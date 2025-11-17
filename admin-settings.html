@@ -1091,32 +1091,34 @@
             
             resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
 
-            // Define common endpoint paths to test for each API type
-            const getTestPaths = (baseUrl) => {
-                if (baseUrl.includes('/admin')) {
-                    return ['/admin/admin/account/login', '/admin/account/user-info', '/admin'];
-                } else if (baseUrl.includes('/wishlist')) {
-                    return ['/wishlist', '/wishlist/wishlist'];
-                } else if (baseUrl.includes('/price-alerts')) {
-                    return ['/alerts', '/alerts'];
-                } else if (baseUrl.includes('/notifications')) {
-                    return ['/notifications', '/notifications/notifications'];
-                } else if (baseUrl.includes('/business')) {
-                    // Business API endpoints from aws-auth-business.js
-                    return ['/business/business/login', '/business/business/user-info', '/business/business/get-services', '/business/business/session'];
-                } else if (baseUrl.includes('/acc')) {
-                    // Account API endpoints from aws-auth.js
-                    return ['/acc/auth/login', '/acc/auth/get-user-info', '/acc/auth/get-session'];
-                }
-                return [''];
-            };
-
-            const testPaths = getTestPaths(apiUrl);
+            // Normalize base URL - remove trailing /business or /acc if present
+            let normalizedBaseUrl = apiUrl;
+            let testPaths = [];
+            
+            if (normalizedBaseUrl.endsWith('/business')) {
+                normalizedBaseUrl = normalizedBaseUrl.replace(/\/business$/, '');
+                // Business API endpoints from aws-auth-business.js - exact paths as defined
+                testPaths = ['/business/business/login', '/business/business/user-info', '/business/business/get-services', '/business/business/session'];
+            } else if (normalizedBaseUrl.endsWith('/acc')) {
+                normalizedBaseUrl = normalizedBaseUrl.replace(/\/acc$/, '');
+                // Account API endpoints from aws-auth.js - exact paths as defined
+                testPaths = ['/acc/auth/login', '/acc/auth/get-user-info', '/acc/auth/get-session'];
+            } else if (normalizedBaseUrl.includes('/admin')) {
+                testPaths = ['/admin/admin/account/login', '/admin/account/user-info', '/admin'];
+            } else if (normalizedBaseUrl.includes('/wishlist')) {
+                testPaths = ['/wishlist', '/wishlist/wishlist'];
+            } else if (normalizedBaseUrl.includes('/price-alerts')) {
+                testPaths = ['/alerts', '/alerts'];
+            } else if (normalizedBaseUrl.includes('/notifications')) {
+                testPaths = ['/notifications', '/notifications/notifications'];
+            } else {
+                testPaths = [''];
+            }
 
             try {
                 // First, try OPTIONS request (CORS preflight) - this is the best way to test CORS
                 try {
-                    const optionsResponse = await fetch(apiUrl, {
+                    const optionsResponse = await fetch(normalizedBaseUrl, {
                         method: 'OPTIONS',
                         mode: 'cors',
                         headers: {
@@ -1142,7 +1144,7 @@
                 let corsErrorDetected = false;
 
                 for (const path of testPaths) {
-                    const testUrl = apiUrl + path;
+                    const testUrl = normalizedBaseUrl + path;
                     try {
                         const response = await fetch(testUrl, {
                             method: 'GET',
@@ -1193,7 +1195,7 @@
                 if (corsErrorDetected) {
                     // CORS error detected - verify endpoint is reachable with no-cors
                     try {
-                        await fetch(apiUrl, {
+                        await fetch(normalizedBaseUrl, {
                             method: 'GET',
                             mode: 'no-cors'
                         });

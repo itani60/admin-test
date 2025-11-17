@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 3px solid var(--danger);
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .admin-header p {
+            color: var(--text);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .products-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        #productsContainer {
+            min-height: 400px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-select, .form-control {
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .product-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .product-info h4 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-meta {
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .pagination {
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .page-link {
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+        }
+
+        .page-link:hover {
+            background: var(--light);
+            color: var(--primary-dark);
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        /* Edit Modal Styles */
+        .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .offer-item {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .offer-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .offer-item-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .specs-nested {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .specs-nested-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .specs-nested-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .specs-array-item {
+            background: var(--light);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            margin: 0.25rem 0;
+            display: inline-block;
+        }
+
+        /* Filter Buttons (matching smartphones.html) */
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.5rem;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            color: #495057;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            min-width: 60px;
+            height: 28px;
+            box-sizing: border-box;
+        }
+
+        .filter-btn:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .filter-btn.filter-active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .filter-btn i {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .filter-btn.filter-active i {
+            color: white;
+        }
+
+        /* Filter Options Panel (matching smartphones.html) */
+        .filter-options {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-options-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* Category and Brand Grid Styling (matching smartphones.html) */
+        .category-grid, .brand-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .category-option, .brand-option {
+            padding: 0.5rem 0.75rem;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            color: #495057;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .category-option:hover, .brand-option:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        .category-option.active, .brand-option.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* Filter Actions (matching smartphones.html) */
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e9ecef;
+            justify-content: center;
+        }
+
+        .btn-apply {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.8rem;
+            width: auto;
+            min-width: 80px;
+        }
+
+        .btn-apply:hover {
+            background: #0056b3;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.8rem;
+            width: auto;
+            min-width: 80px;
+        }
+
+        .btn-cancel:hover {
+            background: #545b62;
+        }
+
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 0.5rem;
+        }
+
+        .btn-clear:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        /* Search Input Wrapper Styling (matching smartphones.html) */
+        .search-wrapper {
+            margin-top: 0.5rem;
+        }
+
+        .search-input-group {
+            display: flex;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .search-input-group:focus-within {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-color: #dc3545;
+            transform: translateY(-1px);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            background: transparent;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .search-input:focus {
+            border: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #6c757d;
+            font-weight: 400;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+            transform: scale(1.05);
+        }
+
+        .search-btn:active {
+            transform: scale(1);
+        }
+
+        /* Smartphone Card Styles (matching smartphones.css) */
+        .smartphone-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .smartphone-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .card-image-container {
+            height: 200px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .card-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .brand-badge {
+            background: #6c757d;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .product-specs {
+            margin-bottom: 1rem;
+        }
+
+        .product-specs span {
+            font-size: 0.85rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        .product-price {
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        .retailer-info {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            align-items: center;
+            min-height: 40px;
+            margin-top: auto;
+        }
+
+        .btn-view {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.8rem;
+            flex: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover {
+            background: #218838;
+        }
+
+        .btn-edit {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.8rem;
+            flex: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-size: 0.8rem;
+            flex: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #productsContainer {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            
+            .card-image-container {
+                height: 140px;
+                padding: 0.75rem;
+            }
+            
+            .card-content {
+                padding: 0.75rem;
+            }
+            
+            .product-name {
+                font-size: 0.95rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .current-price {
+                font-size: 1rem;
+            }
+            
+            .card-actions {
+                padding: 0.75rem;
+                gap: 0.5rem;
+                flex-direction: column;
+            }
+            
+            .btn-view,
+            .btn-edit,
+            .btn-delete {
+                font-size: 0.85rem;
+                height: 34px;
+                width: 100%;
+                flex: none;
+            }
+        }
+
+        /* Breadcrumb Styles */
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active a {
+            color: var(--text-dark);
+            pointer-events: none;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo">
+                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Product Management
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Title Section -->
+        <div class="page-title-section" style="margin-bottom: 2rem; padding: 1.5rem 0;">
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+                Product Management
+            </h1>
+            <p style="color: var(--text); margin: 0; font-size: 1rem;">View, edit, and manage your product catalog</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalProductsCount">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="currentCategoryCount">0</div>
+                        <div class="stat-label">In Current Category</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="filteredCount">0</div>
+                        <div class="stat-label">Filtered Results</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalPages">0</div>
+                        <div class="stat-label">Total Pages</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="filter-buttons">
+                        <button class="filter-btn" data-filter="category" id="categoryFilterBtn">
+                            <i class="fas fa-th-large"></i>
+                            Category
+                        </button>
+                        <button class="filter-btn" data-filter="brand" id="brandFilterBtn" style="display: none;">
+                            <i class="fas fa-tag"></i>
+                            Brand
+                        </button>
+                    </div>
+                    
+                    <!-- Category Filter Options -->
+                    <div class="filter-options" id="categoryOptions" style="display: none;">
+                        <div class="filter-options-content">
+                            <h4>Select Category</h4>
+                            <div class="category-grid" id="categoryGrid">
+                                <!-- Category buttons will be dynamically added here -->
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-clear" data-filter="category">Clear All</button>
+                                <button class="btn-apply" data-filter="category">Apply</button>
+                                <button class="btn-cancel" data-filter="category">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Brand Filter Options -->
+                    <div class="filter-options" id="brandOptions" style="display: none;">
+                        <div class="filter-options-content">
+                            <h4>Select Brand</h4>
+                            <div class="brand-grid" id="brandGrid">
+                                <!-- Brand buttons will be dynamically added here for smartphones -->
+                            </div>
+                            <div id="brandTextInputContainer" style="display: none;">
+                                <input type="text" class="form-control" id="brandFilterText" placeholder="Enter brand name...">
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-clear" data-filter="brand">Clear All</button>
+                                <button class="btn-apply" data-filter="brand">Apply</button>
+                                <button class="btn-cancel" data-filter="brand">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <select class="form-select" id="categoryFilter" style="display: none;">
+                        <option value="">All Categories</option>
+                        <option value="smartphones">Smartphones</option>
+                        <option value="windows-laptops">Windows Laptops</option>
+                        <option value="macbooks-laptops">MacBooks Laptops</option>
+                        <option value="chromebooks-laptops">Chromebooks Laptops</option>
+                        <option value="tablets">Tablets</option>
+                        <option value="wearables">Wearables</option>
+                        <option value="televisions">Televisions</option>
+                        <option value="audio">Audio</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="appliances">Appliances</option>
+                    </select>
+                    <select class="form-select" id="brandFilter" style="display: none;">
+                        <option value="">All Brands</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label"><strong>Search</strong></label>
+                    <div class="search-wrapper">
+                        <div class="input-group search-input-group">
+                            <input type="text" class="form-control search-input" id="searchInput" placeholder="Search products...">
+                            <button type="button" class="btn btn-danger search-btn" onclick="loadProducts()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Products</h3>
+                <div>
+                    <select class="form-select d-inline-block" id="pageSize" style="width: auto;">
+                        <option value="10">10 per page</option>
+                        <option value="25" selected>25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="productsContainer">
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h4>No products found</h4>
+                    <p>Select a category to load products</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Product pagination" id="paginationContainer" style="display: none;">
+                <ul class="pagination" id="pagination">
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">
+                        <i class="fas fa-edit"></i> Edit Product
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <input type="hidden" id="editProductId">
+                        <input type="hidden" id="editProductCategory">
+
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-info-circle"></i> Basic Information
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="editBrand" class="form-label">Brand <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editBrand" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editModel" class="form-label">Model <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="editModel" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editColor" class="form-label">Color</label>
+                                    <input type="text" class="form-control" id="editColor">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editImageFile" class="form-label">Product Image</label>
+                                    <input type="file" class="form-control" id="editImageFile" accept="image/*" onchange="handleImageUpload(event)">
+                                    <small class="text-muted">Upload a new image or leave empty to keep current image</small>
+                                    <div id="imagePreviewContainer" style="margin-top: 1rem; display: none;">
+                                        <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearImagePreview()" style="display: block;">
+                                            <i class="fas fa-times"></i> Remove
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="editImageUrl" value="">
+                                </div>
+                                <div class="col-12">
+                                    <label for="editDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="editDescription" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Offers -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-tags"></i> Retailer Offers
+                                <button type="button" class="btn btn-sm btn-success ms-auto" onclick="addOffer()">
+                                    <i class="fas fa-plus"></i> Add Offer
+                                </button>
+                            </div>
+                            <div id="offersContainer">
+                                <!-- Offers will be dynamically added here -->
+                            </div>
+                        </div>
+
+                        <!-- Specifications -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-cog"></i> Specifications (JSON)
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSpecs" class="form-label">Specifications JSON</label>
+                                <textarea class="form-control font-monospace" id="editSpecs" rows="10" 
+                                    placeholder='{"Performance": {"Processor": "...", "Ram": "...", "Storage": "..."}, ...}'></textarea>
+                                <small class="text-muted">Edit specifications as JSON. Leave empty to keep current specs.</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveProductChanges()">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const API_CONFIG = {
+            BASE_URL: 'https://acc.comparehubprices.site/data',
+            LIST_PRODUCTS_ENDPOINT: '/products',
+            GET_PRODUCT_ENDPOINT: '/products',
+            UPDATE_PRODUCT_ENDPOINT: '/products',
+            DELETE_PRODUCT_ENDPOINT: '/products',
+        };
+
+        let currentPage = 1;
+        let pageSize = 25;
+        let lastKey = null;
+        let currentCategory = '';
+
+        // Load saved API URL
+        const savedUrl = localStorage.getItem('comparehubprices_api_url');
+        if (savedUrl) {
+            API_CONFIG.BASE_URL = savedUrl;
+        }
+
+        // Categories
+        const CATEGORIES = [
+            { value: 'smartphones', label: 'Smartphones' },
+            { value: 'windows-laptops', label: 'Windows Laptops' },
+            { value: 'macbooks-laptops', label: 'MacBooks' },
+            { value: 'chromebooks-laptops', label: 'Chromebooks' },
+            { value: 'tablets', label: 'Tablets' },
+            { value: 'wearables', label: 'Wearables' },
+            { value: 'televisions', label: 'Televisions' },
+            { value: 'audio', label: 'Audio' },
+            { value: 'gaming', label: 'Gaming' },
+            { value: 'appliances', label: 'Appliances' }
+        ];
+
+        // Smartphone brands
+        const SMARTPHONE_BRANDS = [
+            'Apple',
+            'Huawei',
+            'Samsung',
+            'Xiaomi',
+            'OPPO',
+            'Honor',
+            'Motorola',
+            'Nokia',
+            'Tecno',
+            'Vivo',
+            'Realme'
+        ];
+
+        // Initialize category grid
+        function initializeCategoryGrid() {
+            const categoryGrid = document.getElementById('categoryGrid');
+            categoryGrid.innerHTML = '';
+            
+            // Add category buttons
+            CATEGORIES.forEach(cat => {
+                const catBtn = document.createElement('button');
+                catBtn.type = 'button';
+                catBtn.className = 'category-option';
+                catBtn.textContent = cat.label;
+                catBtn.dataset.category = cat.value;
+                catBtn.onclick = () => toggleCategoryOption(cat.value);
+                categoryGrid.appendChild(catBtn);
+            });
+        }
+
+        // Toggle category option selection (for multi-select in panel)
+        function toggleCategoryOption(category) {
+            const optionBtn = document.querySelector(`.category-option[data-category="${category}"]`);
+            if (optionBtn) {
+                optionBtn.classList.toggle('active');
+            }
+        }
+
+        // Apply category filter
+        function applyCategoryFilter() {
+            const activeCategory = document.querySelector('.category-option.active');
+            const category = activeCategory ? activeCategory.dataset.category : '';
+            
+            // Update the hidden select for compatibility
+            const categorySelect = document.getElementById('categoryFilter');
+            categorySelect.value = category;
+            
+            // Update category filter button active state
+            const categoryFilterBtn = document.getElementById('categoryFilterBtn');
+            if (category) {
+                categoryFilterBtn.classList.add('filter-active');
+            } else {
+                categoryFilterBtn.classList.remove('filter-active');
+            }
+            
+            // Update brand filter based on category
+            updateBrandFilter();
+            
+            // Close the filter panel
+            closeFilterPanel('category');
+            
+            // Load products if category is selected
+            if (category) {
+                loadProducts();
+            }
+        }
+
+        // Clear category filter
+        function clearCategoryFilter() {
+            document.querySelectorAll('.category-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
+        // Select category from grid (for direct selection - used by restoreState)
+        function selectCategory(category) {
+            // Remove active class from all category options
+            document.querySelectorAll('.category-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to selected category
+            const selectedBtn = document.querySelector(`.category-option[data-category="${category}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+            
+            // Update the hidden select for compatibility
+            const categorySelect = document.getElementById('categoryFilter');
+            categorySelect.value = category;
+            
+            // Update category filter button active state
+            const categoryFilterBtn = document.getElementById('categoryFilterBtn');
+            if (category) {
+                categoryFilterBtn.classList.add('filter-active');
+            } else {
+                categoryFilterBtn.classList.remove('filter-active');
+            }
+            
+            // Update brand filter based on category
+            updateBrandFilter();
+        }
+
+        // Update brand filter based on category
+        function updateBrandFilter() {
+            const category = document.getElementById('categoryFilter').value;
+            const brandSelect = document.getElementById('brandFilter');
+            const brandText = document.getElementById('brandFilterText');
+            const brandGrid = document.getElementById('brandGrid');
+            const brandOptions = document.getElementById('brandOptions');
+            const brandFilterBtn = document.getElementById('brandFilterBtn');
+            
+            // Clear existing options
+            brandSelect.innerHTML = '<option value="">All Brands</option>';
+            brandGrid.innerHTML = '';
+            
+            if (category === 'smartphones') {
+                // Show brand filter button and grid
+                brandFilterBtn.style.display = 'inline-flex';
+                brandSelect.style.display = 'none';
+                brandText.style.display = 'none';
+                
+                // Populate brand grid
+                SMARTPHONE_BRANDS.forEach(brand => {
+                    const brandBtn = document.createElement('button');
+                    brandBtn.type = 'button';
+                    brandBtn.className = 'brand-option';
+                    brandBtn.textContent = brand;
+                    brandBtn.dataset.brand = brand.toLowerCase();
+                    brandBtn.onclick = () => toggleBrandOption(brand.toLowerCase());
+                    brandGrid.appendChild(brandBtn);
+                });
+            } else if (category) {
+                // For other categories, show brand filter button (but use text input in panel)
+                brandFilterBtn.style.display = 'inline-flex';
+                // Keep brand options panel available but it will use text input
+                brandSelect.style.display = 'none';
+                brandText.style.display = 'none'; // Will show in panel when opened
+                brandGrid.style.display = 'none';
+            } else {
+                // No category selected, hide brand filter
+                brandFilterBtn.style.display = 'none';
+                brandOptions.style.display = 'none';
+                brandSelect.style.display = 'none';
+                brandText.style.display = 'none';
+                brandGrid.style.display = 'none';
+            }
+        }
+
+        // Toggle brand option selection (for multi-select in panel)
+        function toggleBrandOption(brand) {
+            const optionBtn = document.querySelector(`.brand-option[data-brand="${brand}"]`);
+            if (optionBtn) {
+                optionBtn.classList.toggle('active');
+            }
+        }
+
+        // Apply brand filter
+        function applyBrandFilter() {
+            const category = document.getElementById('categoryFilter').value;
+            let brand = '';
+            
+            if (category === 'smartphones') {
+                // Get brand from active button
+                const activeBrand = document.querySelector('.brand-option.active');
+                brand = activeBrand ? activeBrand.dataset.brand : '';
+                // Convert to proper case for API
+                if (brand && SMARTPHONE_BRANDS.includes(brand.charAt(0).toUpperCase() + brand.slice(1))) {
+                    brand = brand.charAt(0).toUpperCase() + brand.slice(1);
+                }
+            } else {
+                // Get brand from text input
+                brand = document.getElementById('brandFilterText').value.trim();
+            }
+            
+            // Update the hidden select for compatibility
+            const brandSelect = document.getElementById('brandFilter');
+            brandSelect.value = brand;
+            
+            // Update brand filter button active state
+            const brandFilterBtn = document.getElementById('brandFilterBtn');
+            if (brand) {
+                brandFilterBtn.classList.add('filter-active');
+            } else {
+                brandFilterBtn.classList.remove('filter-active');
+            }
+            
+            // Close the filter panel
+            closeFilterPanel('brand');
+            
+            // Load products if category is selected
+            if (category) {
+                loadProducts();
+            }
+        }
+
+        // Clear brand filter
+        function clearBrandFilter() {
+            document.querySelectorAll('.brand-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('brandFilterText').value = '';
+        }
+
+        // Select brand from grid (for direct selection - legacy)
+        function selectBrand(brand) {
+            // Remove active class from all brand options
+            document.querySelectorAll('.brand-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to selected brand
+            const selectedBtn = document.querySelector(`.brand-option[data-brand="${brand}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+            
+            // Update the hidden select for compatibility
+            const brandSelect = document.getElementById('brandFilter');
+            brandSelect.value = brand;
+            
+            // Auto-load products if category is selected
+            const category = document.getElementById('categoryFilter').value;
+            if (category) {
+                loadProducts();
+            }
+        }
+
+        // Toggle filter panel
+        function toggleFilterPanel(filterType) {
+            const panel = document.getElementById(`${filterType}Options`);
+            const btn = document.getElementById(`${filterType}FilterBtn`);
+            
+            // Close other panels
+            document.querySelectorAll('.filter-options').forEach(p => {
+                if (p.id !== `${filterType}Options`) {
+                    p.style.display = 'none';
+                }
+            });
+            
+            // Remove active from other buttons
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                if (b.id !== `${filterType}FilterBtn`) {
+                    b.classList.remove('filter-active');
+                }
+            });
+            
+            // Toggle current panel
+            if (panel.style.display === 'none' || !panel.style.display) {
+                panel.style.display = 'block';
+                btn.classList.add('filter-active');
+                
+                // If brand panel and not smartphones, show text input
+                if (filterType === 'brand') {
+                    const category = document.getElementById('categoryFilter').value;
+                    const brandGrid = document.getElementById('brandGrid');
+                    const brandTextContainer = document.getElementById('brandTextInputContainer');
+                    
+                    if (category === 'smartphones') {
+                        brandGrid.style.display = 'grid';
+                        brandTextContainer.style.display = 'none';
+                    } else if (category) {
+                        brandGrid.style.display = 'none';
+                        brandTextContainer.style.display = 'block';
+                    }
+                }
+            } else {
+                panel.style.display = 'none';
+                btn.classList.remove('filter-active');
+            }
+        }
+
+        // Close filter panel
+        function closeFilterPanel(filterType) {
+            const panel = document.getElementById(`${filterType}Options`);
+            const btn = document.getElementById(`${filterType}FilterBtn`);
+            panel.style.display = 'none';
+            btn.classList.remove('filter-active');
+        }
+
+        // Load products from API
+        async function loadProducts() {
+            // Get category from active button or select
+            let category = '';
+            const activeCategory = document.querySelector('.category-option.active');
+            if (activeCategory) {
+                category = activeCategory.dataset.category || '';
+            } else {
+                category = document.getElementById('categoryFilter').value;
+            }
+            const brandSelect = document.getElementById('brandFilter');
+            const brandText = document.getElementById('brandFilterText');
+            const brandGrid = document.getElementById('brandGrid');
+            
+            // Get brand value - check grid first (for smartphones), then select, then text input
+            let brand = '';
+            if (category === 'smartphones') {
+                const activeBrand = document.querySelector('.brand-option.active');
+                brand = activeBrand ? (activeBrand.dataset.brand || '').trim() : '';
+                // Convert to proper case for API (e.g., "apple" -> "Apple")
+                if (brand && SMARTPHONE_BRANDS.includes(brand.charAt(0).toUpperCase() + brand.slice(1))) {
+                    brand = brand.charAt(0).toUpperCase() + brand.slice(1);
+                }
+            } else {
+                brand = brandText.value.trim();
+            }
+            const search = document.getElementById('searchInput').value.trim();
+            const size = parseInt(document.getElementById('pageSize').value);
+
+            // Category is required - API requires it
+            if (!category) {
+                showAlert('Please select a category first', 'warning');
+                return;
+            }
+
+            currentCategory = category;
+            pageSize = size;
+            currentPage = 1;
+            lastKey = null;
+
+            try {
+                // Build query parameters (API requires category, search is handled client-side)
+                let url = `${API_CONFIG.BASE_URL}${API_CONFIG.LIST_PRODUCTS_ENDPOINT}?category=${encodeURIComponent(category)}&limit=${pageSize}`;
+                if (brand) url += `&brand=${encodeURIComponent(brand)}`;
+                // Note: Search is handled client-side since API doesn't support search parameter
+                if (lastKey) url += `&lastKey=${encodeURIComponent(lastKey)}`;
+
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const products = data.body ? JSON.parse(data.body) : data;
+                let allProducts = products.products || products.items || [];
+
+                // Client-side filtering for search term
+                if (search && allProducts.length > 0) {
+                    const searchLower = search.toLowerCase();
+                    allProducts = allProducts.filter(product => {
+                        const model = (product.model || '').toLowerCase();
+                        const brand = (product.brand || '').toLowerCase();
+                        const productId = (product.product_id || '').toLowerCase();
+                        const description = (product.description || '').toLowerCase();
+                        
+                        return model.includes(searchLower) || 
+                               brand.includes(searchLower) || 
+                               productId.includes(searchLower) ||
+                               description.includes(searchLower);
+                    });
+                }
+
+                displayProducts(allProducts);
+                updateStats(allProducts.length);
+                updatePagination(products.lastKey);
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showAlert('Error loading products: ' + error.message, 'danger');
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-box-open"></i>
+                        <h4>No products found</h4>
+                        <p>Try adjusting your filters or select a different category</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = products.map(product => {
+                const lowestPrice = getLowestPrice(product.offers);
+                const formattedPrice = lowestPrice ? lowestPrice.toLocaleString('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0, maximumFractionDigits: 0 }) : 'Price not available';
+                const imageUrl = product.imageUrl || product.image || product.img || 'https://via.placeholder.com/150?text=No+Image';
+                const productName = product.model || product.title || 'Unknown Product';
+                const brandName = product.brand || 'Unknown Brand';
+
+                // Extract specs
+                const specs = [];
+                if (product.specs?.Performance?.Ram) specs.push(product.specs.Performance.Ram);
+                if (product.specs?.Performance?.Storage) specs.push(product.specs.Performance.Storage);
+                if (product.specs?.Os?.['Operating System']) specs.push(product.specs.Os['Operating System']);
+                if (product.color) specs.push(product.color);
+
+                const specsHtml = specs.length > 0 ? `<div class="product-specs"><span>${specs.join(' • ')}</span></div>` : '';
+
+                // Get retailer count
+                const retailerCount = product.offers?.length || 0;
+
+                return `
+                    <div class="smartphone-card">
+                        <div class="card-image-container">
+                            <img src="${imageUrl}" alt="${productName}" class="card-image" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                        </div>
+                        <div class="card-content">
+                            <span class="brand-badge">${brandName}</span>
+                            <h3 class="product-name">${productName}</h3>
+                            ${specsHtml}
+                            <div class="product-price">
+                                <span class="current-price">${formattedPrice}</span>
+                            </div>
+                            <div class="retailer-info">
+                                <span>${retailerCount} retailer${retailerCount !== 1 ? 's' : ''}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-view" onclick="viewProduct('${product.product_id}', '${product.category}')">View</button>
+                            <button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>
+                            <button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get lowest price from offers
+        function getLowestPrice(offers) {
+            if (!offers || offers.length === 0) return 0;
+            const prices = offers.map(o => o.price || o.originalPrice || 0).filter(p => p > 0);
+            return prices.length > 0 ? Math.min(...prices) : 0;
+        }
+
+        // Update stats
+        function updateStats(count) {
+            document.getElementById('filteredCount').textContent = count;
+            document.getElementById('currentCategoryCount').textContent = count;
+        }
+
+        // Update pagination
+        function updatePagination(nextKey) {
+            const paginationContainer = document.getElementById('paginationContainer');
+            const pagination = document.getElementById('pagination');
+            
+            if (!nextKey && currentPage === 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+
+            paginationContainer.style.display = 'block';
+            pagination.innerHTML = `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="previousPage(); return false;">Previous</a>
+                </li>
+                <li class="page-item active">
+                    <span class="page-link">Page ${currentPage}</span>
+                </li>
+                <li class="page-item ${!nextKey ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="nextPage(); return false;">Next</a>
+                </li>
+            `;
+        }
+
+        // Pagination functions
+        function nextPage() {
+            if (lastKey) {
+                currentPage++;
+                loadProducts();
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                // Note: DynamoDB doesn't support backward pagination easily
+                // You may need to reload from start
+                loadProducts();
+            }
+        }
+
+        // View product
+        function viewProduct(productId, category) {
+            // Save current state before navigating
+            let categoryValue = '';
+            const activeCategory = document.querySelector('.category-option.active');
+            if (activeCategory) {
+                categoryValue = activeCategory.dataset.category || '';
+            } else {
+                categoryValue = document.getElementById('categoryFilter').value;
+            }
+            
+            let brandValue = '';
+            
+            // Get brand value based on category type
+            if (categoryValue === 'smartphones') {
+                const brandGrid = document.getElementById('brandGrid');
+                if (brandGrid && brandGrid.style.display !== 'none') {
+                    const activeBrand = document.querySelector('.brand-option.active');
+                    brandValue = activeBrand ? (activeBrand.dataset.brand || '') : '';
+                } else {
+                    brandValue = document.getElementById('brandFilter').value;
+                }
+            } else {
+                brandValue = document.getElementById('brandFilterText').value;
+            }
+            
+            const state = {
+                category: categoryValue,
+                brand: brandValue,
+                search: document.getElementById('searchInput').value,
+                pageSize: document.getElementById('pageSize').value,
+                currentPage: currentPage,
+                lastKey: lastKey
+            };
+            sessionStorage.setItem('productManagementState', JSON.stringify(state));
+            
+            window.location.href = `admin-view-info.html?product_id=${encodeURIComponent(productId)}&category=${encodeURIComponent(category)}`;
+        }
+
+        // Handle image upload and show preview
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showAlert('Image file size must be less than 5MB', 'danger');
+                event.target.value = '';
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showAlert('Please select a valid image file', 'danger');
+                event.target.value = '';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreviewContainer').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Clear image preview
+        function clearImagePreview() {
+            document.getElementById('editImageFile').value = '';
+            document.getElementById('imagePreview').src = '';
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+        }
+
+        // Edit product
+        async function editProduct(productId, category) {
+            try {
+                // Show loading state
+                const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+                modal.show();
+                
+                document.getElementById('editProductModalLabel').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                document.getElementById('editProductForm').style.opacity = '0.5';
+                document.querySelector('.modal-footer').style.display = 'none';
+
+                // Fetch product data
+                const response = await fetch(
+                    `${API_CONFIG.BASE_URL}${API_CONFIG.GET_PRODUCT_ENDPOINT}/${productId}?category=${category}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const product = data.body ? JSON.parse(data.body) : data;
+                const productData = product.product || product;
+
+                // Populate form
+                document.getElementById('editProductId').value = productId;
+                document.getElementById('editProductCategory').value = category;
+                document.getElementById('editBrand').value = productData.brand || '';
+                document.getElementById('editModel').value = productData.model || '';
+                document.getElementById('editColor').value = productData.color || '';
+                document.getElementById('editImageUrl').value = productData.imageUrl || '';
+                document.getElementById('editImageFile').value = ''; // Clear file input
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+                document.getElementById('imagePreview').src = '';
+                document.getElementById('editDescription').value = productData.description || '';
+                
+                // Show current image if exists
+                if (productData.imageUrl) {
+                    document.getElementById('imagePreview').src = productData.imageUrl;
+                    document.getElementById('imagePreviewContainer').style.display = 'block';
+                }
+                document.getElementById('editSpecs').value = productData.specs ? JSON.stringify(productData.specs, null, 2) : '';
+
+                // Populate offers
+                populateOffers(productData.offers || []);
+
+                // Show form
+                document.getElementById('editProductModalLabel').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
+                document.getElementById('editProductForm').style.opacity = '1';
+                document.querySelector('.modal-footer').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showAlert('Error loading product: ' + error.message, 'danger');
+                bootstrap.Modal.getInstance(document.getElementById('editProductModal'))?.hide();
+            }
+        }
+
+        // Populate offers in the form
+        function populateOffers(offers) {
+            const container = document.getElementById('offersContainer');
+            container.innerHTML = '';
+
+            if (offers.length === 0) {
+                container.innerHTML = '<p class="text-muted">No offers available. Click "Add Offer" to add one.</p>';
+                return;
+            }
+
+            offers.forEach((offer, index) => {
+                addOfferToForm(offer, index);
+            });
+        }
+
+        // Add offer to form
+        function addOfferToForm(offer = {}, index = null) {
+            const container = document.getElementById('offersContainer');
+            const offerIndex = index !== null ? index : container.children.length;
+            
+            const offerHTML = `
+                <div class="offer-item" data-offer-index="${offerIndex}">
+                    <div class="offer-item-header">
+                        <span class="offer-item-title">Offer #${offerIndex + 1}</span>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeOffer(${offerIndex})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Retailer <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control offer-retailer" value="${offer.retailer || ''}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">URL</label>
+                            <input type="url" class="form-control offer-url" value="${offer.url || ''}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Price (R) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control offer-price" value="${offer.price || ''}" step="0.01" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Original Price (R)</label>
+                            <input type="number" class="form-control offer-original-price" value="${offer.originalPrice || ''}" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Sale Ends</label>
+                            <input type="text" class="form-control offer-sale-ends" value="${offer.saleEnds || ''}" placeholder="e.g., 15 December 2024">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Logo URL</label>
+                            <input type="url" class="form-control offer-logo-url" value="${offer.logoUrl || ''}">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', offerHTML);
+        }
+
+        // Add new offer
+        function addOffer() {
+            addOfferToForm();
+        }
+
+        // Remove offer
+        function removeOffer(index) {
+            const offerItem = document.querySelector(`.offer-item[data-offer-index="${index}"]`);
+            if (offerItem) {
+                offerItem.remove();
+                // Reindex remaining offers
+                document.querySelectorAll('.offer-item').forEach((item, idx) => {
+                    item.setAttribute('data-offer-index', idx);
+                    item.querySelector('.offer-item-title').textContent = `Offer #${idx + 1}`;
+                });
+            }
+        }
+
+        // Save product changes
+        async function saveProductChanges() {
+            const productId = document.getElementById('editProductId').value;
+            const category = document.getElementById('editProductCategory').value;
+            
+            if (!productId || !category) {
+                showAlert('Missing product ID or category', 'danger');
+                return;
+            }
+
+            try {
+                // Handle image upload if file is selected
+                const imageFile = document.getElementById('editImageFile').files[0];
+                if (imageFile) {
+                    // Validate file size (max 5MB)
+                    if (imageFile.size > 5 * 1024 * 1024) {
+                        showAlert('Image file size must be less than 5MB', 'danger');
+                        return;
+                    }
+                    
+                    // Validate file type
+                    if (!imageFile.type.startsWith('image/')) {
+                        showAlert('Please select a valid image file', 'danger');
+                        return;
+                    }
+                }
+                
+                // Collect form data
+                const updateData = {
+                    category: category,
+                    brand: document.getElementById('editBrand').value.trim(),
+                    model: document.getElementById('editModel').value.trim(),
+                    color: document.getElementById('editColor').value.trim(),
+                    description: document.getElementById('editDescription').value.trim(),
+                };
+                
+                // Add image URL if no new file is uploaded (keep existing)
+                const existingImageUrl = document.getElementById('editImageUrl').value.trim();
+                if (!imageFile && existingImageUrl) {
+                    updateData.imageUrl = existingImageUrl;
+                }
+
+                // Collect offers
+                const offers = [];
+                document.querySelectorAll('.offer-item').forEach((item) => {
+                    const offer = {
+                        retailer: item.querySelector('.offer-retailer').value.trim(),
+                        url: item.querySelector('.offer-url').value.trim(),
+                        price: parseFloat(item.querySelector('.offer-price').value) || 0,
+                        originalPrice: parseFloat(item.querySelector('.offer-original-price').value) || null,
+                        saleEnds: item.querySelector('.offer-sale-ends').value.trim() || null,
+                        logoUrl: item.querySelector('.offer-logo-url').value.trim() || null,
+                    };
+                    
+                    if (offer.retailer && offer.price > 0) {
+                        offers.push(offer);
+                    }
+                });
+
+                if (offers.length > 0) {
+                    updateData.offers = offers;
+                }
+
+                // Parse specs if provided
+                const specsText = document.getElementById('editSpecs').value.trim();
+                if (specsText) {
+                    try {
+                        updateData.specs = JSON.parse(specsText);
+                    } catch (e) {
+                        showAlert('Invalid JSON in specifications field. Please check the format.', 'danger');
+                        return;
+                    }
+                }
+
+                // Convert image file to base64 if file is selected
+                if (imageFile) {
+                    const base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(imageFile);
+                    });
+                    
+                    updateData.imageBase64 = base64;
+                    updateData.imageContentType = imageFile.type;
+                }
+
+                // Remove empty fields
+                Object.keys(updateData).forEach(key => {
+                    if (updateData[key] === '' || updateData[key] === null) {
+                        delete updateData[key];
+                    }
+                });
+
+                // Show loading state
+                const saveBtn = document.querySelector('.modal-footer .btn-primary');
+                const originalText = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                // Send update request
+                const response = await fetch(
+                    `${API_CONFIG.BASE_URL}${API_CONFIG.UPDATE_PRODUCT_ENDPOINT}/${productId}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updateData),
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const resultData = result.body ? JSON.parse(result.body) : result;
+
+                if (resultData.success) {
+                    showAlert(`Product "${productId}" updated successfully!`, 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('editProductModal'))?.hide();
+                    loadProducts(); // Reload product list
+                } else {
+                    throw new Error(resultData.message || 'Update failed');
+                }
+
+            } catch (error) {
+                console.error('Error updating product:', error);
+                showAlert('Error updating product: ' + error.message, 'danger');
+            } finally {
+                const saveBtn = document.querySelector('.modal-footer .btn-primary');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(productId, category) {
+            if (!confirm(`Are you sure you want to delete product "${productId}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_CONFIG.BASE_URL}${API_CONFIG.DELETE_PRODUCT_ENDPOINT}/${productId}?category=${category}`,
+                    { method: 'DELETE' }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                showAlert(`Product "${productId}" deleted successfully`, 'success');
+                loadProducts(); // Reload list
+
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showAlert('Error deleting product: ' + error.message, 'danger');
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer') || createAlertContainer();
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+
+        function createAlertContainer() {
+            // Check if alert container already exists
+            let alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                return alertContainer;
+            }
+            
+            // Create new alert container
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alertContainer';
+            alertContainer.className = 'mb-3';
+            
+            // Find the main content container (not the header one)
+            const mainContainer = document.querySelector('.admin-header').nextElementSibling;
+            const statsBar = document.querySelector('.stats-bar');
+            
+            // Insert before stats-bar if it exists, otherwise prepend to main container
+            if (mainContainer && statsBar && mainContainer.contains(statsBar)) {
+                mainContainer.insertBefore(alertContainer, statsBar);
+            } else if (mainContainer) {
+                mainContainer.insertBefore(alertContainer, mainContainer.firstChild);
+            } else {
+                // Fallback: append to body
+                document.body.insertBefore(alertContainer, document.body.firstChild);
+            }
+            
+            return alertContainer;
+        }
+
+        // Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadProducts();
+        });
+
+        document.getElementById('brandFilterText').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadProducts();
+        });
+
+        // Category change - update brand filter (for hidden select compatibility)
+        document.getElementById('categoryFilter').addEventListener('change', () => {
+            const category = document.getElementById('categoryFilter').value;
+            selectCategory(category);
+        });
+
+        // Page size change
+        document.getElementById('pageSize').addEventListener('change', () => {
+            loadProducts();
+        });
+
+        // Initialize category and brand filters on page load
+        initializeCategoryGrid();
+        updateBrandFilter();
+
+        // Filter button click handlers
+        document.getElementById('categoryFilterBtn').addEventListener('click', () => {
+            toggleFilterPanel('category');
+        });
+
+        document.getElementById('brandFilterBtn').addEventListener('click', () => {
+            toggleFilterPanel('brand');
+        });
+
+        // Filter action button handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-apply')) {
+                const filterType = e.target.dataset.filter;
+                if (filterType === 'category') {
+                    applyCategoryFilter();
+                } else if (filterType === 'brand') {
+                    applyBrandFilter();
+                }
+            } else if (e.target.classList.contains('btn-cancel')) {
+                const filterType = e.target.dataset.filter;
+                closeFilterPanel(filterType);
+            } else if (e.target.classList.contains('btn-clear')) {
+                const filterType = e.target.dataset.filter;
+                if (filterType === 'category') {
+                    clearCategoryFilter();
+                } else if (filterType === 'brand') {
+                    clearBrandFilter();
+                }
+            }
+        });
+
+        // Restore state from sessionStorage when returning from view page
+        function restoreState() {
+            const savedState = sessionStorage.getItem('productManagementState');
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    
+                    // Restore filters
+                    if (state.category) {
+                        // Restore category selection in grid (this will also update brand filter)
+                        selectCategory(state.category);
+                        
+                        // Restore brand after a small delay to ensure grid/inputs are updated
+                        setTimeout(() => {
+                            if (state.category === 'smartphones') {
+                                // Restore brand selection in grid
+                                if (state.brand) {
+                                    // Find and activate the brand button
+                                    const brandLower = state.brand.toLowerCase();
+                                    const brandBtn = document.querySelector(`.brand-option[data-brand="${brandLower}"]`);
+                                    if (brandBtn) {
+                                        brandBtn.classList.add('active');
+                                        document.getElementById('brandFilter').value = brandLower;
+                                        // Update brand filter button active state
+                                        const brandFilterBtn = document.getElementById('brandFilterBtn');
+                                        brandFilterBtn.classList.add('filter-active');
+                                    }
+                                }
+                            } else {
+                                document.getElementById('brandFilterText').value = state.brand || '';
+                            }
+                            
+                            // Restore search
+                            if (state.search) {
+                                document.getElementById('searchInput').value = state.search;
+                            }
+                            
+                            // Restore page size
+                            if (state.pageSize) {
+                                document.getElementById('pageSize').value = state.pageSize;
+                                pageSize = parseInt(state.pageSize);
+                            }
+                            
+                            // Auto-load products if category is set
+                            // Note: We reset to page 1 since DynamoDB doesn't support backward pagination easily
+                            if (state.category) {
+                                currentPage = 1;
+                                lastKey = null;
+                                loadProducts();
+                            }
+                        }, 150);
+                    }
+                    
+                    // Clear saved state after restoring
+                    sessionStorage.removeItem('productManagementState');
+                } catch (error) {
+                    console.error('Error restoring state:', error);
+                }
+            }
+        }
+
+        // Restore state on page load (before other initialization)
+        window.addEventListener('load', () => {
+            restoreState();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 3px solid var(--danger);
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .admin-header p {
+            color: var(--text);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .stats-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.primary {
+            color: var(--primary);
+        }
+
+        .stat-icon.success {
+            color: var(--success);
+        }
+
+        .stat-icon.danger {
+            color: var(--danger);
+        }
+
+        .stat-icon.warning {
+            color: var(--warning);
+        }
+
+        .stat-icon.info {
+            color: var(--info);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .chart-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-section h3 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .chart-placeholder {
+            background: var(--light);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .chart-placeholder i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .table-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .table-section h3 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table tbody tr:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-select, .form-control {
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+            outline: none;
+        }
+
+        /* Breadcrumb Styles */
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active a {
+            color: var(--text-dark);
+            pointer-events: none;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo">
+                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Analytics
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Title Section -->
+        <div class="page-title-section" style="margin-bottom: 2rem; padding: 1.5rem 0;">
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
+                Analytics
+            </h1>
+            <p style="color: var(--text); margin: 0; font-size: 1rem;">View product statistics and performance metrics</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="categoryFilter" class="form-label"><strong>Category</strong></label>
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="smartphones">Smartphones</option>
+                        <option value="windows-laptops">Windows Laptops</option>
+                        <option value="macbooks-laptops">MacBooks Laptops</option>
+                        <option value="chromebooks-laptops">Chromebooks Laptops</option>
+                        <option value="tablets">Tablets</option>
+                        <option value="wearables">Wearables</option>
+                        <option value="televisions">Televisions</option>
+                        <option value="audio">Audio</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="appliances">Appliances</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="timeRange" class="form-label"><strong>Time Range</strong></label>
+                    <select class="form-select" id="timeRange">
+                        <option value="today">Today</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month" selected>Last 30 Days</option>
+                        <option value="year">Last Year</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="brandFilter" class="form-label"><strong>Brand</strong></label>
+                    <select class="form-select" id="brandFilter">
+                        <option value="">All Brands</option>
+                        <option value="Samsung">Samsung</option>
+                        <option value="Apple">Apple</option>
+                        <option value="Google">Google</option>
+                        <option value="OnePlus">OnePlus</option>
+                        <option value="Xiaomi">Xiaomi</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="loadAnalytics()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stat-icon primary">
+                        <img src="assets/images/cards/features.png" alt="Total Products">
+                    </div>
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-change positive" id="productsChange">
+                        <i class="fas fa-arrow-up"></i> +0 this month
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stat-icon success">
+                        <img src="assets/images/cards/sale.png" alt="Price Updates">
+                    </div>
+                    <div class="stat-number" id="priceUpdates">0</div>
+                    <div class="stat-label">Price Updates</div>
+                    <div class="stat-change positive" id="updatesChange">
+                        <i class="fas fa-arrow-up"></i> +0 today
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stat-icon warning">
+                        <img src="assets/images/cards/retailer.png" alt="Active Retailers">
+                    </div>
+                    <div class="stat-number" id="totalRetailers">0</div>
+                    <div class="stat-label">Active Retailers</div>
+                    <div class="stat-change" id="retailersChange">
+                        No change
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stat-icon danger">
+                        <img src="assets/images/cards/price alert.png" alt="Active Price Alerts">
+                    </div>
+                    <div class="stat-number" id="activeAlerts">0</div>
+                    <div class="stat-label">Active Price Alerts</div>
+                    <div class="stat-change negative" id="alertsChange">
+                        <i class="fas fa-arrow-down"></i> -0 this week
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="chart-section">
+                    <h3><i class="fas fa-chart-bar"></i> Products by Category</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>Category distribution chart will be displayed here</p>
+                        <small>Chart integration coming soon</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="chart-section">
+                    <h3><i class="fas fa-chart-line"></i> Price Updates Over Time</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Price update trends will be displayed here</p>
+                        <small>Chart integration coming soon</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="chart-section">
+                    <h3><i class="fas fa-chart-area"></i> Products by Brand</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>Brand distribution chart will be displayed here</p>
+                        <small>Chart integration coming soon</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="chart-section">
+                    <h3><i class="fas fa-dollar-sign"></i> Average Price by Category</h3>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>Average price comparison will be displayed here</p>
+                        <small>Chart integration coming soon</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Products Table -->
+        <div class="table-section">
+            <h3><i class="fas fa-star"></i> Top Products by Price Updates</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Product</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Price Updates</th>
+                            <th>Lowest Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topProductsTable">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-spinner fa-spin"></i> Loading analytics...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Category Statistics Table -->
+        <div class="table-section">
+            <h3><i class="fas fa-table"></i> Category Statistics</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Total Products</th>
+                            <th>Price Updates</th>
+                            <th>Avg. Price</th>
+                            <th>Lowest Price</th>
+                            <th>Highest Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryStatsTable">
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                Select a time range and click Refresh to load statistics
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const API_CONFIG = {
+            BASE_URL: 'https://acc.comparehubprices.site/data',
+            LIST_PRODUCTS_ENDPOINT: '/products',
+        };
+
+        // Load saved API URL
+        const savedUrl = localStorage.getItem('comparehubprices_api_url');
+        if (savedUrl) {
+            API_CONFIG.BASE_URL = savedUrl;
+        }
+
+        // Load analytics on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalytics();
+        });
+
+        // Load analytics data
+        async function loadAnalytics() {
+            const category = document.getElementById('categoryFilter').value;
+            const timeRange = document.getElementById('timeRange').value;
+            const brand = document.getElementById('brandFilter').value;
+
+            try {
+                // Load products for statistics
+                let url = `${API_CONFIG.BASE_URL}${API_CONFIG.LIST_PRODUCTS_ENDPOINT}`;
+                if (category) {
+                    url += `?category=${category}&limit=1000`;
+                } else {
+                    // If no category, we'll need to aggregate across all
+                    url += `?category=smartphones&limit=1000`;
+                }
+
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const products = data.body ? JSON.parse(data.body) : data;
+                const productList = products.products || products.items || [];
+
+                // Calculate statistics
+                calculateStats(productList);
+                displayTopProducts(productList);
+                displayCategoryStats(productList);
+
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                showAlert('Error loading analytics: ' + error.message, 'danger');
+            }
+        }
+
+        // Calculate statistics
+        function calculateStats(products) {
+            const totalProducts = products.length;
+            const uniqueRetailers = new Set();
+            let totalPriceUpdates = 0;
+            let totalAlerts = 0;
+
+            products.forEach(product => {
+                if (product.offers) {
+                    product.offers.forEach(offer => {
+                        if (offer.retailer) uniqueRetailers.add(offer.retailer);
+                    });
+                }
+                // Estimate price updates (this would come from price history in real implementation)
+                totalPriceUpdates += product.offers?.length || 0;
+            });
+
+            // Update stats
+            document.getElementById('totalProducts').textContent = totalProducts.toLocaleString();
+            document.getElementById('totalRetailers').textContent = uniqueRetailers.size;
+            document.getElementById('priceUpdates').textContent = totalPriceUpdates.toLocaleString();
+            document.getElementById('activeAlerts').textContent = totalAlerts.toLocaleString();
+
+            // Update changes (placeholder - would come from historical data)
+            document.getElementById('productsChange').innerHTML = `<i class="fas fa-arrow-up"></i> +${Math.floor(totalProducts * 0.1)} this month`;
+            document.getElementById('updatesChange').innerHTML = `<i class="fas fa-arrow-up"></i> +${Math.floor(totalPriceUpdates * 0.05)} today`;
+        }
+
+        // Display top products
+        function displayTopProducts(products) {
+            const tbody = document.getElementById('topProductsTable');
+            
+            if (products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No products found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort by number of offers (price updates)
+            const sortedProducts = [...products].sort((a, b) => {
+                const aOffers = a.offers?.length || 0;
+                const bOffers = b.offers?.length || 0;
+                return bOffers - aOffers;
+            }).slice(0, 10);
+
+            tbody.innerHTML = sortedProducts.map((product, index) => {
+                const offers = product.offers || [];
+                const prices = offers.map(o => o.price || o.originalPrice || 0).filter(p => p > 0);
+                const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
+
+                return `
+                    <tr>
+                        <td><strong>#${index + 1}</strong></td>
+                        <td>${product.model || product.product_id || 'Unknown'}</td>
+                        <td><span class="badge badge-primary">${product.brand || 'N/A'}</span></td>
+                        <td>${product.category || 'N/A'}</td>
+                        <td><strong>${offers.length}</strong></td>
+                        <td>R${lowestPrice.toLocaleString()}</td>
+                        <td><span class="badge badge-success">Active</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Display category statistics
+        function displayCategoryStats(products) {
+            const tbody = document.getElementById('categoryStatsTable');
+            
+            // Group by category
+            const categoryMap = {};
+            products.forEach(product => {
+                const cat = product.category || 'unknown';
+                if (!categoryMap[cat]) {
+                    categoryMap[cat] = {
+                        products: [],
+                        totalUpdates: 0,
+                        prices: []
+                    };
+                }
+                categoryMap[cat].products.push(product);
+                categoryMap[cat].totalUpdates += product.offers?.length || 0;
+                
+                if (product.offers) {
+                    product.offers.forEach(offer => {
+                        const price = offer.price || offer.originalPrice || 0;
+                        if (price > 0) categoryMap[cat].prices.push(price);
+                    });
+                }
+            });
+
+            if (Object.keys(categoryMap).length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No category data available
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = Object.entries(categoryMap).map(([category, data]) => {
+                const prices = data.prices;
+                const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+                const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+                const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+                return `
+                    <tr>
+                        <td><strong>${category}</strong></td>
+                        <td>${data.products.length}</td>
+                        <td>${data.totalUpdates}</td>
+                        <td>R${avgPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</td>
+                        <td>R${minPrice.toLocaleString()}</td>
+                        <td>R${maxPrice.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            // Create alert container if it doesn't exist
+            let alertContainer = document.getElementById('alertContainer');
+            if (!alertContainer) {
+                alertContainer = document.createElement('div');
+                alertContainer.id = 'alertContainer';
+                alertContainer.className = 'mb-3';
+                document.querySelector('.container').insertBefore(alertContainer, document.querySelector('.filter-section'));
+            }
+
+            const alertId = 'alert-' + Date.now();
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+

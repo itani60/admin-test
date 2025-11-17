@@ -43,7 +43,9 @@
             padding: 1.5rem 0;
             margin-bottom: 2rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid var(--danger);
+            border: 3px solid var(--danger);
+            border-radius: 12px;
+            margin: 0 1rem 2rem 1rem;
         }
 
         .admin-header h1 {
@@ -245,16 +247,16 @@
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--danger);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             flex-shrink: 0;
         }
 
@@ -271,11 +273,6 @@
             font-size: 0.95rem;
         }
 
-        .user-email {
-            margin: 0;
-            color: var(--text);
-            font-size: 0.85rem;
-        }
 
         .logout-btn {
             background: transparent;
@@ -334,7 +331,6 @@
                         <div class="user-avatar" id="userAvatar">JD</div>
                         <div class="user-info">
                             <div class="user-name" id="userName">John Doe</div>
-                            <div class="user-email" id="userEmail">john.doe@admin.com</div>
                         </div>
                         <button class="logout-btn" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i> Logout
@@ -510,38 +506,58 @@
             const loginBtnHeader = document.getElementById('loginBtnHeader');
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
-            const userEmail = document.getElementById('userEmail');
             const logoutBtn = document.getElementById('logoutBtn');
 
-            // Check sessionStorage for admin login state
-            const adminLoggedIn = sessionStorage.getItem('admin_logged_in');
-            const adminEmail = sessionStorage.getItem('admin_email');
+            try {
+                const result = await window.adminAWSAuthService.getUserInfo();
+                
+                if (result.success && result.user) {
+                    const user = result.user;
+                    let displayName = '';
+                    let initials = '';
 
-            if (adminLoggedIn === 'true' && adminEmail) {
-                const name = adminEmail.split('@')[0];
-                const initials = name.substring(0, 2).toUpperCase();
+                    if (user.givenName && user.familyName) {
+                        displayName = `${user.givenName} ${user.familyName}`;
+                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+                    } else if (user.givenName) {
+                        displayName = user.givenName;
+                        initials = user.givenName.substring(0, 2).toUpperCase();
+                    } else if (user.email) {
+                        const name = user.email.split('@')[0];
+                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                        initials = name.substring(0, 2).toUpperCase();
+                    } else {
+                        displayName = 'Admin User';
+                        initials = 'AU';
+                    }
 
-                userAvatar.textContent = initials;
-                userName.textContent = name.charAt(0).toUpperCase() + name.slice(1);
-                userEmail.textContent = adminEmail;
+                    userAvatar.textContent = initials;
+                    userName.textContent = displayName;
 
-                userSection.style.display = 'flex';
-                loginBtnHeader.style.display = 'none';
-            } else {
-                // User is not logged in
+                    userSection.style.display = 'flex';
+                    loginBtnHeader.style.display = 'none';
+                } else {
+                    userSection.style.display = 'none';
+                    loginBtnHeader.style.display = 'inline-flex';
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
                 userSection.style.display = 'none';
                 loginBtnHeader.style.display = 'inline-flex';
             }
         }
 
         // Handle logout
-        function handleLogout() {
-            // Clear session storage
-            sessionStorage.removeItem('admin_logged_in');
-            sessionStorage.removeItem('admin_email');
-
-            // Redirect to admin login page
-            window.location.href = 'admin-login.html';
+        async function handleLogout() {
+            try {
+                await window.adminAWSAuthService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                sessionStorage.removeItem('admin_logged_in');
+                sessionStorage.removeItem('admin_email');
+                window.location.href = 'admin-login.html';
+            }
         }
 
         // Initialize on page load

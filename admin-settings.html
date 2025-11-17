@@ -1146,18 +1146,20 @@
                     const errorMsg = fetchError.message || '';
                     
                     // Check if it's a real CORS error
+                    // Browser CORS errors typically show "Failed to fetch" or "CORS policy" messages
                     if (errorMsg.includes('CORS policy') || 
                         errorMsg.includes('Access-Control-Allow-Origin') ||
                         (fetchError.name === 'TypeError' && errorMsg.includes('Failed to fetch'))) {
-                        // This might be a CORS error, but let's verify with no-cors
+                        // This is a CORS error - verify endpoint is reachable with no-cors
                         try {
                             // Try no-cors to see if endpoint is reachable
                             await fetch(apiUrl, {
                                 method: 'GET',
                                 mode: 'no-cors'
                             });
-                            // If no-cors works, endpoint exists but CORS might not be configured
-                            resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> Endpoint is reachable but CORS may not be properly configured. Check your API Gateway CORS settings.</div>';
+                            // If no-cors works, endpoint exists but CORS is NOT configured for actual requests
+                            // OPTIONS might work, but GET/POST requests need CORS headers in their responses
+                            resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> CORS Error: OPTIONS preflight may work, but actual GET requests are blocked. Ensure your API Gateway CORS is configured to return CORS headers in ALL responses (not just OPTIONS). Also check that your Lambda functions return CORS headers in their responses.</div>';
                             return;
                         } catch (noCorsError) {
                             // Endpoint not reachable

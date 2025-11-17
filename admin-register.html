@@ -430,6 +430,40 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="givenName" class="form-label">
+                                <i class="fas fa-user"></i> First Name
+                            </label>
+                            <div class="input-group">
+                                <i class="fas fa-user input-group-icon"></i>
+                                <input 
+                                    type="text" 
+                                    id="givenName" 
+                                    class="form-control" 
+                                    placeholder="Enter your first name"
+                                    required
+                                    autocomplete="given-name"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="familyName" class="form-label">
+                                <i class="fas fa-user"></i> Last Name
+                            </label>
+                            <div class="input-group">
+                                <i class="fas fa-user input-group-icon"></i>
+                                <input 
+                                    type="text" 
+                                    id="familyName" 
+                                    class="form-control" 
+                                    placeholder="Enter your last name"
+                                    required
+                                    autocomplete="family-name"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="password" class="form-label">
                                 <i class="fas fa-lock"></i> Password
                             </label>
@@ -641,8 +675,20 @@
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
+            const givenName = document.getElementById('givenName').value.trim();
+            const familyName = document.getElementById('familyName').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!givenName) {
+                showAlert('First name is required.', 'danger');
+                return;
+            }
+
+            if (!familyName) {
+                showAlert('Last name is required.', 'danger');
+                return;
+            }
 
             if (password !== confirmPassword) {
                 showAlert('Passwords do not match. Please try again.', 'danger');
@@ -662,7 +708,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password, givenName, familyName })
                 });
 
                 const data = await response.json();

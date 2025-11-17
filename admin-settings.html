@@ -492,7 +492,7 @@
             <h3><i class="fas fa-link"></i> API Configuration</h3>
             
             <div class="form-group">
-                <label for="apiBaseUrl" class="form-label">API Base URL</label>
+                <label for="apiBaseUrl" class="form-label">API Base URL (Products)</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-globe"></i></span>
                     <input 
@@ -503,11 +503,101 @@
                         value="https://acc.comparehubprices.site/data"
                     >
                 </div>
-                <div class="form-text">Base URL for all API requests (e.g., https://acc.comparehubprices.site/data)</div>
+                <div class="form-text">Base URL for product API requests (e.g., https://acc.comparehubprices.site/data)</div>
                 <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnection()">
                     <i class="fas fa-plug"></i> Test Connection
                 </button>
                 <div id="apiTestResult"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlAdmin" class="form-label">Admin API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlAdmin" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/admin"
+                        value="https://acc.comparehubprices.site/admin"
+                    >
+                </div>
+                <div class="form-text">Base URL for admin API requests</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlWishlist" class="form-label">Wishlist API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-heart"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlWishlist" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/wishlist"
+                        value="https://acc.comparehubprices.site/wishlist"
+                    >
+                </div>
+                <div class="form-text">Base URL for wishlist API requests</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlPriceAlerts" class="form-label">Price Alerts API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-bell"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlPriceAlerts" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/price-alerts"
+                        value="https://acc.comparehubprices.site/price-alerts"
+                    >
+                </div>
+                <div class="form-text">Base URL for price alerts API requests</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlNotifications" class="form-label">Notifications API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-bell"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlNotifications" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/notifications"
+                        value="https://acc.comparehubprices.site/notifications"
+                    >
+                </div>
+                <div class="form-text">Base URL for notifications API requests</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlBusiness" class="form-label">Business API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlBusiness" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/business"
+                        value="https://acc.comparehubprices.site/business"
+                    >
+                </div>
+                <div class="form-text">Base URL for business API requests</div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiBaseUrlAcc" class="form-label">Account API Base URL</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input 
+                        type="text" 
+                        id="apiBaseUrlAcc" 
+                        class="form-control" 
+                        placeholder="https://acc.comparehubprices.site/acc"
+                        value="https://acc.comparehubprices.site/acc"
+                    >
+                </div>
+                <div class="form-text">Base URL for account API requests</div>
             </div>
 
             <div class="form-group">
@@ -803,10 +893,46 @@
 
         // Load settings from localStorage
         function loadSettings() {
-            // API Base URL
+            // API Base URL (Products)
             const savedApiUrl = localStorage.getItem('comparehubprices_api_url');
             if (savedApiUrl) {
                 document.getElementById('apiBaseUrl').value = savedApiUrl;
+            }
+
+            // Admin API Base URL
+            const savedAdminUrl = localStorage.getItem('comparehubprices_api_url_admin');
+            if (savedAdminUrl) {
+                document.getElementById('apiBaseUrlAdmin').value = savedAdminUrl;
+            }
+
+            // Wishlist API Base URL
+            const savedWishlistUrl = localStorage.getItem('comparehubprices_api_url_wishlist');
+            if (savedWishlistUrl) {
+                document.getElementById('apiBaseUrlWishlist').value = savedWishlistUrl;
+            }
+
+            // Price Alerts API Base URL
+            const savedPriceAlertsUrl = localStorage.getItem('comparehubprices_api_url_price_alerts');
+            if (savedPriceAlertsUrl) {
+                document.getElementById('apiBaseUrlPriceAlerts').value = savedPriceAlertsUrl;
+            }
+
+            // Notifications API Base URL
+            const savedNotificationsUrl = localStorage.getItem('comparehubprices_api_url_notifications');
+            if (savedNotificationsUrl) {
+                document.getElementById('apiBaseUrlNotifications').value = savedNotificationsUrl;
+            }
+
+            // Business API Base URL
+            const savedBusinessUrl = localStorage.getItem('comparehubprices_api_url_business');
+            if (savedBusinessUrl) {
+                document.getElementById('apiBaseUrlBusiness').value = savedBusinessUrl;
+            }
+
+            // Account API Base URL
+            const savedAccUrl = localStorage.getItem('comparehubprices_api_url_acc');
+            if (savedAccUrl) {
+                document.getElementById('apiBaseUrlAcc').value = savedAccUrl;
             }
 
             // API Region
@@ -860,14 +986,26 @@
         // Save API Settings
         function saveApiSettings() {
             const apiUrl = document.getElementById('apiBaseUrl').value.trim();
+            const apiUrlAdmin = document.getElementById('apiBaseUrlAdmin').value.trim();
+            const apiUrlWishlist = document.getElementById('apiBaseUrlWishlist').value.trim();
+            const apiUrlPriceAlerts = document.getElementById('apiBaseUrlPriceAlerts').value.trim();
+            const apiUrlNotifications = document.getElementById('apiBaseUrlNotifications').value.trim();
+            const apiUrlBusiness = document.getElementById('apiBaseUrlBusiness').value.trim();
+            const apiUrlAcc = document.getElementById('apiBaseUrlAcc').value.trim();
             const region = document.getElementById('apiRegion').value;
 
             if (!apiUrl) {
-                showAlert('Please enter a valid API URL', 'danger');
+                showAlert('Please enter a valid Products API URL', 'danger');
                 return;
             }
 
             localStorage.setItem('comparehubprices_api_url', apiUrl);
+            if (apiUrlAdmin) localStorage.setItem('comparehubprices_api_url_admin', apiUrlAdmin);
+            if (apiUrlWishlist) localStorage.setItem('comparehubprices_api_url_wishlist', apiUrlWishlist);
+            if (apiUrlPriceAlerts) localStorage.setItem('comparehubprices_api_url_price_alerts', apiUrlPriceAlerts);
+            if (apiUrlNotifications) localStorage.setItem('comparehubprices_api_url_notifications', apiUrlNotifications);
+            if (apiUrlBusiness) localStorage.setItem('comparehubprices_api_url_business', apiUrlBusiness);
+            if (apiUrlAcc) localStorage.setItem('comparehubprices_api_url_acc', apiUrlAcc);
             localStorage.setItem('comparehubprices_api_region', region);
 
             showAlert('API settings saved successfully!', 'success');
@@ -983,6 +1121,14 @@
                     localStorage.removeItem(key);
                 }
             });
+            
+            // Clear the new API URL settings
+            localStorage.removeItem('comparehubprices_api_url_admin');
+            localStorage.removeItem('comparehubprices_api_url_wishlist');
+            localStorage.removeItem('comparehubprices_api_url_price_alerts');
+            localStorage.removeItem('comparehubprices_api_url_notifications');
+            localStorage.removeItem('comparehubprices_api_url_business');
+            localStorage.removeItem('comparehubprices_api_url_acc');
 
             // Reload page to reset form
             location.reload();
@@ -992,6 +1138,12 @@
         function exportSettings() {
             const settings = {
                 apiUrl: document.getElementById('apiBaseUrl').value,
+                apiUrlAdmin: document.getElementById('apiBaseUrlAdmin').value,
+                apiUrlWishlist: document.getElementById('apiBaseUrlWishlist').value,
+                apiUrlPriceAlerts: document.getElementById('apiBaseUrlPriceAlerts').value,
+                apiUrlNotifications: document.getElementById('apiBaseUrlNotifications').value,
+                apiUrlBusiness: document.getElementById('apiBaseUrlBusiness').value,
+                apiUrlAcc: document.getElementById('apiBaseUrlAcc').value,
                 region: document.getElementById('apiRegion').value,
                 tables: {},
                 priceHistoryTable: document.getElementById('priceHistoryTable').value,
@@ -1039,6 +1191,12 @@
 
                     // Apply settings
                     if (settings.apiUrl) document.getElementById('apiBaseUrl').value = settings.apiUrl;
+                    if (settings.apiUrlAdmin) document.getElementById('apiBaseUrlAdmin').value = settings.apiUrlAdmin;
+                    if (settings.apiUrlWishlist) document.getElementById('apiBaseUrlWishlist').value = settings.apiUrlWishlist;
+                    if (settings.apiUrlPriceAlerts) document.getElementById('apiBaseUrlPriceAlerts').value = settings.apiUrlPriceAlerts;
+                    if (settings.apiUrlNotifications) document.getElementById('apiBaseUrlNotifications').value = settings.apiUrlNotifications;
+                    if (settings.apiUrlBusiness) document.getElementById('apiBaseUrlBusiness').value = settings.apiUrlBusiness;
+                    if (settings.apiUrlAcc) document.getElementById('apiBaseUrlAcc').value = settings.apiUrlAcc;
                     if (settings.region) document.getElementById('apiRegion').value = settings.region;
                     if (settings.priceHistoryTable) document.getElementById('priceHistoryTable').value = settings.priceHistoryTable;
                     if (settings.defaultPageSize) document.getElementById('defaultPageSize').value = settings.defaultPageSize;

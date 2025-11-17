@@ -867,6 +867,46 @@
         </div>
     </div>
 
+    <!-- Suspend User Modal -->
+    <div class="modal fade" id="suspendUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-ban"></i> Suspend User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="suspendUserForm">
+                        <div class="mb-3">
+                            <p>Are you sure you want to suspend <strong id="suspendUserEmail"></strong>?</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reason for Suspension <span class="text-danger">*</span></label>
+                            <select class="form-select" id="suspensionReason" required>
+                                <option value="">Select a reason...</option>
+                                <option value="Spam or self-promotion">Spam or self-promotion: Posting repetitive content or links</option>
+                                <option value="Harassment or bullying">Harassment or bullying: Abusive language or behavior</option>
+                                <option value="Hate speech or violence">Hate speech or violence: Promoting violence or hatred towards individuals or groups</option>
+                                <option value="Nude or explicit content">Nude or explicit content: Sharing explicit or non-consensual images/videos</option>
+                                <option value="Impersonation or identity theft">Impersonation or identity theft: Pretending to be someone else</option>
+                                <option value="Scams or phishing">Scams or phishing: Sharing suspicious links or requests</option>
+                                <option value="Copyright infringement">Copyright infringement: Sharing copyrighted content without permission</option>
+                            </select>
+                            <div class="form-text">This reason will be recorded and visible in the user's account history.</div>
+                        </div>
+                        <input type="hidden" id="suspendUserEmailHidden">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="confirmSuspendUser()">
+                        <i class="fas fa-ban"></i> Suspend User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Add User Modal -->
     <div class="modal fade" id="addUserModal" tabindex="-1">
         <div class="modal-dialog">
@@ -970,6 +1010,7 @@
             API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
         }
         const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
+        const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users`;
         
         // State
         let allUsers = [];
@@ -1142,6 +1183,7 @@
                                 <th>Status</th>
                                 <th>Created</th>
                                 <th>Last Login</th>
+                                <th>Suspension Reason</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1154,6 +1196,7 @@
                 const createdDate = formatDate(user.createdAt);
                 const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
                 const initials = getInitials(user.displayName || user.email);
+                const suspensionReason = user.suspensionReason ? `<span class="text-danger" title="${escapeHtml(user.suspensionReason)}"><i class="fas fa-info-circle"></i> ${escapeHtml(user.suspensionReason.length > 30 ? user.suspensionReason.substring(0, 30) + '...' : user.suspensionReason)}</span>` : '<span class="text-muted">-</span>';
 
                 html += `
                     <tr>
@@ -1170,22 +1213,27 @@
                         <td>${statusBadge}</td>
                         <td>${createdDate}</td>
                         <td>${lastLogin}</td>
+                        <td>${suspensionReason}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn btn-primary btn-sm" onclick="editUser('${user.email}')" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                ${user.status !== 'suspended' ? 
-                                    `<button class="btn btn-warning btn-sm" onclick="suspendUser('${user.email}')" title="Suspend">
-                                        <i class="fas fa-ban"></i>
-                                    </button>` :
-                                    `<button class="btn btn-success btn-sm" onclick="unsuspendUser('${user.email}')" title="Unsuspend">
-                                        <i class="fas fa-check"></i>
-                                    </button>`
+                                ${user.accountType !== 'admin' ? (
+                                    user.status !== 'suspended' ? 
+                                        `<button class="btn btn-warning btn-sm" onclick="showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
+                                            <i class="fas fa-ban"></i>
+                                        </button>` :
+                                        `<button class="btn btn-success btn-sm" onclick="unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
+                                            <i class="fas fa-check"></i>
+                                        </button>`
+                                ) : ''}
+                                ${user.accountType !== 'admin' ? 
+                                    `<button class="btn btn-danger btn-sm" onclick="deleteUser('${escapeHtml(user.email)}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>` : 
+                                    '<span class="text-muted small">Protected</span>'
                                 }
-                                <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.email}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
                             </div>
                         </td>
                     </tr>
@@ -1393,40 +1441,53 @@
             }
         }
 
-        async function suspendUser(email) {
-            if (!confirm(`Are you sure you want to suspend ${email}?`)) return;
+        function showSuspendModal(email, displayName) {
+            document.getElementById('suspendUserEmail').textContent = displayName || email;
+            document.getElementById('suspendUserEmailHidden').value = email;
+            document.getElementById('suspensionReason').value = '';
+            document.getElementById('suspendUserForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
+            modal.show();
+        }
+
+        async function confirmSuspendUser() {
+            const form = document.getElementById('suspendUserForm');
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const email = document.getElementById('suspendUserEmailHidden').value;
+            const reason = document.getElementById('suspensionReason').value;
 
             try {
-                const response = await fetch(`${USERS_API}/${email}/suspend`, {
+                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({ reason: reason })
                 });
 
-                if (response.ok) {
-                    const user = allUsers.find(u => u.email === email);
-                    if (user) user.status = 'suspended';
-                    updateStats();
-                    applyFilters();
-                    showAlert('User suspended successfully', 'success');
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('suspendUserModal')).hide();
+                    loadUsers(); // Reload users to get updated status
+                    showAlert(`User suspended successfully. Reason: ${reason}`, 'success');
                 } else {
-                    showAlert('Failed to suspend user', 'danger');
+                    showAlert(data.message || 'Failed to suspend user', 'danger');
                 }
             } catch (error) {
                 console.error('Error suspending user:', error);
-                const user = allUsers.find(u => u.email === email);
-                if (user) user.status = 'suspended';
-                updateStats();
-                applyFilters();
-                showAlert('User suspended successfully', 'success');
+                showAlert('Failed to suspend user. Please try again.', 'danger');
             }
         }
 
         async function unsuspendUser(email) {
             try {
-                const response = await fetch(`${USERS_API}/${email}/unsuspend`, {
+                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/unsuspend`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
@@ -1434,28 +1495,17 @@
                     }
                 });
 
-                if (response.ok) {
-                    const user = allUsers.find(u => u.email === email);
-                    if (user) {
-                        user.status = 'verified';
-                        user.verified = true;
-                    }
-                    updateStats();
-                    applyFilters();
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.success) {
+                    loadUsers(); // Reload users to get updated status
                     showAlert('User unsuspended successfully', 'success');
                 } else {
-                    showAlert('Failed to unsuspend user', 'danger');
+                    showAlert(data.message || 'Failed to unsuspend user', 'danger');
                 }
             } catch (error) {
                 console.error('Error unsuspending user:', error);
-                const user = allUsers.find(u => u.email === email);
-                if (user) {
-                    user.status = 'verified';
-                    user.verified = true;
-                }
-                updateStats();
-                applyFilters();
-                showAlert('User unsuspended successfully', 'success');
+                showAlert('Failed to unsuspend user. Please try again.', 'danger');
             }
         }
 
@@ -1463,7 +1513,7 @@
             if (!confirm(`Are you sure you want to delete ${email}? This action cannot be undone.`)) return;
 
             try {
-                const response = await fetch(`${USERS_API}/${email}`, {
+                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}`, {
                     method: 'DELETE',
                     credentials: 'include',
                     headers: {
@@ -1471,20 +1521,17 @@
                     }
                 });
 
-                if (response.ok) {
-                    allUsers = allUsers.filter(u => u.email !== email);
-                    updateStats();
-                    applyFilters();
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.success) {
+                    loadUsers(); // Reload users to reflect deletion
                     showAlert('User deleted successfully', 'success');
                 } else {
-                    showAlert('Failed to delete user', 'danger');
+                    showAlert(data.message || 'Failed to delete user', 'danger');
                 }
             } catch (error) {
                 console.error('Error deleting user:', error);
-                allUsers = allUsers.filter(u => u.email !== email);
-                updateStats();
-                applyFilters();
-                showAlert('User deleted successfully', 'success');
+                showAlert('Failed to delete user. Please try again.', 'danger');
             }
         }
 

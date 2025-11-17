@@ -1152,7 +1152,7 @@
                         });
                         
                         // With no-cors, if we don't get an error, the endpoint is reachable
-                        resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> Endpoint reachable but CORS not configured. Please configure CORS on the API to allow requests from <code>https://admin.comparehubprices.site</code></div>';
+                        resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> Endpoint reachable but CORS not configured. Please configure CORS on the API Gateway to allow requests from <code>https://admin.comparehubprices.site</code>. See <code>API-CORS-CONFIGURATION.md</code> for detailed instructions.</div>';
                         success = true;
                     } catch (noCorsError) {
                         // If no-cors also fails, it's a connection issue
@@ -1169,7 +1169,7 @@
                     error.message.includes('CORS') || 
                     error.message.includes('Access-Control-Allow-Origin')
                 )) {
-                    resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> CORS error: The endpoint may be reachable but CORS is not configured. Please configure CORS on the API to allow requests from <code>https://admin.comparehubprices.site</code></div>';
+                    resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> CORS error: The endpoint may be reachable but CORS is not configured. Please configure CORS on the API Gateway to allow requests from <code>https://admin.comparehubprices.site</code>. See <code>API-CORS-CONFIGURATION.md</code> for detailed instructions.</div>';
                 } else {
                     resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${error.message}</div>`;
                 }

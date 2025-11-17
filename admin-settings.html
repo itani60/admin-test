@@ -1098,13 +1098,13 @@
                 } else if (baseUrl.includes('/wishlist')) {
                     return ['/wishlist', '/wishlist/wishlist'];
                 } else if (baseUrl.includes('/price-alerts')) {
-                    return ['/alerts', '/price-alerts', '/price-alerts/list'];
+                    return ['/alerts', '/alerts'];
                 } else if (baseUrl.includes('/notifications')) {
                     return ['/notifications', '/notifications/notifications'];
                 } else if (baseUrl.includes('/business')) {
-                    return ['/business', '/business/business/login'];
+                    return ['/business', '/business/business/login','/business/business/register'];
                 } else if (baseUrl.includes('/acc')) {
-                    return ['/acc', '/acc/auth/login'];
+                    return ['/acc', '/acc/auth/login', '/acc/auth/register'];
                 }
                 return [''];
             };

@@ -523,6 +523,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for admin API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlAdmin', 'apiTestResultAdmin')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultAdmin"></div>
             </div>
 
             <div class="form-group">
@@ -538,6 +542,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for wishlist API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlWishlist', 'apiTestResultWishlist')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultWishlist"></div>
             </div>
 
             <div class="form-group">
@@ -553,6 +561,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for price alerts API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlPriceAlerts', 'apiTestResultPriceAlerts')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultPriceAlerts"></div>
             </div>
 
             <div class="form-group">
@@ -568,6 +580,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for notifications API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlNotifications', 'apiTestResultNotifications')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultNotifications"></div>
             </div>
 
             <div class="form-group">
@@ -583,6 +599,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for business API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlBusiness', 'apiTestResultBusiness')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultBusiness"></div>
             </div>
 
             <div class="form-group">
@@ -598,6 +618,10 @@
                     >
                 </div>
                 <div class="form-text">Base URL for account API requests</div>
+                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlAcc', 'apiTestResultAcc')">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+                <div id="apiTestResultAcc"></div>
             </div>
 
             <div class="form-group">
@@ -1030,6 +1054,64 @@
                     resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful!</div>';
                 } else {
                     resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: HTTP ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${error.message}</div>`;
+            }
+        }
+
+        // Generic Test API Connection for other endpoints
+        async function testApiConnectionGeneric(inputId, resultDivId) {
+            const apiUrl = document.getElementById(inputId).value.trim();
+            const resultDiv = document.getElementById(resultDivId);
+            
+            if (!apiUrl) {
+                resultDiv.innerHTML = '<div class="test-result error"><i class="fas fa-times-circle"></i> Please enter a valid API URL</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
+
+            try {
+                // Try a simple GET request to the base URL or a common health endpoint
+                const testUrls = [
+                    `${apiUrl}/health`,
+                    `${apiUrl}/`,
+                    apiUrl
+                ];
+
+                let success = false;
+                let lastError = null;
+
+                for (const testUrl of testUrls) {
+                    try {
+                        const response = await fetch(testUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            mode: 'cors'
+                        });
+
+                        if (response.ok || response.status === 404 || response.status === 405) {
+                            // 404 or 405 means the endpoint exists but the route might not, which is still a successful connection
+                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful!</div>';
+                            success = true;
+                            break;
+                        } else if (response.status >= 500) {
+                            // Server error means the endpoint is reachable
+                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! (Server responded)</div>';
+                            success = true;
+                            break;
+                        }
+                    } catch (fetchError) {
+                        lastError = fetchError;
+                        continue;
+                    }
+                }
+
+                if (!success) {
+                    resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${lastError ? lastError.message : 'Unable to reach endpoint'}</div>`;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${error.message}</div>`;

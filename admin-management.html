@@ -646,6 +646,11 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="regular-tab" data-bs-toggle="tab" data-bs-target="#regular" type="button" role="tab">
+                        <i class="fas fa-user"></i> Regular Accounts
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="business-tab" data-bs-toggle="tab" data-bs-target="#business" type="button" role="tab">
                         <i class="fas fa-building"></i> Business Accounts
                     </button>
@@ -759,6 +764,52 @@
                         </div>
 
                         <div id="adminsTableContainer">
+                            <div class="loading-spinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regular Accounts Tab -->
+                <div class="tab-pane fade" id="regular" role="tabpanel">
+                    <div class="filters-section">
+                        <div class="row g-3">
+                            <div class="col-md-9">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="regularSearchInput" 
+                                        placeholder="Search regular users..."
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="regularStatusFilter">
+                                    <option value="all">All Status</option>
+                                    <option value="verified">Verified</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="users-section">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3><i class="fas fa-user"></i> Regular Accounts</h3>
+                            <div>
+                                <button class="btn btn-primary btn-sm" onclick="refreshUsers()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="regularTableContainer">
                             <div class="loading-spinner">
                                 <div class="spinner-border text-primary" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -913,8 +964,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Configuration
-        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site/data';
-        const USERS_API = `${API_BASE_URL}/admin/users`;
+        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+        const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
         
         // State
         let allUsers = [];
@@ -947,6 +998,9 @@
             document.getElementById('adminSearchInput').addEventListener('input', debounce(applyFilters, 300));
             document.getElementById('adminStatusFilter').addEventListener('change', applyFilters);
             
+            document.getElementById('regularSearchInput').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('regularStatusFilter').addEventListener('change', applyFilters);
+            
             document.getElementById('businessSearchInput').addEventListener('input', debounce(applyFilters, 300));
             document.getElementById('businessStatusFilter').addEventListener('change', applyFilters);
         }
@@ -954,9 +1008,13 @@
         // Load users from API
         async function loadUsers() {
             try {
+                // Clear any existing data first
+                allUsers = [];
+                filteredUsers = [];
+                updateStats();
                 showLoading();
                 
-                const response = await fetch(`${USERS_API}?admin=true`, {
+                const response = await fetch(`${USERS_API}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -964,77 +1022,31 @@
                     }
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    allUsers = data.users || [];
-                } else {
-                    // Fallback to mock data for development
-                    allUsers = getMockUsers();
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `Failed to load users (HTTP ${response.status})`);
                 }
 
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to load users');
+                }
+                
+                // Only use data from successful API response
+                allUsers = Array.isArray(data.users) ? data.users : [];
+                
                 updateStats();
                 applyFilters();
             } catch (error) {
                 console.error('Error loading users:', error);
-                // Use mock data on error
-                allUsers = getMockUsers();
+                // Clear all data on error
+                allUsers = [];
+                filteredUsers = [];
                 updateStats();
                 applyFilters();
-                showAlert('Using mock data. API connection failed.', 'warning');
+                showAlert('Failed to load users. Please check your connection and try again.', 'danger');
             }
-        }
-
-        // Mock data for development
-        function getMockUsers() {
-            return [
-                {
-                    email: 'admin@comparehubprices.site',
-                    userId: 'user1',
-                    givenName: 'Admin',
-                    familyName: 'User',
-                    displayName: 'Admin User',
-                    accountType: 'admin',
-                    verified: true,
-                    status: 'verified',
-                    createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    email: 'user@example.com',
-                    userId: 'user2',
-                    givenName: 'John',
-                    familyName: 'Doe',
-                    displayName: 'John Doe',
-                    accountType: 'regular',
-                    verified: true,
-                    status: 'verified',
-                    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-                    lastLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    email: 'business@example.com',
-                    userId: 'user3',
-                    givenName: 'Business',
-                    familyName: 'Account',
-                    displayName: 'Business Account',
-                    accountType: 'business',
-                    verified: true,
-                    status: 'verified',
-                    createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-                    lastLogin: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    email: 'pending@example.com',
-                    userId: 'user4',
-                    givenName: 'Pending',
-                    familyName: 'User',
-                    displayName: 'Pending User',
-                    accountType: 'regular',
-                    verified: false,
-                    status: 'pending',
-                    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-                }
-            ];
         }
 
         // Apply filters
@@ -1051,6 +1063,10 @@
                 searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
                 accountTypeFilter = 'admin';
                 statusFilter = document.getElementById('adminStatusFilter').value;
+            } else if (currentTab === 'regular') {
+                searchTerm = document.getElementById('regularSearchInput').value.toLowerCase();
+                accountTypeFilter = 'regular';
+                statusFilter = document.getElementById('regularStatusFilter').value;
             } else if (currentTab === 'business') {
                 searchTerm = document.getElementById('businessSearchInput').value.toLowerCase();
                 accountTypeFilter = 'business';
@@ -1082,8 +1098,16 @@
 
         // Render users table
         function renderUsers() {
-            const containerId = currentTab === 'users' ? 'usersTableContainer' : 
-                               currentTab === 'admins' ? 'adminsTableContainer' : 'businessTableContainer';
+            let containerId;
+            if (currentTab === 'users') {
+                containerId = 'usersTableContainer';
+            } else if (currentTab === 'admins') {
+                containerId = 'adminsTableContainer';
+            } else if (currentTab === 'regular') {
+                containerId = 'regularTableContainer';
+            } else if (currentTab === 'business') {
+                containerId = 'businessTableContainer';
+            }
             const container = document.getElementById(containerId);
             
             if (filteredUsers.length === 0) {
@@ -1528,8 +1552,16 @@
         }
 
         function showLoading() {
-            const containerId = currentTab === 'users' ? 'usersTableContainer' : 
-                               currentTab === 'admins' ? 'adminsTableContainer' : 'businessTableContainer';
+            let containerId;
+            if (currentTab === 'users') {
+                containerId = 'usersTableContainer';
+            } else if (currentTab === 'admins') {
+                containerId = 'adminsTableContainer';
+            } else if (currentTab === 'regular') {
+                containerId = 'regularTableContainer';
+            } else if (currentTab === 'business') {
+                containerId = 'businessTableContainer';
+            }
             document.getElementById(containerId).innerHTML = `
                 <div class="loading-spinner">
                     <div class="spinner-border text-primary" role="status">

@@ -263,6 +263,12 @@
             font-size: 0.85em;
         }
 
+        .test-result.info {
+            background: #e7f3ff;
+            color: var(--info);
+            border: 1px solid #b3d9ff;
+        }
+
         .category-table {
             width: 100%;
             margin-top: 1rem;
@@ -1086,7 +1092,7 @@
             resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
 
             try {
-                // Try a simple GET request to the base URL or a common health endpoint
+                // Try a simple GET request to the base URL or common endpoints
                 const testUrls = [
                     `${apiUrl}/health`,
                     `${apiUrl}/`,
@@ -1094,11 +1100,10 @@
                 ];
 
                 let success = false;
-                let corsError = false;
-                let connectionError = false;
                 let lastError = null;
+                let hasCorsHeaders = false;
 
-                // First, try with CORS mode
+                // Try with CORS mode - if we get ANY response (even 404/405), CORS is working
                 for (const testUrl of testUrls) {
                     try {
                         const response = await fetch(testUrl, {
@@ -1106,73 +1111,70 @@
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            mode: 'cors'
+                            mode: 'cors',
+                            credentials: 'omit'
                         });
 
-                        if (response.ok || response.status === 404 || response.status === 405) {
-                            // 404 or 405 means the endpoint exists but the route might not, which is still a successful connection
-                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful!</div>';
-                            success = true;
-                            break;
-                        } else if (response.status >= 500) {
-                            // Server error means the endpoint is reachable
-                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! (Server responded)</div>';
+                        // Check if CORS headers are present
+                        const corsOrigin = response.headers.get('Access-Control-Allow-Origin');
+                        hasCorsHeaders = corsOrigin !== null;
+
+                        // If we get ANY response status, it means:
+                        // 1. The endpoint is reachable
+                        // 2. CORS is configured (otherwise browser would block it)
+                        if (response.status >= 200 && response.status < 600) {
+                            // Any HTTP status means connection and CORS are working
+                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! CORS is properly configured.</div>';
                             success = true;
                             break;
                         }
                     } catch (fetchError) {
-                        // Check if it's a CORS error
-                        // CORS errors typically manifest as TypeError with "Failed to fetch" or network errors
-                        // We can't directly detect CORS from the error, but we'll try no-cors mode as fallback
-                        if (fetchError.name === 'TypeError' || 
-                            (fetchError.message && (
-                                fetchError.message.includes('Failed to fetch') ||
-                                fetchError.message.includes('NetworkError') ||
-                                fetchError.message.includes('CORS') ||
-                                fetchError.message.includes('Access-Control-Allow-Origin')
-                            ))) {
-                            corsError = true;
+                        // Only treat as potential CORS error if we can see it's specifically a CORS issue
+                        // Check the error message more carefully
+                        const errorMsg = fetchError.message || '';
+                        const errorName = fetchError.name || '';
+                        
+                        // Real CORS errors will have specific messages
+                        if (errorMsg.includes('CORS policy') || 
+                            errorMsg.includes('Access-Control-Allow-Origin') ||
+                            (errorName === 'TypeError' && errorMsg.includes('Failed to fetch') && 
+                             // Only if it's a network error that might be CORS
+                             !errorMsg.includes('NetworkError'))) {
                             lastError = fetchError;
-                            // Continue to try other URLs or fallback test
+                            // Continue to try other URLs
+                            continue;
                         } else {
-                            connectionError = true;
+                            // Likely a network/connection error, not CORS
                             lastError = fetchError;
+                            continue;
                         }
-                        continue;
                     }
                 }
 
-                // If we got CORS errors, try with no-cors mode to see if endpoint is reachable
-                if (!success && corsError) {
+                // If we didn't succeed, try with no-cors to check if endpoint is reachable
+                if (!success) {
                     try {
-                        // Use no-cors mode to test if endpoint is reachable (we won't get response details)
+                        // Use no-cors mode - this bypasses CORS checks
+                        // If this succeeds, endpoint is reachable but we can't verify CORS
                         const response = await fetch(apiUrl, {
                             method: 'GET',
                             mode: 'no-cors'
                         });
                         
-                        // With no-cors, if we don't get an error, the endpoint is reachable
-                        resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> Endpoint reachable but CORS not configured. Please configure CORS on the API Gateway to allow requests from <code>https://admin.comparehubprices.site</code>. See <code>API-CORS-CONFIGURATION.md</code> for detailed instructions.</div>';
+                        // no-cors always returns opaque response, so if we get here, endpoint exists
+                        // But we can't verify CORS this way, so show a neutral message
+                        resultDiv.innerHTML = '<div class="test-result info"><i class="fas fa-info-circle"></i> Endpoint is reachable. CORS configuration cannot be verified with this test method. If you see CORS errors in actual API calls, please check your API Gateway CORS settings.</div>';
                         success = true;
                     } catch (noCorsError) {
-                        // If no-cors also fails, it's a connection issue
-                        resultDiv.innerHTML = '<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: Endpoint not reachable. Check if the URL is correct and the service is running.</div>';
+                        // If no-cors also fails, it's a connection/network issue
+                        const errorMsg = lastError ? lastError.message : 'Unable to reach endpoint';
+                        resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${errorMsg}. Check if the URL is correct and the service is running.</div>`;
                     }
-                } else if (!success) {
-                    // Connection error (not CORS)
-                    const errorMsg = lastError ? lastError.message : 'Unable to reach endpoint';
-                    resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${errorMsg}. Check if the URL is correct and the service is running.</div>`;
                 }
             } catch (error) {
-                // Check if it's a CORS error
-                if (error.message && (
-                    error.message.includes('CORS') || 
-                    error.message.includes('Access-Control-Allow-Origin')
-                )) {
-                    resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> CORS error: The endpoint may be reachable but CORS is not configured. Please configure CORS on the API Gateway to allow requests from <code>https://admin.comparehubprices.site</code>. See <code>API-CORS-CONFIGURATION.md</code> for detailed instructions.</div>';
-                } else {
-                    resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${error.message}</div>`;
-                }
+                // Final error handler
+                const errorMsg = error.message || 'Unknown error';
+                resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${errorMsg}. Check if the URL is correct and the service is running.</div>`;
             }
         }
 

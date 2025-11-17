@@ -1102,9 +1102,9 @@
                 } else if (baseUrl.includes('/notifications')) {
                     return ['/notifications', '/notifications/notifications'];
                 } else if (baseUrl.includes('/business')) {
-                    return ['/business', '/business/business/login','/business/business/register'];
+                    return ['/business/business/login','/business/business/register'];
                 } else if (baseUrl.includes('/acc')) {
-                    return ['/acc', '/acc/auth/login', '/acc/auth/register'];
+                    return ['/acc/auth/login'];
                 }
                 return [''];
             };

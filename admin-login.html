@@ -391,49 +391,52 @@
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (!email || !password) {
+                showAlert('Please enter both email and password.', 'danger');
+                return;
+            }
 
             // Disable button
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
 
             try {
-                // TODO: Replace with actual authentication API
-                // Example:
-                // const response = await fetch('https://acc.comparehubprices.site/admin/admin/account/login', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ email, password })
-                // });
+                const result = await window.adminAWSAuthService.login(email, password);
                 
-                // For now, simulate login
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Store login state
-                if (rememberMe) {
-                    localStorage.setItem('admin_remember', 'true');
+                if (result.success) {
+                    // Store login state
+                    if (rememberMe) {
+                        localStorage.setItem('admin_remember', 'true');
+                    }
+                    
+                    sessionStorage.setItem('admin_logged_in', 'true');
+                    sessionStorage.setItem('admin_email', email);
+                    
+                    // Redirect to index.html
+                    window.location.href = 'index.html';
+                } else {
+                    showAlert(result.message || 'Invalid email or password. Please try again.', 'danger');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
                 }
-                
-                sessionStorage.setItem('admin_logged_in', 'true');
-                sessionStorage.setItem('admin_email', email);
-                
-                // Redirect to admin dashboard
-                window.location.href = 'admin-home.html';
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showAlert('Invalid email or password. Please try again.', 'danger');
+                showAlert('An error occurred during login. Please try again.', 'danger');
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
         });
 
         // Check if already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('admin_logged_in') === 'true') {
-                window.location.href = 'admin-home.html';
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAuth = await window.adminAWSAuthService.isAuthenticated();
+            if (isAuth || sessionStorage.getItem('admin_logged_in') === 'true') {
+                window.location.href = 'index.html';
             }
         });
     </script>

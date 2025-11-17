@@ -1102,9 +1102,11 @@
                 } else if (baseUrl.includes('/notifications')) {
                     return ['/notifications', '/notifications/notifications'];
                 } else if (baseUrl.includes('/business')) {
-                    return ['/business/business/get-services'];
+                    // Business API endpoints from aws-auth-business.js
+                    return ['/business/business/login', '/business/business/user-info', '/business/business/get-services', '/business/business/session'];
                 } else if (baseUrl.includes('/acc')) {
-                    return ['/acc/auth/login','/acc/auth/get-user-info','/acc'];
+                    // Account API endpoints from aws-auth.js
+                    return ['/acc/auth/login', '/acc/auth/get-user-info', '/acc/auth/get-session'];
                 }
                 return [''];
             };

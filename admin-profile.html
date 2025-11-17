@@ -484,6 +484,80 @@
             background: var(--success);
             width: 100%;
         }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .user-name {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .login-btn-header {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .login-btn-header:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -494,6 +568,22 @@
                     <div class="logo">
                         <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
                     </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <!-- User Section (shown when logged in) -->
+                    <div class="user-section" id="userSection">
+                        <div class="user-avatar" id="userAvatar">JD</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">John Doe</div>
+                        </div>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <!-- Login Button (shown when not logged in) -->
+                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
                 </div>
             </div>
         </div>
@@ -1263,6 +1353,77 @@
                 }
             }, 5000);
         }
+
+        // Check login state and update header
+        async function checkLoginState() {
+            const userSection = document.getElementById('userSection');
+            const loginBtnHeader = document.getElementById('loginBtnHeader');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            try {
+                const result = await window.adminAWSAuthService.getUserInfo();
+                
+                if (result.success && result.user) {
+                    const user = result.user;
+                    let displayName = '';
+                    let initials = '';
+
+                    if (user.givenName && user.familyName) {
+                        displayName = `${user.givenName} ${user.familyName}`;
+                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+                    } else if (user.givenName) {
+                        displayName = user.givenName;
+                        initials = user.givenName.substring(0, 2).toUpperCase();
+                    } else if (user.email) {
+                        const name = user.email.split('@')[0];
+                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                        initials = name.substring(0, 2).toUpperCase();
+                    } else {
+                        displayName = 'Admin User';
+                        initials = 'AU';
+                    }
+
+                    userAvatar.textContent = initials;
+                    userName.textContent = displayName;
+
+                    userSection.style.display = 'flex';
+                    loginBtnHeader.style.display = 'none';
+                } else {
+                    userSection.style.display = 'none';
+                    loginBtnHeader.style.display = 'inline-flex';
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
+                userSection.style.display = 'none';
+                loginBtnHeader.style.display = 'inline-flex';
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await window.adminAWSAuthService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                sessionStorage.removeItem('admin_logged_in');
+                sessionStorage.removeItem('admin_email');
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // Initialize login state check
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginState();
+
+            // Attach logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        });
     </script>
 </body>
 </html>

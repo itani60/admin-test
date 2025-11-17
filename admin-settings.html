@@ -1096,15 +1096,15 @@
                 if (baseUrl.includes('/admin')) {
                     return ['/admin/admin/account/login', '/admin/account/user-info', '/admin'];
                 } else if (baseUrl.includes('/wishlist')) {
-                    return ['/wishlist', '/wishlist/items'];
+                    return ['/wishlist', '/wishlist/wishlist'];
                 } else if (baseUrl.includes('/price-alerts')) {
-                    return ['/price-alerts', '/price-alerts/list'];
+                    return ['/alerts', '/price-alerts', '/price-alerts/list'];
                 } else if (baseUrl.includes('/notifications')) {
-                    return ['/notifications', '/notifications/list'];
+                    return ['/notifications', '/notifications/notifications'];
                 } else if (baseUrl.includes('/business')) {
-                    return ['/business', '/business/info'];
+                    return ['/business', '/business/business/login'];
                 } else if (baseUrl.includes('/acc')) {
-                    return ['/acc', '/acc/user-info'];
+                    return ['/acc', '/acc/auth/login'];
                 }
                 return [''];
             };

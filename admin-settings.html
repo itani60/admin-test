@@ -250,6 +250,19 @@
             border: 1px solid #fecaca;
         }
 
+        .test-result.warning {
+            background: #fffbf0;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .test-result.warning code {
+            background: #fef3c7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
         .category-table {
             width: 100%;
             margin-top: 1rem;
@@ -1109,11 +1122,15 @@
                         }
                     } catch (fetchError) {
                         // Check if it's a CORS error
-                        if (fetchError.message && (
-                            fetchError.message.includes('CORS') || 
-                            fetchError.message.includes('Access-Control-Allow-Origin') ||
-                            fetchError.name === 'TypeError' && fetchError.message.includes('Failed to fetch')
-                        )) {
+                        // CORS errors typically manifest as TypeError with "Failed to fetch" or network errors
+                        // We can't directly detect CORS from the error, but we'll try no-cors mode as fallback
+                        if (fetchError.name === 'TypeError' || 
+                            (fetchError.message && (
+                                fetchError.message.includes('Failed to fetch') ||
+                                fetchError.message.includes('NetworkError') ||
+                                fetchError.message.includes('CORS') ||
+                                fetchError.message.includes('Access-Control-Allow-Origin')
+                            ))) {
                             corsError = true;
                             lastError = fetchError;
                             // Continue to try other URLs or fallback test

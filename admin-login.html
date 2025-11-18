@@ -408,14 +408,7 @@
                 const result = await window.adminAWSAuthService.login(email, password);
                 
                 if (result.success) {
-                    // Store login state
-                    if (rememberMe) {
-                        localStorage.setItem('admin_remember', 'true');
-                    }
-                    
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    sessionStorage.setItem('admin_email', email);
-                    
+                    // HttpOnly cookie is set by server - no client storage needed
                     // Redirect to index.html
                     window.location.href = 'index.html';
                 } else {
@@ -432,10 +425,10 @@
             }
         });
 
-        // Check if already logged in
+        // Check if already logged in (using HttpOnly cookie only)
         document.addEventListener('DOMContentLoaded', async () => {
             const isAuth = await window.adminAWSAuthService.isAuthenticated();
-            if (isAuth || sessionStorage.getItem('admin_logged_in') === 'true') {
+            if (isAuth) {
                 window.location.href = 'index.html';
             }
         });

@@ -531,12 +531,12 @@
                         initials = 'AU';
                     }
 
-                    userAvatar.textContent = initials;
+                userAvatar.textContent = initials;
                     userName.textContent = displayName;
 
-                    userSection.style.display = 'flex';
-                    loginBtnHeader.style.display = 'none';
-                } else {
+                userSection.style.display = 'flex';
+                loginBtnHeader.style.display = 'none';
+            } else {
                     userSection.style.display = 'none';
                     loginBtnHeader.style.display = 'inline-flex';
                 }
@@ -554,8 +554,7 @@
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                sessionStorage.removeItem('admin_logged_in');
-                sessionStorage.removeItem('admin_email');
+                // HttpOnly cookie is cleared by server on logout
                 window.location.href = 'admin-login.html';
             }
         }

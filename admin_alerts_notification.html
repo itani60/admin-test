@@ -1287,8 +1287,7 @@ ${alert.triggeredAt ? `Triggered: ${formatDate(alert.triggeredAt)}` : ''}
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                sessionStorage.removeItem('admin_logged_in');
-                sessionStorage.removeItem('admin_email');
+                // HttpOnly cookie is cleared by server on logout
                 window.location.href = 'admin-login.html';
             }
         }

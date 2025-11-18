@@ -833,9 +833,10 @@
             }
         });
 
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+        // Check if already logged in (using HttpOnly cookie only)
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAuth = await window.adminAWSAuthService.isAuthenticated();
+            if (isAuth) {
                 window.location.href = 'admin-home.html';
             }
         });

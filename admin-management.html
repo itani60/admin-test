@@ -973,12 +973,33 @@
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
+                    
+                    // Check if it's a non-admin session error
+                    if (errorData.error === 'NOT_ADMIN_SESSION' || errorData.message?.includes('requires an admin session')) {
+                        showAlert('Your session was replaced by a regular user login. Please log in as admin again.', 'warning');
+                        // Redirect to login after a short delay
+                        setTimeout(() => {
+                            window.location.href = 'admin-login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
                     throw new Error(errorData.message || `Failed to load users (HTTP ${response.status})`);
                 }
 
                 const data = await response.json();
                 
                 if (!data.success) {
+                    // Check if it's a non-admin session error
+                    if (data.error === 'NOT_ADMIN_SESSION' || data.message?.includes('requires an admin session')) {
+                        showAlert('Your session was replaced by a regular user login. Please log in as admin again.', 'warning');
+                        // Redirect to login after a short delay
+                        setTimeout(() => {
+                            window.location.href = 'admin-login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
                     throw new Error(data.message || 'Failed to load users');
                 }
                 

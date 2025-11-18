@@ -985,6 +985,14 @@
                 // Only use data from successful API response
                 allUsers = Array.isArray(data.users) ? data.users : [];
                 
+                // Debug: Log users with suspension reasons
+                const usersWithSuspension = allUsers.filter(u => u.suspensionReason);
+                if (usersWithSuspension.length > 0) {
+                    console.log('Users with suspension reasons:', usersWithSuspension.map(u => ({ email: u.email, reason: u.suspensionReason })));
+                } else {
+                    console.log('No users with suspension reasons found in API response');
+                }
+                
                 updateStats();
                 applyFilters();
             } catch (error) {
@@ -1100,7 +1108,14 @@
                 const createdDate = formatDate(user.createdAt);
                 const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
                 const initials = getInitials(user.displayName || user.email);
-                const suspensionReason = user.suspensionReason ? `<span class="text-danger" title="${escapeHtml(user.suspensionReason)}"><i class="fas fa-info-circle"></i> ${escapeHtml(user.suspensionReason.length > 30 ? user.suspensionReason.substring(0, 30) + '...' : user.suspensionReason)}</span>` : '<span class="text-muted">-</span>';
+                
+                // Display suspension reason if it exists (regardless of current status - for historical record)
+                let suspensionReason = '<span class="text-muted">-</span>';
+                if (user.suspensionReason) {
+                    const reasonText = escapeHtml(user.suspensionReason);
+                    const displayText = reasonText.length > 30 ? reasonText.substring(0, 30) + '...' : reasonText;
+                    suspensionReason = `<span class="text-danger" title="${reasonText}"><i class="fas fa-info-circle"></i> ${displayText}</span>`;
+                }
 
                 html += `
                     <tr>

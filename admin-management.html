@@ -700,9 +700,6 @@
                                 <button class="btn btn-primary btn-sm" onclick="refreshUsers()">
                                     <i class="fas fa-sync-alt"></i> Refresh
                                 </button>
-                                <button class="btn btn-success btn-sm" onclick="showAddUserModal()">
-                                    <i class="fas fa-user-plus"></i> Add User
-                                </button>
                                 <button class="btn btn-info btn-sm" onclick="exportUsers()">
                                     <i class="fas fa-download"></i> Export
                                 </button>
@@ -907,99 +904,6 @@
         </div>
     </div>
 
-    <!-- Add User Modal -->
-    <div class="modal fade" id="addUserModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user-plus"></i> Add New User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addUserForm">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="userEmail" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="userFirstName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="userLastName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Account Type</label>
-                            <select class="form-select" id="userAccountType" required>
-                                <option value="regular">Regular</option>
-                                <option value="business">Business</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" class="form-control" id="userPassword" required minlength="8">
-                            <small class="form-text text-muted">Minimum 8 characters</small>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="addUser()">Add User</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit User Modal -->
-    <div class="modal fade" id="editUserModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user-edit"></i> Edit User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editUserForm">
-                        <input type="hidden" id="editUserId">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="editUserEmail" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="editUserFirstName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="editUserLastName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Account Type</label>
-                            <select class="form-select" id="editUserAccountType" required>
-                                <option value="regular">Regular</option>
-                                <option value="business">Business</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="editUserStatus" required>
-                                <option value="verified">Verified</option>
-                                <option value="pending">Pending Verification</option>
-                                <option value="suspended">Suspended</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateUser()">Update User</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1216,9 +1120,6 @@
                         <td>${suspensionReason}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-primary btn-sm" onclick="editUser('${user.email}')" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
                                 ${user.accountType !== 'admin' ? (
                                     user.status !== 'suspended' ? 
                                         `<button class="btn btn-warning btn-sm" onclick="showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
@@ -1313,133 +1214,7 @@
             document.getElementById('businessUsersCount').textContent = allUsers.filter(u => u.accountType === 'business').length;
         }
 
-        // User actions
-        function showAddUserModal() {
-            document.getElementById('addUserForm').reset();
-            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
-            modal.show();
-        }
-
-        function showAddAdminModal() {
-            document.getElementById('addUserForm').reset();
-            document.getElementById('userAccountType').value = 'admin';
-            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
-            modal.show();
-        }
-
-        async function addUser() {
-            const form = document.getElementById('addUserForm');
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const userData = {
-                email: document.getElementById('userEmail').value,
-                givenName: document.getElementById('userFirstName').value,
-                familyName: document.getElementById('userLastName').value,
-                accountType: document.getElementById('userAccountType').value,
-                password: document.getElementById('userPassword').value
-            };
-
-            try {
-                const response = await fetch(`${USERS_API}`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-
-                if (response.ok) {
-                    showAlert('User added successfully', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-                    loadUsers();
-                } else {
-                    showAlert('Failed to add user', 'danger');
-                }
-            } catch (error) {
-                console.error('Error adding user:', error);
-                // For mock data
-                const newUser = {
-                    ...userData,
-                    userId: 'user' + Date.now(),
-                    displayName: `${userData.givenName} ${userData.familyName}`,
-                    verified: false,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                };
-                allUsers.push(newUser);
-                updateStats();
-                applyFilters();
-                showAlert('User added successfully', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-            }
-        }
-
-        function editUser(email) {
-            const user = allUsers.find(u => u.email === email);
-            if (!user) return;
-
-            document.getElementById('editUserId').value = user.userId;
-            document.getElementById('editUserEmail').value = user.email;
-            document.getElementById('editUserFirstName').value = user.givenName || '';
-            document.getElementById('editUserLastName').value = user.familyName || '';
-            document.getElementById('editUserAccountType').value = user.accountType;
-            document.getElementById('editUserStatus').value = user.status || (user.verified ? 'verified' : 'pending');
-
-            const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-            modal.show();
-        }
-
-        async function updateUser() {
-            const form = document.getElementById('editUserForm');
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const userId = document.getElementById('editUserId').value;
-            const userData = {
-                givenName: document.getElementById('editUserFirstName').value,
-                familyName: document.getElementById('editUserLastName').value,
-                accountType: document.getElementById('editUserAccountType').value,
-                status: document.getElementById('editUserStatus').value
-            };
-
-            try {
-                const response = await fetch(`${USERS_API}/${userId}`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-
-                if (response.ok) {
-                    showAlert('User updated successfully', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-                    loadUsers();
-                } else {
-                    showAlert('Failed to update user', 'danger');
-                }
-            } catch (error) {
-                console.error('Error updating user:', error);
-                // For mock data
-                const user = allUsers.find(u => u.userId === userId);
-                if (user) {
-                    Object.assign(user, userData);
-                    user.displayName = `${userData.givenName} ${userData.familyName}`;
-                    user.verified = userData.status === 'verified';
-                }
-                updateStats();
-                applyFilters();
-                showAlert('User updated successfully', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-            }
-        }
+        // User actions (edit and add user removed for privacy)
 
         function showSuspendModal(email, displayName) {
             document.getElementById('suspendUserEmail').textContent = displayName || email;

@@ -316,6 +316,15 @@
             font-size: 1.2rem;
         }
 
+        .user-info {
+            transition: background-color 0.2s;
+        }
+        .user-info:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            padding: 4px;
+            margin: -4px;
+        }
         .user-details {
             flex: 1;
         }
@@ -864,6 +873,28 @@
         </div>
     </div>
 
+    <!-- View User Details Modal -->
+    <div class="modal fade" id="viewUserDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user"></i> User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="userDetailsContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Suspend User Modal -->
     <div class="modal fade" id="suspendUserModal" tabindex="-1">
         <div class="modal-dialog">
@@ -1141,7 +1172,7 @@
                 html += `
                     <tr>
                         <td>
-                            <div class="user-info">
+                            <div class="user-info" style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}')" title="Click to view details">
                                 <div class="user-avatar">${initials}</div>
                                 <div class="user-details">
                                     <div class="user-name">${escapeHtml(user.displayName || user.email)}</div>
@@ -1156,17 +1187,20 @@
                         <td>${suspensionReason}</td>
                         <td>
                             <div class="action-buttons">
+                                <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                                 ${user.accountType !== 'admin' ? (
                                     user.status !== 'suspended' ? 
-                                        `<button class="btn btn-warning btn-sm" onclick="showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
+                                        `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
                                             <i class="fas fa-ban"></i>
                                         </button>` :
-                                        `<button class="btn btn-success btn-sm" onclick="unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
+                                        `<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
                                             <i class="fas fa-check"></i>
                                         </button>`
                                 ) : ''}
                                 ${user.accountType !== 'admin' ? 
-                                    `<button class="btn btn-danger btn-sm" onclick="deleteUser('${escapeHtml(user.email)}')" title="Delete">
+                                    `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>` : 
                                     '<span class="text-muted small">Protected</span>'
@@ -1251,6 +1285,199 @@
         }
 
         // User actions (edit and add user removed for privacy)
+
+        function showUserDetailsModal(email) {
+            const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
+            const content = document.getElementById('userDetailsContent');
+            
+            // Find user in allUsers array
+            const user = allUsers.find(u => u.email === email);
+            
+            if (!user) {
+                content.innerHTML = '<div class="alert alert-danger">User not found</div>';
+                modal.show();
+                return;
+            }
+            
+            // Format dates
+            const createdDate = formatDate(user.createdAt) || 'N/A';
+            const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
+            const updatedDate = user.updatedAt ? formatDate(user.updatedAt) : 'N/A';
+            const suspendedDate = user.suspendedAt ? formatDate(user.suspendedAt) : null;
+            const unsuspendedDate = user.unsuspendedAt ? formatDate(user.unsuspendedAt) : null;
+            
+            // Build user details HTML
+            let detailsHTML = `
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                            ${getInitials(user.displayName || user.email)}
+                        </div>
+                        <h4>${escapeHtml(user.displayName || user.email)}</h4>
+                        <p class="text-muted mb-0">${escapeHtml(user.email)}</p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-user-tag"></i> Account Type:</strong>
+                        <div class="mt-1">${getAccountTypeBadge(user.accountType)}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-info-circle"></i> Status:</strong>
+                        <div class="mt-1">${getStatusBadge(user)}</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-check-circle"></i> Email Verified:</strong>
+                        <div class="mt-1">
+                            ${user.verified ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Not Verified</span>'}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-calendar"></i> Account Created:</strong>
+                        <div class="mt-1">${createdDate}</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-sign-in-alt"></i> Last Login:</strong>
+                        <div class="mt-1">${lastLogin}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong><i class="fas fa-edit"></i> Last Updated:</strong>
+                        <div class="mt-1">${updatedDate}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Add user ID if available
+            if (user.userId) {
+                detailsHTML += `
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <strong><i class="fas fa-id-card"></i> User ID:</strong>
+                            <div class="mt-1"><code>${escapeHtml(user.userId)}</code></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add name fields if available
+            if (user.givenName || user.familyName) {
+                detailsHTML += `
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-user"></i> First Name:</strong>
+                            <div class="mt-1">${escapeHtml(user.givenName || 'N/A')}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong><i class="fas fa-user"></i> Last Name:</strong>
+                            <div class="mt-1">${escapeHtml(user.familyName || 'N/A')}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add business-specific fields
+            if (user.accountType === 'business' && user.businessName) {
+                detailsHTML += `
+                    <hr>
+                    <h6 class="mb-3"><i class="fas fa-building"></i> Business Information</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Business Name:</strong>
+                            <div class="mt-1">${escapeHtml(user.businessName || 'N/A')}</div>
+                        </div>
+                        ${user.businessNumber ? `
+                        <div class="col-md-6 mb-3">
+                            <strong>Business Phone:</strong>
+                            <div class="mt-1">${escapeHtml(user.businessNumber)}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // Add suspension history
+            if (user.suspensionReason || user.status === 'suspended' || suspendedDate) {
+                detailsHTML += `
+                    <hr>
+                    <h6 class="mb-3"><i class="fas fa-ban"></i> Suspension History</h6>
+                    <div class="row">
+                        ${user.suspensionReason ? `
+                        <div class="col-12 mb-3">
+                            <strong>Suspension Reason:</strong>
+                            <div class="mt-1 alert alert-warning">${escapeHtml(user.suspensionReason)}</div>
+                        </div>
+                        ` : ''}
+                        ${suspendedDate ? `
+                        <div class="col-md-6 mb-3">
+                            <strong>Suspended At:</strong>
+                            <div class="mt-1">${suspendedDate}</div>
+                        </div>
+                        ` : ''}
+                        ${unsuspendedDate ? `
+                        <div class="col-md-6 mb-3">
+                            <strong>Unsuspended At:</strong>
+                            <div class="mt-1">${unsuspendedDate}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            // Add additional metadata if available
+            const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
+            const hasMetadata = metadataFields.some(field => user[field]);
+            
+            if (hasMetadata) {
+                detailsHTML += `
+                    <hr>
+                    <h6 class="mb-3"><i class="fas fa-map-marker-alt"></i> Additional Information</h6>
+                    <div class="row">
+                `;
+                
+                if (user.city || user.province) {
+                    detailsHTML += `
+                        <div class="col-md-6 mb-3">
+                            <strong>Location:</strong>
+                            <div class="mt-1">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
+                        </div>
+                    `;
+                }
+                
+                if (user.phoneNumber) {
+                    detailsHTML += `
+                        <div class="col-md-6 mb-3">
+                            <strong>Phone Number:</strong>
+                            <div class="mt-1">${escapeHtml(user.phoneNumber)}</div>
+                        </div>
+                    `;
+                }
+                
+                detailsHTML += `</div>`;
+            }
+            
+            // Add provider information
+            if (user.provider) {
+                detailsHTML += `
+                    <hr>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <strong><i class="fas fa-key"></i> Authentication Provider:</strong>
+                            <div class="mt-1">${escapeHtml(user.provider)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = detailsHTML;
+            modal.show();
+        }
 
         function showSuspendModal(email, displayName) {
             document.getElementById('suspendUserEmail').textContent = displayName || email;

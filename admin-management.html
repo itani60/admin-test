@@ -1290,14 +1290,52 @@
             const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
             const content = document.getElementById('userDetailsContent');
             
+            // Determine account type from current tab (source of truth)
+            // This ensures we get the correct account type based on which tab we're viewing
+            let targetAccountType = accountType;
+            
+            // Override with current tab if we're in a specific account type tab
+            if (currentTab === 'regular') {
+                targetAccountType = 'regular';
+            } else if (currentTab === 'business') {
+                targetAccountType = 'business';
+            } else if (currentTab === 'admins') {
+                targetAccountType = 'admin';
+            }
+            // If in 'users' tab, use the accountType parameter passed (or find all matches)
+            
             // Find user in allUsers array by both email AND accountType
             // This ensures we get the correct account when same email exists in multiple tables
-            const user = allUsers.find(u => u.email === email && u.accountType === accountType);
+            let user = null;
+            
+            if (targetAccountType) {
+                // First try to find with the target account type
+                user = allUsers.find(u => u.email === email && u.accountType === targetAccountType);
+            }
+            
+            // If not found and we're in 'users' tab, try to find any match
+            if (!user && currentTab === 'users') {
+                user = allUsers.find(u => u.email === email);
+            }
             
             if (!user) {
-                content.innerHTML = '<div class="alert alert-danger">User not found</div>';
+                content.innerHTML = `<div class="alert alert-danger">
+                    <strong>User not found</strong><br>
+                    Email: ${escapeHtml(email)}<br>
+                    Looking for account type: ${targetAccountType || 'any'}<br>
+                    Current tab: ${currentTab}
+                </div>`;
                 modal.show();
                 return;
+            }
+            
+            // Final verification: ensure the account type matches what we expect
+            if (currentTab === 'regular' && user.accountType !== 'regular') {
+                console.warn(`Account type mismatch: Expected regular, got ${user.accountType} for ${email}`);
+            } else if (currentTab === 'business' && user.accountType !== 'business') {
+                console.warn(`Account type mismatch: Expected business, got ${user.accountType} for ${email}`);
+            } else if (currentTab === 'admins' && user.accountType !== 'admin') {
+                console.warn(`Account type mismatch: Expected admin, got ${user.accountType} for ${email}`);
             }
             
             // Format dates

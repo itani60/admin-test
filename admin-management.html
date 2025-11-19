@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         :root {
@@ -636,6 +637,43 @@
                     <div class="stat-item">
                         <div class="stat-number" id="businessUsersCount">0</div>
                         <div class="stat-label">Business Users</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Analytics Section -->
+        <div class="visual-analytics-section" style="margin: 2rem 1rem;">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h5 style="margin-bottom: 20px; color: var(--dark);">
+                            <i class="fas fa-chart-pie" style="color: var(--primary); margin-right: 10px;"></i>
+                            Account Type Distribution
+                        </h5>
+                        <canvas id="accountTypeChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h5 style="margin-bottom: 20px; color: var(--dark);">
+                            <i class="fas fa-chart-bar" style="color: var(--primary); margin-right: 10px;"></i>
+                            User Status Distribution
+                        </h5>
+                        <div id="statusDistributionChart" style="min-height: 250px;">
+                            <!-- Progress bars will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h5 style="margin-bottom: 20px; color: var(--dark);">
+                            <i class="fas fa-chart-line" style="color: var(--primary); margin-right: 10px;"></i>
+                            User Growth Over Time
+                        </h5>
+                        <canvas id="userGrowthChart" style="max-height: 300px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -1276,12 +1314,220 @@
             }
         }
 
+        // Chart instances
+        let accountTypeChart = null;
+        let userGrowthChart = null;
+
         // Update statistics
         function updateStats() {
             document.getElementById('totalUsersCount').textContent = allUsers.length;
             document.getElementById('adminUsersCount').textContent = allUsers.filter(u => u.accountType === 'admin').length;
             document.getElementById('regularUsersCount').textContent = allUsers.filter(u => u.accountType === 'regular').length;
             document.getElementById('businessUsersCount').textContent = allUsers.filter(u => u.accountType === 'business').length;
+            
+            // Update charts
+            updateCharts();
+        }
+
+        // Update visual charts
+        function updateCharts() {
+            // Account Type Distribution Chart
+            const adminCount = allUsers.filter(u => u.accountType === 'admin').length;
+            const regularCount = allUsers.filter(u => u.accountType === 'regular').length;
+            const businessCount = allUsers.filter(u => u.accountType === 'business').length;
+            
+            if (accountTypeChart) {
+                accountTypeChart.destroy();
+            }
+            
+            const accountTypeCtx = document.getElementById('accountTypeChart');
+            if (accountTypeCtx) {
+                accountTypeChart = new Chart(accountTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Regular Users', 'Business Users', 'Admin Users'],
+                        datasets: [{
+                            data: [regularCount, businessCount, adminCount],
+                            backgroundColor: [
+                                '#007bff',
+                                '#17a2b8',
+                                '#dc3545'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        if (total > 0) {
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            label += context.parsed + ' (' + percentage + '%)';
+                                        } else {
+                                            label += context.parsed;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Status Distribution (Progress Bars)
+            const verifiedCount = allUsers.filter(u => u.verified && u.status !== 'suspended').length;
+            const pendingCount = allUsers.filter(u => !u.verified && u.status !== 'suspended').length;
+            const suspendedCount = allUsers.filter(u => u.status === 'suspended').length;
+            const total = allUsers.length;
+            
+            const statusChartContainer = document.getElementById('statusDistributionChart');
+            if (statusChartContainer && total > 0) {
+                const verifiedPercent = ((verifiedCount / total) * 100).toFixed(1);
+                const pendingPercent = ((pendingCount / total) * 100).toFixed(1);
+                const suspendedPercent = ((suspendedCount / total) * 100).toFixed(1);
+                
+                statusChartContainer.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
+                            <span style="font-weight: 500; color: var(--dark);">Verified</span>
+                            <span style="color: var(--text);">${verifiedCount} (${verifiedPercent}%)</span>
+                        </div>
+                        <div class="progress" style="height: 25px; border-radius: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: ${verifiedPercent}%; border-radius: 10px;" aria-valuenow="${verifiedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
+                            <span style="font-weight: 500; color: var(--dark);">Pending</span>
+                            <span style="color: var(--text);">${pendingCount} (${pendingPercent}%)</span>
+                        </div>
+                        <div class="progress" style="height: 25px; border-radius: 10px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: ${pendingPercent}%; border-radius: 10px;" aria-valuenow="${pendingPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
+                            <span style="font-weight: 500; color: var(--dark);">Suspended</span>
+                            <span style="color: var(--text);">${suspendedCount} (${suspendedPercent}%)</span>
+                        </div>
+                        <div class="progress" style="height: 25px; border-radius: 10px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${suspendedPercent}%; border-radius: 10px;" aria-valuenow="${suspendedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // User Growth Chart (based on creation dates)
+            if (userGrowthChart) {
+                userGrowthChart.destroy();
+            }
+            
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (userGrowthCtx && allUsers.length > 0) {
+                // Group users by month based on createdAt
+                const monthlyData = {};
+                const currentDate = new Date();
+                const months = [];
+                
+                // Get last 12 months
+                for (let i = 11; i >= 0; i--) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    months.push(monthKey);
+                    monthlyData[monthKey] = 0;
+                }
+                
+                // Count users by month
+                allUsers.forEach(user => {
+                    if (user.createdAt) {
+                        const userDate = new Date(user.createdAt);
+                        const monthKey = userDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                        if (monthlyData.hasOwnProperty(monthKey)) {
+                            monthlyData[monthKey]++;
+                        }
+                    }
+                });
+                
+                // Calculate cumulative totals
+                const cumulativeData = [];
+                let runningTotal = 0;
+                months.forEach(month => {
+                    runningTotal += monthlyData[month];
+                    cumulativeData.push(runningTotal);
+                });
+                
+                const monthlyCounts = months.map(month => monthlyData[month]);
+                
+                userGrowthChart = new Chart(userGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Total Users',
+                            data: cumulativeData,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }, {
+                            label: 'New Users This Month',
+                            data: monthlyCounts,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: Math.ceil(Math.max(...cumulativeData) / 10) || 1
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            }
         }
 
         // User actions (edit and add user removed for privacy)

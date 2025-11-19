@@ -232,22 +232,50 @@
 
     /**
      * Logout admin user
-     * @returns {Promise<{success: boolean, message?: string}>}
+     * @returns {Promise<{success: boolean, message?: string, error?: string}>}
      */
     async logout() {
       try {
-        await fetch(ENDPOINTS.LOGOUT, {
+        const res = await fetch(ENDPOINTS.LOGOUT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include'
         });
-      } catch (error) {
-        console.error('Logout error:', error);
-      } finally {
+
+        const data = await res.json().catch(() => ({}));
+
+        // Always clear profile and notify listeners, even if request failed
         this.clear();
         this._notifyListeners('logout', null);
+
+        if (!res.ok || !data?.success) {
+          // Still return success since we cleared the local state
+          // The server-side session deletion may have failed, but client is logged out
+          return {
+            success: true,
+            message: data?.message || 'Logged out locally',
+            warning: data?.error || 'Server logout may have failed'
+          };
+        }
+
+        return {
+          success: true,
+          message: data.message || 'Logged out successfully'
+        };
+      } catch (error) {
+        console.error('Admin logout error:', error);
+        
+        // Always clear profile and notify listeners, even on network error
+        this.clear();
+        this._notifyListeners('logout', null);
+        
+        // Return success since we cleared local state
+        return {
+          success: true,
+          message: 'Logged out locally',
+          warning: 'Network error occurred, but local session cleared'
+        };
       }
-      return { success: true, message: 'Logged out successfully' };
     }
 
     /**

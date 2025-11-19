@@ -4,7 +4,7 @@
     REGISTER: `${BASE_URL}/account/register`,
     VERIFY_EMAIL: `${BASE_URL}/account/verify-email`,
     LOGIN: `${BASE_URL}/account/login`,
-    USER_INFO: `${BASE_URL}/account/user-info`,
+    USER_INFO: `${BASE_URL}/account/get-user-info`,
     LOGOUT: `${BASE_URL}/account/logout`,
     FORGOT_PASSWORD: `${BASE_URL}/account/forgot-password`,
     RESET_PASSWORD: `${BASE_URL}/account/reset-password`

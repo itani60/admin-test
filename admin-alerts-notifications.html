@@ -788,7 +788,9 @@
                     notification.type.toLowerCase().includes(searchTerm);
 
                 // Type filter
-                const matchesType = typeFilter === 'all' || notification.type === typeFilter;
+                const matchesType = typeFilter === 'all' || 
+                    notification.type === typeFilter ||
+                    (typeFilter === 'price_alert' && (notification.type === 'price_alert' || notification.type === 'price_alert_created'));
 
                 // Status filter
                 const matchesStatus = statusFilter === 'all' || 
@@ -797,7 +799,7 @@
 
                 // Time filter
                 let matchesTime = true;
-                const notificationDate = new Date(notification.timestamp);
+                const notificationDate = new Date(notification.timestamp || notification.createdAt);
                 const now = new Date();
                 
                 if (timeFilter === 'today') {
@@ -815,7 +817,11 @@
             });
 
             // Sort by timestamp (newest first)
-            filteredNotifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            filteredNotifications.sort((a, b) => {
+                const dateA = new Date(a.timestamp || a.createdAt);
+                const dateB = new Date(b.timestamp || b.createdAt);
+                return dateB - dateA;
+            });
 
             renderNotifications();
         }
@@ -841,11 +847,12 @@
                 const iconClass = getIconClass(notification.type);
                 const badgeClass = getBadgeClass(notification.type);
                 const badgeText = getBadgeText(notification.type);
-                const formattedTime = formatTimeAgo(notification.timestamp);
+                const formattedTime = formatTimeAgo(notification.timestamp || notification.createdAt);
                 const unreadClass = !notification.isRead ? 'unread' : '';
+                const notifId = notification.id || notification.notificationId;
 
                 html += `
-                    <div class="notification-item ${unreadClass}" data-notification-id="${notification.id}">
+                    <div class="notification-item ${unreadClass}" data-notification-id="${notifId}">
                         <div class="notification-header">
                             <div class="notification-icon ${iconClass}">
                                 <i class="${getIcon(notification.type)}"></i>
@@ -890,11 +897,11 @@
                                 ` : ''}
                                 <div class="notification-actions">
                                     ${!notification.isRead ? `
-                                        <button class="btn btn-success btn-sm" onclick="markAsRead('${notification.id}')">
+                                        <button class="btn btn-success btn-sm" onclick="markAsRead('${notifId}')">
                                             Mark as Read
                                         </button>
                                     ` : ''}
-                                    <button class="btn btn-danger btn-sm" onclick="deleteNotification('${notification.id}')">
+                                    <button class="btn btn-danger btn-sm" onclick="deleteNotification('${notifId}')">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
                                 </div>
@@ -962,8 +969,8 @@
             
             document.getElementById('totalNotificationsCount').textContent = allNotifications.length;
             document.getElementById('unreadNotificationsCount').textContent = allNotifications.filter(n => !n.isRead).length;
-            document.getElementById('todayNotificationsCount').textContent = allNotifications.filter(n => new Date(n.timestamp) >= todayStart).length;
-            document.getElementById('priceAlertsCount').textContent = allNotifications.filter(n => n.type === 'price_alert').length;
+            document.getElementById('todayNotificationsCount').textContent = allNotifications.filter(n => new Date(n.timestamp || n.createdAt) >= todayStart).length;
+            document.getElementById('priceAlertsCount').textContent = allNotifications.filter(n => n.type === 'price_alert_created' || n.type === 'price_alert').length;
         }
 
         // Mark notification as read
@@ -980,8 +987,8 @@
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
-                        const notification = allNotifications.find(n => n.id === notificationId);
-                        if (notification) notification.isRead = true;
+                    const notification = allNotifications.find(n => (n.id === notificationId || n.notificationId === notificationId));
+                    if (notification) notification.isRead = true;
                         updateStats();
                         applyFilters();
                         showAlert('Notification marked as read', 'success');
@@ -1047,7 +1054,7 @@
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
-                        allNotifications = allNotifications.filter(n => n.id !== notificationId);
+                        allNotifications = allNotifications.filter(n => (n.id !== notificationId && n.notificationId !== notificationId));
                         updateStats();
                         applyFilters();
                         showAlert('Notification deleted successfully', 'success');

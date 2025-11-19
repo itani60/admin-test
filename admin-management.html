@@ -1172,7 +1172,7 @@
                 html += `
                     <tr>
                         <td>
-                            <div class="user-info" style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}')" title="Click to view details">
+                            <div class="user-info" style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="Click to view details">
                                 <div class="user-avatar">${initials}</div>
                                 <div class="user-details">
                                     <div class="user-name">${escapeHtml(user.displayName || user.email)}</div>
@@ -1187,7 +1187,7 @@
                         <td>${suspensionReason}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}')" title="View Details">
+                                <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 ${user.accountType !== 'admin' ? (
@@ -1286,12 +1286,13 @@
 
         // User actions (edit and add user removed for privacy)
 
-        function showUserDetailsModal(email) {
+        function showUserDetailsModal(email, accountType) {
             const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
             const content = document.getElementById('userDetailsContent');
             
-            // Find user in allUsers array
-            const user = allUsers.find(u => u.email === email);
+            // Find user in allUsers array by both email AND accountType
+            // This ensures we get the correct account when same email exists in multiple tables
+            const user = allUsers.find(u => u.email === email && u.accountType === accountType);
             
             if (!user) {
                 content.innerHTML = '<div class="alert alert-danger">User not found</div>';

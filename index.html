@@ -292,6 +292,21 @@
             border-color: var(--danger);
         }
 
+        .logout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .logout-btn .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .login-btn-header {
             background: var(--primary);
             color: white;
@@ -549,12 +564,35 @@
 
         // Handle logout
         async function handleLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Disable button to prevent double-clicks
+            if (logoutBtn) {
+                logoutBtn.disabled = true;
+                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+            }
+            
             try {
-                await window.adminAWSAuthService.logout();
+                const result = await window.adminAWSAuthService.logout();
+                
+                if (result.success) {
+                    console.log('Logout successful:', result.message);
+                    
+                    // Show success message briefly before redirect
+                    if (result.warning) {
+                        console.warn('Logout warning:', result.warning);
+                    }
+                    
+                    // Small delay to ensure cookie is cleared
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } else {
+                    console.error('Logout failed:', result.message || result.error);
+                }
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                // HttpOnly cookie is cleared by server on logout
+                // Always redirect to login page, even if logout request failed
+                // The local session is cleared by adminAWSAuthService.logout()
                 window.location.href = 'admin-login.html';
             }
         }

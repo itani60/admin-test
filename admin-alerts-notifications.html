@@ -585,13 +585,13 @@
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <div class="notifications-section">
-                    <h3><i class="fas fa-chart-line"></i> Notifications Over Time</h3>
+                    <h3>Notifications Over Time</h3>
                     <canvas id="notificationsOverTimeChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
                 <div class="notifications-section">
-                    <h3><i class="fas fa-chart-pie"></i> Notification Types Distribution</h3>
+                    <h3>Notification Types Distribution</h3>
                     <canvas id="notificationTypesChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
@@ -600,13 +600,13 @@
         <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <div class="notifications-section">
-                    <h3><i class="fas fa-chart-bar"></i> Activity by Category</h3>
+                    <h3>Activity by Category</h3>
                     <canvas id="activityByCategoryChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
                 <div class="notifications-section">
-                    <h3><i class="fas fa-chart-area"></i> Read vs Unread Status</h3>
+                    <h3>Read vs Unread Status</h3>
                     <canvas id="readStatusChart" style="max-height: 300px;"></canvas>
                 </div>
             </div>
@@ -1339,7 +1339,26 @@
                 'user_registration': 0,
                 'business_registration': 0,
                 'password_reset': 0,
+                'password_change_attempted': 0,
+                'password_change_failed': 0,
+                'password_change_success': 0,
                 'email_update': 0,
+                'email_change': 0,
+                'email_change_failed': 0,
+                'profile_update': 0,
+                'profile_image_updated': 0,
+                'business_info_update_success': 0,
+                'business_info_update_failed': 0,
+                'account_deletion_attempted': 0,
+                'account_deletion_failed': 0,
+                'account_deletion_success': 0,
+                'mfa_setup': 0,
+                'mfa_removed': 0,
+                'email_mfa_enabled': 0,
+                'co_owner_removed': 0,
+                'business_address_updated': 0,
+                'business_logo_updated': 0,
+                'social_media_updated': 0,
                 'price_alert': 0,
                 'price_alert_created': 0,
                 'other': 0
@@ -1356,13 +1375,54 @@
                 }
             });
             
+            // Group related types
+            const passwordChangeTotal = typeCounts['password_change_attempted'] + 
+                                      typeCounts['password_change_failed'] + 
+                                      typeCounts['password_change_success'];
+            
+            const accountDeletionTotal = typeCounts['account_deletion_attempted'] + 
+                                        typeCounts['account_deletion_failed'] + 
+                                        typeCounts['account_deletion_success'];
+            
+            const profileUpdateTotal = typeCounts['profile_update'] + 
+                                      typeCounts['profile_image_updated'] + 
+                                      typeCounts['business_info_update_success'] + 
+                                      typeCounts['business_info_update_failed'] +
+                                      typeCounts['co_owner_removed'] +
+                                      typeCounts['business_address_updated'] +
+                                      typeCounts['business_logo_updated'] +
+                                      typeCounts['social_media_updated'];
+            
+            const emailChangeTotal = typeCounts['email_update'] + 
+                                    typeCounts['email_change'] + 
+                                    typeCounts['email_change_failed'];
+            
+            const mfaTotal = typeCounts['mfa_setup'] + 
+                           typeCounts['mfa_removed'] + 
+                           typeCounts['email_mfa_enabled'];
+            
             return {
-                labels: ['User Registration', 'Business Registration', 'Password Reset', 'Email Update', 'Price Alert', 'Other'],
+                labels: [
+                    'User Registration', 
+                    'Business Registration', 
+                    'Password Reset', 
+                    'Password Change',
+                    'Profile Updated',
+                    'Email Update',
+                    'Account Deletion',
+                    'MFA Setup',
+                    'Price Alert',
+                    'Other'
+                ],
                 data: [
                     typeCounts['user_registration'],
                     typeCounts['business_registration'],
                     typeCounts['password_reset'],
-                    typeCounts['email_update'],
+                    passwordChangeTotal,
+                    profileUpdateTotal,
+                    emailChangeTotal,
+                    accountDeletionTotal,
+                    mfaTotal,
                     typeCounts['price_alert'] + typeCounts['price_alert_created'],
                     typeCounts['other']
                 ]
@@ -1381,15 +1441,39 @@
             
             allNotifications.forEach(notif => {
                 const type = notif.type || '';
-                if (type.includes('password') || type.includes('delete') || type.includes('security') || type.includes('mfa')) {
+                
+                // Security category: password changes, account deletion, MFA, security-related
+                if (type.includes('password') || 
+                    type.includes('delete') || 
+                    type.includes('security') || 
+                    type.includes('mfa') ||
+                    type.includes('account_deletion') ||
+                    type.includes('password_change')) {
                     categoryCounts['Security']++;
-                } else if (type.includes('registration')) {
+                } 
+                // Registration category
+                else if (type.includes('registration')) {
                     categoryCounts['Registration']++;
-                } else if (type.includes('update') || type.includes('change') || type.includes('modify')) {
+                } 
+                // Updates category: profile updates, email changes, business info updates
+                else if (type.includes('update') || 
+                         type.includes('change') || 
+                         type.includes('modify') ||
+                         type.includes('profile') ||
+                         type.includes('email_change') ||
+                         type.includes('business_info') ||
+                         type.includes('co_owner') ||
+                         type.includes('address') ||
+                         type.includes('logo') ||
+                         type.includes('social_media')) {
                     categoryCounts['Updates']++;
-                } else if (type.includes('alert') || type.includes('price')) {
+                } 
+                // Alerts category
+                else if (type.includes('alert') || type.includes('price')) {
                     categoryCounts['Alerts']++;
-                } else {
+                } 
+                // Other
+                else {
                     categoryCounts['Other']++;
                 }
             });
@@ -1468,19 +1552,27 @@
                         datasets: [{
                             data: typesData.data,
                             backgroundColor: [
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(23, 162, 184, 0.8)',
-                                'rgba(255, 193, 7, 0.8)',
-                                'rgba(0, 123, 255, 0.8)',
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(108, 117, 125, 0.8)'
+                                'rgba(40, 167, 69, 0.8)',      // User Registration - Green
+                                'rgba(23, 162, 184, 0.8)',      // Business Registration - Cyan
+                                'rgba(255, 193, 7, 0.8)',       // Password Reset - Yellow
+                                'rgba(255, 152, 0, 0.8)',       // Password Change - Orange
+                                'rgba(156, 39, 176, 0.8)',      // Profile Updated - Purple
+                                'rgba(0, 123, 255, 0.8)',       // Email Update - Blue
+                                'rgba(220, 53, 69, 0.8)',       // Account Deletion - Red
+                                'rgba(0, 188, 212, 0.8)',       // MFA Setup - Light Blue
+                                'rgba(233, 30, 99, 0.8)',       // Price Alert - Pink
+                                'rgba(108, 117, 125, 0.8)'      // Other - Gray
                             ],
                             borderColor: [
                                 'rgb(40, 167, 69)',
                                 'rgb(23, 162, 184)',
                                 'rgb(255, 193, 7)',
+                                'rgb(255, 152, 0)',
+                                'rgb(156, 39, 176)',
                                 'rgb(0, 123, 255)',
                                 'rgb(220, 53, 69)',
+                                'rgb(0, 188, 212)',
+                                'rgb(233, 30, 99)',
                                 'rgb(108, 117, 125)'
                             ],
                             borderWidth: 2

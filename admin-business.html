@@ -622,7 +622,9 @@
     <script>
         // Configuration
         const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
-        const BUSINESS_POST_APPROVAL_API = `${API_BASE_URL}/admin/admin/business-post-approval`;
+        const BUSINESS_POST_APPROVAL_API = `${API_BASE_URL}/admin/admin/business-post-approval`; // For GET posts
+        const PUBLISH_BUSINESS_API = `${API_BASE_URL}/admin/publish-business`; // For APPROVE (new Lambda)
+        const REJECT_BUSINESS_API = `${API_BASE_URL}/admin/reject-business-post`; // For REJECT (new Lambda)
         
         // State
         let allPosts = [];
@@ -675,26 +677,54 @@
                     const data = await response.json();
                     if (data.success && data.posts) {
                         // Transform API data to match our format
-                        allPosts = data.posts.map(post => ({
-                            postId: post.postId,
-                            businessName: post.businessInfo?.businessName || 'Unknown Business',
-                            businessEmail: post.businessEmail || post.businessInfo?.businessEmail || '',
-                            title: post.title || 'Untitled Post',
-                            type: post.type || 'Service',
-                            status: post.status || 'pending',
-                            permission: 'granted', // Permission is separate from approval status
-                            image: post.images && post.images.length > 0 ? post.images[0].url : 'https://via.placeholder.com/200x150?text=No+Image',
-                            submitted: post.submittedAt ? new Date(post.submittedAt).toLocaleString() : 'Unknown',
-                            submittedAt: post.submittedAt,
-                            description: post.description || '',
-                            content: post.description || '',
-                            images: post.images || [],
-                            serviceGalleries: post.serviceGalleries || {},
-                            businessInfo: post.businessInfo || {},
-                            readyForApproval: post.readyForApproval || false,
-                            timeUntilApproval: post.timeUntilApproval || null,
-                            validation: post.validation || { valid: true, issues: [] }
-                        }));
+                        allPosts = data.posts.map(post => {
+                            // Calculate wait period if needed
+                            let readyForApproval = post.readyForApproval;
+                            let timeUntilApproval = post.timeUntilApproval;
+                            
+                            // If submittedAt exists, calculate wait period
+                            if (post.submittedAt && readyForApproval === undefined && !timeUntilApproval) {
+                                const submittedTime = new Date(post.submittedAt).getTime();
+                                const now = Date.now();
+                                const elapsed = now - submittedTime;
+                                const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+                                
+                                if (elapsed < twoHours) {
+                                    readyForApproval = false;
+                                    const remaining = twoHours - elapsed;
+                                    const hours = Math.floor(remaining / (60 * 60 * 1000));
+                                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                                    timeUntilApproval = { hours, minutes };
+                                } else {
+                                    readyForApproval = true;
+                                    timeUntilApproval = null;
+                                }
+                            }
+                            
+                            return {
+                                postId: post.postId,
+                                businessName: post.businessInfo?.businessName || post.businessName || 'Unknown Business',
+                                businessEmail: post.businessEmail || post.businessInfo?.businessEmail || '',
+                                title: post.title || post.businessName || 'Untitled Post',
+                                type: post.type || 'Service',
+                                status: post.status || 'pending',
+                                permission: 'granted', // Permission is separate from approval status
+                                image: post.images && post.images.length > 0 ? post.images[0].url : 
+                                       (post.serviceGalleries && Object.keys(post.serviceGalleries).length > 0 ? 
+                                        Object.values(post.serviceGalleries)[0]?.images?.[0]?.url : 
+                                        'https://via.placeholder.com/200x150?text=No+Image'),
+                                submitted: post.submittedAt ? new Date(post.submittedAt).toLocaleString() : 'Unknown',
+                                submittedAt: post.submittedAt,
+                                description: post.description || post.businessDescription || '',
+                                content: post.description || post.businessDescription || '',
+                                images: post.images || [],
+                                serviceGalleries: post.serviceGalleries || {},
+                                businessInfo: post.businessInfo || {},
+                                readyForApproval: readyForApproval !== undefined ? readyForApproval : true,
+                                timeUntilApproval: timeUntilApproval,
+                                validation: post.validation || { valid: true, issues: [] }
+                            };
+                        });
                         updateStats();
                         applyFilters();
                         updateCharts();
@@ -972,7 +1002,7 @@
             document.getElementById('totalBusinessesCount').textContent = totalBusinesses;
         }
 
-        // Approve post
+        // Approve post - Uses new publish-business Lambda
         async function approvePost(postId) {
             const post = allPosts.find(p => (p.postId || p.id) === postId);
             if (!post) {
@@ -980,39 +1010,67 @@
                 return;
             }
 
-            if (!confirm(`Are you sure you want to approve "${post.title}"?`)) {
+            // Check if post is ready for approval
+            if (post.timeUntilApproval) {
+                const timeUntil = post.timeUntilApproval;
+                const message = `Post must wait ${timeUntil.hours}h ${timeUntil.minutes}m before approval. Please wait until the wait period has elapsed.`;
+                showAlert(message, 'warning');
                 return;
             }
 
+            if (!confirm(`Are you sure you want to approve "${post.title || post.businessName}"?`)) {
+                return;
+            }
+
+            // Show loading state
+            const approveBtn = event?.target || document.querySelector(`[onclick*="approvePost('${postId}')"]`);
+            const originalText = approveBtn?.innerHTML || '';
+            if (approveBtn) {
+                approveBtn.disabled = true;
+                approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+            }
+
             try {
-                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}`, {
+                // Use new publish-business Lambda
+                const response = await fetch(`${PUBLISH_BUSINESS_API}`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        action: 'approve',
-                        postId: postId,
-                        reason: 'Approved by admin'
+                        postId: postId
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    showAlert(`Post "${post.title}" has been approved successfully`, 'success');
+                    showAlert(`Post "${post.title || post.businessName}" has been published successfully!`, 'success');
                     await loadPosts(); // Reload posts to get updated status
                 } else {
-                    throw new Error(data.message || 'Failed to approve post');
+                    // Handle wait period error
+                    if (data.error === 'WAIT_PERIOD_NOT_ELAPSED' && data.timeUntil) {
+                        const timeUntil = data.timeUntil;
+                        const message = `Post must wait ${timeUntil.hours}h ${timeUntil.minutes}m before approval. Time remaining: ${timeUntil.hours}h ${timeUntil.minutes}m`;
+                        showAlert(message, 'warning');
+                    } else {
+                        throw new Error(data.message || 'Failed to approve post');
+                    }
                 }
             } catch (error) {
                 console.error('Error approving post:', error);
                 showAlert(`Failed to approve post: ${error.message}`, 'danger');
+            } finally {
+                // Restore button state
+                if (approveBtn) {
+                    approveBtn.disabled = false;
+                    approveBtn.innerHTML = originalText;
+                }
             }
         }
 
-        // Reject post
+        // Reject post - Uses new reject-business-post Lambda
         async function rejectPost(postId) {
             const post = allPosts.find(p => (p.postId || p.id) === postId);
             if (!post) {
@@ -1020,7 +1078,7 @@
                 return;
             }
 
-            const reason = prompt(`Please provide a reason for rejecting "${post.title}":`);
+            const reason = prompt(`Please provide a reason for rejecting "${post.title || post.businessName}":`);
             if (reason === null || reason.trim().length < 5) {
                 if (reason !== null) {
                     showAlert('Rejection reason must be at least 5 characters', 'warning');
@@ -1028,15 +1086,23 @@
                 return;
             }
 
+            // Show loading state
+            const rejectBtn = event?.target || document.querySelector(`[onclick*="rejectPost('${postId}')"]`);
+            const originalText = rejectBtn?.innerHTML || '';
+            if (rejectBtn) {
+                rejectBtn.disabled = true;
+                rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rejecting...';
+            }
+
             try {
-                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}`, {
+                // Use new reject-business-post Lambda
+                const response = await fetch(`${REJECT_BUSINESS_API}`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        action: 'reject',
                         postId: postId,
                         reason: reason.trim()
                     })
@@ -1045,7 +1111,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    showAlert(`Post "${post.title}" has been rejected. Reason: ${reason}`, 'danger');
+                    showAlert(`Post "${post.title || post.businessName}" has been rejected. Reason: ${reason}`, 'danger');
                     await loadPosts(); // Reload posts to get updated status
                 } else {
                     throw new Error(data.message || 'Failed to reject post');
@@ -1053,6 +1119,12 @@
             } catch (error) {
                 console.error('Error rejecting post:', error);
                 showAlert(`Failed to reject post: ${error.message}`, 'danger');
+            } finally {
+                // Restore button state
+                if (rejectBtn) {
+                    rejectBtn.disabled = false;
+                    rejectBtn.innerHTML = originalText;
+                }
             }
         }
 

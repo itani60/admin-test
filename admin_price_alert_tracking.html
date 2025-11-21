@@ -449,6 +449,37 @@
             </div>
         </div>
 
+        <!-- Analytics Charts Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Alerts Created Over Time</h3>
+                    <canvas id="alertsOverTimeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Active vs Inactive Alerts</h3>
+                    <canvas id="alertStatusChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Top Users by Alert Count</h3>
+                    <canvas id="topUsersChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Notification Methods Distribution</h3>
+                    <canvas id="notificationMethodsChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Filters Section -->
         <div class="filters-section">
             <div class="row g-3">
@@ -516,6 +547,7 @@
 
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         // Configuration
         const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
@@ -525,12 +557,19 @@
         let allUserStats = [];
         let filteredUserStats = [];
         let expandedUsers = new Set();
+        
+        // Chart instances
+        let alertsOverTimeChart = null;
+        let alertStatusChart = null;
+        let topUsersChart = null;
+        let notificationMethodsChart = null;
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             loadPriceAlertStats();
             checkLoginState();
+            initializeCharts();
         });
 
         // Setup event listeners
@@ -560,10 +599,11 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.success && data.data) {
-                        allUserStats = data.data.userStats || [];
-                        updateStats(data.data);
+                    if (data.success && data.userStats) {
+                        allUserStats = data.userStats || [];
+                        updateStats(data);
                         applyFilters();
+                        updateCharts();
                     } else {
                         throw new Error(data.message || 'Invalid response format');
                     }
@@ -759,10 +799,10 @@
 
         // Update statistics
         function updateStats(data) {
-            document.getElementById('totalUsersCount').textContent = data.totalUsers || 0;
+            document.getElementById('totalUsersCount').textContent = data.totalUsersWithAlerts || data.totalUsers || 0;
             document.getElementById('totalAlertsCount').textContent = data.totalAlerts || 0;
-            document.getElementById('activeAlertsCount').textContent = data.activeAlerts || 0;
-            document.getElementById('inactiveAlertsCount').textContent = data.inactiveAlerts || 0;
+            document.getElementById('activeAlertsCount').textContent = data.totalActiveAlerts || data.activeAlerts || 0;
+            document.getElementById('inactiveAlertsCount').textContent = data.totalInactiveAlerts || data.inactiveAlerts || 0;
         }
 
         // Refresh price alerts
@@ -900,6 +940,277 @@
                     userSection.style.display = 'none';
                     loginBtnHeader.style.display = 'inline-flex';
                 }
+            }
+        }
+
+        // Initialize Analytics Charts
+        function initializeCharts() {
+            // Chart 1: Alerts Over Time (Line Chart)
+            const alertsOverTimeCtx = document.getElementById('alertsOverTimeChart');
+            if (alertsOverTimeCtx) {
+                const timeData = calculateAlertsOverTime();
+                alertsOverTimeChart = new Chart(alertsOverTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeData.labels,
+                        datasets: [{
+                            label: 'Alerts Created',
+                            data: timeData.data,
+                            borderColor: 'rgb(0, 123, 255)',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Active vs Inactive Alerts (Pie Chart)
+            const alertStatusCtx = document.getElementById('alertStatusChart');
+            if (alertStatusCtx) {
+                const statusData = calculateAlertStatus();
+                alertStatusChart = new Chart(alertStatusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: statusData.labels,
+                        datasets: [{
+                            data: statusData.data,
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Top Users by Alert Count (Bar Chart)
+            const topUsersCtx = document.getElementById('topUsersChart');
+            if (topUsersCtx) {
+                const usersData = calculateTopUsers();
+                topUsersChart = new Chart(topUsersCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: usersData.labels,
+                        datasets: [{
+                            label: 'Total Alerts',
+                            data: usersData.data,
+                            backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                            borderColor: 'rgb(0, 123, 255)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 4: Notification Methods Distribution (Doughnut Chart)
+            const notificationMethodsCtx = document.getElementById('notificationMethodsChart');
+            if (notificationMethodsCtx) {
+                const methodsData = calculateNotificationMethods();
+                notificationMethodsChart = new Chart(notificationMethodsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: methodsData.labels,
+                        datasets: [{
+                            data: methodsData.data,
+                            backgroundColor: [
+                                'rgba(0, 123, 255, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(108, 117, 125, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(0, 123, 255)',
+                                'rgb(40, 167, 69)',
+                                'rgb(255, 193, 7)',
+                                'rgb(220, 53, 69)',
+                                'rgb(108, 117, 125)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Calculate alerts over time data
+        function calculateAlertsOverTime() {
+            const alerts = getAllAlerts();
+            const last7Days = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                last7Days.push(dateStr);
+            }
+            
+            const labels = last7Days.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            });
+            
+            const data = last7Days.map(date => {
+                return alerts.filter(alert => {
+                    if (!alert.dateCreated) return false;
+                    const alertDate = new Date(alert.dateCreated).toISOString().split('T')[0];
+                    return alertDate === date;
+                }).length;
+            });
+            
+            return { labels, data };
+        }
+
+        // Calculate alert status distribution
+        function calculateAlertStatus() {
+            const alerts = getAllAlerts();
+            const active = alerts.filter(a => a.status === 'active').length;
+            const inactive = alerts.filter(a => a.status !== 'active').length;
+            
+            return {
+                labels: ['Active', 'Inactive'],
+                data: [active, inactive]
+            };
+        }
+
+        // Calculate top users by alert count
+        function calculateTopUsers() {
+            const sortedUsers = [...allUserStats].sort((a, b) => b.totalAlerts - a.totalAlerts).slice(0, 10);
+            const labels = sortedUsers.map(user => {
+                const email = user.userEmail || 'Unknown';
+                return email.length > 20 ? email.substring(0, 20) + '...' : email;
+            });
+            const data = sortedUsers.map(user => user.totalAlerts);
+            
+            return { labels, data };
+        }
+
+        // Calculate notification methods distribution
+        function calculateNotificationMethods() {
+            const alerts = getAllAlerts();
+            const methods = {};
+            
+            alerts.forEach(alert => {
+                const method = alert.notificationMethod || 'Unknown';
+                methods[method] = (methods[method] || 0) + 1;
+            });
+            
+            const labels = Object.keys(methods);
+            const data = Object.values(methods);
+            
+            return { labels, data };
+        }
+
+        // Get all alerts from user stats
+        function getAllAlerts() {
+            const allAlerts = [];
+            allUserStats.forEach(user => {
+                if (user.alerts && Array.isArray(user.alerts)) {
+                    allAlerts.push(...user.alerts);
+                }
+            });
+            return allAlerts;
+        }
+
+        // Update charts with real data
+        function updateCharts() {
+            if (!allUserStats || allUserStats.length === 0) {
+                return;
+            }
+
+            // Update Chart 1: Alerts Over Time
+            if (alertsOverTimeChart) {
+                const timeData = calculateAlertsOverTime();
+                alertsOverTimeChart.data.labels = timeData.labels;
+                alertsOverTimeChart.data.datasets[0].data = timeData.data;
+                alertsOverTimeChart.update();
+            }
+
+            // Update Chart 2: Alert Status
+            if (alertStatusChart) {
+                const statusData = calculateAlertStatus();
+                alertStatusChart.data.labels = statusData.labels;
+                alertStatusChart.data.datasets[0].data = statusData.data;
+                alertStatusChart.update();
+            }
+
+            // Update Chart 3: Top Users
+            if (topUsersChart) {
+                const usersData = calculateTopUsers();
+                topUsersChart.data.labels = usersData.labels;
+                topUsersChart.data.datasets[0].data = usersData.data;
+                topUsersChart.update();
+            }
+
+            // Update Chart 4: Notification Methods
+            if (notificationMethodsChart) {
+                const methodsData = calculateNotificationMethods();
+                notificationMethodsChart.data.labels = methodsData.labels;
+                notificationMethodsChart.data.datasets[0].data = methodsData.data;
+                notificationMethodsChart.update();
             }
         }
 

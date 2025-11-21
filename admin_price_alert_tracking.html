@@ -598,14 +598,15 @@
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.userStats) {
-                        allUserStats = data.userStats || [];
-                        updateStats(data);
+                    const responseData = await response.json();
+                    if (responseData.success && responseData.data) {
+                        const stats = responseData.data;
+                        allUserStats = stats.userStats || [];
+                        updateStats(stats);
                         applyFilters();
                         updateCharts();
                     } else {
-                        throw new Error(data.message || 'Invalid response format');
+                        throw new Error(responseData.message || 'Invalid response format');
                     }
                 } else {
                     const errorData = await response.json().catch(() => ({}));
@@ -798,11 +799,11 @@
         }
 
         // Update statistics
-        function updateStats(data) {
-            document.getElementById('totalUsersCount').textContent = data.totalUsersWithAlerts || data.totalUsers || 0;
-            document.getElementById('totalAlertsCount').textContent = data.totalAlerts || 0;
-            document.getElementById('activeAlertsCount').textContent = data.totalActiveAlerts || data.activeAlerts || 0;
-            document.getElementById('inactiveAlertsCount').textContent = data.totalInactiveAlerts || data.inactiveAlerts || 0;
+        function updateStats(stats) {
+            document.getElementById('totalUsersCount').textContent = stats.totalUsers || stats.totalUsersWithAlerts || 0;
+            document.getElementById('totalAlertsCount').textContent = stats.totalAlerts || 0;
+            document.getElementById('activeAlertsCount').textContent = stats.activeAlerts || stats.totalActiveAlerts || 0;
+            document.getElementById('inactiveAlertsCount').textContent = stats.inactiveAlerts || stats.totalInactiveAlerts || 0;
         }
 
         // Refresh price alerts

@@ -622,9 +622,9 @@
     <script>
         // Configuration
         const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
-        const BUSINESS_POST_APPROVAL_API = `${API_BASE_URL}/admin/admin/business-post-approval`; // For GET posts
-        const PUBLISH_BUSINESS_API = `${API_BASE_URL}/admin/publish-business`; // For APPROVE (new Lambda)
-        const REJECT_BUSINESS_API = `${API_BASE_URL}/admin/reject-business-post`; // For REJECT (new Lambda)
+        const GET_PENDING_POSTS_API = `${API_BASE_URL}/admin/admin/get-pending-business-posts`; // For GET posts (new Lambda)
+        const PUBLISH_BUSINESS_API = `${API_BASE_URL}/admin/admin/publish-business`; // For APPROVE (new Lambda)
+        const REJECT_BUSINESS_API = `${API_BASE_URL}/admin/admin/reject-business-post`; // For REJECT (new Lambda)
         
         // State
         let allPosts = [];
@@ -665,7 +665,7 @@
             try {
                 showLoading();
                 
-                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}?status=pending&limit=1000`, {
+                const response = await fetch(`${GET_PENDING_POSTS_API}?status=pending&limit=1000`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {

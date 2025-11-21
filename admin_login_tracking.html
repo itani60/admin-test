@@ -849,19 +849,19 @@
                 if (dateFrom) {
                     const fromDate = new Date(dateFrom);
                     fromDate.setHours(0, 0, 0, 0);
-                    const eventDate = new Date(event.timestamp || event.createdAt);
-                    if (eventDate < fromDate) matchesDateRange = false;
+                    const eventDate = timestampToDate(event.timestamp || event.createdAt);
+                    if (eventDate && eventDate < fromDate) matchesDateRange = false;
                 }
                 if (dateTo) {
                     const toDate = new Date(dateTo);
                     toDate.setHours(23, 59, 59, 999);
-                    const eventDate = new Date(event.timestamp || event.createdAt);
-                    if (eventDate > toDate) matchesDateRange = false;
+                    const eventDate = timestampToDate(event.timestamp || event.createdAt);
+                    if (eventDate && eventDate > toDate) matchesDateRange = false;
                 }
 
                 // Time filter
                 let matchesTime = true;
-                const eventDate = new Date(event.timestamp || event.createdAt);
+                const eventDate = timestampToDate(event.timestamp || event.createdAt);
                 const now = new Date();
                 
                 if (timeFilter === 'today') {
@@ -880,8 +880,9 @@
 
             // Sort by timestamp (newest first)
             filteredLoginEvents.sort((a, b) => {
-                const dateA = new Date(a.timestamp || a.createdAt);
-                const dateB = new Date(b.timestamp || b.createdAt);
+                const dateA = timestampToDate(a.timestamp || a.createdAt);
+                const dateB = timestampToDate(b.timestamp || b.createdAt);
+                if (!dateA || !dateB) return 0;
                 return dateB - dateA;
             });
 
@@ -921,8 +922,9 @@
                     : '<span class="badge badge-primary">Regular</span>';
                 
                 const formattedTime = formatTimeAgo(event.timestamp || event.createdAt);
-                const formattedDate = event.timestamp 
-                    ? new Date(event.timestamp).toLocaleString('en-ZA', {
+                const eventDate = timestampToDate(event.timestamp || event.createdAt);
+                const formattedDate = eventDate 
+                    ? eventDate.toLocaleString('en-ZA', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -963,7 +965,10 @@
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
             document.getElementById('totalLoginsCount').textContent = allLoginEvents.length;
-            document.getElementById('todayLoginsCount').textContent = allLoginEvents.filter(e => new Date(e.timestamp || e.createdAt) >= todayStart).length;
+            document.getElementById('todayLoginsCount').textContent = allLoginEvents.filter(e => {
+                const eventDate = timestampToDate(e.timestamp || e.createdAt);
+                return eventDate && eventDate >= todayStart;
+            }).length;
             document.getElementById('successfulLoginsCount').textContent = allLoginEvents.filter(e => e.status === 'success').length;
             document.getElementById('failedLoginsCount').textContent = allLoginEvents.filter(e => e.status === 'failed').length;
         }
@@ -1145,8 +1150,8 @@
                 nextDay.setDate(nextDay.getDate() + 1);
                 
                 const count = allLoginEvents.filter(event => {
-                    const eventDate = new Date(event.timestamp || event.createdAt);
-                    return eventDate >= date && eventDate < nextDay;
+                    const eventDate = timestampToDate(event.timestamp || event.createdAt);
+                    return eventDate && eventDate >= date && eventDate < nextDay;
                 }).length;
                 
                 counts.push(count);
@@ -1187,9 +1192,11 @@
             const hourCounts = Array(24).fill(0);
             
             allLoginEvents.forEach(event => {
-                const eventDate = new Date(event.timestamp || event.createdAt);
-                const hour = eventDate.getHours();
-                hourCounts[hour]++;
+                const eventDate = timestampToDate(event.timestamp || event.createdAt);
+                if (eventDate) {
+                    const hour = eventDate.getHours();
+                    hourCounts[hour]++;
+                }
             });
             
             const labels = Array.from({ length: 24 }, (_, i) => {
@@ -1251,9 +1258,21 @@
         }
 
         // Utility functions
+        // Convert Unix timestamp (seconds) to JavaScript Date (milliseconds)
+        function timestampToDate(timestamp) {
+            if (!timestamp) return null;
+            // Database stores timestamps in seconds, but JavaScript Date expects milliseconds
+            // If timestamp is already in milliseconds (greater than year 2000 in milliseconds), use as is
+            // Otherwise multiply by 1000 to convert seconds to milliseconds
+            // Year 2000 in milliseconds = 946684800000
+            const timestampMs = timestamp > 946684800000 ? timestamp : timestamp * 1000;
+            return new Date(timestampMs);
+        }
+
         function formatTimeAgo(dateString) {
             if (!dateString) return 'N/A';
-            const date = new Date(dateString);
+            const date = timestampToDate(dateString);
+            if (!date) return 'N/A';
             const now = new Date();
             const diffMs = now - date;
             const diffMins = Math.floor(diffMs / 60000);

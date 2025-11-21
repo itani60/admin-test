@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Management | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-dark);
+        }
+
+        .page-title-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title-section p {
+            color: var(--text);
+            margin: 0;
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .stat-number.success {
+            color: var(--success);
+        }
+
+        .stat-number.danger {
+            color: var(--danger);
+        }
+
+        .stat-number.warning {
+            color: var(--warning);
+        }
+
+        .stat-number.info {
+            color: var(--info);
+        }
+
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+        }
+
+        .business-posts-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            border-radius: 0.25rem;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: #000;
+        }
+
+        .badge-info {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .badge-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .user-name {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .logout-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .logout-btn .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .login-btn-header {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .login-btn-header:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            text-decoration: none;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .post-preview {
+            max-width: 200px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .loading-spinner {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .modal-content {
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border);
+        }
+
+        .permission-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo">
+                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <div class="user-section" id="userSection">
+                        <div class="user-avatar" id="userAvatar">AD</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Admin</div>
+                        </div>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Business Management
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Title -->
+        <div class="page-title-section">
+            <h1>Business Post Management</h1>
+            <p>Review, approve, and manage business posts and permissions</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Analytics Charts Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="business-posts-section">
+                    <h3>Posts Over Time</h3>
+                    <canvas id="postsOverTimeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="business-posts-section">
+                    <h3>Post Status Distribution</h3>
+                    <canvas id="postStatusChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="business-posts-section">
+                    <h3>Posts by Type</h3>
+                    <canvas id="postTypeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="business-posts-section">
+                    <h3>Permission Status</h3>
+                    <canvas id="permissionStatusChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number warning" id="pendingCount">5</div>
+                        <div class="stat-label">Pending Approval</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number success" id="approvedCount">12</div>
+                        <div class="stat-label">Approved</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number danger" id="rejectedCount">2</div>
+                        <div class="stat-label">Rejected</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number info" id="totalBusinessesCount">8</div>
+                        <div class="stat-label">Total Businesses</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="searchInput" 
+                            placeholder="Search by business name, email, or post title..."
+                        >
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="permissionFilter">
+                        <option value="all">All Permissions</option>
+                        <option value="granted">Granted</option>
+                        <option value="pending">Pending</option>
+                        <option value="revoked">Revoked</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="postTypeFilter">
+                        <option value="all">All Types</option>
+                        <option value="service">Service</option>
+                        <option value="product">Product</option>
+                        <option value="announcement">Announcement</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">
+                        <i class="fas fa-filter"></i> Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Posts Section -->
+        <div class="business-posts-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Business Posts</h3>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="refreshPosts()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="exportPosts()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Business</th>
+                            <th>Post Title</th>
+                            <th>Type</th>
+                            <th>Preview</th>
+                            <th>Status</th>
+                            <th>Permission</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="businessPostsContainer">
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                <div class="loading-state">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading posts...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Post Modal -->
+    <div class="modal fade" id="viewPostModal" tabindex="-1" aria-labelledby="viewPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewPostModalLabel">Post Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="postModalBody">
+                    <!-- Post details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="modalApproveBtn" onclick="approvePostFromModal()">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button type="button" class="btn btn-danger" id="modalRejectBtn" onclick="rejectPostFromModal()">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+        const BUSINESS_POST_APPROVAL_API = `${API_BASE_URL}/admin/admin/business-post-approval`;
+        
+        // State
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentPostId = null;
+        
+        // Chart instances
+        let postsOverTimeChart = null;
+        let postStatusChart = null;
+        let postTypeChart = null;
+        let permissionStatusChart = null;
+
+        // Sample data removed - now loading from API
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            loadPosts();
+            checkLoginState();
+            initializeCharts();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('permissionFilter').addEventListener('change', applyFilters);
+            document.getElementById('postTypeFilter').addEventListener('change', applyFilters);
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        }
+
+        // Load posts from API
+        async function loadPosts() {
+            try {
+                showLoading();
+                
+                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}?status=pending&limit=1000`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.posts) {
+                        // Transform API data to match our format
+                        allPosts = data.posts.map(post => ({
+                            postId: post.postId,
+                            businessName: post.businessInfo?.businessName || 'Unknown Business',
+                            businessEmail: post.businessEmail || post.businessInfo?.businessEmail || '',
+                            title: post.title || 'Untitled Post',
+                            type: post.type || 'Service',
+                            status: post.status || 'pending',
+                            permission: 'granted', // Permission is separate from approval status
+                            image: post.images && post.images.length > 0 ? post.images[0].url : 'https://via.placeholder.com/200x150?text=No+Image',
+                            submitted: post.submittedAt ? new Date(post.submittedAt).toLocaleString() : 'Unknown',
+                            submittedAt: post.submittedAt,
+                            description: post.description || '',
+                            content: post.description || '',
+                            images: post.images || [],
+                            serviceGalleries: post.serviceGalleries || {},
+                            businessInfo: post.businessInfo || {},
+                            readyForApproval: post.readyForApproval || false,
+                            timeUntilApproval: post.timeUntilApproval || null,
+                            validation: post.validation || { valid: true, issues: [] }
+                        }));
+                        updateStats();
+                        applyFilters();
+                        updateCharts();
+                    } else {
+                        throw new Error(data.message || 'Invalid response format');
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    
+                    if (response.status === 401) {
+                        showAlert('Please log in to view business posts', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'admin-login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
+                    throw new Error(errorData.message || `Failed to load posts: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                showAlert(`Failed to load posts: ${error.message}`, 'danger');
+                allPosts = [];
+                updateStats();
+                applyFilters();
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Show loading state
+        function showLoading() {
+            const container = document.getElementById('businessPostsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="loading-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Loading posts...</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Hide loading state
+        function hideLoading() {
+            // Loading will be replaced by renderPosts()
+        }
+        
+        // Show alert message
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            if (!alertContainer) return;
+            
+            const alertId = 'alert-' + Date.now();
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${escapeHtml(message)}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const permissionFilter = document.getElementById('permissionFilter').value;
+            const postTypeFilter = document.getElementById('postTypeFilter').value;
+
+            filteredPosts = allPosts.filter(post => {
+                const matchesSearch = !searchTerm || 
+                    post.businessName.toLowerCase().includes(searchTerm) ||
+                    post.businessEmail.toLowerCase().includes(searchTerm) ||
+                    post.title.toLowerCase().includes(searchTerm);
+
+                const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
+                const matchesPermission = permissionFilter === 'all' || post.permission === permissionFilter;
+                const matchesType = postTypeFilter === 'all' || post.type.toLowerCase() === postTypeFilter.toLowerCase();
+
+                return matchesSearch && matchesStatus && matchesPermission && matchesType;
+            });
+
+            renderPosts();
+            updateStats();
+            updateCharts();
+        }
+
+        // Render posts
+        function renderPosts() {
+            const container = document.getElementById('businessPostsContainer');
+            
+            if (filteredPosts.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h4>No posts found</h4>
+                                <p>No posts match your current filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredPosts.forEach(post => {
+                const statusBadge = getStatusBadge(post.status);
+                const permissionBadge = getPermissionBadge(post.permission);
+                const typeBadge = getTypeBadge(post.type);
+                const timeAgo = getTimeAgo(post.submitted);
+
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${escapeHtml(post.businessName)}</strong><br>
+                            <small class="text-muted">${escapeHtml(post.businessEmail)}</small>
+                        </td>
+                        <td>${escapeHtml(post.title)}</td>
+                        <td>${typeBadge}</td>
+                        <td>
+                            <img src="${escapeHtml(post.image)}" alt="Post Preview" class="post-preview">
+                        </td>
+                        <td>${statusBadge}</td>
+                        <td>${permissionBadge}</td>
+                        <td>
+                            <small>${timeAgo}</small><br>
+                            <small class="text-muted">${escapeHtml(post.submitted)}</small>
+                        </td>
+                        <td>
+                            ${getActionButtons(post)}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="badge badge-warning">Pending</span>',
+                'approved': '<span class="badge badge-success">Approved</span>',
+                'rejected': '<span class="badge badge-danger">Rejected</span>'
+            };
+            return badges[status] || '<span class="badge">Unknown</span>';
+        }
+
+        // Get permission badge
+        function getPermissionBadge(permission) {
+            const badges = {
+                'granted': '<span class="badge badge-success permission-badge"><i class="fas fa-check-circle"></i> Granted</span>',
+                'pending': '<span class="badge badge-warning permission-badge"><i class="fas fa-clock"></i> Pending</span>',
+                'revoked': '<span class="badge badge-danger permission-badge"><i class="fas fa-ban"></i> Revoked</span>'
+            };
+            return badges[permission] || '<span class="badge">Unknown</span>';
+        }
+
+        // Get type badge
+        function getTypeBadge(type) {
+            const badges = {
+                'Service': '<span class="badge badge-info">Service</span>',
+                'Product': '<span class="badge badge-primary">Product</span>',
+                'Announcement': '<span class="badge badge-warning">Announcement</span>'
+            };
+            return badges[type] || '<span class="badge">Unknown</span>';
+        }
+
+        // Get action buttons
+        function getActionButtons(post) {
+            let buttons = '';
+            const postId = post.postId || post.id;
+            const isReady = post.readyForApproval !== false;
+            const waitTime = post.timeUntilApproval;
+            
+            if (post.status === 'pending') {
+                if (isReady) {
+                    buttons += `
+                        <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectPost('${postId}')" title="Reject this post">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    `;
+                } else {
+                    const waitText = waitTime ? `${waitTime.hours}h ${waitTime.minutes}m` : 'Wait period';
+                    buttons += `
+                        <button class="btn btn-secondary btn-sm" disabled title="Wait period: ${waitText}">
+                            <i class="fas fa-clock"></i> Wait ${waitText}
+                        </button>
+                    `;
+                }
+            } else if (post.status === 'approved') {
+                buttons += `
+                    <span class="badge badge-success">Approved</span>
+                `;
+            } else if (post.status === 'rejected') {
+                buttons += `
+                    <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                `;
+            }
+            
+            buttons += `
+                <button class="btn btn-info btn-sm" onclick="viewPost('${postId}')" title="View post details">
+                    <i class="fas fa-eye"></i> View
+                </button>
+            `;
+            
+            return `<div class="action-buttons">${buttons}</div>`;
+        }
+
+        // Get time ago
+        function getTimeAgo(dateString) {
+            if (!dateString) return 'Unknown';
+            
+            let date;
+            if (typeof dateString === 'string' && dateString.includes('T')) {
+                date = new Date(dateString);
+            } else {
+                date = new Date(dateString);
+            }
+            
+            if (isNaN(date.getTime())) return 'Invalid date';
+            
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        }
+        
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Update stats
+        function updateStats() {
+            const pending = allPosts.filter(p => p.status === 'pending').length;
+            const approved = allPosts.filter(p => p.status === 'approved').length;
+            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            const totalBusinesses = new Set(allPosts.map(p => p.businessEmail)).size;
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('approvedCount').textContent = approved;
+            document.getElementById('rejectedCount').textContent = rejected;
+            document.getElementById('totalBusinessesCount').textContent = totalBusinesses;
+        }
+
+        // Approve post
+        async function approvePost(postId) {
+            const post = allPosts.find(p => (p.postId || p.id) === postId);
+            if (!post) {
+                showAlert('Post not found', 'danger');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to approve "${post.title}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'approve',
+                        postId: postId,
+                        reason: 'Approved by admin'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showAlert(`Post "${post.title}" has been approved successfully`, 'success');
+                    await loadPosts(); // Reload posts to get updated status
+                } else {
+                    throw new Error(data.message || 'Failed to approve post');
+                }
+            } catch (error) {
+                console.error('Error approving post:', error);
+                showAlert(`Failed to approve post: ${error.message}`, 'danger');
+            }
+        }
+
+        // Reject post
+        async function rejectPost(postId) {
+            const post = allPosts.find(p => (p.postId || p.id) === postId);
+            if (!post) {
+                showAlert('Post not found', 'danger');
+                return;
+            }
+
+            const reason = prompt(`Please provide a reason for rejecting "${post.title}":`);
+            if (reason === null || reason.trim().length < 5) {
+                if (reason !== null) {
+                    showAlert('Rejection reason must be at least 5 characters', 'warning');
+                }
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BUSINESS_POST_APPROVAL_API}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'reject',
+                        postId: postId,
+                        reason: reason.trim()
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showAlert(`Post "${post.title}" has been rejected. Reason: ${reason}`, 'danger');
+                    await loadPosts(); // Reload posts to get updated status
+                } else {
+                    throw new Error(data.message || 'Failed to reject post');
+                }
+            } catch (error) {
+                console.error('Error rejecting post:', error);
+                showAlert(`Failed to reject post: ${error.message}`, 'danger');
+            }
+        }
+
+        // Grant permission (placeholder - can be implemented later if needed)
+        function grantPermission(postId) {
+            showAlert('Permission granting feature coming soon', 'info');
+        }
+
+        // Revoke approval (placeholder - can be implemented later if needed)
+        function revokeApproval(postId) {
+            showAlert('Revoke approval feature coming soon', 'info');
+        }
+
+        // View post
+        function viewPost(postId) {
+            const post = allPosts.find(p => (p.postId || p.id) === postId);
+            if (!post) {
+                showAlert('Post not found', 'danger');
+                return;
+            }
+
+            currentPostId = postId;
+            const modalBody = document.getElementById('postModalBody');
+            
+            // Build images HTML
+            let imagesHtml = '';
+            if (post.images && post.images.length > 0) {
+                imagesHtml = '<div class="row">';
+                post.images.forEach((img, index) => {
+                    imagesHtml += `
+                        <div class="col-md-4 mb-3">
+                            <img src="${escapeHtml(img.url || img.image)}" alt="Image ${index + 1}" class="img-fluid rounded">
+                            ${img.title ? `<p class="small text-muted mt-1">${escapeHtml(img.title)}</p>` : ''}
+                        </div>
+                    `;
+                });
+                imagesHtml += '</div>';
+            } else {
+                imagesHtml = '<p class="text-muted">No images available</p>';
+            }
+            
+            // Build validation issues HTML
+            let validationHtml = '';
+            if (post.validation && post.validation.issues && post.validation.issues.length > 0) {
+                validationHtml = `
+                    <div class="alert alert-warning">
+                        <strong>Validation Issues:</strong>
+                        <ul class="mb-0">
+                            ${post.validation.issues.map(issue => `<li>${escapeHtml(issue)}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Build wait time info
+            let waitTimeHtml = '';
+            if (post.status === 'pending' && !post.readyForApproval && post.timeUntilApproval) {
+                waitTimeHtml = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-clock"></i> 
+                        Post must wait ${post.timeUntilApproval.hours}h ${post.timeUntilApproval.minutes}m before approval
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = `
+                <div class="mb-3">
+                    <h6>Business Information</h6>
+                    <p><strong>Name:</strong> ${escapeHtml(post.businessName)}</p>
+                    <p><strong>Email:</strong> ${escapeHtml(post.businessEmail)}</p>
+                    ${post.businessInfo?.businessType ? `<p><strong>Type:</strong> ${escapeHtml(post.businessInfo.businessType)}</p>` : ''}
+                    ${post.businessInfo?.businessAddress ? `<p><strong>Address:</strong> ${escapeHtml(post.businessInfo.businessAddress)}</p>` : ''}
+                </div>
+                <div class="mb-3">
+                    <h6>Post Information</h6>
+                    <p><strong>Title:</strong> ${escapeHtml(post.title)}</p>
+                    <p><strong>Type:</strong> ${getTypeBadge(post.type)}</p>
+                    <p><strong>Status:</strong> ${getStatusBadge(post.status)}</p>
+                    <p><strong>Submitted:</strong> ${escapeHtml(post.submitted)}</p>
+                    ${post.readyForApproval !== undefined ? `<p><strong>Ready for Approval:</strong> ${post.readyForApproval ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-warning">No</span>'}</p>` : ''}
+                </div>
+                ${waitTimeHtml}
+                ${validationHtml}
+                <div class="mb-3">
+                    <h6>Description</h6>
+                    <p>${escapeHtml(post.description || post.content || 'No description available')}</p>
+                </div>
+                <div class="mb-3">
+                    <h6>Images (${post.images ? post.images.length : 0})</h6>
+                    ${imagesHtml}
+                </div>
+            `;
+
+            // Show/hide action buttons based on status
+            const approveBtn = document.getElementById('modalApproveBtn');
+            const rejectBtn = document.getElementById('modalRejectBtn');
+            
+            if (post.status === 'pending' && post.readyForApproval) {
+                approveBtn.style.display = 'inline-block';
+                rejectBtn.style.display = 'inline-block';
+            } else if (post.status === 'pending' && !post.readyForApproval) {
+                approveBtn.style.display = 'none';
+                rejectBtn.style.display = 'none';
+            } else if (post.status === 'approved') {
+                approveBtn.style.display = 'none';
+                rejectBtn.style.display = 'none';
+            } else {
+                approveBtn.style.display = 'inline-block';
+                rejectBtn.style.display = 'none';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('viewPostModal'));
+            modal.show();
+        }
+
+        // Approve from modal
+        function approvePostFromModal() {
+            if (currentPostId) {
+                approvePost(currentPostId);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('viewPostModal'));
+                modal.hide();
+            }
+        }
+
+        // Reject from modal
+        function rejectPostFromModal() {
+            if (currentPostId) {
+                rejectPost(currentPostId);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('viewPostModal'));
+                modal.hide();
+            }
+        }
+
+        // Refresh posts
+        function refreshPosts() {
+            loadPosts();
+            showAlert('Posts refreshed', 'info');
+        }
+
+        // Export posts
+        function exportPosts() {
+            if (filteredPosts.length === 0) {
+                showAlert('No posts to export', 'warning');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Business Name,Business Email,Post Title,Type,Status,Permission,Submitted\n";
+
+            filteredPosts.forEach(post => {
+                csvContent += [
+                    `"${post.businessName}"`,
+                    `"${post.businessEmail}"`,
+                    `"${post.title}"`,
+                    `"${post.type}"`,
+                    `"${post.status}"`,
+                    `"${post.permission}"`,
+                    `"${post.submitted}"`
+                ].join(',') + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `business_posts_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showAlert('Posts exported successfully!', 'success');
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                ${escapeHtml(message)}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // Initialize Analytics Charts
+        function initializeCharts() {
+            // Chart 1: Posts Over Time (Line Chart)
+            const postsOverTimeCtx = document.getElementById('postsOverTimeChart');
+            if (postsOverTimeCtx) {
+                const timeData = calculatePostsOverTime();
+                postsOverTimeChart = new Chart(postsOverTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeData.labels,
+                        datasets: [{
+                            label: 'Posts Submitted',
+                            data: timeData.data,
+                            borderColor: 'rgb(0, 123, 255)',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Post Status Distribution (Pie Chart)
+            const postStatusCtx = document.getElementById('postStatusChart');
+            if (postStatusCtx) {
+                const statusData = calculatePostStatus();
+                postStatusChart = new Chart(postStatusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: statusData.labels,
+                        datasets: [{
+                            data: statusData.data,
+                            backgroundColor: [
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(255, 193, 7)',
+                                'rgb(40, 167, 69)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Posts by Type (Bar Chart)
+            const postTypeCtx = document.getElementById('postTypeChart');
+            if (postTypeCtx) {
+                const typeData = calculatePostType();
+                postTypeChart = new Chart(postTypeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: typeData.labels,
+                        datasets: [{
+                            label: 'Posts',
+                            data: typeData.data,
+                            backgroundColor: [
+                                'rgba(0, 123, 255, 0.8)',
+                                'rgba(23, 162, 184, 0.8)',
+                                'rgba(255, 193, 7, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(0, 123, 255)',
+                                'rgb(23, 162, 184)',
+                                'rgb(255, 193, 7)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 4: Permission Status (Doughnut Chart)
+            const permissionStatusCtx = document.getElementById('permissionStatusChart');
+            if (permissionStatusCtx) {
+                const permissionData = calculatePermissionStatus();
+                permissionStatusChart = new Chart(permissionStatusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: permissionData.labels,
+                        datasets: [{
+                            data: permissionData.data,
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(255, 193, 7)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Calculate posts over time
+        function calculatePostsOverTime() {
+            const last7Days = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                last7Days.push(dateStr);
+            }
+            
+            const labels = last7Days.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            });
+            
+            const data = last7Days.map(date => {
+                return allPosts.filter(post => {
+                    if (!post.submitted) return false;
+                    const postDate = new Date(post.submitted).toISOString().split('T')[0];
+                    return postDate === date;
+                }).length;
+            });
+            
+            return { labels, data };
+        }
+
+        // Calculate post status distribution
+        function calculatePostStatus() {
+            const pending = allPosts.filter(p => p.status === 'pending').length;
+            const approved = allPosts.filter(p => p.status === 'approved').length;
+            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            
+            return {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                data: [pending, approved, rejected]
+            };
+        }
+
+        // Calculate post type distribution
+        function calculatePostType() {
+            const types = {};
+            
+            allPosts.forEach(post => {
+                const type = post.type || 'Unknown';
+                types[type] = (types[type] || 0) + 1;
+            });
+            
+            const labels = Object.keys(types);
+            const data = Object.values(types);
+            
+            return { labels, data };
+        }
+
+        // Calculate permission status distribution (using approval status as proxy)
+        function calculatePermissionStatus() {
+            const pending = allPosts.filter(p => p.status === 'pending').length;
+            const approved = allPosts.filter(p => p.status === 'approved').length;
+            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            
+            return {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                data: [pending, approved, rejected]
+            };
+        }
+
+        // Update charts with real data
+        function updateCharts() {
+            if (!allPosts || allPosts.length === 0) {
+                return;
+            }
+
+            // Update Chart 1: Posts Over Time
+            if (postsOverTimeChart) {
+                const timeData = calculatePostsOverTime();
+                postsOverTimeChart.data.labels = timeData.labels;
+                postsOverTimeChart.data.datasets[0].data = timeData.data;
+                postsOverTimeChart.update();
+            }
+
+            // Update Chart 2: Post Status
+            if (postStatusChart) {
+                const statusData = calculatePostStatus();
+                postStatusChart.data.labels = statusData.labels;
+                postStatusChart.data.datasets[0].data = statusData.data;
+                postStatusChart.update();
+            }
+
+            // Update Chart 3: Post Type
+            if (postTypeChart) {
+                const typeData = calculatePostType();
+                postTypeChart.data.labels = typeData.labels;
+                postTypeChart.data.datasets[0].data = typeData.data;
+                postTypeChart.update();
+            }
+
+            // Update Chart 4: Permission Status
+            if (permissionStatusChart) {
+                const permissionData = calculatePermissionStatus();
+                permissionStatusChart.data.labels = permissionData.labels;
+                permissionStatusChart.data.datasets[0].data = permissionData.data;
+                permissionStatusChart.update();
+            }
+        }
+
+        // Check login state
+        async function checkLoginState() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/admin/account/get-user-info`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        const userSection = document.getElementById('userSection');
+                        const loginBtnHeader = document.getElementById('loginBtnHeader');
+                        const userName = document.getElementById('userName');
+                        const userAvatar = document.getElementById('userAvatar');
+                        
+                        if (userSection && loginBtnHeader) {
+                            userSection.style.display = 'flex';
+                            loginBtnHeader.style.display = 'none';
+                        }
+                        
+                        if (userName && data.user.email) {
+                            const email = data.user.email;
+                            userName.textContent = email.split('@')[0];
+                            if (userAvatar) {
+                                const initials = email.substring(0, 2).toUpperCase();
+                                userAvatar.textContent = initials;
+                            }
+                        }
+                    } else {
+                        throw new Error('Not logged in');
+                    }
+                } else {
+                    throw new Error('Not logged in');
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
+                const userSection = document.getElementById('userSection');
+                const loginBtnHeader = document.getElementById('loginBtnHeader');
+                if (userSection && loginBtnHeader) {
+                    userSection.style.display = 'none';
+                    loginBtnHeader.style.display = 'inline-flex';
+                }
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (logoutBtn) {
+                logoutBtn.disabled = true;
+                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+            }
+            
+            try {
+                const result = await window.adminAWSAuthService.logout();
+                
+                if (result.success) {
+                    console.log('Logout successful:', result.message);
+                    
+                    if (result.warning) {
+                        console.warn('Logout warning:', result.warning);
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } else {
+                    console.error('Logout failed:', result.message || result.error);
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

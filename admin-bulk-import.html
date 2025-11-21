@@ -598,6 +598,45 @@
             <p style="color: var(--text); margin: 0; font-size: 1rem;">Import multiple products at once from JSON file</p>
         </div>
 
+        <!-- Analytics Charts Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Imports Over Time</h3>
+                        <canvas id="importsOverTimeChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Success vs Failed Imports</h3>
+                        <canvas id="importStatusChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Products by Category</h3>
+                        <canvas id="categoryChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Products by Brand</h3>
+                        <canvas id="brandChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- API Configuration -->
         <div class="alert alert-info" id="apiConfigAlert" style="display: none;">
             <h5><i class="fas fa-cog"></i> API Configuration</h5>
@@ -761,6 +800,7 @@
     </div>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="assets/scripts/admin-bulk-import.js"></script>
     <script>
         // Load saved API URL from localStorage
@@ -809,10 +849,18 @@
             }
         }
 
+        // Chart instances
+        let importsOverTimeChart = null;
+        let importStatusChart = null;
+        let categoryChart = null;
+        let brandChart = null;
+        let importHistory = JSON.parse(localStorage.getItem('importHistory') || '[]');
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadApiUrl();
             checkLoginState();
+            initializeCharts();
 
             // Attach logout handler
             const logoutBtn = document.getElementById('logoutBtn');
@@ -867,14 +915,361 @@
             }
         }
 
+        // Initialize Analytics Charts
+        function initializeCharts() {
+            // Chart 1: Imports Over Time (Line Chart)
+            const importsOverTimeCtx = document.getElementById('importsOverTimeChart');
+            if (importsOverTimeCtx) {
+                const timeData = calculateImportsOverTime();
+                importsOverTimeChart = new Chart(importsOverTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeData.labels,
+                        datasets: [{
+                            label: 'Products Imported',
+                            data: timeData.data,
+                            borderColor: 'rgb(0, 123, 255)',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Success vs Failed Imports (Pie Chart)
+            const importStatusCtx = document.getElementById('importStatusChart');
+            if (importStatusCtx) {
+                const statusData = calculateImportStatus();
+                importStatusChart = new Chart(importStatusCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: statusData.labels,
+                        datasets: [{
+                            data: statusData.data,
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(220, 53, 69)',
+                                'rgb(255, 193, 7)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Products by Category (Bar Chart)
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                const categoryData = calculateCategoryDistribution();
+                categoryChart = new Chart(categoryCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: categoryData.labels,
+                        datasets: [{
+                            label: 'Products',
+                            data: categoryData.data,
+                            backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                            borderColor: 'rgb(0, 123, 255)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 4: Products by Brand (Doughnut Chart)
+            const brandCtx = document.getElementById('brandChart');
+            if (brandCtx) {
+                const brandData = calculateBrandDistribution();
+                brandChart = new Chart(brandCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: brandData.labels,
+                        datasets: [{
+                            data: brandData.data,
+                            backgroundColor: [
+                                'rgba(0, 123, 255, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(108, 117, 125, 0.8)',
+                                'rgba(23, 162, 184, 0.8)',
+                                'rgba(255, 87, 34, 0.8)',
+                                'rgba(156, 39, 176, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(0, 123, 255)',
+                                'rgb(40, 167, 69)',
+                                'rgb(255, 193, 7)',
+                                'rgb(220, 53, 69)',
+                                'rgb(108, 117, 125)',
+                                'rgb(23, 162, 184)',
+                                'rgb(255, 87, 34)',
+                                'rgb(156, 39, 176)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Calculate imports over time
+        function calculateImportsOverTime() {
+            const last7Days = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                last7Days.push(dateStr);
+            }
+            
+            const labels = last7Days.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            });
+            
+            const data = last7Days.map(date => {
+                return importHistory.filter(importItem => {
+                    if (!importItem.date) return false;
+                    const importDate = new Date(importItem.date).toISOString().split('T')[0];
+                    return importDate === date;
+                }).reduce((sum, item) => sum + (item.successful || 0), 0);
+            });
+            
+            return { labels, data };
+        }
+
+        // Calculate import status distribution
+        function calculateImportStatus() {
+            const totalSuccessful = importHistory.reduce((sum, item) => sum + (item.successful || 0), 0);
+            const totalFailed = importHistory.reduce((sum, item) => sum + (item.failed || 0), 0);
+            const totalSkipped = importHistory.reduce((sum, item) => sum + (item.skipped || 0), 0);
+            
+            return {
+                labels: ['Successful', 'Failed', 'Skipped'],
+                data: [totalSuccessful, totalFailed, totalSkipped]
+            };
+        }
+
+        // Calculate category distribution
+        function calculateCategoryDistribution() {
+            if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
+                return { labels: [], data: [] };
+            }
+            
+            const categories = {};
+            
+            productsData.forEach(product => {
+                const category = product.category || 'Unknown';
+                categories[category] = (categories[category] || 0) + 1;
+            });
+            
+            const sorted = Object.entries(categories)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            return {
+                labels: sorted.map(([cat]) => cat),
+                data: sorted.map(([, count]) => count)
+            };
+        }
+
+        // Calculate brand distribution
+        function calculateBrandDistribution() {
+            if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
+                return { labels: [], data: [] };
+            }
+            
+            const brands = {};
+            
+            productsData.forEach(product => {
+                const brand = product.brand || 'Unknown';
+                brands[brand] = (brands[brand] || 0) + 1;
+            });
+            
+            const sorted = Object.entries(brands)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+            
+            return {
+                labels: sorted.map(([brand]) => brand),
+                data: sorted.map(([, count]) => count)
+            };
+        }
+
+        // Save import history
+        function saveImportHistory(data) {
+            const importRecord = {
+                date: new Date().toISOString(),
+                successful: data.successful || data.created || 0,
+                failed: data.failed || data.errors?.length || 0,
+                skipped: data.skipped || 0,
+                total: typeof productsData !== 'undefined' ? productsData.length : 0
+            };
+            
+            importHistory.push(importRecord);
+            
+            // Keep only last 30 days
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            importHistory = importHistory.filter(item => {
+                const itemDate = new Date(item.date);
+                return itemDate >= thirtyDaysAgo;
+            });
+            
+            localStorage.setItem('importHistory', JSON.stringify(importHistory));
+        }
+
+        // Update charts with real data
+        function updateCharts() {
+            // Update Chart 1: Imports Over Time
+            if (importsOverTimeChart) {
+                const timeData = calculateImportsOverTime();
+                importsOverTimeChart.data.labels = timeData.labels;
+                importsOverTimeChart.data.datasets[0].data = timeData.data;
+                importsOverTimeChart.update();
+            }
+
+            // Update Chart 2: Import Status
+            if (importStatusChart) {
+                const statusData = calculateImportStatus();
+                importStatusChart.data.labels = statusData.labels;
+                importStatusChart.data.datasets[0].data = statusData.data;
+                importStatusChart.update();
+            }
+
+            // Update Chart 3: Category Distribution
+            if (categoryChart) {
+                const categoryData = calculateCategoryDistribution();
+                categoryChart.data.labels = categoryData.labels;
+                categoryChart.data.datasets[0].data = categoryData.data;
+                categoryChart.update();
+            }
+
+            // Update Chart 4: Brand Distribution
+            if (brandChart) {
+                const brandData = calculateBrandDistribution();
+                brandChart.data.labels = brandData.labels;
+                brandChart.data.datasets[0].data = brandData.data;
+                brandChart.update();
+            }
+        }
+
+        // Override or extend the showResults function from admin-bulk-import.js
+        const originalShowResults = window.showResults;
+        window.showResults = function(data) {
+            // Call original function if it exists
+            if (originalShowResults) {
+                originalShowResults(data);
+            }
+            
+            // Save import history and update charts
+            saveImportHistory(data);
+            updateCharts();
+        };
+
+        // Override or extend file processing to update charts
+        const originalProcessFile = window.processFile;
+        if (typeof window.processFile === 'function') {
+            window.processFile = function(file) {
+                if (originalProcessFile) {
+                    originalProcessFile(file);
+                }
+                // Update charts when file is loaded
+                setTimeout(updateCharts, 100);
+            };
+        }
+
         // Handle logout
         async function handleLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            if (logoutBtn) {
+                logoutBtn.disabled = true;
+                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+            }
+            
             try {
-                await window.adminAWSAuthService.logout();
+                const result = await window.adminAWSAuthService.logout();
+                
+                if (result.success) {
+                    console.log('Logout successful:', result.message);
+                    
+                    if (result.warning) {
+                        console.warn('Logout warning:', result.warning);
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } else {
+                    console.error('Logout failed:', result.message || result.error);
+                }
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                // HttpOnly cookie is cleared by server on logout
                 window.location.href = 'admin-login.html';
             }
         }

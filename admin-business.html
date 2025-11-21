@@ -1503,9 +1503,23 @@
             
             const data = last7Days.map(date => {
                 return allPosts.filter(post => {
-                    if (!post.submitted) return false;
-                    const postDate = new Date(post.submitted).toISOString().split('T')[0];
-                    return postDate === date;
+                    // Use submittedAt (raw date) instead of submitted (formatted string)
+                    if (!post.submittedAt) return false;
+                    
+                    try {
+                        const postDate = new Date(post.submittedAt);
+                        // Check if date is valid
+                        if (isNaN(postDate.getTime())) {
+                            console.warn('Invalid date for post:', post.postId, post.submittedAt);
+                            return false;
+                        }
+                        const postDateStr = postDate.toISOString().split('T')[0];
+                        return postDateStr === date;
+                    } catch (error) {
+                        // Invalid date, skip this post
+                        console.warn('Error parsing date for post:', post.postId, error);
+                        return false;
+                    }
                 }).length;
             });
             

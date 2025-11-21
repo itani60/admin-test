@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Alert Tracking | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-dark);
+        }
+
+        .page-title-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title-section h1 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .page-title-section p {
+            color: var(--text);
+            margin: 0;
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--light);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .price-alert-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .badge {
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            border-radius: 0.25rem;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .badge-info {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .badge-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: #000;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .login-btn-header {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .login-btn-header:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .loading-spinner {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .alert-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .expand-btn:hover {
+            text-decoration: underline;
+        }
+
+        .alerts-detail {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 4px;
+            display: none;
+        }
+
+        .alerts-detail.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo">
+                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <div class="user-section" id="userSection">
+                        <div class="user-avatar" id="userAvatar">AD</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Admin</div>
+                        </div>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Price Alert Tracking
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Title -->
+        <div class="page-title-section">
+            <h1>Price Alert Tracking</h1>
+            <p>Monitor price alerts created by users, view alert statistics, and track user engagement</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalUsersCount">0</div>
+                        <div class="stat-label">Users with Alerts</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalAlertsCount">0</div>
+                        <div class="stat-label">Total Alerts</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="activeAlertsCount">0</div>
+                        <div class="stat-label">Active Alerts</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="inactiveAlertsCount">0</div>
+                        <div class="stat-label">Inactive Alerts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="searchInput" 
+                            placeholder="Search by user email or product name..."
+                        >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100" onclick="refreshAlerts()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Alert Statistics Section -->
+        <div class="price-alert-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Price Alerts by User</h3>
+                <button class="btn btn-danger btn-sm" onclick="exportAlerts()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Total Alerts</th>
+                            <th>Active Alerts</th>
+                            <th>Inactive Alerts</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priceAlertsContainer">
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+        const PRICE_ALERT_TRACKING_API = `${API_BASE_URL}/admin/admin/price-alert-tracking`;
+        
+        // State
+        let allUserStats = [];
+        let filteredUserStats = [];
+        let expandedUsers = new Set();
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            loadPriceAlertStats();
+            checkLoginState();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+            // Attach logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        }
+
+        // Load price alert statistics from API
+        async function loadPriceAlertStats() {
+            try {
+                showLoading();
+                
+                const response = await fetch(`${PRICE_ALERT_TRACKING_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        allUserStats = data.data.userStats || [];
+                        updateStats(data.data);
+                        applyFilters();
+                    } else {
+                        throw new Error(data.message || 'Invalid response format');
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    
+                    if (response.status === 401) {
+                        showAlert('Please log in to view price alert tracking', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'admin-login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
+                    throw new Error(errorData.message || `Failed to load price alert statistics: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error loading price alert statistics:', error);
+                showAlert(`Failed to load price alert statistics: ${error.message}`, 'danger');
+                allUserStats = [];
+                updateStats({ totalUsers: 0, totalAlerts: 0, activeAlerts: 0, inactiveAlerts: 0 });
+                applyFilters();
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredUserStats = allUserStats.filter(userStat => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    (userStat.userEmail && userStat.userEmail.toLowerCase().includes(searchTerm)) ||
+                    (userStat.alerts && userStat.alerts.some(alert => 
+                        alert.productName && alert.productName.toLowerCase().includes(searchTerm)
+                    ));
+
+                // Status filter
+                let matchesStatus = true;
+                if (statusFilter === 'active') {
+                    matchesStatus = userStat.activeAlerts > 0;
+                } else if (statusFilter === 'inactive') {
+                    matchesStatus = userStat.inactiveAlerts > 0;
+                }
+
+                return matchesSearch && matchesStatus;
+            });
+
+            // Sort by total alerts (descending)
+            filteredUserStats.sort((a, b) => b.totalAlerts - a.totalAlerts);
+
+            renderUserStats();
+        }
+
+        // Render user statistics
+        function renderUserStats() {
+            const container = document.getElementById('priceAlertsContainer');
+            
+            if (filteredUserStats.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash"></i>
+                                <h4>No price alerts found</h4>
+                                <p>No price alerts match your current filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            filteredUserStats.forEach(userStat => {
+                const isExpanded = expandedUsers.has(userStat.userId);
+                const activeBadge = userStat.activeAlerts > 0 
+                    ? `<span class="badge badge-success">${userStat.activeAlerts}</span>`
+                    : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
+                const inactiveBadge = userStat.inactiveAlerts > 0
+                    ? `<span class="badge badge-danger">${userStat.inactiveAlerts}</span>`
+                    : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
+
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${escapeHtml(userStat.userEmail || 'N/A')}</strong>
+                            <br>
+                            <small class="text-muted">User ID: ${escapeHtml(userStat.userId || 'N/A')}</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">${userStat.totalAlerts}</span>
+                        </td>
+                        <td>${activeBadge}</td>
+                        <td>${inactiveBadge}</td>
+                        <td>
+                            <button class="expand-btn" onclick="toggleUserAlerts('${userStat.userId}')">
+                                <i class="fas fa-${isExpanded ? 'chevron-up' : 'chevron-down'}"></i>
+                                ${isExpanded ? 'Hide' : 'Show'} Alerts (${userStat.alerts.length})
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+                // Add expanded alerts detail row
+                if (isExpanded && userStat.alerts.length > 0) {
+                    html += `
+                        <tr>
+                            <td colspan="5">
+                                <div class="alerts-detail show">
+                                    <h5>Price Alerts for ${escapeHtml(userStat.userEmail || 'N/A')}</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Brand</th>
+                                                    <th>Current Price</th>
+                                                    <th>Target Price</th>
+                                                    <th>Status</th>
+                                                    <th>Notification</th>
+                                                    <th>Created</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                    `;
+                    
+                    userStat.alerts.forEach(alert => {
+                        const statusBadge = alert.status === 'active'
+                            ? '<span class="badge badge-success">Active</span>'
+                            : '<span class="badge badge-danger">Inactive</span>';
+                        const notificationBadge = alert.notificationMethod === 'email'
+                            ? '<span class="badge badge-info">Email</span>'
+                            : alert.notificationMethod === 'website'
+                            ? '<span class="badge badge-primary">Website</span>'
+                            : '<span class="badge badge-warning">Both</span>';
+                        
+                        const formattedDate = alert.dateCreated 
+                            ? new Date(alert.dateCreated).toLocaleString('en-ZA', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })
+                            : 'N/A';
+
+                        html += `
+                                                <tr>
+                                                    <td>
+                                                        ${alert.productImage 
+                                                            ? `<img src="${escapeHtml(alert.productImage)}" alt="${escapeHtml(alert.productName)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">`
+                                                            : ''
+                                                        }
+                                                        <strong>${escapeHtml(alert.productName || 'Unknown Product')}</strong>
+                                                        ${alert.alertName ? `<br><small class="text-muted">${escapeHtml(alert.alertName)}</small>` : ''}
+                                                    </td>
+                                                    <td>${escapeHtml(alert.productBrand || 'Unknown')}</td>
+                                                    <td>R ${(alert.currentPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                    <td>R ${(alert.targetPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                                    <td>${statusBadge}</td>
+                                                    <td>${notificationBadge}</td>
+                                                    <td><small>${formattedDate}</small></td>
+                                                </tr>
+                        `;
+                    });
+
+                    html += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Toggle user alerts expansion
+        function toggleUserAlerts(userId) {
+            if (expandedUsers.has(userId)) {
+                expandedUsers.delete(userId);
+            } else {
+                expandedUsers.add(userId);
+            }
+            renderUserStats();
+        }
+
+        // Update statistics
+        function updateStats(data) {
+            document.getElementById('totalUsersCount').textContent = data.totalUsers || 0;
+            document.getElementById('totalAlertsCount').textContent = data.totalAlerts || 0;
+            document.getElementById('activeAlertsCount').textContent = data.activeAlerts || 0;
+            document.getElementById('inactiveAlertsCount').textContent = data.inactiveAlerts || 0;
+        }
+
+        // Refresh price alerts
+        function refreshAlerts() {
+            loadPriceAlertStats();
+            showAlert('Refreshing price alert statistics...', 'info');
+        }
+
+        // Export price alerts
+        function exportAlerts() {
+            const csv = convertToCSV(filteredUserStats);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `price-alert-tracking-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Convert data to CSV
+        function convertToCSV(userStats) {
+            const headers = ['User Email', 'User ID', 'Total Alerts', 'Active Alerts', 'Inactive Alerts'];
+            const rows = userStats.map(stat => [
+                stat.userEmail || 'N/A',
+                stat.userId || 'N/A',
+                stat.totalAlerts,
+                stat.activeAlerts,
+                stat.inactiveAlerts
+            ]);
+            
+            return [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showLoading() {
+            document.getElementById('priceAlertsContainer').innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
+                    ${escapeHtml(message)}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Check login state
+        async function checkLoginState() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/admin/account/get-user-info`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        const userSection = document.getElementById('userSection');
+                        const loginBtnHeader = document.getElementById('loginBtnHeader');
+                        const userName = document.getElementById('userName');
+                        const userAvatar = document.getElementById('userAvatar');
+                        
+                        if (userSection && loginBtnHeader) {
+                            userSection.style.display = 'flex';
+                            loginBtnHeader.style.display = 'none';
+                        }
+                        
+                        if (userName && data.user.email) {
+                            const email = data.user.email;
+                            userName.textContent = email.split('@')[0];
+                            if (userAvatar) {
+                                const initials = email.substring(0, 2).toUpperCase();
+                                userAvatar.textContent = initials;
+                            }
+                        }
+                    } else {
+                        throw new Error('Not logged in');
+                    }
+                } else {
+                    throw new Error('Not logged in');
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
+                const userSection = document.getElementById('userSection');
+                const loginBtnHeader = document.getElementById('loginBtnHeader');
+                if (userSection && loginBtnHeader) {
+                    userSection.style.display = 'none';
+                    loginBtnHeader.style.display = 'inline-flex';
+                }
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await fetch(`${API_BASE_URL}/admin/admin/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

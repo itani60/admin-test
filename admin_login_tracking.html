@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Tracking | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Breadcrumb Styles */
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .page-title-section {
+            margin-bottom: 2rem;
+        }
+
+        .page-title-section h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title-section p {
+            color: var(--text);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 2.5rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text-dark);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Login Events Section */
+        .login-events-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .login-events-section h3 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .login-event-item {
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .login-event-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-event-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .login-event-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .login-event-icon.regular {
+            background: var(--success);
+        }
+
+        .login-event-icon.business {
+            background: var(--info);
+        }
+
+        .login-event-icon.admin {
+            background: var(--danger);
+        }
+
+        .login-event-content {
+            flex: 1;
+        }
+
+        .login-event-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .login-event-message {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .login-event-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .login-event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+
+        .badge-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-secondary {
+            background: var(--text);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .user-name {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .login-btn-header {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .login-btn-header:hover {
+            background: var(--primary-dark);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            text-decoration: none;
+        }
+
+        .alert {
+            border-radius: 6px;
+            border: 1px solid;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: var(--success);
+            border-color: #c8e6c9;
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .alert-warning {
+            background: #fff9e6;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: var(--info);
+            border-color: #90caf9;
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo">
+                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    </div>
+                </div>
+                <div class="col-auto ms-auto">
+                    <!-- User Section (shown when logged in) -->
+                    <div class="user-section" id="userSection">
+                        <div class="user-avatar" id="userAvatar">JD</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">John Doe</div>
+                        </div>
+                        <button class="logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <!-- Login Button (shown when not logged in) -->
+                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Login Tracking
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Page Title -->
+        <div class="page-title-section">
+            <h1>Login Tracking</h1>
+            <p>Monitor user login activities, track authentication events, and analyze access patterns</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Analytics Charts Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Logins Over Time</h3>
+                    <canvas id="loginsOverTimeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Account Type Distribution</h3>
+                    <canvas id="accountTypeChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Login Activity by Hour</h3>
+                    <canvas id="loginActivityByHourChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="login-events-section">
+                    <h3>Successful vs Failed Logins</h3>
+                    <canvas id="loginStatusChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalLoginsCount">0</div>
+                        <div class="stat-label">Total Logins</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="todayLoginsCount">0</div>
+                        <div class="stat-label">Today</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="successfulLoginsCount">0</div>
+                        <div class="stat-label">Successful</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="failedLoginsCount">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="searchInput" 
+                            placeholder="Search by email, IP address, or device..."
+                        >
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="accountTypeFilter">
+                        <option value="all">All Account Types</option>
+                        <option value="regular">Regular Users</option>
+                        <option value="business">Business Users</option>
+                        <option value="admin">Admin Users</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">All Status</option>
+                        <option value="success">Successful</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="dateFromFilter" title="From Date">
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="dateToFilter" title="To Date">
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all" id="filterAll">
+                    All
+                </button>
+                <button class="filter-btn" data-filter="today" id="filterToday">
+                    Today
+                </button>
+                <button class="filter-btn" data-filter="week" id="filterWeek">
+                    This Week
+                </button>
+                <button class="filter-btn" data-filter="month" id="filterMonth">
+                    This Month
+                </button>
+            </div>
+        </div>
+
+        <!-- Login Events Section -->
+        <div class="login-events-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Login Events</h3>
+                <div>
+                    <button class="btn btn-primary btn-sm" onclick="refreshLogins()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="exportLogins()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Account Type</th>
+                            <th>Status</th>
+                            <th>IP Address</th>
+                            <th>Device/Browser</th>
+                            <th>Location</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loginEventsContainer">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site/admin';
+        const ADMIN_LOGIN_TRACKING_API = `${API_BASE_URL}/admin/login-tracking`;
+        
+        // State
+        let allLoginEvents = [];
+        let filteredLoginEvents = [];
+        
+        // Chart instances
+        let loginsOverTimeChart = null;
+        let accountTypeChart = null;
+        let loginActivityByHourChart = null;
+        let loginStatusChart = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            loadLoginEvents();
+            checkLoginState();
+            initializeCharts();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('accountTypeFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    applyFilters();
+                });
+            });
+
+            // Attach logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+        }
+
+        // Load login events from API
+        async function loadLoginEvents() {
+            try {
+                showLoading();
+                
+                const response = await fetch(`${ADMIN_LOGIN_TRACKING_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.loginEvents) {
+                        allLoginEvents = data.loginEvents || [];
+                        updateStats();
+                        applyFilters();
+                        updateCharts();
+                    } else {
+                        throw new Error(data.message || 'Invalid response format');
+                    }
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    
+                    if (response.status === 401) {
+                        showAlert('Please log in to view login tracking', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'admin-login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
+                    throw new Error(errorData.message || `Failed to load login events: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error loading login events:', error);
+                showAlert(`Failed to load login events: ${error.message}`, 'danger');
+                allLoginEvents = [];
+                updateStats();
+                applyFilters();
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const accountTypeFilter = document.getElementById('accountTypeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFromFilter').value;
+            const dateTo = document.getElementById('dateToFilter').value;
+            const timeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+
+            filteredLoginEvents = allLoginEvents.filter(event => {
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    (event.email && event.email.toLowerCase().includes(searchTerm)) ||
+                    (event.ipAddress && event.ipAddress.toLowerCase().includes(searchTerm)) ||
+                    (event.userAgent && event.userAgent.toLowerCase().includes(searchTerm)) ||
+                    (event.device && event.device.toLowerCase().includes(searchTerm));
+
+                // Account type filter
+                const matchesAccountType = accountTypeFilter === 'all' || 
+                    event.accountType === accountTypeFilter;
+
+                // Status filter
+                const matchesStatus = statusFilter === 'all' || 
+                    (statusFilter === 'success' && event.status === 'success') ||
+                    (statusFilter === 'failed' && event.status === 'failed');
+
+                // Date range filter
+                let matchesDateRange = true;
+                if (dateFrom) {
+                    const fromDate = new Date(dateFrom);
+                    fromDate.setHours(0, 0, 0, 0);
+                    const eventDate = new Date(event.timestamp || event.createdAt);
+                    if (eventDate < fromDate) matchesDateRange = false;
+                }
+                if (dateTo) {
+                    const toDate = new Date(dateTo);
+                    toDate.setHours(23, 59, 59, 999);
+                    const eventDate = new Date(event.timestamp || event.createdAt);
+                    if (eventDate > toDate) matchesDateRange = false;
+                }
+
+                // Time filter
+                let matchesTime = true;
+                const eventDate = new Date(event.timestamp || event.createdAt);
+                const now = new Date();
+                
+                if (timeFilter === 'today') {
+                    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    matchesTime = eventDate >= todayStart;
+                } else if (timeFilter === 'week') {
+                    const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                    matchesTime = eventDate >= weekAgo;
+                } else if (timeFilter === 'month') {
+                    const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                    matchesTime = eventDate >= monthAgo;
+                }
+
+                return matchesSearch && matchesAccountType && matchesStatus && matchesDateRange && matchesTime;
+            });
+
+            // Sort by timestamp (newest first)
+            filteredLoginEvents.sort((a, b) => {
+                const dateA = new Date(a.timestamp || a.createdAt);
+                const dateB = new Date(b.timestamp || b.createdAt);
+                return dateB - dateA;
+            });
+
+            renderLoginEvents();
+        }
+
+        // Render login events
+        function renderLoginEvents() {
+            const container = document.getElementById('loginEventsContainer');
+            
+            if (filteredLoginEvents.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <div class="empty-state">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <h4>No login events found</h4>
+                                <p>No login events match your current filters.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            filteredLoginEvents.forEach(event => {
+                const statusBadge = event.status === 'success' 
+                    ? '<span class="badge badge-success">Success</span>'
+                    : '<span class="badge badge-danger">Failed</span>';
+                
+                const accountTypeBadge = event.accountType === 'business'
+                    ? '<span class="badge badge-info">Business</span>'
+                    : event.accountType === 'admin'
+                    ? '<span class="badge badge-danger">Admin</span>'
+                    : '<span class="badge badge-primary">Regular</span>';
+                
+                const formattedTime = formatTimeAgo(event.timestamp || event.createdAt);
+                const formattedDate = event.timestamp 
+                    ? new Date(event.timestamp).toLocaleString('en-ZA', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    : 'N/A';
+                
+                const deviceInfo = event.device || event.userAgent || 'Unknown';
+                const location = event.location || event.country || 'Unknown';
+
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${escapeHtml(event.email || 'N/A')}</strong>
+                        </td>
+                        <td>${accountTypeBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td>${escapeHtml(event.ipAddress || 'N/A')}</td>
+                        <td>
+                            <small>${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</small>
+                        </td>
+                        <td>${escapeHtml(location)}</td>
+                        <td>
+                            <div>${escapeHtml(formattedDate)}</div>
+                            <small class="text-muted">${formattedTime}</small>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            document.getElementById('totalLoginsCount').textContent = allLoginEvents.length;
+            document.getElementById('todayLoginsCount').textContent = allLoginEvents.filter(e => new Date(e.timestamp || e.createdAt) >= todayStart).length;
+            document.getElementById('successfulLoginsCount').textContent = allLoginEvents.filter(e => e.status === 'success').length;
+            document.getElementById('failedLoginsCount').textContent = allLoginEvents.filter(e => e.status === 'failed').length;
+        }
+
+        // Refresh login events
+        function refreshLogins() {
+            loadLoginEvents();
+            showAlert('Refreshing login events...', 'info');
+        }
+
+        // Export login events
+        function exportLogins() {
+            // TODO: Implement CSV/Excel export
+            showAlert('Export functionality coming soon', 'info');
+        }
+
+        // Initialize Analytics Charts
+        function initializeCharts() {
+            // Chart 1: Logins Over Time (Line Chart)
+            const loginsOverTimeCtx = document.getElementById('loginsOverTimeChart');
+            if (loginsOverTimeCtx) {
+                const timeData = calculateLoginsOverTime();
+                loginsOverTimeChart = new Chart(loginsOverTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: timeData.labels,
+                        datasets: [{
+                            label: 'Logins',
+                            data: timeData.data,
+                            borderColor: 'rgb(0, 123, 255)',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Account Type Distribution (Pie Chart)
+            const accountTypeCtx = document.getElementById('accountTypeChart');
+            if (accountTypeCtx) {
+                const typeData = calculateAccountTypeDistribution();
+                accountTypeChart = new Chart(accountTypeCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: typeData.labels,
+                        datasets: [{
+                            data: typeData.data,
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(23, 162, 184, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(23, 162, 184)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 3: Login Activity by Hour (Bar Chart)
+            const loginActivityByHourCtx = document.getElementById('loginActivityByHourChart');
+            if (loginActivityByHourCtx) {
+                const hourData = calculateLoginActivityByHour();
+                loginActivityByHourChart = new Chart(loginActivityByHourCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: hourData.labels,
+                        datasets: [{
+                            label: 'Logins',
+                            data: hourData.data,
+                            backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                            borderColor: 'rgb(0, 123, 255)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 4: Successful vs Failed Logins (Doughnut Chart)
+            const loginStatusCtx = document.getElementById('loginStatusChart');
+            if (loginStatusCtx) {
+                const statusData = calculateLoginStatus();
+                loginStatusChart = new Chart(loginStatusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: statusData.labels,
+                        datasets: [{
+                            data: statusData.data,
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(40, 167, 69)',
+                                'rgb(220, 53, 69)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Calculate logins over time (last 7 days)
+        function calculateLoginsOverTime() {
+            const now = new Date();
+            const days = [];
+            const counts = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(date.getDate() - i);
+                date.setHours(0, 0, 0, 0);
+                
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                days.push(dayName);
+                
+                const nextDay = new Date(date);
+                nextDay.setDate(nextDay.getDate() + 1);
+                
+                const count = allLoginEvents.filter(event => {
+                    const eventDate = new Date(event.timestamp || event.createdAt);
+                    return eventDate >= date && eventDate < nextDay;
+                }).length;
+                
+                counts.push(count);
+            }
+            
+            return { labels: days, data: counts };
+        }
+
+        // Calculate account type distribution
+        function calculateAccountTypeDistribution() {
+            const typeCounts = {
+                'regular': 0,
+                'business': 0,
+                'admin': 0
+            };
+            
+            allLoginEvents.forEach(event => {
+                const type = event.accountType || 'regular';
+                if (typeCounts.hasOwnProperty(type)) {
+                    typeCounts[type]++;
+                } else {
+                    typeCounts['regular']++;
+                }
+            });
+            
+            return {
+                labels: ['Regular Users', 'Business Users', 'Admin Users'],
+                data: [
+                    typeCounts['regular'],
+                    typeCounts['business'],
+                    typeCounts['admin']
+                ]
+            };
+        }
+
+        // Calculate login activity by hour
+        function calculateLoginActivityByHour() {
+            const hourCounts = Array(24).fill(0);
+            
+            allLoginEvents.forEach(event => {
+                const eventDate = new Date(event.timestamp || event.createdAt);
+                const hour = eventDate.getHours();
+                hourCounts[hour]++;
+            });
+            
+            const labels = Array.from({ length: 24 }, (_, i) => {
+                const hour = i.toString().padStart(2, '0');
+                return `${hour}:00`;
+            });
+            
+            return { labels, data: hourCounts };
+        }
+
+        // Calculate login status
+        function calculateLoginStatus() {
+            const successCount = allLoginEvents.filter(e => e.status === 'success').length;
+            const failedCount = allLoginEvents.length - successCount;
+            
+            return {
+                labels: ['Successful', 'Failed'],
+                data: [successCount, failedCount]
+            };
+        }
+
+        // Update charts with real data
+        function updateCharts() {
+            if (!allLoginEvents || allLoginEvents.length === 0) {
+                return;
+            }
+
+            // Update Chart 1: Logins Over Time
+            if (loginsOverTimeChart) {
+                const timeData = calculateLoginsOverTime();
+                loginsOverTimeChart.data.labels = timeData.labels;
+                loginsOverTimeChart.data.datasets[0].data = timeData.data;
+                loginsOverTimeChart.update();
+            }
+
+            // Update Chart 2: Account Type Distribution
+            if (accountTypeChart) {
+                const typeData = calculateAccountTypeDistribution();
+                accountTypeChart.data.labels = typeData.labels;
+                accountTypeChart.data.datasets[0].data = typeData.data;
+                accountTypeChart.update();
+            }
+
+            // Update Chart 3: Login Activity by Hour
+            if (loginActivityByHourChart) {
+                const hourData = calculateLoginActivityByHour();
+                loginActivityByHourChart.data.labels = hourData.labels;
+                loginActivityByHourChart.data.datasets[0].data = hourData.data;
+                loginActivityByHourChart.update();
+            }
+
+            // Update Chart 4: Login Status
+            if (loginStatusChart) {
+                const statusData = calculateLoginStatus();
+                loginStatusChart.data.labels = statusData.labels;
+                loginStatusChart.data.datasets[0].data = statusData.data;
+                loginStatusChart.update();
+            }
+        }
+
+        // Utility functions
+        function formatTimeAgo(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            
+            return date.toLocaleDateString('en-ZA', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showLoading() {
+            document.getElementById('loginEventsContainer').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center">
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            alertContainer.innerHTML = alertHTML;
+            
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Check login state and update header
+        async function checkLoginState() {
+            const userSection = document.getElementById('userSection');
+            const loginBtnHeader = document.getElementById('loginBtnHeader');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+
+            try {
+                const result = await window.adminAWSAuthService.getUserInfo();
+                
+                if (result.success && result.user) {
+                    const user = result.user;
+                    let displayName = '';
+                    let initials = '';
+
+                    if (user.givenName && user.familyName) {
+                        displayName = `${user.givenName} ${user.familyName}`;
+                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+                    } else if (user.givenName) {
+                        displayName = user.givenName;
+                        initials = user.givenName.substring(0, 2).toUpperCase();
+                    } else if (user.email) {
+                        const name = user.email.split('@')[0];
+                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                        initials = name.substring(0, 2).toUpperCase();
+                    } else {
+                        displayName = 'Admin User';
+                        initials = 'AU';
+                    }
+
+                    userAvatar.textContent = initials;
+                    userName.textContent = displayName;
+
+                    userSection.style.display = 'flex';
+                    loginBtnHeader.style.display = 'none';
+                } else {
+                    userSection.style.display = 'none';
+                    loginBtnHeader.style.display = 'inline-flex';
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
+                userSection.style.display = 'none';
+                loginBtnHeader.style.display = 'inline-flex';
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await window.adminAWSAuthService.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+</html>
+

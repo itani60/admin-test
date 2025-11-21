@@ -1003,22 +1003,29 @@
         }
 
         // Approve post - Uses new publish-business Lambda
-        async function approvePost(postId) {
+        async function approvePost(postId, forceApprove = false) {
             const post = allPosts.find(p => (p.postId || p.id) === postId);
             if (!post) {
                 showAlert('Post not found', 'danger');
                 return;
             }
 
-            // Check if post is ready for approval
-            if (post.timeUntilApproval) {
+            // Check if post is ready for approval (unless forcing)
+            if (!forceApprove && post.timeUntilApproval) {
                 const timeUntil = post.timeUntilApproval;
-                const message = `Post must wait ${timeUntil.hours}h ${timeUntil.minutes}m before approval. Please wait until the wait period has elapsed.`;
-                showAlert(message, 'warning');
-                return;
+                const message = `Post submitted ${timeUntil.hours}h ${timeUntil.minutes}m ago. Recommended wait: 2 hours. Do you want to approve immediately anyway?`;
+                if (!confirm(message)) {
+                    return;
+                }
+                // User confirmed, proceed with force approve
+                forceApprove = true;
             }
 
-            if (!confirm(`Are you sure you want to approve "${post.title || post.businessName}"?`)) {
+            const confirmMessage = forceApprove 
+                ? `Approve "${post.title || post.businessName}" immediately (bypassing wait period)?`
+                : `Are you sure you want to approve "${post.title || post.businessName}"?`;
+            
+            if (!confirm(confirmMessage)) {
                 return;
             }
 
@@ -1039,7 +1046,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        postId: postId
+                        postId: postId,
+                        forceApprove: forceApprove || false // Allow admin to bypass wait period
                     })
                 });
 

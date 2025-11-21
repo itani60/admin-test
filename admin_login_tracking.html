@@ -702,6 +702,7 @@
                             <th>User</th>
                             <th>Account Type</th>
                             <th>Status</th>
+                            <th>Failure Reason</th>
                             <th>IP Address</th>
                             <th>Device/Browser</th>
                             <th>Location</th>
@@ -710,7 +711,7 @@
                     </thead>
                     <tbody id="loginEventsContainer">
                         <tr>
-                            <td colspan="7" class="text-center">
+                            <td colspan="8" class="text-center">
                                 <div class="loading-spinner">
                                     <div class="spinner-border text-primary" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -896,7 +897,7 @@
             if (filteredLoginEvents.length === 0) {
                 container.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center">
+                        <td colspan="8" class="text-center">
                             <div class="empty-state">
                                 <i class="fas fa-sign-in-alt"></i>
                                 <h4>No login events found</h4>
@@ -935,6 +936,13 @@
                 
                 const deviceInfo = event.device || event.userAgent || 'Unknown';
                 const location = event.location || event.country || 'Unknown';
+                
+                // Get failure reason for failed logins
+                let failureReasonHtml = '<span class="text-muted">-</span>';
+                if (event.status === 'failed') {
+                    const failureReason = event.failureReason || event.errorCode || event.errorMessage || 'Unknown reason';
+                    failureReasonHtml = `<span class="badge badge-warning" style="background-color: #ffc107; color: #000;">${escapeHtml(failureReason)}</span>`;
+                }
 
                 html += `
                     <tr>
@@ -943,6 +951,7 @@
                         </td>
                         <td>${accountTypeBadge}</td>
                         <td>${statusBadge}</td>
+                        <td>${failureReasonHtml}</td>
                         <td>${escapeHtml(event.ipAddress || 'N/A')}</td>
                         <td>
                             <small>${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</small>
@@ -1303,7 +1312,7 @@
         function showLoading() {
             document.getElementById('loginEventsContainer').innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center">
+                    <td colspan="8" class="text-center">
                         <div class="loading-spinner">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>

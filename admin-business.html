@@ -6,7 +6,7 @@
     <title>Business Management | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     
     <style>
@@ -351,6 +351,26 @@
             border-radius: 4px;
         }
 
+        .business-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .business-logo-small {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .business-name-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .action-buttons {
             display: flex;
             gap: 0.5rem;
@@ -599,54 +619,37 @@
         }
 
         .social-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
             margin-top: 1rem;
         }
 
-        .social-card {
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            text-decoration: none;
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
+        .social-link {
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
         }
 
-        .social-card:hover {
-            border-color: currentColor;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+        .social-link:hover {
+            color: var(--primary);
         }
 
-        .social-card i {
-            font-size: 1.5rem;
+        .social-link i {
+            font-size: 1.1rem;
+            color: var(--primary);
         }
 
-        .social-card.facebook { border-color: #1877f2; color: #1877f2; }
-        .social-card.facebook:hover { background: #1877f2; }
-        .social-card.instagram { border-color: #e4405f; color: #e4405f; }
-        .social-card.instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .social-card.twitter { border-color: #1da1f2; color: #1da1f2; }
-        .social-card.twitter:hover { background: #1da1f2; }
-        .social-card.linkedin { border-color: #0077b5; color: #0077b5; }
-        .social-card.linkedin:hover { background: #0077b5; }
-        .social-card.whatsapp { border-color: #25d366; color: #25d366; }
-        .social-card.whatsapp:hover { background: #25d366; }
-        .social-card.tiktok { border-color: #000000; color: #000000; }
-        .social-card.tiktok:hover { background: #000000; }
-
-        .social-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .social-link.facebook i { color: #1877f2; }
+        .social-link.instagram i { color: #e4405f; }
+        .social-link.twitter i { color: #1da1f2; }
+        .social-link.linkedin i { color: #0077b5; }
+        .social-link.whatsapp i { color: #25d366; }
+        .social-link.tiktok i { color: #000000; }
 
         .hours-box {
             background: rgba(0, 123, 255, 0.05);
@@ -1117,8 +1120,13 @@
                 html += `
                     <tr>
                         <td>
-                            <strong>${escapeHtml(post.businessName)}</strong><br>
-                            <small class="text-muted">${escapeHtml(post.businessEmail)}</small>
+                            <div class="business-name-cell">
+                                ${post.logo ? `<img src="${escapeHtml(post.logo)}" alt="${escapeHtml(post.businessName)}" class="business-logo-small" onerror="this.style.display='none'">` : ''}
+                                <div class="business-name-info">
+                                    <strong>${escapeHtml(post.businessName)}</strong><br>
+                                    <small class="text-muted">${escapeHtml(post.businessEmail)}</small>
+                                </div>
+                            </div>
                         </td>
                         <td>${escapeHtml(post.title)}</td>
                         <td>${typeBadge}</td>
@@ -1501,22 +1509,22 @@
             if (hasSocialMedia) {
                 socialHtml = '<div class="social-grid">';
                 if (socialMedia.facebook && socialMedia.facebook.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.facebook.trim())}" target="_blank" class="social-card facebook"><i class="fab fa-facebook"></i><span class="social-label">Facebook</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.facebook.trim())}" target="_blank" class="social-link facebook"><i class="fab fa-facebook"></i><span>Facebook</span></a>`;
                 }
                 if (socialMedia.instagram && socialMedia.instagram.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.instagram.trim())}" target="_blank" class="social-card instagram"><i class="fab fa-instagram"></i><span class="social-label">Instagram</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.instagram.trim())}" target="_blank" class="social-link instagram"><i class="fab fa-instagram"></i><span>Instagram</span></a>`;
                 }
                 if (socialMedia.twitter && socialMedia.twitter.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.twitter.trim())}" target="_blank" class="social-card twitter"><i class="fab fa-twitter"></i><span class="social-label">Twitter</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.twitter.trim())}" target="_blank" class="social-link twitter"><i class="fab fa-x-twitter"></i><span>Twitter</span></a>`;
                 }
                 if (socialMedia.linkedin && socialMedia.linkedin.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.linkedin.trim())}" target="_blank" class="social-card linkedin"><i class="fab fa-linkedin"></i><span class="social-label">LinkedIn</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.linkedin.trim())}" target="_blank" class="social-link linkedin"><i class="fab fa-linkedin"></i><span>LinkedIn</span></a>`;
                 }
                 if (socialMedia.whatsapp && socialMedia.whatsapp.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.whatsapp.trim())}" target="_blank" class="social-card whatsapp"><i class="fab fa-whatsapp"></i><span class="social-label">WhatsApp</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.whatsapp.trim())}" target="_blank" class="social-link whatsapp"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>`;
                 }
                 if (socialMedia.tiktok && socialMedia.tiktok.trim()) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.tiktok.trim())}" target="_blank" class="social-card tiktok"><i class="fab fa-tiktok"></i><span class="social-label">TikTok</span></a>`;
+                    socialHtml += `<a href="${escapeHtml(socialMedia.tiktok.trim())}" target="_blank" class="social-link tiktok"><i class="fab fa-tiktok"></i><span>TikTok</span></a>`;
                 }
                 socialHtml += '</div>';
             }
@@ -1581,7 +1589,9 @@
                         <i class="fas fa-list"></i>
                         <h5>Our Services</h5>
                     </div>
-                    <p style="color: var(--text); line-height: 1.8;">${escapeHtml(post.ourServices)}</p>
+                    <ul style="color: var(--text); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+                        ${post.ourServices.split(',').map(service => `<li>${escapeHtml(service.trim())}</li>`).join('')}
+                    </ul>
                 </div>
                 ` : ''}
 
@@ -1629,7 +1639,9 @@
                         <i class="fas fa-info-circle"></i>
                         <h5>More Information</h5>
                     </div>
-                    <p style="color: var(--text); line-height: 1.8;">${escapeHtml(moreInformation.trim())}</p>
+                    <ul style="color: var(--text); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+                        ${moreInformation.trim().split(',').map(info => `<li>${escapeHtml(info.trim())}</li>`).join('')}
+                    </ul>
                 </div>
                 ` : ''}
 

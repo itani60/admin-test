@@ -385,6 +385,11 @@
             border-top: 1px solid var(--border);
         }
 
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
         .permission-badge {
             display: inline-flex;
             align-items: center;
@@ -594,7 +599,7 @@
 
     <!-- View Post Modal -->
     <div class="modal fade" id="viewPostModal" tabindex="-1" aria-labelledby="viewPostModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewPostModalLabel">Post Details</h5>
@@ -698,7 +703,16 @@
                                 images: post.images || [],
                                 serviceGalleries: post.serviceGalleries || {},
                                 businessInfo: post.businessInfo || {},
-                                validation: post.validation || { valid: true, issues: [] }
+                                validation: post.validation || { valid: true, issues: [] },
+                                // Include all business fields for comprehensive preview
+                                ourServices: post.ourServices || '',
+                                businessAddress: post.businessAddress || post.businessInfo?.businessAddress || '',
+                                businessNumber: post.businessNumber || post.businessInfo?.businessNumber || '',
+                                businessCategory: post.businessCategory || post.businessInfo?.businessType || '',
+                                businessHours: post.businessHours || post.businessInfo?.businessHours || '',
+                                socialMedia: post.socialMedia || post.businessInfo?.socialMedia || {},
+                                moreInformation: post.moreInformation || post.businessInfo?.moreInformation || '',
+                                logo: post.logo || post.businessInfo?.logo || post.businessLogoUrl || ''
                             };
                         });
                         updateStats();
@@ -1104,21 +1118,133 @@
             currentPostId = postId;
             const modalBody = document.getElementById('postModalBody');
             
-            // Build images HTML
+            // Build service galleries HTML
+            let servicesHtml = '';
+            if (post.serviceGalleries && Object.keys(post.serviceGalleries).length > 0) {
+                servicesHtml = '<div class="row">';
+                Object.keys(post.serviceGalleries).forEach(serviceName => {
+                    const serviceData = post.serviceGalleries[serviceName];
+                    const serviceImages = Array.isArray(serviceData) ? serviceData : (serviceData?.images || []);
+                    const serviceDescription = serviceData?.description || (post.serviceGalleries[`${serviceName}_description`] || '');
+                    
+                    servicesHtml += `
+                        <div class="col-12 mb-4">
+                            <h6 class="mb-2"><i class="fas fa-tag"></i> ${escapeHtml(serviceName)}</h6>
+                            ${serviceDescription ? `<p class="text-muted mb-2">${escapeHtml(serviceDescription)}</p>` : ''}
+                            <div class="row">
+                    `;
+                    
+                    if (serviceImages && serviceImages.length > 0) {
+                        serviceImages.forEach((img, imgIndex) => {
+                            const imgUrl = img.url || img.image || img;
+                            if (imgUrl) {
+                                servicesHtml += `
+                                    <div class="col-md-3 col-sm-4 mb-3">
+                                        <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(serviceName)} ${imgIndex + 1}" class="img-fluid rounded" style="max-height: 150px; object-fit: cover; width: 100%;">
+                                        ${img.title ? `<p class="small text-muted mt-1 mb-0">${escapeHtml(img.title)}</p>` : ''}
+                                    </div>
+                                `;
+                            }
+                        });
+                    } else {
+                        servicesHtml += '<div class="col-12"><p class="text-muted small">No images for this service</p></div>';
+                    }
+                    
+                    servicesHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+                servicesHtml += '</div>';
+            } else {
+                servicesHtml = '<p class="text-muted">No services/gallery available</p>';
+            }
+            
+            // Build main images HTML (if any)
             let imagesHtml = '';
             if (post.images && post.images.length > 0) {
                 imagesHtml = '<div class="row">';
                 post.images.forEach((img, index) => {
                     imagesHtml += `
-                        <div class="col-md-4 mb-3">
-                            <img src="${escapeHtml(img.url || img.image)}" alt="Image ${index + 1}" class="img-fluid rounded">
-                            ${img.title ? `<p class="small text-muted mt-1">${escapeHtml(img.title)}</p>` : ''}
+                        <div class="col-md-3 col-sm-4 mb-3">
+                            <img src="${escapeHtml(img.url || img.image)}" alt="Image ${index + 1}" class="img-fluid rounded" style="max-height: 150px; object-fit: cover; width: 100%;">
+                            ${img.title ? `<p class="small text-muted mt-1 mb-0">${escapeHtml(img.title)}</p>` : ''}
                         </div>
                     `;
                 });
                 imagesHtml += '</div>';
-            } else {
-                imagesHtml = '<p class="text-muted">No images available</p>';
+            }
+            
+            // Build contact information HTML
+            let contactHtml = '';
+            const businessNumber = post.businessNumber || post.businessInfo?.businessNumber || '';
+            const businessAddress = post.businessAddress || post.businessInfo?.businessAddress || '';
+            const businessEmail = post.businessEmail || post.businessInfo?.businessEmail || '';
+            
+            if (businessNumber || businessAddress || businessEmail) {
+                contactHtml = '<div class="mb-3"><h6><i class="fas fa-address-card"></i> Contact Information</h6>';
+                if (businessEmail) {
+                    contactHtml += `<p><strong>Email:</strong> <a href="mailto:${escapeHtml(businessEmail)}">${escapeHtml(businessEmail)}</a></p>`;
+                }
+                if (businessNumber) {
+                    contactHtml += `<p><strong>Phone:</strong> <a href="tel:${escapeHtml(businessNumber)}">${escapeHtml(businessNumber)}</a></p>`;
+                }
+                if (businessAddress) {
+                    contactHtml += `<p><strong>Address:</strong> ${escapeHtml(businessAddress)}</p>`;
+                }
+                contactHtml += '</div>';
+            }
+            
+            // Build business hours HTML
+            let hoursHtml = '';
+            const businessHours = post.businessHours || post.businessInfo?.businessHours || '';
+            if (businessHours) {
+                hoursHtml = `
+                    <div class="mb-3">
+                        <h6><i class="fas fa-clock"></i> Business Hours</h6>
+                        <p>${escapeHtml(businessHours)}</p>
+                    </div>
+                `;
+            }
+            
+            // Build social media HTML
+            let socialHtml = '';
+            const socialMedia = post.socialMedia || post.businessInfo?.socialMedia || {};
+            if (socialMedia && Object.keys(socialMedia).length > 0) {
+                socialHtml = '<div class="mb-3"><h6><i class="fas fa-share-alt"></i> Connect With Us</h6><div class="d-flex flex-wrap gap-2">';
+                
+                if (socialMedia.facebook) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.facebook)}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-facebook"></i> Facebook</a>`;
+                }
+                if (socialMedia.instagram) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.instagram)}" target="_blank" class="btn btn-sm btn-danger"><i class="fab fa-instagram"></i> Instagram</a>`;
+                }
+                if (socialMedia.twitter) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.twitter)}" target="_blank" class="btn btn-sm btn-info"><i class="fab fa-twitter"></i> Twitter</a>`;
+                }
+                if (socialMedia.linkedin) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.linkedin)}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-linkedin"></i> LinkedIn</a>`;
+                }
+                if (socialMedia.whatsapp) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.whatsapp)}" target="_blank" class="btn btn-sm btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
+                }
+                if (socialMedia.tiktok) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.tiktok)}" target="_blank" class="btn btn-sm btn-dark"><i class="fab fa-tiktok"></i> TikTok</a>`;
+                }
+                
+                socialHtml += '</div></div>';
+            }
+            
+            // Build more information HTML
+            let moreInfoHtml = '';
+            const moreInformation = post.moreInformation || post.businessInfo?.moreInformation || '';
+            if (moreInformation) {
+                moreInfoHtml = `
+                    <div class="mb-3">
+                        <h6><i class="fas fa-info-circle"></i> More Information</h6>
+                        <p>${escapeHtml(moreInformation)}</p>
+                    </div>
+                `;
             }
             
             // Build validation issues HTML
@@ -1136,28 +1262,51 @@
             
             modalBody.innerHTML = `
                 <div class="mb-3">
-                    <h6>Business Information</h6>
-                    <p><strong>Name:</strong> ${escapeHtml(post.businessName)}</p>
-                    <p><strong>Email:</strong> ${escapeHtml(post.businessEmail)}</p>
-                    ${post.businessInfo?.businessType ? `<p><strong>Type:</strong> ${escapeHtml(post.businessInfo.businessType)}</p>` : ''}
-                    ${post.businessInfo?.businessAddress ? `<p><strong>Address:</strong> ${escapeHtml(post.businessInfo.businessAddress)}</p>` : ''}
+                    <h5><i class="fas fa-building"></i> ${escapeHtml(post.businessName)}</h5>
+                    ${post.businessCategory ? `<span class="badge badge-info">${escapeHtml(post.businessCategory)}</span>` : ''}
+                    ${post.logo ? `<div class="mt-2"><img src="${escapeHtml(post.logo)}" alt="Logo" class="img-fluid" style="max-height: 100px;"></div>` : ''}
                 </div>
+                
                 <div class="mb-3">
-                    <h6>Post Information</h6>
-                    <p><strong>Title:</strong> ${escapeHtml(post.title)}</p>
-                    <p><strong>Type:</strong> ${getTypeBadge(post.type)}</p>
+                    <h6><i class="fas fa-info-circle"></i> Post Information</h6>
                     <p><strong>Status:</strong> ${getStatusBadge(post.status)}</p>
+                    <p><strong>Type:</strong> ${getTypeBadge(post.type)}</p>
                     <p><strong>Submitted:</strong> ${escapeHtml(post.submitted)}</p>
                 </div>
+                
                 ${validationHtml}
+                
                 <div class="mb-3">
-                    <h6>Description</h6>
+                    <h6><i class="fas fa-align-left"></i> Business Description</h6>
                     <p>${escapeHtml(post.description || post.content || 'No description available')}</p>
                 </div>
+                
+                ${post.ourServices ? `
                 <div class="mb-3">
-                    <h6>Images (${post.images ? post.images.length : 0})</h6>
+                    <h6><i class="fas fa-list"></i> Our Services</h6>
+                    <p>${escapeHtml(post.ourServices)}</p>
+                </div>
+                ` : ''}
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-images"></i> Services Gallery</h6>
+                    ${servicesHtml}
+                </div>
+                
+                ${imagesHtml ? `
+                <div class="mb-3">
+                    <h6><i class="fas fa-image"></i> Additional Images</h6>
                     ${imagesHtml}
                 </div>
+                ` : ''}
+                
+                ${contactHtml}
+                
+                ${hoursHtml}
+                
+                ${moreInfoHtml}
+                
+                ${socialHtml}
             `;
 
             // Show/hide action buttons based on status

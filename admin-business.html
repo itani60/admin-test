@@ -895,6 +895,46 @@
         </div>
     </div>
 
+    <!-- Approval Confirmation Modal -->
+    <div class="modal fade" id="approveConfirmationModal" tabindex="-1" aria-labelledby="approveConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="approveConfirmationModalLabel">
+                        <i class="fas fa-check-circle"></i> Approve Business Post
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <p class="text-center mb-3">
+                        <strong id="approveBusinessName">Business Name</strong>
+                    </p>
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>What happens when you approve:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>This business will be published to the public marketplace</li>
+                            <li>It will become visible to all customers</li>
+                            <li>The business owner will be notified of the approval</li>
+                        </ul>
+                    </div>
+                    <p class="text-muted small text-center mb-0">
+                        Are you sure you want to approve this business post?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmApproveBtn" onclick="confirmApprove()">
+                        <i class="fas fa-check"></i> Yes, Approve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Rejection Reason Modal -->
     <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -1312,12 +1352,35 @@
                 return;
             }
 
-            // Admin can approve immediately - no wait period checks
-            const businessName = post.title || post.businessName || 'this business';
-            const confirmMessage = `Are you sure you want to approve "${businessName}"?\n\nThis will publish the business to the public marketplace and make it visible to all customers.`;
+            // Store postId for confirmation
+            window.pendingApprovePostId = postId;
             
-            if (!confirm(confirmMessage)) {
+            // Show approval confirmation modal
+            const businessName = post.title || post.businessName || 'this business';
+            document.getElementById('approveBusinessName').textContent = businessName;
+            
+            const modal = new bootstrap.Modal(document.getElementById('approveConfirmationModal'));
+            modal.show();
+        }
+
+        // Confirm approval from modal
+        async function confirmApprove() {
+            const postId = window.pendingApprovePostId;
+            if (!postId) {
+                showAlert('Post ID not found', 'danger');
                 return;
+            }
+
+            const post = allPosts.find(p => (p.postId || p.id) === postId);
+            if (!post) {
+                showAlert('Post not found', 'danger');
+                return;
+            }
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('approveConfirmationModal'));
+            if (modal) {
+                modal.hide();
             }
 
             // Show loading state
@@ -1326,6 +1389,13 @@
             if (approveBtn) {
                 approveBtn.disabled = true;
                 approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+            }
+
+            // Disable confirm button
+            const confirmBtn = document.getElementById('confirmApproveBtn');
+            if (confirmBtn) {
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
             }
 
             try {
@@ -1359,6 +1429,12 @@
                     approveBtn.disabled = false;
                     approveBtn.innerHTML = originalText;
                 }
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="fas fa-check"></i> Yes, Approve';
+                }
+                // Clear pending post ID
+                window.pendingApprovePostId = null;
             }
         }
 
@@ -1771,9 +1847,13 @@
         // Approve from modal
         function approvePostFromModal() {
             if (currentPostId) {
+                // Close view modal first
+                const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewPostModal'));
+                if (viewModal) {
+                    viewModal.hide();
+                }
+                // Then open approval confirmation modal
                 approvePost(currentPostId);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('viewPostModal'));
-                modal.hide();
             }
         }
 

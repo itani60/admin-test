@@ -678,29 +678,7 @@
                     if (data.success && data.posts) {
                         // Transform API data to match our format
                         allPosts = data.posts.map(post => {
-                            // Calculate wait period if needed
-                            let readyForApproval = post.readyForApproval;
-                            let timeUntilApproval = post.timeUntilApproval;
-                            
-                            // If submittedAt exists, calculate wait period
-                            if (post.submittedAt && readyForApproval === undefined && !timeUntilApproval) {
-                                const submittedTime = new Date(post.submittedAt).getTime();
-                                const now = Date.now();
-                                const elapsed = now - submittedTime;
-                                const twoHours = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-                                
-                                if (elapsed < twoHours) {
-                                    readyForApproval = false;
-                                    const remaining = twoHours - elapsed;
-                                    const hours = Math.floor(remaining / (60 * 60 * 1000));
-                                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-                                    timeUntilApproval = { hours, minutes };
-                                } else {
-                                    readyForApproval = true;
-                                    timeUntilApproval = null;
-                                }
-                            }
-                            
+                            // Admin can always approve/reject immediately - no wait period checks
                             return {
                                 postId: post.postId,
                                 businessName: post.businessInfo?.businessName || post.businessName || 'Unknown Business',
@@ -720,8 +698,6 @@
                                 images: post.images || [],
                                 serviceGalleries: post.serviceGalleries || {},
                                 businessInfo: post.businessInfo || {},
-                                readyForApproval: readyForApproval !== undefined ? readyForApproval : true,
-                                timeUntilApproval: timeUntilApproval,
                                 validation: post.validation || { valid: true, issues: [] }
                             };
                         });
@@ -914,27 +890,17 @@
         function getActionButtons(post) {
             let buttons = '';
             const postId = post.postId || post.id;
-            const isReady = post.readyForApproval !== false;
-            const waitTime = post.timeUntilApproval;
             
+            // Admin can always approve/reject immediately - no wait period checks
             if (post.status === 'pending') {
-                if (isReady) {
-                    buttons += `
-                        <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
-                            <i class="fas fa-check"></i> Approve
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="rejectPost('${postId}')" title="Reject this post">
-                            <i class="fas fa-times"></i> Reject
-                        </button>
-                    `;
-                } else {
-                    const waitText = waitTime ? `${waitTime.hours}h ${waitTime.minutes}m` : 'Wait period';
-                    buttons += `
-                        <button class="btn btn-secondary btn-sm" disabled title="Wait period: ${waitText}">
-                            <i class="fas fa-clock"></i> Wait ${waitText}
-                        </button>
-                    `;
-                }
+                buttons += `
+                    <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectPost('${postId}')" title="Reject this post">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                `;
             } else if (post.status === 'approved') {
                 buttons += `
                     <span class="badge badge-success">Approved</span>
@@ -1003,27 +969,15 @@
         }
 
         // Approve post - Uses new publish-business Lambda
-        async function approvePost(postId, forceApprove = false) {
+        async function approvePost(postId) {
             const post = allPosts.find(p => (p.postId || p.id) === postId);
             if (!post) {
                 showAlert('Post not found', 'danger');
                 return;
             }
 
-            // Check if post is ready for approval (unless forcing)
-            if (!forceApprove && post.timeUntilApproval) {
-                const timeUntil = post.timeUntilApproval;
-                const message = `Post submitted ${timeUntil.hours}h ${timeUntil.minutes}m ago. Recommended wait: 2 hours. Do you want to approve immediately anyway?`;
-                if (!confirm(message)) {
-                    return;
-                }
-                // User confirmed, proceed with force approve
-                forceApprove = true;
-            }
-
-            const confirmMessage = forceApprove 
-                ? `Approve "${post.title || post.businessName}" immediately (bypassing wait period)?`
-                : `Are you sure you want to approve "${post.title || post.businessName}"?`;
+            // Admin can approve immediately - no wait period checks
+            const confirmMessage = `Are you sure you want to approve "${post.title || post.businessName}"?`;
             
             if (!confirm(confirmMessage)) {
                 return;
@@ -1038,7 +992,7 @@
             }
 
             try {
-                // Use new publish-business Lambda
+                // Use new publish-business Lambda - always use forceApprove=true for admin
                 const response = await fetch(`${PUBLISH_BUSINESS_API}`, {
                     method: 'POST',
                     credentials: 'include',
@@ -1047,7 +1001,7 @@
                     },
                     body: JSON.stringify({
                         postId: postId,
-                        forceApprove: forceApprove || false // Allow admin to bypass wait period
+                        forceApprove: true // Admin can always approve immediately
                     })
                 });
 
@@ -1057,14 +1011,7 @@
                     showAlert(`Post "${post.title || post.businessName}" has been published successfully!`, 'success');
                     await loadPosts(); // Reload posts to get updated status
                 } else {
-                    // Handle wait period error
-                    if (data.error === 'WAIT_PERIOD_NOT_ELAPSED' && data.timeUntil) {
-                        const timeUntil = data.timeUntil;
-                        const message = `Post must wait ${timeUntil.hours}h ${timeUntil.minutes}m before approval. Time remaining: ${timeUntil.hours}h ${timeUntil.minutes}m`;
-                        showAlert(message, 'warning');
-                    } else {
-                        throw new Error(data.message || 'Failed to approve post');
-                    }
+                    throw new Error(data.message || 'Failed to approve post');
                 }
             } catch (error) {
                 console.error('Error approving post:', error);
@@ -1187,17 +1134,6 @@
                 `;
             }
             
-            // Build wait time info
-            let waitTimeHtml = '';
-            if (post.status === 'pending' && !post.readyForApproval && post.timeUntilApproval) {
-                waitTimeHtml = `
-                    <div class="alert alert-info">
-                        <i class="fas fa-clock"></i> 
-                        Post must wait ${post.timeUntilApproval.hours}h ${post.timeUntilApproval.minutes}m before approval
-                    </div>
-                `;
-            }
-            
             modalBody.innerHTML = `
                 <div class="mb-3">
                     <h6>Business Information</h6>
@@ -1212,9 +1148,7 @@
                     <p><strong>Type:</strong> ${getTypeBadge(post.type)}</p>
                     <p><strong>Status:</strong> ${getStatusBadge(post.status)}</p>
                     <p><strong>Submitted:</strong> ${escapeHtml(post.submitted)}</p>
-                    ${post.readyForApproval !== undefined ? `<p><strong>Ready for Approval:</strong> ${post.readyForApproval ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-warning">No</span>'}</p>` : ''}
                 </div>
-                ${waitTimeHtml}
                 ${validationHtml}
                 <div class="mb-3">
                     <h6>Description</h6>
@@ -1227,19 +1161,18 @@
             `;
 
             // Show/hide action buttons based on status
+            // Admin can always approve/reject immediately - no wait period checks
             const approveBtn = document.getElementById('modalApproveBtn');
             const rejectBtn = document.getElementById('modalRejectBtn');
             
-            if (post.status === 'pending' && post.readyForApproval) {
+            if (post.status === 'pending') {
                 approveBtn.style.display = 'inline-block';
                 rejectBtn.style.display = 'inline-block';
-            } else if (post.status === 'pending' && !post.readyForApproval) {
-                approveBtn.style.display = 'none';
-                rejectBtn.style.display = 'none';
             } else if (post.status === 'approved') {
                 approveBtn.style.display = 'none';
                 rejectBtn.style.display = 'none';
             } else {
+                // Rejected posts can be approved
                 approveBtn.style.display = 'inline-block';
                 rejectBtn.style.display = 'none';
             }

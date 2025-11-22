@@ -1115,6 +1115,15 @@
                 return;
             }
 
+            // Debug: Log social media and more information data
+            console.log('Post data for preview:', {
+                postId: post.postId,
+                socialMedia: post.socialMedia,
+                businessInfoSocialMedia: post.businessInfo?.socialMedia,
+                moreInformation: post.moreInformation,
+                businessInfoMoreInformation: post.businessInfo?.moreInformation
+            });
+
             currentPostId = postId;
             const modalBody = document.getElementById('postModalBody');
             
@@ -1210,26 +1219,37 @@
             // Build social media HTML
             let socialHtml = '';
             const socialMedia = post.socialMedia || post.businessInfo?.socialMedia || {};
-            if (socialMedia && Object.keys(socialMedia).length > 0) {
+            
+            // Check if there's at least one non-empty social media link
+            const hasSocialMedia = socialMedia && (
+                (socialMedia.facebook && socialMedia.facebook.trim()) ||
+                (socialMedia.instagram && socialMedia.instagram.trim()) ||
+                (socialMedia.twitter && socialMedia.twitter.trim()) ||
+                (socialMedia.linkedin && socialMedia.linkedin.trim()) ||
+                (socialMedia.whatsapp && socialMedia.whatsapp.trim()) ||
+                (socialMedia.tiktok && socialMedia.tiktok.trim())
+            );
+            
+            if (hasSocialMedia) {
                 socialHtml = '<div class="mb-3"><h6><i class="fas fa-share-alt"></i> Connect With Us</h6><div class="d-flex flex-wrap gap-2">';
                 
-                if (socialMedia.facebook) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.facebook)}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-facebook"></i> Facebook</a>`;
+                if (socialMedia.facebook && socialMedia.facebook.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.facebook.trim())}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-facebook"></i> Facebook</a>`;
                 }
-                if (socialMedia.instagram) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.instagram)}" target="_blank" class="btn btn-sm btn-danger"><i class="fab fa-instagram"></i> Instagram</a>`;
+                if (socialMedia.instagram && socialMedia.instagram.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.instagram.trim())}" target="_blank" class="btn btn-sm btn-danger"><i class="fab fa-instagram"></i> Instagram</a>`;
                 }
-                if (socialMedia.twitter) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.twitter)}" target="_blank" class="btn btn-sm btn-info"><i class="fab fa-twitter"></i> Twitter</a>`;
+                if (socialMedia.twitter && socialMedia.twitter.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.twitter.trim())}" target="_blank" class="btn btn-sm btn-info"><i class="fab fa-twitter"></i> Twitter</a>`;
                 }
-                if (socialMedia.linkedin) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.linkedin)}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-linkedin"></i> LinkedIn</a>`;
+                if (socialMedia.linkedin && socialMedia.linkedin.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.linkedin.trim())}" target="_blank" class="btn btn-sm btn-primary"><i class="fab fa-linkedin"></i> LinkedIn</a>`;
                 }
-                if (socialMedia.whatsapp) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.whatsapp)}" target="_blank" class="btn btn-sm btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
+                if (socialMedia.whatsapp && socialMedia.whatsapp.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.whatsapp.trim())}" target="_blank" class="btn btn-sm btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</a>`;
                 }
-                if (socialMedia.tiktok) {
-                    socialHtml += `<a href="${escapeHtml(socialMedia.tiktok)}" target="_blank" class="btn btn-sm btn-dark"><i class="fab fa-tiktok"></i> TikTok</a>`;
+                if (socialMedia.tiktok && socialMedia.tiktok.trim()) {
+                    socialHtml += `<a href="${escapeHtml(socialMedia.tiktok.trim())}" target="_blank" class="btn btn-sm btn-dark"><i class="fab fa-tiktok"></i> TikTok</a>`;
                 }
                 
                 socialHtml += '</div></div>';
@@ -1238,11 +1258,11 @@
             // Build more information HTML
             let moreInfoHtml = '';
             const moreInformation = post.moreInformation || post.businessInfo?.moreInformation || '';
-            if (moreInformation) {
+            if (moreInformation && moreInformation.trim()) {
                 moreInfoHtml = `
                     <div class="mb-3">
                         <h6><i class="fas fa-info-circle"></i> More Information</h6>
-                        <p>${escapeHtml(moreInformation)}</p>
+                        <p>${escapeHtml(moreInformation.trim())}</p>
                     </div>
                 `;
             }

@@ -1573,6 +1573,11 @@
             let servicesHtml = '';
             if (post.serviceGalleries && Object.keys(post.serviceGalleries).length > 0) {
                 Object.keys(post.serviceGalleries).forEach(serviceName => {
+                    // Skip description keys (keys ending with "_description")
+                    if (serviceName.endsWith('_description')) {
+                        return;
+                    }
+                    
                     const serviceData = post.serviceGalleries[serviceName];
                     const serviceImages = Array.isArray(serviceData) ? serviceData : (serviceData?.images || []);
                     const serviceDescription = serviceData?.description || (post.serviceGalleries[`${serviceName}_description`] || '');

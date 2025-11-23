@@ -1758,7 +1758,11 @@
                         <h5>Our Services</h5>
                     </div>
                     <ul style="color: var(--text); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
-                        ${post.ourServices.split(',').map(service => `<li>${escapeHtml(service.trim())}</li>`).join('')}
+                        ${post.ourServices.split(/\n/).filter(item => item.trim()).map(service => {
+                            // Remove bullet point if present, then trim
+                            const cleaned = service.trim().replace(/^[•\-\*]\s*/, '').trim();
+                            return cleaned ? `<li>${escapeHtml(cleaned)}</li>` : '';
+                        }).filter(item => item).join('')}
                     </ul>
                 </div>
                 ` : ''}
@@ -1808,7 +1812,11 @@
                         <h5>More Information</h5>
                     </div>
                     <ul style="color: var(--text); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
-                        ${moreInformation.trim().split(',').map(info => `<li>${escapeHtml(info.trim())}</li>`).join('')}
+                        ${moreInformation.trim().split(/\n/).filter(item => item.trim()).map(info => {
+                            // Remove bullet point if present, then trim
+                            const cleaned = info.trim().replace(/^[•\-\*]\s*/, '').trim();
+                            return cleaned ? `<li>${escapeHtml(cleaned)}</li>` : '';
+                        }).filter(item => item).join('')}
                     </ul>
                 </div>
                 ` : ''}

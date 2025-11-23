@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Reports | CompareHubPrices Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --text: #6c757d;
+            --text-dark: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 3rem;
+        }
+
+        .admin-header {
+            background: white;
+            color: var(--text-dark);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .admin-header p {
+            color: var(--text);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .breadcrumb-container {
+            background: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "/";
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .page-title-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-title-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title-section p {
+            color: var(--text);
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-icon.resolved {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .stat-icon.dismissed {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text);
+        }
+
+        .stat-icon.total {
+            background: rgba(0, 123, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .reports-table-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reports-table thead {
+            background: var(--light);
+        }
+
+        .reports-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reports-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .reports-table tbody tr:hover {
+            background: var(--light);
+        }
+
+        .report-item {
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .status-badge.reviewed {
+            background: rgba(0, 123, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .status-badge.resolved {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.dismissed {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text);
+        }
+
+        .reason-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--light);
+            color: var(--text-dark);
+        }
+
+        .review-preview {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-dismiss {
+            background: var(--light);
+            color: var(--text-dark);
+        }
+
+        .btn-resolve {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-remove {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-review-content {
+            padding: 1.5rem;
+        }
+
+        .review-detail-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .review-rating {
+            color: var(--warning);
+            font-size: 1.2rem;
+        }
+
+        .report-detail-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--danger);
+            margin-bottom: 1.5rem;
+        }
+
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .reports-table-container {
+                overflow-x: auto;
+            }
+
+            .reports-table {
+                min-width: 800px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="logo">
+                    <img src="../assets/logo .png" alt="CompareHubPrices" class="logo-img">
+                    <div class="ms-3">
+                        <h1>Review Reports</h1>
+                        <p>Manage and review reported business reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-container">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Admin Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Review Reports</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Page Title -->
+        <div class="page-title-section">
+            <h1><i class="fas fa-flag text-danger"></i> Review Reports Management</h1>
+            <p>Review and take action on reported business reviews</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon total">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                </div>
+                <div class="stat-number">47</div>
+                <div class="stat-label">Total Reports</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-number">23</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon resolved">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-number">18</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon dismissed">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-number">6</div>
+                <div class="stat-label">Dismissed</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="statusFilter">Filter by Status</label>
+                    <select id="statusFilter" class="form-select" onchange="filterReports()">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="dismissed">Dismissed</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="reasonFilter">Filter by Reason</label>
+                    <select id="reasonFilter" class="form-select" onchange="filterReports()">
+                        <option value="all">All Reasons</option>
+                        <option value="spam">Spam</option>
+                        <option value="inappropriate">Inappropriate</option>
+                        <option value="fake">Fake</option>
+                        <option value="offensive">Offensive</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="searchFilter">Search</label>
+                    <input type="text" id="searchFilter" class="form-control" placeholder="Search by business, reviewer, or reporter..." onkeyup="filterReports()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="reports-table-container">
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>Report ID</th>
+                        <th>Reported Review</th>
+                        <th>Business</th>
+                        <th>Reporter</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Reported Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsTableBody">
+                    <!-- Reports will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Report Detail Modal -->
+    <div class="modal fade" id="reportDetailModal" tabindex="-1" aria-labelledby="reportDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportDetailModalLabel">
+                        <i class="fas fa-flag text-danger"></i> Report Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modal-review-content">
+                    <div id="reportDetailContent">
+                        <!-- Report details will be populated here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-action btn-dismiss" onclick="dismissReport()">
+                        <i class="fas fa-times"></i> Dismiss
+                    </button>
+                    <button type="button" class="btn btn-action btn-resolve" onclick="resolveReport()">
+                        <i class="fas fa-check"></i> Resolve
+                    </button>
+                    <button type="button" class="btn btn-action btn-remove" onclick="removeReview()">
+                        <i class="fas fa-trash"></i> Remove Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = 'https://acc.comparehubprices.site/admin/admin/review-reports';
+        
+        let reportsData = [];
+        let currentReport = null;
+        let filteredReports = [];
+        let isLoading = false;
+
+        async function loadReports(status = null) {
+            if (isLoading) return;
+            isLoading = true;
+            
+            try {
+                const url = status ? `${API_BASE_URL}?status=${status}` : API_BASE_URL;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success && Array.isArray(data.reports)) {
+                    reportsData = data.reports;
+                    // Fetch review details for each report
+                    await enrichReportsWithReviewDetails();
+                    filterReports();
+                    updateStats();
+                } else {
+                    console.error('Failed to load reports:', data);
+                    reportsData = [];
+                    filterReports();
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                alert('Failed to load reports. Please try again.');
+                reportsData = [];
+                filterReports();
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        async function enrichReportsWithReviewDetails() {
+            // Fetch review details for each report
+            for (const report of reportsData) {
+                if (!report.review) {
+                    try {
+                        const reviewResponse = await fetch(
+                            `https://acc.comparehubprices.site/business/business/reviews/${report.businessId}`,
+                            {
+                                method: 'GET',
+                                credentials: 'include',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }
+                        );
+                        
+                        if (reviewResponse.ok) {
+                            const reviewData = await reviewResponse.json();
+                            if (reviewData.success && Array.isArray(reviewData.reviews)) {
+                                const review = reviewData.reviews.find(r => 
+                                    r.userId === report.reviewerUserId || 
+                                    r.id === report.reviewId
+                                );
+                                if (review) {
+                                    report.review = {
+                                        rating: review.rating || 0,
+                                        comment: review.comment || '',
+                                        date: review.date || review.createdAt || report.createdAt
+                                    };
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error fetching review details:', error);
+                        // Set default review data if fetch fails
+                        report.review = {
+                            rating: 0,
+                            comment: 'Review details unavailable',
+                            date: report.createdAt
+                        };
+                    }
+                }
+            }
+        }
+
+        function renderReports() {
+            const tbody = document.getElementById('reportsTableBody');
+            tbody.innerHTML = '';
+
+            if (isLoading) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                return;
+            }
+
+            if (filteredReports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No reports found</td></tr>';
+                return;
+            }
+
+            filteredReports.forEach(report => {
+                const row = document.createElement('tr');
+                row.className = 'report-item';
+                row.onclick = () => viewReportDetail(report);
+
+                const reportedDate = new Date(report.createdAt || report.reportedDate).toLocaleDateString();
+                const reviewComment = report.review?.comment || 'No comment available';
+                const reviewPreview = reviewComment.length > 50 
+                    ? reviewComment.substring(0, 50) + '...' 
+                    : reviewComment;
+                const rating = report.review?.rating || 0;
+
+                row.innerHTML = `
+                    <td><code style="font-size: 0.8rem;">${(report.reportId || report.reviewId || '').substring(0, 20)}...</code></td>
+                    <td>
+                        <div class="review-preview" title="${reviewComment}">
+                            ${reviewPreview}
+                        </div>
+                        <div class="review-rating mt-1">
+                            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
+                        </div>
+                    </td>
+                    <td>${report.businessName || report.businessId || 'N/A'}</td>
+                    <td>${report.reporterName || report.reporterEmail || 'Anonymous'}</td>
+                    <td><span class="reason-badge">${report.reason || 'other'}</span></td>
+                    <td><span class="status-badge ${report.status || 'pending'}">${report.status || 'pending'}</span></td>
+                    <td>${reportedDate}</td>
+                    <td>
+                        <div class="action-buttons" onclick="event.stopPropagation()">
+                            <button class="btn-action btn-view" onclick="viewReportDetail('${report.reviewId}', '${report.reporterUserId}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterReports() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const reasonFilter = document.getElementById('reasonFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+            filteredReports = reportsData.filter(report => {
+                const statusMatch = statusFilter === 'all' || (report.status || 'pending') === statusFilter;
+                const reasonMatch = reasonFilter === 'all' || (report.reason || 'other') === reasonFilter;
+                const searchMatch = !searchFilter || 
+                    (report.businessName || report.businessId || '').toLowerCase().includes(searchFilter) ||
+                    (report.reviewerName || report.reviewerEmail || '').toLowerCase().includes(searchFilter) ||
+                    (report.reporterName || report.reporterEmail || '').toLowerCase().includes(searchFilter) ||
+                    (report.review?.comment || '').toLowerCase().includes(searchFilter) ||
+                    (report.description || '').toLowerCase().includes(searchFilter);
+
+                return statusMatch && reasonMatch && searchMatch;
+            });
+
+            renderReports();
+        }
+
+        function updateStats() {
+            const total = reportsData.length;
+            const pending = reportsData.filter(r => (r.status || 'pending') === 'pending').length;
+            const resolved = reportsData.filter(r => r.status === 'resolved').length;
+            const dismissed = reportsData.filter(r => r.status === 'dismissed').length;
+
+            document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = total;
+            document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = pending;
+            document.querySelector('.stat-card:nth-child(3) .stat-number').textContent = resolved;
+            document.querySelector('.stat-card:nth-child(4) .stat-number').textContent = dismissed;
+        }
+
+        async function viewReportDetail(reviewId, reporterUserId) {
+            // Find the report in our data
+            const report = reportsData.find(r => r.reviewId === reviewId && r.reporterUserId === reporterUserId);
+            
+            if (!report) {
+                alert('Report not found');
+                return;
+            }
+
+            currentReport = report;
+            const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
+            const content = document.getElementById('reportDetailContent');
+
+            // If review details are missing, try to fetch them
+            if (!report.review) {
+                try {
+                    const reviewResponse = await fetch(
+                        `https://acc.comparehubprices.site/business/business/reviews/${report.businessId}`,
+                        {
+                            method: 'GET',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    
+                    if (reviewResponse.ok) {
+                        const reviewData = await reviewResponse.json();
+                        if (reviewData.success && Array.isArray(reviewData.reviews)) {
+                            const review = reviewData.reviews.find(r => 
+                                r.userId === report.reviewerUserId || 
+                                r.id === report.reviewId
+                            );
+                            if (review) {
+                                report.review = {
+                                    rating: review.rating || 0,
+                                    comment: review.comment || '',
+                                    date: review.date || review.createdAt || report.createdAt
+                                };
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching review details:', error);
+                }
+            }
+
+            const reviewDate = report.review?.date ? new Date(report.review.date).toLocaleString() : 'N/A';
+            const reportedDate = new Date(report.createdAt || report.reportedDate).toLocaleString();
+            const rating = report.review?.rating || 0;
+            const reviewComment = report.review?.comment || 'No comment available';
+            const reviewerName = report.reviewerName || report.reviewerEmail || 'Unknown';
+            const reviewerEmail = report.reviewerEmail || 'N/A';
+            const reporterName = report.reporterName || report.reporterEmail || 'Anonymous';
+
+            content.innerHTML = `
+                <div class="review-detail-card">
+                    <div class="review-detail-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">${reviewerName.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div class="fw-bold">${reviewerName}</div>
+                                <div class="text-muted small">${reviewerEmail}</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="mb-0">${reviewComment}</p>
+                        <small class="text-muted">${reviewDate}</small>
+                    </div>
+                </div>
+
+                <div class="report-detail-card">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-flag text-danger"></i> Report Information</h6>
+                    <div class="report-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Reporter</span>
+                            <span class="meta-value">${reporterName}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Report Reason</span>
+                            <span class="meta-value"><span class="reason-badge">${report.reason || 'other'}</span></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Status</span>
+                            <span class="meta-value"><span class="status-badge ${report.status || 'pending'}">${report.status || 'pending'}</span></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Reported Date</span>
+                            <span class="meta-value">${reportedDate}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Business</span>
+                            <span class="meta-value">${report.businessName || report.businessId || 'N/A'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Review ID</span>
+                            <span class="meta-value"><code style="font-size: 0.8rem;">${report.reviewId}</code></span>
+                        </div>
+                    </div>
+                    ${report.description ? `
+                        <div class="mt-3">
+                            <span class="meta-label">Description</span>
+                            <p class="mt-1 mb-0">${report.description}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modal.show();
+        }
+
+        async function dismissReport() {
+            if (!currentReport) return;
+            if (!confirm(`Are you sure you want to dismiss this report?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/dismiss`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reviewId: currentReport.reviewId,
+                        reporterUserId: currentReport.reporterUserId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('Report dismissed successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+                    await loadReports(); // Reload reports
+                } else {
+                    throw new Error(data.message || 'Failed to dismiss report');
+                }
+            } catch (error) {
+                console.error('Error dismissing report:', error);
+                alert(error.message || 'Failed to dismiss report. Please try again.');
+            }
+        }
+
+        async function resolveReport() {
+            if (!currentReport) return;
+            if (!confirm(`Are you sure you want to mark this report as resolved?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/resolve`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reviewId: currentReport.reviewId,
+                        reporterUserId: currentReport.reporterUserId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('Report marked as resolved!');
+                    bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+                    await loadReports(); // Reload reports
+                } else {
+                    throw new Error(data.message || 'Failed to resolve report');
+                }
+            } catch (error) {
+                console.error('Error resolving report:', error);
+                alert(error.message || 'Failed to resolve report. Please try again.');
+            }
+        }
+
+        async function removeReview() {
+            if (!currentReport) return;
+            if (!confirm(`Are you sure you want to remove this review? This action cannot be undone.`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/remove-review`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        businessId: currentReport.businessId,
+                        reviewerUserId: currentReport.reviewerUserId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('Review removed successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+                    await loadReports(); // Reload reports
+                } else {
+                    throw new Error(data.message || 'Failed to remove review');
+                }
+            } catch (error) {
+                console.error('Error removing review:', error);
+                alert(error.message || 'Failed to remove review. Please try again.');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadReports();
+            
+            // Update filter to reload when status filter changes
+            document.getElementById('statusFilter').addEventListener('change', async function() {
+                const status = this.value === 'all' ? null : this.value;
+                await loadReports(status);
+            });
+        });
+    </script>
+</body>
+</html>
+

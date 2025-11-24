@@ -686,12 +686,20 @@
                 row.onclick = () => viewReportDetail(report);
 
                 const reportedDate = new Date(report.createdAt || report.reportedDate).toLocaleDateString();
+                const reviewComment = report.review?.comment || 'No comment available';
+                const reviewPreview = reviewComment.length > 50 
+                    ? reviewComment.substring(0, 50) + '...' 
+                    : reviewComment;
+                const rating = report.review?.rating || 0;
 
                 row.innerHTML = `
                     <td><code style="font-size: 0.8rem;">${(report.reportId || report.reviewId || '').substring(0, 20)}...</code></td>
                     <td>
-                        <div class="review-preview">
-                            Review ID: ${report.reviewId || 'N/A'}
+                        <div class="review-preview" title="${reviewComment}">
+                            ${reviewPreview}
+                        </div>
+                        <div class="review-rating mt-1">
+                            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
                         </div>
                     </td>
                     <td>${report.businessName || report.businessId || 'N/A'}</td>
@@ -721,8 +729,9 @@
                 const reasonMatch = reasonFilter === 'all' || (report.reason || 'other') === reasonFilter;
                 const searchMatch = !searchFilter || 
                     (report.businessName || report.businessId || '').toLowerCase().includes(searchFilter) ||
-                    (report.reviewerName || report.reviewerEmail || '').toLowerCase().includes(searchFilter) ||
+                    (report.reviewerName || report.reviewerEmail || report.review?.reviewerName || report.review?.reviewerEmail || '').toLowerCase().includes(searchFilter) ||
                     (report.reporterName || report.reporterEmail || '').toLowerCase().includes(searchFilter) ||
+                    (report.review?.comment || '').toLowerCase().includes(searchFilter) ||
                     (report.description || '').toLowerCase().includes(searchFilter);
 
                 return statusMatch && reasonMatch && searchMatch;
@@ -764,9 +773,12 @@
             const content = document.getElementById('reportDetailContent');
 
             const reportedDate = new Date(report.createdAt || report.reportedDate).toLocaleString();
-            const reviewerName = report.reviewerName || report.reviewerEmail || 'Unknown';
-            const reviewerEmail = report.reviewerEmail || 'N/A';
+            const reviewerName = report.review?.reviewerName || report.reviewerName || report.reviewerEmail || 'Unknown';
+            const reviewerEmail = report.review?.reviewerEmail || report.reviewerEmail || 'N/A';
             const reporterName = report.reporterName || report.reporterEmail || 'Anonymous';
+            const reviewDate = report.review?.createdAt ? new Date(report.review.createdAt).toLocaleString() : 'N/A';
+            const rating = report.review?.rating || 0;
+            const reviewComment = report.review?.comment || 'No comment available';
 
             content.innerHTML = `
                 <div class="review-detail-card">
@@ -778,9 +790,13 @@
                                 <div class="text-muted small">${reviewerEmail}</div>
                             </div>
                         </div>
+                        <div class="review-rating">
+                            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
+                        </div>
                     </div>
                     <div class="mt-2">
-                        <p class="mb-0 text-muted">Review details are managed by the manage lambda</p>
+                        <p class="mb-0">${reviewComment}</p>
+                        <small class="text-muted">${reviewDate}</small>
                     </div>
                 </div>
 

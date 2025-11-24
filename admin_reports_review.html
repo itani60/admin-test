@@ -630,8 +630,12 @@
             if (isLoading) return;
             isLoading = true;
             
+            // Show loading state immediately
+            renderReports();
+            
             try {
                 const url = status ? `${API_BASE_URL}?status=${status}` : API_BASE_URL;
+                console.log('Fetching reports from:', url);
                 const response = await fetch(url, {
                     method: 'GET',
                     credentials: 'include',
@@ -640,14 +644,20 @@
                     }
                 });
 
+                console.log('Response status:', response.status);
+                
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log('Received data:', data);
                 
                 if (data.success && Array.isArray(data.reports)) {
                     reportsData = data.reports;
+                    console.log('Loaded reports:', reportsData.length);
                     filterReports();
                     updateStats();
                 } else {
@@ -657,11 +667,13 @@
                 }
             } catch (error) {
                 console.error('Error loading reports:', error);
-                alert('Failed to load reports. Please try again.');
+                alert('Failed to load reports: ' + error.message);
                 reportsData = [];
                 filterReports();
             } finally {
                 isLoading = false;
+                // Ensure we render again after loading is complete
+                renderReports();
             }
         }
 
@@ -720,9 +732,16 @@
         }
 
         function filterReports() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            const reasonFilter = document.getElementById('reasonFilter').value;
-            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+            const reasonFilter = document.getElementById('reasonFilter')?.value || 'all';
+            const searchFilter = document.getElementById('searchFilter')?.value.toLowerCase() || '';
+
+            console.log('Filtering reports:', {
+                totalReports: reportsData.length,
+                statusFilter,
+                reasonFilter,
+                searchFilter
+            });
 
             filteredReports = reportsData.filter(report => {
                 const statusMatch = statusFilter === 'all' || (report.status || 'pending') === statusFilter;
@@ -737,6 +756,7 @@
                 return statusMatch && reasonMatch && searchMatch;
             });
 
+            console.log('Filtered reports:', filteredReports.length);
             renderReports();
         }
 

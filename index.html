@@ -893,10 +893,10 @@
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <div class="stat-value">89</div>
+                    <div class="stat-value" id="pendingReviewsCount">0</div>
                     <div class="stat-change negative">
                         <i class="fas fa-arrow-down"></i>
-                        <span>5.3% from last week</span>
+                        <span id="pendingReviewsChange">Loading...</span>
                     </div>
                 </div>
 
@@ -1102,6 +1102,44 @@
             }
         }
 
+        // Load pending reviews count
+        async function loadPendingReviews() {
+            try {
+                const REPORTS_API = 'https://acc.comparehubprices.site/admin/admin/review-reports';
+
+                const response = await fetch(`${REPORTS_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.reports)) {
+                        // Filter for pending reports (status is 'pending' or undefined/null defaults to pending)
+                        const pendingCount = data.reports.filter(r => (r.status || 'pending') === 'pending').length;
+                        const pendingElement = document.getElementById('pendingReviewsCount');
+                        const changeElement = document.getElementById('pendingReviewsChange');
+                        
+                        if (pendingElement) {
+                            pendingElement.textContent = pendingCount.toLocaleString();
+                        }
+                        
+                        if (changeElement) {
+                            // Calculate change (mock calculation for now)
+                            const changePercent = 5.3; // This could be calculated from historical data
+                            changeElement.textContent = `${changePercent}% from last week`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading pending reviews:', error);
+                // Keep default value on error
+            }
+        }
+
         function initCharts() {
             const userGrowthCtx = document.getElementById('userGrowthChart');
             if (userGrowthCtx) {
@@ -1211,6 +1249,7 @@
             checkLoginState();
             initCharts();
             loadTotalUsers();
+            loadPendingReviews();
         });
 
         function initUserDropdown() {

@@ -199,6 +199,16 @@ function updateCharts() {
     if (chartsData.topFollowersByBusiness) {
         const topFollowersCtx = document.getElementById('topFollowersChart');
         if (topFollowersCtx) {
+            // Prevent wheel/scroll events from affecting the chart
+            const preventScroll = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            };
+            
+            topFollowersCtx.addEventListener('wheel', preventScroll, { passive: false });
+            topFollowersCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            
             if (charts.topFollowers) charts.topFollowers.destroy();
             charts.topFollowers = new Chart(topFollowersCtx.getContext('2d'), {
                 type: 'bar',
@@ -231,21 +241,54 @@ function updateCharts() {
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#2563eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Followers: ' + context.parsed.y.toLocaleString();
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: '#eff6ff'
+                                color: '#eff6ff',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                }
                             }
                         },
                         x: {
                             grid: {
-                                display: false
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                }
                             }
                         }
-                    }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                 }
             });
         }
@@ -255,6 +298,16 @@ function updateCharts() {
     if (chartsData.ratingsDistribution) {
         const ratingsDistCtx = document.getElementById('ratingsDistributionChart');
         if (ratingsDistCtx) {
+            // Prevent wheel/scroll events from affecting the chart
+            const preventScroll = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            };
+            
+            ratingsDistCtx.addEventListener('wheel', preventScroll, { passive: false });
+            ratingsDistCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            
             if (charts.ratingsDistribution) charts.ratingsDistribution.destroy();
             charts.ratingsDistribution = new Chart(ratingsDistCtx.getContext('2d'), {
                 type: 'doughnut',
@@ -263,13 +316,20 @@ function updateCharts() {
                     datasets: [{
                         data: chartsData.ratingsDistribution.data || [],
                         backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(6, 182, 212, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(253, 126, 20, 0.8)',
+                            'rgba(244, 63, 94, 0.8)'
+                        ],
+                        borderColor: [
                             '#28a745',
                             '#06b6d4',
                             '#f59e0b',
                             '#fd7e14',
                             '#f43f5e'
                         ],
-                        borderWidth: 0
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -280,10 +340,33 @@ function updateCharts() {
                             position: 'bottom',
                             labels: {
                                 padding: 15,
-                                usePointStyle: true
+                                usePointStyle: true,
+                                font: {
+                                    size: 12
+                                },
+                                color: '#64748b'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#2563eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return label + ': ' + value + ' (' + percentage + '%)';
+                                }
                             }
                         }
-                    }
+                    },
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                 }
             });
         }
@@ -293,6 +376,16 @@ function updateCharts() {
     if (chartsData.goodReviewsByMonth) {
         const goodReviewsCtx = document.getElementById('goodReviewsChart');
         if (goodReviewsCtx) {
+            // Prevent wheel/scroll events from affecting the chart
+            const preventScroll = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            };
+            
+            goodReviewsCtx.addEventListener('wheel', preventScroll, { passive: false });
+            goodReviewsCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            
             if (charts.goodReviews) charts.goodReviews.destroy();
             charts.goodReviews = new Chart(goodReviewsCtx.getContext('2d'), {
                 type: 'line',
@@ -344,7 +437,12 @@ function updateCharts() {
                                 display: false
                             }
                         }
-                    }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                 }
             });
         }
@@ -354,6 +452,16 @@ function updateCharts() {
     if (chartsData.productLikesByMonth) {
         const productLikesCtx = document.getElementById('productLikesChart');
         if (productLikesCtx) {
+            // Prevent wheel/scroll events from affecting the chart
+            const preventScroll = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            };
+            
+            productLikesCtx.addEventListener('wheel', preventScroll, { passive: false });
+            productLikesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            
             if (charts.productLikes) charts.productLikes.destroy();
             charts.productLikes = new Chart(productLikesCtx.getContext('2d'), {
                 type: 'line',
@@ -405,7 +513,12 @@ function updateCharts() {
                                 display: false
                             }
                         }
-                    }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                 }
             });
         }

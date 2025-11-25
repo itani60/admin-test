@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics | CompareHubPrices Admin</title>
+    <title>Business Reviews Analytics | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         :root {
@@ -331,7 +332,7 @@
             margin-bottom: 2.25rem;
         }
 
-        .stats-card {
+        .stat-card {
             background: white;
             border-radius: 16px;
             padding: 2rem;
@@ -342,7 +343,7 @@
             overflow: hidden;
         }
 
-        .stats-card::before {
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -352,7 +353,7 @@
             background: var(--primary);
         }
 
-        .stats-card:hover {
+        .stat-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
             border-color: var(--primary);
@@ -385,29 +386,17 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .stat-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .stat-card.info .stat-icon { background: linear-gradient(135deg, var(--info) 0%, #22d3ee 100%); }
 
-        .stats-card.primary .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-        .stats-card.success .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
-        .stats-card.warning .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
-        .stats-card.danger .stat-icon { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
-
-        .stat-number {
+        .stat-value {
             font-size: 2.5rem;
             font-weight: 900;
             color: var(--text-dark);
             margin-bottom: 0.625rem;
             letter-spacing: -1.5px;
-        }
-
-        .stat-label {
-            color: var(--text);
-            font-size: 0.9rem;
-            font-weight: 500;
         }
 
         .stat-change {
@@ -416,7 +405,6 @@
             gap: 0.625rem;
             font-size: 0.9rem;
             font-weight: 700;
-            margin-top: 0.625rem;
         }
 
         .stat-change.positive {
@@ -425,6 +413,35 @@
 
         .stat-change.negative {
             color: var(--danger);
+        }
+
+        .filters-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
         }
 
         /* Charts Section */
@@ -452,19 +469,16 @@
             border-bottom: 2px solid var(--border);
         }
 
-        .chart-placeholder {
-            background: var(--light);
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            padding: 4rem 2rem;
-            text-align: center;
-            color: var(--text);
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
         }
 
-        .chart-placeholder i {
-            font-size: 3rem;
-            color: var(--border);
-            margin-bottom: 1rem;
+        .chart-section canvas {
+            touch-action: pan-y;
+            display: block;
         }
 
         .table-section {
@@ -486,100 +500,77 @@
         }
 
         .table {
-            margin-bottom: 0;
+            margin: 0;
         }
 
-        .table thead th {
+        .table thead {
             background: var(--light);
-            border-bottom: 2px solid var(--border);
+        }
+
+        .table th {
+            padding: 1rem;
+            text-align: left;
             font-weight: 600;
             color: var(--text-dark);
-            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .table tbody td {
+        .table td {
             padding: 1rem;
             border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
 
         .table tbody tr:hover {
             background: var(--light);
         }
 
-        .badge {
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .badge-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .badge-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .badge-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 6px;
-            font-weight: 600;
+        .rating-stars {
+            color: var(--warning);
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        .btn-outline-primary {
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            background: transparent;
-            padding: 0.75rem 2rem;
-            border-radius: 6px;
+        .business-name {
             font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            color: var(--text-dark);
         }
 
-        .btn-outline-primary:hover {
-            background: var(--primary);
-            color: white;
+        .reviewer-name {
+            font-weight: 500;
+            color: var(--text-dark);
         }
 
-        .filter-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            margin-bottom: 2.25rem;
-            border: 2px solid var(--border);
+        .review-comment {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .form-select, .form-control {
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
+        .badge-rating {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .form-select:focus, .form-control:focus {
-            border-color: var(--danger);
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-            outline: none;
+        .badge-rating.high {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .badge-rating.medium {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-rating.low {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
         }
 
         /* Responsive */
@@ -616,6 +607,18 @@
 
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .chart-container {
+                height: 250px;
             }
 
             .content-wrapper {
@@ -674,7 +677,7 @@
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="admin-analytics.html" class="nav-item active">
+                <a href="admin-analytics.html" class="nav-item">
                     <i class="fas fa-chart-line"></i>
                     <span>Products Analytics</span>
                 </a>
@@ -766,218 +769,179 @@
 
         <div class="content-wrapper">
             <div class="page-header">
-                <h1 class="page-title">Products Analytics</h1>
-                <p class="page-subtitle">View product statistics and performance metrics</p>
+                <h1 class="page-title">Business Reviews Analytics</h1>
+                <p class="page-subtitle">Comprehensive overview of all reviews published by businesses</p>
             </div>
 
-            <!-- Filter Section -->
-            <div class="filter-section">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label for="categoryFilter" class="form-label"><strong>Category</strong></label>
-                    <select class="form-select" id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <option value="smartphones">Smartphones</option>
-                        <option value="windows-laptops">Windows Laptops</option>
-                        <option value="macbooks-laptops">MacBooks Laptops</option>
-                        <option value="chromebooks-laptops">Chromebooks Laptops</option>
-                        <option value="tablets">Tablets</option>
-                        <option value="wearables">Wearables</option>
-                        <option value="televisions">Televisions</option>
-                        <option value="audio">Audio</option>
-                        <option value="gaming">Gaming</option>
-                        <option value="appliances">Appliances</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="timeRange" class="form-label"><strong>Time Range</strong></label>
-                    <select class="form-select" id="timeRange">
-                        <option value="today">Today</option>
-                        <option value="week">Last 7 Days</option>
-                        <option value="month" selected>Last 30 Days</option>
-                        <option value="year">Last Year</option>
-                        <option value="all">All Time</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="brandFilter" class="form-label"><strong>Brand</strong></label>
-                    <select class="form-select" id="brandFilter">
-                        <option value="">All Brands</option>
-                        <option value="Samsung">Samsung</option>
-                        <option value="Apple">Apple</option>
-                        <option value="Google">Google</option>
-                        <option value="OnePlus">OnePlus</option>
-                        <option value="Xiaomi">Xiaomi</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-primary w-100" onclick="loadAnalytics()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </div>
-            </div>
-
-            <!-- Key Metrics -->
+            <!-- Overall Stats -->
             <div class="stats-grid">
-                <div class="stats-card primary">
+                <!-- Total Reviews -->
+                <div class="stat-card primary">
                     <div class="stat-header">
-                        <div class="stat-title">Total Products</div>
+                        <div class="stat-title">Total Reviews</div>
                         <div class="stat-icon">
-                            <img src="assets/images/cards/features.png" alt="Total Products">
+                            <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="totalProducts">0</div>
-                    <div class="stat-label">Total Products</div>
-                    <div class="stat-change positive" id="productsChange">
+                    <div class="stat-value">2,847</div>
+                    <div class="stat-change positive">
                         <i class="fas fa-arrow-up"></i>
-                        <span>+0 this month</span>
+                        <span>+12.5% from last month</span>
                     </div>
                 </div>
 
-                <div class="stats-card success">
+                <!-- Average Rating -->
+                <div class="stat-card success">
                     <div class="stat-header">
-                        <div class="stat-title">Price Updates</div>
+                        <div class="stat-title">Average Rating</div>
                         <div class="stat-icon">
-                            <img src="assets/images/cards/sale.png" alt="Price Updates">
+                            <i class="fas fa-chart-line"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="priceUpdates">0</div>
-                    <div class="stat-label">Price Updates</div>
-                    <div class="stat-change positive" id="updatesChange">
+                    <div class="stat-value">4.3</div>
+                    <div class="stat-change positive">
                         <i class="fas fa-arrow-up"></i>
-                        <span>+0 today</span>
+                        <span>+0.1 from last month</span>
                     </div>
                 </div>
 
-                <div class="stats-card warning">
+                <!-- Reviews This Month -->
+                <div class="stat-card info">
                     <div class="stat-header">
-                        <div class="stat-title">Active Retailers</div>
+                        <div class="stat-title">Reviews This Month</div>
                         <div class="stat-icon">
-                            <img src="assets/images/cards/retailer.png" alt="Active Retailers">
+                            <i class="fas fa-calendar"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="totalRetailers">0</div>
-                    <div class="stat-label">Active Retailers</div>
-                    <div class="stat-change" id="retailersChange">
-                        <span>No change</span>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+8.3% from last month</span>
                     </div>
                 </div>
 
-                <div class="stats-card danger">
+                <!-- Businesses with Reviews -->
+                <div class="stat-card warning">
                     <div class="stat-header">
-                        <div class="stat-title">Active Price Alerts</div>
+                        <div class="stat-title">Businesses with Reviews</div>
                         <div class="stat-icon">
-                            <img src="assets/images/cards/price alert.png" alt="Active Price Alerts">
+                            <i class="fas fa-store"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="activeAlerts">0</div>
-                    <div class="stat-label">Active Price Alerts</div>
-                    <div class="stat-change negative" id="alertsChange">
-                        <i class="fas fa-arrow-down"></i>
-                        <span>-0 this week</span>
-                    </div>
+                    <div class="stat-value">189</div>
                 </div>
             </div>
 
-            <!-- Charts Section -->
+            <!-- Charts Row -->
             <div class="charts-grid">
+                <!-- Rating Distribution Chart -->
                 <div class="chart-section">
-                    <h3>Products by Category</h3>
-                    <div class="chart-placeholder">
-                        <i class="fas fa-chart-pie"></i>
-                        <p>Category distribution chart will be displayed here</p>
-                        <small>Chart integration coming soon</small>
+                    <h3>Rating Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="ratingDistributionChart"></canvas>
                     </div>
                 </div>
 
+                <!-- Reviews Over Time Chart -->
                 <div class="chart-section">
-                    <h3>Price Updates Over Time</h3>
-                    <div class="chart-placeholder">
-                        <i class="fas fa-chart-line"></i>
-                        <p>Price update trends will be displayed here</p>
-                        <small>Chart integration coming soon</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="charts-grid">
-                <div class="chart-section">
-                    <h3>Products by Brand</h3>
-                    <div class="chart-placeholder">
-                        <i class="fas fa-chart-bar"></i>
-                        <p>Brand distribution chart will be displayed here</p>
-                        <small>Chart integration coming soon</small>
-                    </div>
-                </div>
-
-                <div class="chart-section">
-                    <h3>Average Price by Category</h3>
-                    <div class="chart-placeholder">
-                        <i class="fas fa-chart-bar"></i>
-                        <p>Average price comparison will be displayed here</p>
-                        <small>Chart integration coming soon</small>
+                    <h3>Reviews Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="reviewsOverTimeChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Top Products Table -->
+            <!-- Filters -->
+            <div class="filters-section">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="businessFilter">Filter by Business</label>
+                    <select id="businessFilter" class="form-select" onchange="filterReviews()">
+                        <option value="all">All Businesses</option>
+                        <option value="tech-solutions">Tech Solutions Inc.</option>
+                        <option value="abc-services">ABC Services</option>
+                        <option value="xyz-company">XYZ Company</option>
+                        <option value="rabs-itani">Rabs Itani</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="ratingFilter">Filter by Rating</label>
+                    <select id="ratingFilter" class="form-select" onchange="filterReviews()">
+                        <option value="all">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="dateFilter">Filter by Date</label>
+                    <select id="dateFilter" class="form-select" onchange="filterReviews()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="searchFilter">Search</label>
+                    <input type="text" id="searchFilter" class="form-control" placeholder="Search reviews..." onkeyup="filterReviews()">
+                </div>
+            </div>
+        </div>
+
+            <!-- All Reviews Table -->
             <div class="table-section">
-                <h3>Top Products by Price Updates</h3>
+            <h3>All Business Reviews</h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Product</th>
-                            <th>Brand</th>
-                            <th>Category</th>
-                            <th>Price Updates</th>
-                            <th>Lowest Price</th>
-                            <th>Status</th>
+                            <th>Business</th>
+                            <th>Reviewer</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Date</th>
+                            <th>Helpful</th>
                         </tr>
                     </thead>
-                    <tbody id="topProductsTable">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading analytics...
-                            </td>
-                        </tr>
+                    <tbody id="reviewsTableBody">
+                        <!-- Reviews will be populated here -->
                     </tbody>
                 </table>
             </div>
         </div>
 
-            <!-- Category Statistics Table -->
+            <!-- Top Rated Businesses -->
             <div class="table-section">
-                <h3>Category Statistics</h3>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Total Products</th>
-                            <th>Price Updates</th>
-                            <th>Avg. Price</th>
-                            <th>Lowest Price</th>
-                            <th>Highest Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="categoryStatsTable">
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                Select a time range and click Refresh to load statistics
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h3>Top Rated Businesses</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Business</th>
+                                <th>Average Rating</th>
+                                <th>Total Reviews</th>
+                                <th>5 Star Reviews</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topBusinessesTableBody">
+                            <!-- Top businesses will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
         </div>
     </div>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/scripts/admin-analytics.js"></script>
+    <script src="assets/scripts/admin_reviews_business_analytics.js"></script>
 </body>
 </html>
 

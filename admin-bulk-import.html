@@ -6,22 +6,25 @@
     <title>Bulk Import Products | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -31,60 +34,317 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
             padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
         }
 
-        .admin-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin: 0;
+        .nav-section {
+            margin-bottom: 2.5rem;
         }
 
-        .admin-header p {
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             color: var(--text);
-            margin: 0.25rem 0 0 0;
-            font-size: 0.9rem;
+            margin-bottom: 0.875rem;
         }
 
-        .container {
-            max-width: 1200px;
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .search-box {
+            position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
         }
 
         .card {
             background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
             overflow: hidden;
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary);
         }
 
         .card-header {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            padding: 1.25rem 1.5rem;
+            padding: 1.5rem 2rem;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.1rem;
         }
 
@@ -95,10 +355,10 @@
         .upload-section {
             background: white;
             padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
         }
 
         .upload-area {
@@ -180,11 +440,11 @@
         .preview-section {
             background: white;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
             display: none;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
 
         .preview-section.active {
@@ -217,12 +477,12 @@
         .progress-section {
             background: white;
             padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
             display: none;
             text-align: center;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
 
         .progress-section.active {
@@ -245,10 +505,10 @@
         .results-section {
             background: white;
             padding: 2.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             display: none;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
 
         .results-section.active {
@@ -407,235 +667,224 @@
             font-weight: 500;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
         }
 
-        .logo-img {
-            height: 50px;
-            width: auto;
-            object-fit: contain;
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
         }
 
-        /* Breadcrumb Styles */
-        .breadcrumb-container {
-            background: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .breadcrumb {
+        .sidebar::-webkit-scrollbar-track {
             background: transparent;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-            align-items: center;
         }
 
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "/";
-            display: inline-block;
-            padding: 0 0.5rem;
-            color: var(--text);
-            font-weight: 400;
-        }
-
-        .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .breadcrumb-item.active {
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .breadcrumb-item.active a {
-            color: var(--text-dark);
-            pointer-events: none;
-            cursor: default;
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--danger);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .user-name {
-            margin: 0;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95rem;
-        }
-
-        .logout-btn {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-
-        .login-btn-header {
+        .sidebar::-webkit-scrollbar-thumb:hover {
             background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .login-btn-header:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img" style="height: 50px; width: auto;">
-                    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Products Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Business Alerts Notification</span>
+                </a>
+                <a href="admin_business_analytics.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Business Analytics</span>
+                </a>
+                <a href="admin_price_alert_tracking.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Price Alerts Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item active">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+                <a href="admin_reports_review.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports Review</span>
+                </a>
+                <a href="admin-product-management.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Product Management</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
                 </div>
-                <div class="col-auto ms-auto">
-                    <!-- User Section (shown when logged in) -->
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">John Doe</div>
+            </div>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Bulk Import Products</h1>
+                <p class="page-subtitle">Import multiple products at once from JSON file</p>
+            </div>
+
+            <!-- Analytics Charts Section -->
+            <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.75rem; margin-bottom: 2.25rem;">
+                <div class="card">
+                    <div class="card-header">Imports Over Time</div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; width: 100%; height: 300px; overflow: hidden;">
+                            <canvas id="importsOverTimeChart"></canvas>
                         </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
                     </div>
-                    <!-- Login Button (shown when not logged in) -->
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Bulk Import
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <!-- Page Title Section -->
-        <div class="page-title-section" style="margin-bottom: 2rem; padding: 1.5rem 0;">
-            <h1 style="font-size: 2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
-                Bulk Import Products
-            </h1>
-            <p style="color: var(--text); margin: 0; font-size: 1rem;">Import multiple products at once from JSON file</p>
-        </div>
-
-        <!-- Analytics Charts Section -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
                 <div class="card">
+                    <div class="card-header">Success vs Failed Imports</div>
                     <div class="card-body">
-                        <h3>Imports Over Time</h3>
-                        <canvas id="importsOverTimeChart" style="max-height: 300px;"></canvas>
+                        <div class="chart-container" style="position: relative; width: 100%; height: 300px; overflow: hidden;">
+                            <canvas id="importStatusChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Success vs Failed Imports</h3>
-                        <canvas id="importStatusChart" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
+            <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.75rem; margin-bottom: 2.25rem;">
                 <div class="card">
+                    <div class="card-header">Products by Category</div>
                     <div class="card-body">
-                        <h3>Products by Category</h3>
-                        <canvas id="categoryChart" style="max-height: 300px;"></canvas>
+                        <div class="chart-container" style="position: relative; width: 100%; height: 300px; overflow: hidden;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Products by Brand</div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; width: 100%; height: 300px; overflow: hidden;">
+                            <canvas id="brandChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Products by Brand</h3>
-                        <canvas id="brandChart" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- API Configuration -->
         <div class="alert alert-info" id="apiConfigAlert" style="display: none;">
@@ -795,485 +1044,15 @@
             </div>
         </div>
 
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+        </div>
     </div>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="assets/scripts/admin-bulk-import.js"></script>
-    <script>
-        // Load saved API URL from localStorage
-        function loadApiUrl() {
-            const savedUrl = localStorage.getItem('comparehubprices_api_url');
-            const defaultUrl = 'https://acc.comparehubprices.site/data';
-            
-            if (savedUrl) {
-                API_CONFIG.BASE_URL = savedUrl;
-                document.getElementById('apiUrlInput').value = savedUrl;
-                document.getElementById('apiConfigAlert').style.display = 'none';
-            } else {
-                // Use default domain
-                API_CONFIG.BASE_URL = defaultUrl;
-                document.getElementById('apiUrlInput').value = defaultUrl;
-                document.getElementById('apiConfigAlert').style.display = 'none';
-            }
-        }
-
-        // Save API URL to localStorage
-        function saveApiUrl() {
-            const apiUrl = document.getElementById('apiUrlInput').value.trim();
-            if (!apiUrl) {
-                alert('Please enter a valid API URL');
-                return;
-            }
-            
-            // Remove trailing slash if present
-            const cleanUrl = apiUrl.replace(/\/$/, '');
-            
-            // Validate URL format
-            if (!cleanUrl.startsWith('https://')) {
-                alert('Please enter a valid API URL (should start with https://)');
-                return;
-            }
-            
-            API_CONFIG.BASE_URL = cleanUrl;
-            localStorage.setItem('comparehubprices_api_url', cleanUrl);
-            document.getElementById('apiConfigAlert').style.display = 'none';
-            
-            // Use showAlert if available, otherwise use alert
-            if (typeof showAlert === 'function') {
-                showAlert('API URL saved successfully!', 'success');
-            } else {
-                alert('API URL saved successfully!');
-            }
-        }
-
-        // Chart instances
-        let importsOverTimeChart = null;
-        let importStatusChart = null;
-        let categoryChart = null;
-        let brandChart = null;
-        let importHistory = JSON.parse(localStorage.getItem('importHistory') || '[]');
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadApiUrl();
-            checkLoginState();
-            initializeCharts();
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-        });
-
-        // Check login state and update header
-        async function checkLoginState() {
-            const userSection = document.getElementById('userSection');
-            const loginBtnHeader = document.getElementById('loginBtnHeader');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-
-            try {
-                const result = await window.adminAWSAuthService.getUserInfo();
-                
-                if (result.success && result.user) {
-                    const user = result.user;
-                    let displayName = '';
-                    let initials = '';
-
-                    if (user.givenName && user.familyName) {
-                        displayName = `${user.givenName} ${user.familyName}`;
-                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                    } else if (user.givenName) {
-                        displayName = user.givenName;
-                        initials = user.givenName.substring(0, 2).toUpperCase();
-                    } else if (user.email) {
-                        const name = user.email.split('@')[0];
-                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                        initials = name.substring(0, 2).toUpperCase();
-                    } else {
-                        displayName = 'Admin User';
-                        initials = 'AU';
-                    }
-
-                    userAvatar.textContent = initials;
-                    userName.textContent = displayName;
-
-                    userSection.style.display = 'flex';
-                    loginBtnHeader.style.display = 'none';
-                } else {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                userSection.style.display = 'none';
-                loginBtnHeader.style.display = 'inline-flex';
-            }
-        }
-
-        // Initialize Analytics Charts
-        function initializeCharts() {
-            // Chart 1: Imports Over Time (Line Chart)
-            const importsOverTimeCtx = document.getElementById('importsOverTimeChart');
-            if (importsOverTimeCtx) {
-                const timeData = calculateImportsOverTime();
-                importsOverTimeChart = new Chart(importsOverTimeCtx, {
-                    type: 'line',
-                    data: {
-                        labels: timeData.labels,
-                        datasets: [{
-                            label: 'Products Imported',
-                            data: timeData.data,
-                            borderColor: 'rgb(0, 123, 255)',
-                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 2: Success vs Failed Imports (Pie Chart)
-            const importStatusCtx = document.getElementById('importStatusChart');
-            if (importStatusCtx) {
-                const statusData = calculateImportStatus();
-                importStatusChart = new Chart(importStatusCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: statusData.labels,
-                        datasets: [{
-                            data: statusData.data,
-                            backgroundColor: [
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(255, 193, 7, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(40, 167, 69)',
-                                'rgb(220, 53, 69)',
-                                'rgb(255, 193, 7)'
-                            ],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 3: Products by Category (Bar Chart)
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                const categoryData = calculateCategoryDistribution();
-                categoryChart = new Chart(categoryCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: categoryData.labels,
-                        datasets: [{
-                            label: 'Products',
-                            data: categoryData.data,
-                            backgroundColor: 'rgba(0, 123, 255, 0.8)',
-                            borderColor: 'rgb(0, 123, 255)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 4: Products by Brand (Doughnut Chart)
-            const brandCtx = document.getElementById('brandChart');
-            if (brandCtx) {
-                const brandData = calculateBrandDistribution();
-                brandChart = new Chart(brandCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: brandData.labels,
-                        datasets: [{
-                            data: brandData.data,
-                            backgroundColor: [
-                                'rgba(0, 123, 255, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(255, 193, 7, 0.8)',
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(108, 117, 125, 0.8)',
-                                'rgba(23, 162, 184, 0.8)',
-                                'rgba(255, 87, 34, 0.8)',
-                                'rgba(156, 39, 176, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(0, 123, 255)',
-                                'rgb(40, 167, 69)',
-                                'rgb(255, 193, 7)',
-                                'rgb(220, 53, 69)',
-                                'rgb(108, 117, 125)',
-                                'rgb(23, 162, 184)',
-                                'rgb(255, 87, 34)',
-                                'rgb(156, 39, 176)'
-                            ],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // Calculate imports over time
-        function calculateImportsOverTime() {
-            const last7Days = [];
-            const today = new Date();
-            
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                last7Days.push(dateStr);
-            }
-            
-            const labels = last7Days.map(date => {
-                const d = new Date(date);
-                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            });
-            
-            const data = last7Days.map(date => {
-                return importHistory.filter(importItem => {
-                    if (!importItem.date) return false;
-                    const importDate = new Date(importItem.date).toISOString().split('T')[0];
-                    return importDate === date;
-                }).reduce((sum, item) => sum + (item.successful || 0), 0);
-            });
-            
-            return { labels, data };
-        }
-
-        // Calculate import status distribution
-        function calculateImportStatus() {
-            const totalSuccessful = importHistory.reduce((sum, item) => sum + (item.successful || 0), 0);
-            const totalFailed = importHistory.reduce((sum, item) => sum + (item.failed || 0), 0);
-            const totalSkipped = importHistory.reduce((sum, item) => sum + (item.skipped || 0), 0);
-            
-            return {
-                labels: ['Successful', 'Failed', 'Skipped'],
-                data: [totalSuccessful, totalFailed, totalSkipped]
-            };
-        }
-
-        // Calculate category distribution
-        function calculateCategoryDistribution() {
-            if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
-                return { labels: [], data: [] };
-            }
-            
-            const categories = {};
-            
-            productsData.forEach(product => {
-                const category = product.category || 'Unknown';
-                categories[category] = (categories[category] || 0) + 1;
-            });
-            
-            const sorted = Object.entries(categories)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10);
-            
-            return {
-                labels: sorted.map(([cat]) => cat),
-                data: sorted.map(([, count]) => count)
-            };
-        }
-
-        // Calculate brand distribution
-        function calculateBrandDistribution() {
-            if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
-                return { labels: [], data: [] };
-            }
-            
-            const brands = {};
-            
-            productsData.forEach(product => {
-                const brand = product.brand || 'Unknown';
-                brands[brand] = (brands[brand] || 0) + 1;
-            });
-            
-            const sorted = Object.entries(brands)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 8);
-            
-            return {
-                labels: sorted.map(([brand]) => brand),
-                data: sorted.map(([, count]) => count)
-            };
-        }
-
-        // Save import history
-        function saveImportHistory(data) {
-            const importRecord = {
-                date: new Date().toISOString(),
-                successful: data.successful || data.created || 0,
-                failed: data.failed || data.errors?.length || 0,
-                skipped: data.skipped || 0,
-                total: typeof productsData !== 'undefined' ? productsData.length : 0
-            };
-            
-            importHistory.push(importRecord);
-            
-            // Keep only last 30 days
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            importHistory = importHistory.filter(item => {
-                const itemDate = new Date(item.date);
-                return itemDate >= thirtyDaysAgo;
-            });
-            
-            localStorage.setItem('importHistory', JSON.stringify(importHistory));
-        }
-
-        // Update charts with real data
-        function updateCharts() {
-            // Update Chart 1: Imports Over Time
-            if (importsOverTimeChart) {
-                const timeData = calculateImportsOverTime();
-                importsOverTimeChart.data.labels = timeData.labels;
-                importsOverTimeChart.data.datasets[0].data = timeData.data;
-                importsOverTimeChart.update();
-            }
-
-            // Update Chart 2: Import Status
-            if (importStatusChart) {
-                const statusData = calculateImportStatus();
-                importStatusChart.data.labels = statusData.labels;
-                importStatusChart.data.datasets[0].data = statusData.data;
-                importStatusChart.update();
-            }
-
-            // Update Chart 3: Category Distribution
-            if (categoryChart) {
-                const categoryData = calculateCategoryDistribution();
-                categoryChart.data.labels = categoryData.labels;
-                categoryChart.data.datasets[0].data = categoryData.data;
-                categoryChart.update();
-            }
-
-            // Update Chart 4: Brand Distribution
-            if (brandChart) {
-                const brandData = calculateBrandDistribution();
-                brandChart.data.labels = brandData.labels;
-                brandChart.data.datasets[0].data = brandData.data;
-                brandChart.update();
-            }
-        }
-
-        // Override or extend the showResults function from admin-bulk-import.js
-        const originalShowResults = window.showResults;
-        window.showResults = function(data) {
-            // Call original function if it exists
-            if (originalShowResults) {
-                originalShowResults(data);
-            }
-            
-            // Save import history and update charts
-            saveImportHistory(data);
-            updateCharts();
-        };
-
-        // Override or extend file processing to update charts
-        const originalProcessFile = window.processFile;
-        if (typeof window.processFile === 'function') {
-            window.processFile = function(file) {
-                if (originalProcessFile) {
-                    originalProcessFile(file);
-                }
-                // Update charts when file is loaded
-                setTimeout(updateCharts, 100);
-            };
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            if (logoutBtn) {
-                logoutBtn.disabled = true;
-                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
-            }
-            
-            try {
-                const result = await window.adminAWSAuthService.logout();
-                
-                if (result.success) {
-                    console.log('Logout successful:', result.message);
-                    
-                    if (result.warning) {
-                        console.warn('Logout warning:', result.warning);
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                } else {
-                    console.error('Logout failed:', result.message || result.error);
-                }
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                window.location.href = 'admin-login.html';
-            }
-        }
-    </script>
+    <script src="assets/scripts/admin-bulk-import-charts.js"></script>
 </body>
 </html>
 

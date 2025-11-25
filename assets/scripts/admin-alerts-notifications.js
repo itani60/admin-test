@@ -895,6 +895,16 @@ function initializeCharts() {
     // Chart 1: Notifications Over Time (Line Chart)
     const notificationsOverTimeCtx = document.getElementById('notificationsOverTimeChart');
     if (notificationsOverTimeCtx) {
+        // Prevent wheel/scroll events from affecting the chart
+        const preventScroll = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        
+        notificationsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
+        notificationsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        
         const timeData = calculateNotificationsOverTime();
         notificationsOverTimeChart = new Chart(notificationsOverTimeCtx, {
             type: 'line',
@@ -937,7 +947,12 @@ function initializeCharts() {
                             display: false
                         }
                     }
-                }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
     }
@@ -945,6 +960,15 @@ function initializeCharts() {
     // Chart 2: Notification Types Distribution (Pie Chart)
     const notificationTypesCtx = document.getElementById('notificationTypesChart');
     if (notificationTypesCtx) {
+        // Prevent wheel/scroll events from affecting the chart
+        const preventScroll = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        
+        notificationTypesCtx.addEventListener('wheel', preventScroll, { passive: false });
+        notificationTypesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const typesData = calculateNotificationTypes();
         notificationTypesChart = new Chart(notificationTypesCtx, {
             type: 'pie',
@@ -987,7 +1011,8 @@ function initializeCharts() {
                         display: true,
                         position: 'bottom'
                     }
-                }
+                },
+                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
     }
@@ -995,6 +1020,15 @@ function initializeCharts() {
     // Chart 3: Activity by Category (Bar Chart)
     const activityByCategoryCtx = document.getElementById('activityByCategoryChart');
     if (activityByCategoryCtx) {
+        // Prevent wheel/scroll events from affecting the chart
+        const preventScroll = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        
+        activityByCategoryCtx.addEventListener('wheel', preventScroll, { passive: false });
+        activityByCategoryCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const categoryData = calculateActivityByCategory();
         activityByCategoryChart = new Chart(activityByCategoryCtx, {
             type: 'bar',
@@ -1044,7 +1078,12 @@ function initializeCharts() {
                             display: false
                         }
                     }
-                }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
     }
@@ -1052,6 +1091,15 @@ function initializeCharts() {
     // Chart 4: Read vs Unread Status (Doughnut Chart)
     const readStatusCtx = document.getElementById('readStatusChart');
     if (readStatusCtx) {
+        // Prevent wheel/scroll events from affecting the chart
+        const preventScroll = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        
+        readStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
+        readStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const statusData = calculateReadStatus();
         readStatusChart = new Chart(readStatusCtx, {
             type: 'doughnut',
@@ -1078,7 +1126,8 @@ function initializeCharts() {
                         display: true,
                         position: 'bottom'
                     }
-                }
+                },
+                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
     }

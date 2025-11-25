@@ -649,174 +649,314 @@ function showUserDetailsModal(email, accountType) {
     const suspendedDate = user.suspendedAt ? formatDate(user.suspendedAt) : null;
     const unsuspendedDate = user.unsuspendedAt ? formatDate(user.unsuspendedAt) : null;
     
-    // Build user details HTML
+    // Build user details HTML with modern card-based design
     let detailsHTML = `
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
-                    ${getInitials(user.displayName || user.email)}
+        <style>
+            .user-detail-card {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-bottom: 1.25rem;
+                border: 2px solid #bfdbfe;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            }
+            .user-detail-card-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid #bfdbfe;
+            }
+            .user-detail-card-header i {
+                font-size: 1.25rem;
+                color: #2563eb;
+            }
+            .user-detail-card-title {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0;
+            }
+            .user-detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.25rem;
+            }
+            .user-detail-item {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .user-detail-label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #64748b;
+            }
+            .user-detail-value {
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: #0f172a;
+            }
+            .user-profile-header {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                padding: 2.5rem 2rem;
+                border-bottom: 2px solid #bfdbfe;
+            }
+            .user-profile-avatar {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 2.5rem;
+                border: 4px solid white;
+                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+                margin: 0 auto 1.25rem;
+            }
+            .user-profile-name {
+                font-size: 1.75rem;
+                font-weight: 900;
+                color: #0f172a;
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
+            .user-profile-email {
+                font-size: 1rem;
+                color: #64748b;
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+            .user-profile-badges {
+                display: flex;
+                justify-content: center;
+                gap: 0.75rem;
+                flex-wrap: wrap;
+            }
+        </style>
+        
+        <!-- User Profile Header -->
+        <div class="user-profile-header">
+            <div class="user-profile-avatar">
+                ${getInitials(user.displayName || user.email)}
+            </div>
+            <h3 class="user-profile-name">${escapeHtml(user.displayName || user.email)}</h3>
+            <p class="user-profile-email">${escapeHtml(user.email)}</p>
+            <div class="user-profile-badges">
+                ${getAccountTypeBadge(user.accountType)}
+                ${getStatusBadge(user)}
+                ${user.verified ? '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Verified</span>' : '<span class="badge badge-warning"><i class="fas fa-exclamation-circle"></i> Not Verified</span>'}
+            </div>
+        </div>
+        
+        <div style="padding: 2rem;">
+            <!-- Account Information Card -->
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h6 class="user-detail-card-title">Account Information</h6>
                 </div>
-                <h4>${escapeHtml(user.displayName || user.email)}</h4>
-                <p class="text-muted mb-0">${escapeHtml(user.email)}</p>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-user-tag"></i> Account Type:</strong>
-                <div class="mt-1">${getAccountTypeBadge(user.accountType)}</div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-info-circle"></i> Status:</strong>
-                <div class="mt-1">${getStatusBadge(user)}</div>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-check-circle"></i> Email Verified:</strong>
-                <div class="mt-1">
-                    ${user.verified ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Not Verified</span>'}
+                <div class="user-detail-grid">
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-user-tag"></i> Account Type</div>
+                        <div class="user-detail-value">${getAccountTypeBadge(user.accountType)}</div>
+                    </div>
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-info-circle"></i> Status</div>
+                        <div class="user-detail-value">${getStatusBadge(user)}</div>
+                    </div>
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-check-circle"></i> Email Verified</div>
+                        <div class="user-detail-value">${user.verified ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Not Verified</span>'}</div>
+                    </div>
+                    ${user.userId ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-id-card"></i> User ID</div>
+                        <div class="user-detail-value"><code style="font-size: 0.85rem; background: #eff6ff; padding: 0.25rem 0.5rem; border-radius: 6px;">${escapeHtml(user.userId)}</code></div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-calendar"></i> Account Created:</strong>
-                <div class="mt-1">${createdDate}</div>
+            
+            <!-- Timeline Information Card -->
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-clock"></i>
+                    <h6 class="user-detail-card-title">Timeline</h6>
+                </div>
+                <div class="user-detail-grid">
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-calendar-plus"></i> Account Created</div>
+                        <div class="user-detail-value">${createdDate}</div>
+                    </div>
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-sign-in-alt"></i> Last Login</div>
+                        <div class="user-detail-value">${lastLogin}</div>
+                    </div>
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-edit"></i> Last Updated</div>
+                        <div class="user-detail-value">${updatedDate}</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-sign-in-alt"></i> Last Login:</strong>
-                <div class="mt-1">${lastLogin}</div>
+            
+            <!-- Personal Information Card -->
+            ${(user.givenName || user.familyName) ? `
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-user"></i>
+                    <h6 class="user-detail-card-title">Personal Information</h6>
+                </div>
+                <div class="user-detail-grid">
+                    ${user.givenName ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-user"></i> First Name</div>
+                        <div class="user-detail-value">${escapeHtml(user.givenName)}</div>
+                    </div>
+                    ` : ''}
+                    ${user.familyName ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-user"></i> Last Name</div>
+                        <div class="user-detail-value">${escapeHtml(user.familyName)}</div>
+                    </div>
+                    ` : ''}
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <strong><i class="fas fa-edit"></i> Last Updated:</strong>
-                <div class="mt-1">${updatedDate}</div>
+            ` : ''}
+            
+            <!-- Business Information Card -->
+            ${(user.accountType === 'business' && user.businessName) ? `
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-building"></i>
+                    <h6 class="user-detail-card-title">Business Information</h6>
+                </div>
+                <div class="user-detail-grid">
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-store"></i> Business Name</div>
+                        <div class="user-detail-value">${escapeHtml(user.businessName || 'N/A')}</div>
+                    </div>
+                    ${user.businessNumber ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-phone"></i> Business Phone</div>
+                        <div class="user-detail-value">${escapeHtml(user.businessNumber)}</div>
+                    </div>
+                    ` : ''}
+                </div>
             </div>
+            ` : ''}
+            
+            <!-- Suspension History Card -->
+            ${(user.suspensionReason || user.status === 'suspended' || suspendedDate) ? `
+            <div class="user-detail-card" style="border-left: 4px solid #f59e0b;">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-ban" style="color: #f59e0b;"></i>
+                    <h6 class="user-detail-card-title">Suspension History</h6>
+                </div>
+                <div class="user-detail-grid">
+                    ${user.suspensionReason ? `
+                    <div class="user-detail-item" style="grid-column: 1 / -1;">
+                        <div class="user-detail-label"><i class="fas fa-exclamation-triangle"></i> Suspension Reason</div>
+                        <div class="user-detail-value" style="background: #fff7ed; padding: 1rem; border-radius: 8px; border-left: 3px solid #f59e0b; color: #92400e; font-weight: 500;">${escapeHtml(user.suspensionReason)}</div>
+                    </div>
+                    ` : ''}
+                    ${suspendedDate ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-calendar-times"></i> Suspended At</div>
+                        <div class="user-detail-value">${suspendedDate}</div>
+                    </div>
+                    ` : ''}
+                    ${unsuspendedDate ? `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-calendar-check"></i> Unsuspended At</div>
+                        <div class="user-detail-value">${unsuspendedDate}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+            ` : ''}
+            
+            <!-- Additional Information Card -->
+            ${(() => {
+                const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
+                const hasMetadata = metadataFields.some(field => user[field]);
+                if (!hasMetadata) return '';
+                
+                let metadataHTML = `
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h6 class="user-detail-card-title">Additional Information</h6>
+                </div>
+                <div class="user-detail-grid">
+                `;
+                
+                if (user.city || user.province) {
+                    metadataHTML += `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-location-dot"></i> Location</div>
+                        <div class="user-detail-value">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
+                    </div>
+                    `;
+                }
+                
+                if (user.phoneNumber) {
+                    metadataHTML += `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-phone"></i> Phone Number</div>
+                        <div class="user-detail-value">${escapeHtml(user.phoneNumber)}</div>
+                    </div>
+                    `;
+                }
+                
+                if (user.address) {
+                    metadataHTML += `
+                    <div class="user-detail-item" style="grid-column: 1 / -1;">
+                        <div class="user-detail-label"><i class="fas fa-home"></i> Address</div>
+                        <div class="user-detail-value">${escapeHtml(user.address)}</div>
+                    </div>
+                    `;
+                }
+                
+                if (user.postalCode) {
+                    metadataHTML += `
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-mail-bulk"></i> Postal Code</div>
+                        <div class="user-detail-value">${escapeHtml(user.postalCode)}</div>
+                    </div>
+                    `;
+                }
+                
+                metadataHTML += `
+                </div>
+            </div>
+                `;
+                return metadataHTML;
+            })()}
+            
+            <!-- Authentication Provider Card -->
+            ${user.provider ? `
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-key"></i>
+                    <h6 class="user-detail-card-title">Authentication</h6>
+                </div>
+                <div class="user-detail-grid">
+                    <div class="user-detail-item">
+                        <div class="user-detail-label"><i class="fas fa-shield-alt"></i> Provider</div>
+                        <div class="user-detail-value"><span class="badge badge-info">${escapeHtml(user.provider)}</span></div>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
         </div>
     `;
-    
-    // Add user ID if available
-    if (user.userId) {
-        detailsHTML += `
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <strong><i class="fas fa-id-card"></i> User ID:</strong>
-                    <div class="mt-1"><code>${escapeHtml(user.userId)}</code></div>
-                </div>
-            </div>
-        `;
-    }
-    
-    // Add name fields if available
-    if (user.givenName || user.familyName) {
-        detailsHTML += `
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <strong><i class="fas fa-user"></i> First Name:</strong>
-                    <div class="mt-1">${escapeHtml(user.givenName || 'N/A')}</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong><i class="fas fa-user"></i> Last Name:</strong>
-                    <div class="mt-1">${escapeHtml(user.familyName || 'N/A')}</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    // Add business-specific fields
-    if (user.accountType === 'business' && user.businessName) {
-        detailsHTML += `
-            <hr>
-            <h6 class="mb-3"><i class="fas fa-building"></i> Business Information</h6>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <strong>Business Name:</strong>
-                    <div class="mt-1">${escapeHtml(user.businessName || 'N/A')}</div>
-                </div>
-                ${user.businessNumber ? `
-                <div class="col-md-6 mb-3">
-                    <strong>Business Phone:</strong>
-                    <div class="mt-1">${escapeHtml(user.businessNumber)}</div>
-                </div>
-                ` : ''}
-            </div>
-        `;
-    }
-    
-    // Add suspension history
-    if (user.suspensionReason || user.status === 'suspended' || suspendedDate) {
-        detailsHTML += `
-            <hr>
-            <h6 class="mb-3"><i class="fas fa-ban"></i> Suspension History</h6>
-            <div class="row">
-                ${user.suspensionReason ? `
-                <div class="col-12 mb-3">
-                    <strong>Suspension Reason:</strong>
-                    <div class="mt-1 alert alert-warning">${escapeHtml(user.suspensionReason)}</div>
-                </div>
-                ` : ''}
-                ${suspendedDate ? `
-                <div class="col-md-6 mb-3">
-                    <strong>Suspended At:</strong>
-                    <div class="mt-1">${suspendedDate}</div>
-                </div>
-                ` : ''}
-                ${unsuspendedDate ? `
-                <div class="col-md-6 mb-3">
-                    <strong>Unsuspended At:</strong>
-                    <div class="mt-1">${unsuspendedDate}</div>
-                </div>
-                ` : ''}
-            </div>
-        `;
-    }
-    
-    // Add additional metadata if available
-    const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
-    const hasMetadata = metadataFields.some(field => user[field]);
-    
-    if (hasMetadata) {
-        detailsHTML += `
-            <hr>
-            <h6 class="mb-3"><i class="fas fa-map-marker-alt"></i> Additional Information</h6>
-            <div class="row">
-        `;
-        
-        if (user.city || user.province) {
-            detailsHTML += `
-                <div class="col-md-6 mb-3">
-                    <strong>Location:</strong>
-                    <div class="mt-1">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
-                </div>
-            `;
-        }
-        
-        if (user.phoneNumber) {
-            detailsHTML += `
-                <div class="col-md-6 mb-3">
-                    <strong>Phone Number:</strong>
-                    <div class="mt-1">${escapeHtml(user.phoneNumber)}</div>
-                </div>
-            `;
-        }
-        
-        detailsHTML += `</div>`;
-    }
-    
-    // Add provider information
-    if (user.provider) {
-        detailsHTML += `
-            <hr>
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <strong><i class="fas fa-key"></i> Authentication Provider:</strong>
-                    <div class="mt-1">${escapeHtml(user.provider)}</div>
-                </div>
-            </div>
-        `;
-    }
     
     content.innerHTML = detailsHTML;
     modal.show();

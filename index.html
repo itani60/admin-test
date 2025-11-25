@@ -430,6 +430,18 @@
             border: 2px solid var(--border);
         }
 
+        .chart-card canvas {
+            touch-action: pan-y;
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+
         .chart-header {
             display: flex;
             justify-content: space-between;
@@ -786,10 +798,9 @@
                             <i class="fas fa-dollar-sign"></i>
                         </div>
                     </div>
-                    <div class="stat-value">$45,231</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>23.1% from last month</span>
+                    <div class="stat-value" style="font-size: 1.5rem;">Coming Soon</div>
+                    <div class="stat-change" style="color: var(--text);">
+                        <span>Data will be available shortly</span>
                     </div>
                 </div>
             </div>
@@ -800,7 +811,9 @@
                         <h3 class="chart-title">User Growth</h3>
                         <i class="fas fa-ellipsis-h" style="color: var(--text); cursor: pointer;"></i>
                     </div>
-                    <canvas id="userGrowthChart" height="300"></canvas>
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -941,7 +954,25 @@
         function initCharts() {
             const userGrowthCtx = document.getElementById('userGrowthChart');
             if (userGrowthCtx) {
-                new Chart(userGrowthCtx, {
+                // Prevent wheel/scroll events from affecting the chart
+                const preventScroll = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                };
+                
+                userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
+                userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+                
+                // Prevent touch events from interfering with page scroll
+                userGrowthCtx.addEventListener('touchstart', (e) => {
+                    // Only prevent if it's a multi-touch gesture (pinch/zoom)
+                    if (e.touches.length > 1) {
+                        e.stopPropagation();
+                    }
+                }, { passive: true });
+
+                const chart = new Chart(userGrowthCtx, {
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -1018,7 +1049,8 @@
                         interaction: {
                             intersect: false,
                             mode: 'index'
-                        }
+                        },
+                        events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                     }
                 });
             }

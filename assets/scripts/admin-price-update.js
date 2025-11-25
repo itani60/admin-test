@@ -809,3 +809,89 @@ document.getElementById('productSearch').addEventListener('keypress', function(e
     }
 });
 
+// Setup sidebar toggle
+function setupSidebar() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (menuToggle && sidebar && overlay) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+}
+
+// Check login state and update header
+async function checkLoginState() {
+    try {
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.warn('Admin auth service not available');
+            return;
+        }
+
+        const result = await window.adminAWSAuthService.getUserInfo();
+        
+        if (result.success && result.user) {
+            const user = result.user;
+            let displayName = '';
+            let initials = '';
+
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
+            } else {
+                displayName = 'Admin User';
+                initials = 'AU';
+            }
+
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            if (userAvatar) userAvatar.textContent = initials;
+            if (userName) userName.textContent = displayName;
+        } else {
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error checking login state:', error);
+        window.location.href = 'admin-login.html';
+    }
+}
+
+// Handle logout
+async function handleLogout() {
+    try {
+        await window.adminAWSAuthService.logout();
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        window.location.href = 'admin-login.html';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setupSidebar();
+    checkLoginState();
+    
+    // Attach logout handler
+    const userProfile = document.getElementById('userProfile');
+    if (userProfile) {
+        userProfile.addEventListener('click', handleLogout);
+    }
+});
+

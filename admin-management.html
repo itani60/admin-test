@@ -6,23 +6,26 @@
     <title>User Management | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -32,138 +35,394 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1400px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        /* Breadcrumb Styles */
-        .breadcrumb-container {
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
             background: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
         }
 
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
             display: flex;
-            flex-wrap: wrap;
-            list-style: none;
             align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "/";
-            display: inline-block;
-            padding: 0 0.5rem;
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             color: var(--text);
+            margin-bottom: 0.875rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .search-box {
+            position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
             font-weight: 400;
         }
 
-        .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
         }
 
-        .breadcrumb-item a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .breadcrumb-item.active {
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .page-title-section {
-            margin-bottom: 2rem;
-        }
-
-        .page-title-section h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .page-title-section p {
-            color: var(--text);
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        /* Stats Bar */
-        .stats-bar {
+        .stat-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 1rem;
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
         }
 
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary);
         }
 
-        .stat-label {
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
             color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1.5px;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 700;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
         }
 
         /* Tabs */
         .management-tabs {
             background: white;
             padding: 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
         }
 
         .nav-tabs {
@@ -185,7 +444,7 @@
         }
 
         .nav-tabs .nav-link.active {
-            border-bottom-color: var(--danger);
+            border-bottom-color: var(--primary);
             color: var(--text-dark);
             font-weight: 600;
         }
@@ -198,36 +457,20 @@
         .filters-section {
             background: white;
             padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            padding-left: 2.5rem;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
         }
 
         /* Users Table */
         .users-section {
             background: white;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
         }
 
         .table-responsive {
@@ -485,199 +728,259 @@
             outline: none;
         }
 
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
         }
 
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--danger);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
         }
 
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .user-name {
-            margin: 0;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95rem;
-        }
-
-        .logout-btn {
+        .sidebar::-webkit-scrollbar-track {
             background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
         }
 
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
 
-        .login-btn-header {
+        .sidebar::-webkit-scrollbar-thumb:hover {
             background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .login-btn-header:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
-                    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Products Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Business Alerts Notification</span>
+                </a>
+                <a href="admin_business_analytics.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Business Analytics</span>
+                </a>
+                <a href="admin_price_alert_tracking.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Price Alerts Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item active">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+                <a href="admin_reports_review.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports Review</span>
+                </a>
+                <a href="admin-product-management.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Product Management</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
                 </div>
-                <div class="col-auto ms-auto">
-                    <!-- User Section (shown when logged in) -->
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">John Doe</div>
+            </div>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">User Management</h1>
+                <p class="page-subtitle">Manage users, accounts, and system access</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
                     </div>
-                    <!-- Login Button (shown when not logged in) -->
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
+                    <div class="stat-value" id="totalUsersCount">0</div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        User Management
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <!-- Page Title -->
-        <div class="page-title-section">
-            <h1><i class="fas fa-users-cog"></i> User Management</h1>
-            <p>Manage users, accounts, and system access</p>
-        </div>
-
-        <div id="alertContainer"></div>
-
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalUsersCount">0</div>
-                        <div class="stat-label">Total Users</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="adminUsersCount">0</div>
-                        <div class="stat-label">Admin Users</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="regularUsersCount">0</div>
-                        <div class="stat-label">Regular Users</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="businessUsersCount">0</div>
-                        <div class="stat-label">Business Users</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Visual Analytics Section -->
-        <div class="visual-analytics-section" style="margin: 2rem 1rem;">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h5 style="margin-bottom: 20px; color: var(--dark);">
-                            <i class="fas fa-chart-pie" style="color: var(--primary); margin-right: 10px;"></i>
-                            Account Type Distribution
-                        </h5>
-                        <canvas id="accountTypeChart" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h5 style="margin-bottom: 20px; color: var(--dark);">
-                            <i class="fas fa-chart-bar" style="color: var(--primary); margin-right: 10px;"></i>
-                            User Status Distribution
-                        </h5>
-                        <div id="statusDistributionChart" style="min-height: 250px;">
-                            <!-- Progress bars will be inserted here -->
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Admin Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-shield"></i>
                         </div>
                     </div>
+                    <div class="stat-value" id="adminUsersCount">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Regular Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="regularUsersCount">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-header">
+                        <div class="stat-title">Business Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="businessUsersCount">0</div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="chart-card" style="background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h5 style="margin-bottom: 20px; color: var(--dark);">
-                            <i class="fas fa-chart-line" style="color: var(--primary); margin-right: 10px;"></i>
-                            User Growth Over Time
-                        </h5>
-                        <canvas id="userGrowthChart" style="max-height: 300px;"></canvas>
+
+            <!-- Visual Analytics Section -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Account Type Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="accountTypeChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">User Status Distribution</h3>
+                    </div>
+                    <div id="statusDistributionChart" style="min-height: 250px; padding: 1rem;">
+                        <!-- Progress bars will be inserted here -->
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">User Growth Over Time</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
 
         <!-- Management Tabs -->
         <div class="management-tabs">
@@ -971,1105 +1274,12 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
 
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Configuration
-        let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
-        // Remove /data suffix if present
-        if (API_BASE_URL.endsWith('/data')) {
-            API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
-        }
-        const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
-        const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users`;
-        
-        // State
-        let allUsers = [];
-        let filteredUsers = [];
-        let currentPage = 1;
-        const itemsPerPage = 25;
-        let currentTab = 'users';
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            loadUsers();
-            
-            // Handle tab changes
-            const tabButtons = document.querySelectorAll('#managementTabs button[data-bs-toggle="tab"]');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('shown.bs.tab', function(e) {
-                    currentTab = e.target.getAttribute('data-bs-target').replace('#', '');
-                    applyFilters();
-                });
-            });
-        });
-
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('accountTypeFilter').addEventListener('change', applyFilters);
-            document.getElementById('statusFilter').addEventListener('change', applyFilters);
-            
-            document.getElementById('adminSearchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('adminStatusFilter').addEventListener('change', applyFilters);
-            
-            document.getElementById('regularSearchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('regularStatusFilter').addEventListener('change', applyFilters);
-            
-            document.getElementById('businessSearchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('businessStatusFilter').addEventListener('change', applyFilters);
-        }
-
-        // Load users from API
-        async function loadUsers() {
-            try {
-                // Clear any existing data first
-                allUsers = [];
-                filteredUsers = [];
-                updateStats();
-                showLoading();
-                
-                const response = await fetch(`${USERS_API}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    
-                    // Check if it's a non-admin session error
-                    if (errorData.error === 'NOT_ADMIN_SESSION' || errorData.message?.includes('requires an admin session')) {
-                        showAlert('Your session was replaced by a regular user login. Please log in as admin again.', 'warning');
-                        // Redirect to login after a short delay
-                        setTimeout(() => {
-                            window.location.href = 'admin-login.html';
-                        }, 2000);
-                        return;
-                    }
-                    
-                    throw new Error(errorData.message || `Failed to load users (HTTP ${response.status})`);
-                }
-
-                const data = await response.json();
-                
-                if (!data.success) {
-                    // Check if it's a non-admin session error
-                    if (data.error === 'NOT_ADMIN_SESSION' || data.message?.includes('requires an admin session')) {
-                        showAlert('Your session was replaced by a regular user login. Please log in as admin again.', 'warning');
-                        // Redirect to login after a short delay
-                        setTimeout(() => {
-                            window.location.href = 'admin-login.html';
-                        }, 2000);
-                        return;
-                    }
-                    
-                    throw new Error(data.message || 'Failed to load users');
-                }
-                
-                // Only use data from successful API response
-                allUsers = Array.isArray(data.users) ? data.users : [];
-                
-                // Debug: Log users with suspension reasons
-                const usersWithSuspension = allUsers.filter(u => u.suspensionReason);
-                if (usersWithSuspension.length > 0) {
-                    console.log('Users with suspension reasons:', usersWithSuspension.map(u => ({ email: u.email, reason: u.suspensionReason })));
-                } else {
-                    console.log('No users with suspension reasons found in API response');
-                }
-                
-                updateStats();
-                applyFilters();
-            } catch (error) {
-                console.error('Error loading users:', error);
-                // Clear all data on error
-                allUsers = [];
-                filteredUsers = [];
-                updateStats();
-                applyFilters();
-                showAlert('Failed to load users. Please check your connection and try again.', 'danger');
-            }
-        }
-
-        // Apply filters
-        function applyFilters() {
-            let searchTerm = '';
-            let accountTypeFilter = 'all';
-            let statusFilter = 'all';
-
-            if (currentTab === 'users') {
-                searchTerm = document.getElementById('searchInput').value.toLowerCase();
-                accountTypeFilter = document.getElementById('accountTypeFilter').value;
-                statusFilter = document.getElementById('statusFilter').value;
-            } else if (currentTab === 'admins') {
-                searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
-                accountTypeFilter = 'admin';
-                statusFilter = document.getElementById('adminStatusFilter').value;
-            } else if (currentTab === 'regular') {
-                searchTerm = document.getElementById('regularSearchInput').value.toLowerCase();
-                accountTypeFilter = 'regular';
-                statusFilter = document.getElementById('regularStatusFilter').value;
-            } else if (currentTab === 'business') {
-                searchTerm = document.getElementById('businessSearchInput').value.toLowerCase();
-                accountTypeFilter = 'business';
-                statusFilter = document.getElementById('businessStatusFilter').value;
-            }
-
-            filteredUsers = allUsers.filter(user => {
-                // Search filter
-                const matchesSearch = !searchTerm || 
-                    user.email.toLowerCase().includes(searchTerm) ||
-                    (user.displayName && user.displayName.toLowerCase().includes(searchTerm)) ||
-                    (user.givenName && user.givenName.toLowerCase().includes(searchTerm)) ||
-                    (user.familyName && user.familyName.toLowerCase().includes(searchTerm));
-
-                // Account type filter
-                const matchesAccountType = accountTypeFilter === 'all' || user.accountType === accountTypeFilter;
-
-                // Status filter
-                let userStatus = user.verified ? 'verified' : 'pending';
-                if (user.status === 'suspended') userStatus = 'suspended';
-                const matchesStatus = statusFilter === 'all' || userStatus === statusFilter;
-
-                return matchesSearch && matchesAccountType && matchesStatus;
-            });
-
-            currentPage = 1;
-            renderUsers();
-        }
-
-        // Render users table
-        function renderUsers() {
-            let containerId;
-            if (currentTab === 'users') {
-                containerId = 'usersTableContainer';
-            } else if (currentTab === 'admins') {
-                containerId = 'adminsTableContainer';
-            } else if (currentTab === 'regular') {
-                containerId = 'regularTableContainer';
-            } else if (currentTab === 'business') {
-                containerId = 'businessTableContainer';
-            }
-            const container = document.getElementById(containerId);
-            
-            if (filteredUsers.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users-slash"></i>
-                        <h4>No users found</h4>
-                        <p>No users match your current filters.</p>
-                    </div>
-                `;
-                if (currentTab === 'users') {
-                    document.getElementById('paginationContainer').style.display = 'none';
-                }
-                return;
-            }
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const pageUsers = filteredUsers.slice(startIndex, endIndex);
-
-            let html = `
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Account Type</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Last Login</th>
-                                <th>Suspension Reason</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            pageUsers.forEach(user => {
-                const statusBadge = getStatusBadge(user);
-                const accountTypeBadge = getAccountTypeBadge(user.accountType);
-                const createdDate = formatDate(user.createdAt);
-                const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
-                const initials = getInitials(user.displayName || user.email);
-                
-                // Display suspension reason if it exists (regardless of current status - for historical record)
-                let suspensionReason = '<span class="text-muted">-</span>';
-                if (user.suspensionReason) {
-                    const reasonText = escapeHtml(user.suspensionReason);
-                    const displayText = reasonText.length > 30 ? reasonText.substring(0, 30) + '...' : reasonText;
-                    suspensionReason = `<span class="text-danger" title="${reasonText}"><i class="fas fa-info-circle"></i> ${displayText}</span>`;
-                }
-
-                html += `
-                    <tr>
-                        <td>
-                            <div class="user-info" style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="Click to view details">
-                                <div class="user-avatar">${initials}</div>
-                                <div class="user-details">
-                                    <div class="user-name">${escapeHtml(user.displayName || user.email)}</div>
-                                    <div class="user-email">${escapeHtml(user.email)}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>${accountTypeBadge}</td>
-                        <td>${statusBadge}</td>
-                        <td>${createdDate}</td>
-                        <td>${lastLogin}</td>
-                        <td>${suspensionReason}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                ${user.accountType !== 'admin' ? (
-                                    user.status !== 'suspended' ? 
-                                        `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
-                                            <i class="fas fa-ban"></i>
-                                        </button>` :
-                                        `<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
-                                            <i class="fas fa-check"></i>
-                                        </button>`
-                                ) : ''}
-                                ${user.accountType !== 'admin' ? 
-                                    `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>` : 
-                                    '<span class="text-muted small">Protected</span>'
-                                }
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            container.innerHTML = html;
-            
-            if (currentTab === 'users') {
-                renderPagination();
-            }
-        }
-
-        // Render pagination
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-            const paginationContainer = document.getElementById('paginationContainer');
-            const pagination = document.getElementById('pagination');
-
-            if (totalPages <= 1) {
-                paginationContainer.style.display = 'none';
-                return;
-            }
-
-            paginationContainer.style.display = 'block';
-            pagination.innerHTML = '';
-
-            // Previous button
-            pagination.innerHTML += `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
-                </li>
-            `;
-
-            // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
-                    pagination.innerHTML += `
-                        <li class="page-item ${i === currentPage ? 'active' : ''}">
-                            <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
-                        </li>
-                    `;
-                } else if (i === currentPage - 3 || i === currentPage + 3) {
-                    pagination.innerHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-                }
-            }
-
-            // Next button
-            pagination.innerHTML += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
-                </li>
-            `;
-        }
-
-        // Change page
-        function changePage(page) {
-            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-            if (page >= 1 && page <= totalPages) {
-                currentPage = page;
-                renderUsers();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        // Chart instances
-        let accountTypeChart = null;
-        let userGrowthChart = null;
-
-        // Update statistics
-        function updateStats() {
-            document.getElementById('totalUsersCount').textContent = allUsers.length;
-            document.getElementById('adminUsersCount').textContent = allUsers.filter(u => u.accountType === 'admin').length;
-            document.getElementById('regularUsersCount').textContent = allUsers.filter(u => u.accountType === 'regular').length;
-            document.getElementById('businessUsersCount').textContent = allUsers.filter(u => u.accountType === 'business').length;
-            
-            // Update charts
-            updateCharts();
-        }
-
-        // Update visual charts
-        function updateCharts() {
-            // Account Type Distribution Chart
-            const adminCount = allUsers.filter(u => u.accountType === 'admin').length;
-            const regularCount = allUsers.filter(u => u.accountType === 'regular').length;
-            const businessCount = allUsers.filter(u => u.accountType === 'business').length;
-            
-            if (accountTypeChart) {
-                accountTypeChart.destroy();
-            }
-            
-            const accountTypeCtx = document.getElementById('accountTypeChart');
-            if (accountTypeCtx) {
-                accountTypeChart = new Chart(accountTypeCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Regular Users', 'Business Users', 'Admin Users'],
-                        datasets: [{
-                            data: [regularCount, businessCount, adminCount],
-                            backgroundColor: [
-                                '#007bff',
-                                '#17a2b8',
-                                '#dc3545'
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 15,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        if (total > 0) {
-                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                            label += context.parsed + ' (' + percentage + '%)';
-                                        } else {
-                                            label += context.parsed;
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Status Distribution (Progress Bars)
-            const verifiedCount = allUsers.filter(u => u.verified && u.status !== 'suspended').length;
-            const pendingCount = allUsers.filter(u => !u.verified && u.status !== 'suspended').length;
-            const suspendedCount = allUsers.filter(u => u.status === 'suspended').length;
-            const total = allUsers.length;
-            
-            const statusChartContainer = document.getElementById('statusDistributionChart');
-            if (statusChartContainer && total > 0) {
-                const verifiedPercent = ((verifiedCount / total) * 100).toFixed(1);
-                const pendingPercent = ((pendingCount / total) * 100).toFixed(1);
-                const suspendedPercent = ((suspendedCount / total) * 100).toFixed(1);
-                
-                statusChartContainer.innerHTML = `
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                            <span style="font-weight: 500; color: var(--dark);">Verified</span>
-                            <span style="color: var(--text);">${verifiedCount} (${verifiedPercent}%)</span>
-                        </div>
-                        <div class="progress" style="height: 25px; border-radius: 10px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: ${verifiedPercent}%; border-radius: 10px;" aria-valuenow="${verifiedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                            <span style="font-weight: 500; color: var(--dark);">Pending</span>
-                            <span style="color: var(--text);">${pendingCount} (${pendingPercent}%)</span>
-                        </div>
-                        <div class="progress" style="height: 25px; border-radius: 10px;">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: ${pendingPercent}%; border-radius: 10px;" aria-valuenow="${pendingPercent}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                            <span style="font-weight: 500; color: var(--dark);">Suspended</span>
-                            <span style="color: var(--text);">${suspendedCount} (${suspendedPercent}%)</span>
-                        </div>
-                        <div class="progress" style="height: 25px; border-radius: 10px;">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${suspendedPercent}%; border-radius: 10px;" aria-valuenow="${suspendedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // User Growth Chart (based on creation dates)
-            if (userGrowthChart) {
-                userGrowthChart.destroy();
-            }
-            
-            const userGrowthCtx = document.getElementById('userGrowthChart');
-            if (userGrowthCtx && allUsers.length > 0) {
-                // Group users by month based on createdAt
-                const monthlyData = {};
-                const currentDate = new Date();
-                const months = [];
-                
-                // Get last 12 months
-                for (let i = 11; i >= 0; i--) {
-                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                    const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                    months.push(monthKey);
-                    monthlyData[monthKey] = 0;
-                }
-                
-                // Count users by month
-                allUsers.forEach(user => {
-                    if (user.createdAt) {
-                        const userDate = new Date(user.createdAt);
-                        const monthKey = userDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                        if (monthlyData.hasOwnProperty(monthKey)) {
-                            monthlyData[monthKey]++;
-                        }
-                    }
-                });
-                
-                // Calculate cumulative totals
-                const cumulativeData = [];
-                let runningTotal = 0;
-                months.forEach(month => {
-                    runningTotal += monthlyData[month];
-                    cumulativeData.push(runningTotal);
-                });
-                
-                const monthlyCounts = months.map(month => monthlyData[month]);
-                
-                userGrowthChart = new Chart(userGrowthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [{
-                            label: 'Total Users',
-                            data: cumulativeData,
-                            borderColor: '#007bff',
-                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }, {
-                            label: 'New Users This Month',
-                            data: monthlyCounts,
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: Math.ceil(Math.max(...cumulativeData) / 10) || 1
-                                }
-                            }
-                        },
-                        interaction: {
-                            mode: 'nearest',
-                            axis: 'x',
-                            intersect: false
-                        }
-                    }
-                });
-            }
-        }
-
-        // User actions (edit and add user removed for privacy)
-
-        function showUserDetailsModal(email, accountType) {
-            const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
-            const content = document.getElementById('userDetailsContent');
-            
-            // Determine account type from current tab (source of truth)
-            // This ensures we get the correct account type based on which tab we're viewing
-            let targetAccountType = accountType;
-            
-            // Override with current tab if we're in a specific account type tab
-            if (currentTab === 'regular') {
-                targetAccountType = 'regular';
-            } else if (currentTab === 'business') {
-                targetAccountType = 'business';
-            } else if (currentTab === 'admins') {
-                targetAccountType = 'admin';
-            }
-            // If in 'users' tab, use the accountType parameter passed (or find all matches)
-            
-            // Find user in allUsers array by both email AND accountType
-            // This ensures we get the correct account when same email exists in multiple tables
-            let user = null;
-            
-            if (targetAccountType) {
-                // First try to find with the target account type
-                user = allUsers.find(u => u.email === email && u.accountType === targetAccountType);
-            }
-            
-            // If not found and we're in 'users' tab, try to find any match
-            if (!user && currentTab === 'users') {
-                user = allUsers.find(u => u.email === email);
-            }
-            
-            if (!user) {
-                content.innerHTML = `<div class="alert alert-danger">
-                    <strong>User not found</strong><br>
-                    Email: ${escapeHtml(email)}<br>
-                    Looking for account type: ${targetAccountType || 'any'}<br>
-                    Current tab: ${currentTab}
-                </div>`;
-                modal.show();
-                return;
-            }
-            
-            // Final verification: ensure the account type matches what we expect
-            if (currentTab === 'regular' && user.accountType !== 'regular') {
-                console.warn(`Account type mismatch: Expected regular, got ${user.accountType} for ${email}`);
-            } else if (currentTab === 'business' && user.accountType !== 'business') {
-                console.warn(`Account type mismatch: Expected business, got ${user.accountType} for ${email}`);
-            } else if (currentTab === 'admins' && user.accountType !== 'admin') {
-                console.warn(`Account type mismatch: Expected admin, got ${user.accountType} for ${email}`);
-            }
-            
-            // Format dates
-            const createdDate = formatDate(user.createdAt) || 'N/A';
-            const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
-            const updatedDate = user.updatedAt ? formatDate(user.updatedAt) : 'N/A';
-            const suspendedDate = user.suspendedAt ? formatDate(user.suspendedAt) : null;
-            const unsuspendedDate = user.unsuspendedAt ? formatDate(user.unsuspendedAt) : null;
-            
-            // Build user details HTML
-            let detailsHTML = `
-                <div class="row mb-4">
-                    <div class="col-12 text-center">
-                        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
-                            ${getInitials(user.displayName || user.email)}
-                        </div>
-                        <h4>${escapeHtml(user.displayName || user.email)}</h4>
-                        <p class="text-muted mb-0">${escapeHtml(user.email)}</p>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-user-tag"></i> Account Type:</strong>
-                        <div class="mt-1">${getAccountTypeBadge(user.accountType)}</div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-info-circle"></i> Status:</strong>
-                        <div class="mt-1">${getStatusBadge(user)}</div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-check-circle"></i> Email Verified:</strong>
-                        <div class="mt-1">
-                            ${user.verified ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Not Verified</span>'}
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-calendar"></i> Account Created:</strong>
-                        <div class="mt-1">${createdDate}</div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-sign-in-alt"></i> Last Login:</strong>
-                        <div class="mt-1">${lastLogin}</div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <strong><i class="fas fa-edit"></i> Last Updated:</strong>
-                        <div class="mt-1">${updatedDate}</div>
-                    </div>
-                </div>
-            `;
-            
-            // Add user ID if available
-            if (user.userId) {
-                detailsHTML += `
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <strong><i class="fas fa-id-card"></i> User ID:</strong>
-                            <div class="mt-1"><code>${escapeHtml(user.userId)}</code></div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Add name fields if available
-            if (user.givenName || user.familyName) {
-                detailsHTML += `
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong><i class="fas fa-user"></i> First Name:</strong>
-                            <div class="mt-1">${escapeHtml(user.givenName || 'N/A')}</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong><i class="fas fa-user"></i> Last Name:</strong>
-                            <div class="mt-1">${escapeHtml(user.familyName || 'N/A')}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Add business-specific fields
-            if (user.accountType === 'business' && user.businessName) {
-                detailsHTML += `
-                    <hr>
-                    <h6 class="mb-3"><i class="fas fa-building"></i> Business Information</h6>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Business Name:</strong>
-                            <div class="mt-1">${escapeHtml(user.businessName || 'N/A')}</div>
-                        </div>
-                        ${user.businessNumber ? `
-                        <div class="col-md-6 mb-3">
-                            <strong>Business Phone:</strong>
-                            <div class="mt-1">${escapeHtml(user.businessNumber)}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-            }
-            
-            // Add suspension history
-            if (user.suspensionReason || user.status === 'suspended' || suspendedDate) {
-                detailsHTML += `
-                    <hr>
-                    <h6 class="mb-3"><i class="fas fa-ban"></i> Suspension History</h6>
-                    <div class="row">
-                        ${user.suspensionReason ? `
-                        <div class="col-12 mb-3">
-                            <strong>Suspension Reason:</strong>
-                            <div class="mt-1 alert alert-warning">${escapeHtml(user.suspensionReason)}</div>
-                        </div>
-                        ` : ''}
-                        ${suspendedDate ? `
-                        <div class="col-md-6 mb-3">
-                            <strong>Suspended At:</strong>
-                            <div class="mt-1">${suspendedDate}</div>
-                        </div>
-                        ` : ''}
-                        ${unsuspendedDate ? `
-                        <div class="col-md-6 mb-3">
-                            <strong>Unsuspended At:</strong>
-                            <div class="mt-1">${unsuspendedDate}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                `;
-            }
-            
-            // Add additional metadata if available
-            const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
-            const hasMetadata = metadataFields.some(field => user[field]);
-            
-            if (hasMetadata) {
-                detailsHTML += `
-                    <hr>
-                    <h6 class="mb-3"><i class="fas fa-map-marker-alt"></i> Additional Information</h6>
-                    <div class="row">
-                `;
-                
-                if (user.city || user.province) {
-                    detailsHTML += `
-                        <div class="col-md-6 mb-3">
-                            <strong>Location:</strong>
-                            <div class="mt-1">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
-                        </div>
-                    `;
-                }
-                
-                if (user.phoneNumber) {
-                    detailsHTML += `
-                        <div class="col-md-6 mb-3">
-                            <strong>Phone Number:</strong>
-                            <div class="mt-1">${escapeHtml(user.phoneNumber)}</div>
-                        </div>
-                    `;
-                }
-                
-                detailsHTML += `</div>`;
-            }
-            
-            // Add provider information
-            if (user.provider) {
-                detailsHTML += `
-                    <hr>
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <strong><i class="fas fa-key"></i> Authentication Provider:</strong>
-                            <div class="mt-1">${escapeHtml(user.provider)}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            content.innerHTML = detailsHTML;
-            modal.show();
-        }
-
-        function showSuspendModal(email, displayName) {
-            document.getElementById('suspendUserEmail').textContent = displayName || email;
-            document.getElementById('suspendUserEmailHidden').value = email;
-            document.getElementById('suspensionReason').value = '';
-            document.getElementById('suspendUserForm').reset();
-            const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
-            modal.show();
-        }
-
-        async function confirmSuspendUser() {
-            const form = document.getElementById('suspendUserForm');
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const email = document.getElementById('suspendUserEmailHidden').value;
-            const reason = document.getElementById('suspensionReason').value;
-
-            try {
-                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: reason })
-                });
-
-                const data = await response.json().catch(() => ({}));
-
-                if (response.ok && data.success) {
-                    bootstrap.Modal.getInstance(document.getElementById('suspendUserModal')).hide();
-                    loadUsers(); // Reload users to get updated status
-                    showAlert(`User suspended successfully. Reason: ${reason}`, 'success');
-                } else {
-                    showAlert(data.message || 'Failed to suspend user', 'danger');
-                }
-            } catch (error) {
-                console.error('Error suspending user:', error);
-                showAlert('Failed to suspend user. Please try again.', 'danger');
-            }
-        }
-
-        async function unsuspendUser(email) {
-            try {
-                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/unsuspend`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const data = await response.json().catch(() => ({}));
-
-                if (response.ok && data.success) {
-                    loadUsers(); // Reload users to get updated status
-                    showAlert('User unsuspended successfully', 'success');
-                } else {
-                    showAlert(data.message || 'Failed to unsuspend user', 'danger');
-                }
-            } catch (error) {
-                console.error('Error unsuspending user:', error);
-                showAlert('Failed to unsuspend user. Please try again.', 'danger');
-            }
-        }
-
-        async function deleteUser(email) {
-            if (!confirm(`Are you sure you want to delete ${email}? This action cannot be undone.`)) return;
-
-            try {
-                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}`, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const data = await response.json().catch(() => ({}));
-
-                if (response.ok && data.success) {
-                    loadUsers(); // Reload users to reflect deletion
-                    showAlert('User deleted successfully', 'success');
-                } else {
-                    showAlert(data.message || 'Failed to delete user', 'danger');
-                }
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                showAlert('Failed to delete user. Please try again.', 'danger');
-            }
-        }
-
-        function refreshUsers() {
-            loadUsers();
-            showAlert('Refreshing users...', 'info');
-        }
-
-        function exportUsers() {
-            const csv = convertToCSV(filteredUsers);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showAlert('Users exported successfully', 'success');
-        }
-
-        // Utility functions
-        function getStatusBadge(user) {
-            let status = user.verified ? 'verified' : 'pending';
-            if (user.status === 'suspended') status = 'suspended';
-            
-            const badges = {
-                'verified': '<span class="badge badge-success">Verified</span>',
-                'pending': '<span class="badge badge-warning">Pending</span>',
-                'suspended': '<span class="badge badge-danger">Suspended</span>'
-            };
-            return badges[status] || '<span class="badge badge-secondary">Unknown</span>';
-        }
-
-        function getAccountTypeBadge(type) {
-            const badges = {
-                'admin': '<span class="badge badge-danger"><i class="fas fa-user-shield"></i> Admin</span>',
-                'business': '<span class="badge badge-info"><i class="fas fa-building"></i> Business</span>',
-                'regular': '<span class="badge badge-primary"><i class="fas fa-user"></i> Regular</span>'
-            };
-            return badges[type] || '<span class="badge badge-secondary">Unknown</span>';
-        }
-
-        function getInitials(name) {
-            if (!name) return '?';
-            const parts = name.trim().split(' ');
-            if (parts.length >= 2) {
-                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-            }
-            return name.substring(0, 2).toUpperCase();
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-ZA', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showLoading() {
-            let containerId;
-            if (currentTab === 'users') {
-                containerId = 'usersTableContainer';
-            } else if (currentTab === 'admins') {
-                containerId = 'adminsTableContainer';
-            } else if (currentTab === 'regular') {
-                containerId = 'regularTableContainer';
-            } else if (currentTab === 'business') {
-                containerId = 'businessTableContainer';
-            }
-            document.getElementById(containerId).innerHTML = `
-                <div class="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertId = 'alert-' + Date.now();
-            
-            const alertHTML = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            alertContainer.innerHTML = alertHTML;
-            
-            setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 5000);
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        function convertToCSV(data) {
-            if (data.length === 0) return '';
-            
-            const headers = ['Email', 'Name', 'Account Type', 'Status', 'Created Date', 'Last Login'];
-            const rows = data.map(user => [
-                user.email || '',
-                user.displayName || '',
-                user.accountType || '',
-                user.verified ? 'verified' : 'pending',
-                user.createdAt || '',
-                user.lastLogin || ''
-            ]);
-            
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-            ].join('\n');
-            
-            return csvContent;
-        }
-
-        // Check login state and update header
-        async function checkLoginState() {
-            const userSection = document.getElementById('userSection');
-            const loginBtnHeader = document.getElementById('loginBtnHeader');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            try {
-                const result = await window.adminAWSAuthService.getUserInfo();
-                
-                if (result.success && result.user) {
-                    const user = result.user;
-                    let displayName = '';
-                    let initials = '';
-
-                    if (user.givenName && user.familyName) {
-                        displayName = `${user.givenName} ${user.familyName}`;
-                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                    } else if (user.givenName) {
-                        displayName = user.givenName;
-                        initials = user.givenName.substring(0, 2).toUpperCase();
-                    } else if (user.email) {
-                        const name = user.email.split('@')[0];
-                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                        initials = name.substring(0, 2).toUpperCase();
-                    } else {
-                        displayName = 'Admin User';
-                        initials = 'AU';
-                    }
-
-                    userAvatar.textContent = initials;
-                    userName.textContent = displayName;
-
-                    userSection.style.display = 'flex';
-                    loginBtnHeader.style.display = 'none';
-                } else {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                userSection.style.display = 'none';
-                loginBtnHeader.style.display = 'inline-flex';
-            }
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            try {
-                await window.adminAWSAuthService.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                // HttpOnly cookie is cleared by server on logout
-                window.location.href = 'admin-login.html';
-            }
-        }
-
-        // Initialize login state check
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLoginState();
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-        });
-    </script>
+    <script src="assets/scripts/admin-management.js"></script>
 </body>
 </html>
 

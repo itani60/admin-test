@@ -6,22 +6,25 @@
     <title>Price Alert Tracking | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -31,181 +34,516 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1400px;
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
         }
 
-        .logo {
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
             display: flex;
             align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .logo-img {
-            height: 50px;
+        .sidebar-logo img {
+            height: 38px;
             width: auto;
-            object-fit: contain;
+            filter: brightness(0) invert(1);
         }
 
-        .breadcrumb-container {
-            background: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+        .sidebar-nav {
+            padding: 1.5rem 0;
         }
 
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-            align-items: center;
+        .nav-section {
+            margin-bottom: 2.5rem;
         }
 
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
-        }
-
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "/";
-            display: inline-block;
-            padding: 0 0.5rem;
-            color: var(--text);
-            font-weight: 400;
-        }
-
-        .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: var(--primary-dark);
-        }
-
-        .page-title-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .page-title-section h1 {
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-            font-size: 2rem;
-        }
-
-        .page-title-section p {
-            color: var(--text);
-            margin: 0;
-        }
-
-        .stats-bar {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: var(--text);
-            font-size: 0.9rem;
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
         }
 
-        .filters-section {
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
         }
 
         .search-box {
             position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
         .search-box i {
             position: absolute;
-            left: 1rem;
+            left: 1.125rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text);
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .search-box input {
-            padding-left: 2.5rem;
-        }
-
-        .filter-buttons {
+        .header-right {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.125rem;
         }
 
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-            background: white;
-            color: var(--text);
-            border-radius: 4px;
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
-        .filter-btn:hover {
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
             background: var(--light);
         }
 
-        .filter-btn.active {
-            background: var(--primary);
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
             border-color: var(--primary);
         }
 
-        .price-alert-section {
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1.5px;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .chart-card {
             background: white;
+            border-radius: 16px;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+        }
+
+        .chart-card canvas {
+            touch-action: pan-y;
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
+        }
+
+        .filters-section .search-box {
+            position: relative;
+        }
+
+        .filters-section .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .filters-section .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .filters-section .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Table Section */
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+        }
+
+        .table-section .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table-section h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: var(--light);
         }
 
         .badge {
@@ -241,102 +579,6 @@
             color: #000;
         }
 
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-            background: var(--light);
-            border-bottom: 2px solid var(--border);
-            font-weight: 600;
-            color: var(--text-dark);
-            padding: 1rem;
-        }
-
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-        }
-
-        .table tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .logout-btn {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-
-        .logout-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .logout-btn .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .login-btn-header {
-            padding: 0.5rem 1rem;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background 0.2s ease;
-        }
-
-        .login-btn-header:hover {
-            background: var(--primary-dark);
-            color: white;
-        }
-
         .loading-spinner {
             padding: 2rem;
             text-align: center;
@@ -354,24 +596,18 @@
             color: var(--text);
         }
 
-        .alert-item {
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .alert-item:last-child {
-            border-bottom: none;
-        }
-
         .expand-btn {
             background: none;
             border: none;
             color: var(--primary);
             cursor: pointer;
             padding: 0.25rem 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
         .expand-btn:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
@@ -379,187 +615,342 @@
             margin-top: 1rem;
             padding: 1rem;
             background: var(--light);
-            border-radius: 4px;
+            border-radius: 8px;
             display: none;
         }
 
         .alerts-detail.show {
             display: block;
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Products Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Business Alerts Notification</span>
+                </a>
+                <a href="admin_business_analytics.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Business Analytics</span>
+                </a>
+                <a href="admin_price_alert_tracking.html" class="nav-item active">
+                    <i class="fas fa-bell"></i>
+                    <span>Price Alerts Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+                <a href="admin_reports_review.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports Review</span>
+                </a>
+                <a href="admin-product-management.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Product Management</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Price Alert Tracking</h1>
+                <p class="page-subtitle">Monitor price alerts created by users, view alert statistics, and track user engagement</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div class="stat-title">Users with Alerts</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUsersCount">0</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Alerts</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalAlertsCount">0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Alerts</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="activeAlertsCount">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-header">
+                        <div class="stat-title">Inactive Alerts</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="inactiveAlertsCount">0</div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Alerts Created Over Time</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="alertsOverTimeChart"></canvas>
                     </div>
                 </div>
-                <div class="col-auto ms-auto">
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">AD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">Admin</div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Active vs Inactive Alerts</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="alertStatusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Users by Alert Count</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="topUsersChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Notification Methods Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="notificationMethodsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="searchInput" 
+                                placeholder="Search by user email or product name..."
+                            >
                         </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100" onclick="refreshAlerts()">
+                            <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                     </div>
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Price Alert Tracking
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <!-- Page Title -->
-        <div class="page-title-section">
-            <h1>Price Alert Tracking</h1>
-            <p>Monitor price alerts created by users, view alert statistics, and track user engagement</p>
-        </div>
-
-        <div id="alertContainer"></div>
-
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalUsersCount">0</div>
-                        <div class="stat-label">Users with Alerts</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalAlertsCount">0</div>
-                        <div class="stat-label">Total Alerts</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="activeAlertsCount">0</div>
-                        <div class="stat-label">Active Alerts</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="inactiveAlertsCount">0</div>
-                        <div class="stat-label">Inactive Alerts</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Analytics Charts Section -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="login-events-section">
-                    <h3>Alerts Created Over Time</h3>
-                    <canvas id="alertsOverTimeChart" style="max-height: 300px;"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="login-events-section">
-                    <h3>Active vs Inactive Alerts</h3>
-                    <canvas id="alertStatusChart" style="max-height: 300px;"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="login-events-section">
-                    <h3>Top Users by Alert Count</h3>
-                    <canvas id="topUsersChart" style="max-height: 300px;"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="login-events-section">
-                    <h3>Notification Methods Distribution</h3>
-                    <canvas id="notificationMethodsChart" style="max-height: 300px;"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filters Section -->
-        <div class="filters-section">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="searchInput" 
-                            placeholder="Search by user email or product name..."
-                        >
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" id="statusFilter">
-                        <option value="all">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-primary w-100" onclick="refreshAlerts()">
-                        <i class="fas fa-sync-alt"></i> Refresh
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>Price Alerts by User</h3>
+                    <button class="btn btn-danger btn-sm" onclick="exportAlerts()">
+                        <i class="fas fa-download"></i> Export
                     </button>
                 </div>
-            </div>
-        </div>
 
-        <!-- Price Alert Statistics Section -->
-        <div class="price-alert-section">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Price Alerts by User</h3>
-                <button class="btn btn-danger btn-sm" onclick="exportAlerts()">
-                    <i class="fas fa-download"></i> Export
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>User Email</th>
-                            <th>Total Alerts</th>
-                            <th>Active Alerts</th>
-                            <th>Inactive Alerts</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="priceAlertsContainer">
-                        <tr>
-                            <td colspan="5" class="text-center">
-                                <div class="loading-spinner">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User Email</th>
+                                <th>Total Alerts</th>
+                                <th>Active Alerts</th>
+                                <th>Inactive Alerts</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priceAlertsContainer">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -567,708 +958,7 @@
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // Configuration
-        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
-        const PRICE_ALERT_TRACKING_API = `${API_BASE_URL}/admin/admin/price-alert-tracking`;
-        
-        // State
-        let allUserStats = [];
-        let filteredUserStats = [];
-        let expandedUsers = new Set();
-        
-        // Chart instances
-        let alertsOverTimeChart = null;
-        let alertStatusChart = null;
-        let topUsersChart = null;
-        let notificationMethodsChart = null;
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            loadPriceAlertStats();
-            checkLoginState();
-            initializeCharts();
-        });
-
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('statusFilter').addEventListener('change', applyFilters);
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-        }
-
-        // Load price alert statistics from API
-        async function loadPriceAlertStats() {
-            try {
-                showLoading();
-                
-                const response = await fetch(`${PRICE_ALERT_TRACKING_API}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const responseData = await response.json();
-                    if (responseData.success && responseData.data) {
-                        const stats = responseData.data;
-                        allUserStats = stats.userStats || [];
-                        updateStats(stats);
-                        applyFilters();
-                        updateCharts();
-                    } else {
-                        throw new Error(responseData.message || 'Invalid response format');
-                    }
-                } else {
-                    const errorData = await response.json().catch(() => ({}));
-                    
-                    if (response.status === 401) {
-                        showAlert('Please log in to view price alert tracking', 'warning');
-                        setTimeout(() => {
-                            window.location.href = 'admin-login.html';
-                        }, 2000);
-                        return;
-                    }
-                    
-                    throw new Error(errorData.message || `Failed to load price alert statistics: ${response.statusText}`);
-                }
-            } catch (error) {
-                console.error('Error loading price alert statistics:', error);
-                showAlert(`Failed to load price alert statistics: ${error.message}`, 'danger');
-                allUserStats = [];
-                updateStats({ totalUsers: 0, totalAlerts: 0, activeAlerts: 0, inactiveAlerts: 0 });
-                applyFilters();
-            }
-        }
-
-        // Apply filters
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-
-            filteredUserStats = allUserStats.filter(userStat => {
-                // Search filter
-                const matchesSearch = !searchTerm || 
-                    (userStat.userEmail && userStat.userEmail.toLowerCase().includes(searchTerm)) ||
-                    (userStat.alerts && userStat.alerts.some(alert => 
-                        alert.productName && alert.productName.toLowerCase().includes(searchTerm)
-                    ));
-
-                // Status filter
-                let matchesStatus = true;
-                if (statusFilter === 'active') {
-                    matchesStatus = userStat.activeAlerts > 0;
-                } else if (statusFilter === 'inactive') {
-                    matchesStatus = userStat.inactiveAlerts > 0;
-                }
-
-                return matchesSearch && matchesStatus;
-            });
-
-            // Sort by total alerts (descending)
-            filteredUserStats.sort((a, b) => b.totalAlerts - a.totalAlerts);
-
-            renderUserStats();
-        }
-
-        // Render user statistics
-        function renderUserStats() {
-            const container = document.getElementById('priceAlertsContainer');
-            
-            if (filteredUserStats.length === 0) {
-                container.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center">
-                            <div class="empty-state">
-                                <i class="fas fa-bell-slash"></i>
-                                <h4>No price alerts found</h4>
-                                <p>No price alerts match your current filters.</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            let html = '';
-
-            filteredUserStats.forEach(userStat => {
-                const isExpanded = expandedUsers.has(userStat.userId);
-                const activeBadge = userStat.activeAlerts > 0 
-                    ? `<span class="badge badge-success">${userStat.activeAlerts}</span>`
-                    : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
-                const inactiveBadge = userStat.inactiveAlerts > 0
-                    ? `<span class="badge badge-danger">${userStat.inactiveAlerts}</span>`
-                    : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
-
-                html += `
-                    <tr>
-                        <td>
-                            <strong>${escapeHtml(userStat.userEmail || 'N/A')}</strong>
-                            <br>
-                            <small class="text-muted">User ID: ${escapeHtml(userStat.userId || 'N/A')}</small>
-                        </td>
-                        <td>
-                            <span class="badge badge-primary">${userStat.totalAlerts}</span>
-                        </td>
-                        <td>${activeBadge}</td>
-                        <td>${inactiveBadge}</td>
-                        <td>
-                            <button class="expand-btn" onclick="toggleUserAlerts('${userStat.userId}')">
-                                <i class="fas fa-${isExpanded ? 'chevron-up' : 'chevron-down'}"></i>
-                                ${isExpanded ? 'Hide' : 'Show'} Alerts (${userStat.alerts.length})
-                            </button>
-                        </td>
-                    </tr>
-                `;
-
-                // Add expanded alerts detail row
-                if (isExpanded && userStat.alerts.length > 0) {
-                    html += `
-                        <tr>
-                            <td colspan="5">
-                                <div class="alerts-detail show">
-                                    <h5>Price Alerts for ${escapeHtml(userStat.userEmail || 'N/A')}</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Brand</th>
-                                                    <th>Current Price</th>
-                                                    <th>Target Price</th>
-                                                    <th>Status</th>
-                                                    <th>Notification</th>
-                                                    <th>Created</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                    `;
-                    
-                    userStat.alerts.forEach(alert => {
-                        const statusBadge = alert.status === 'active'
-                            ? '<span class="badge badge-success">Active</span>'
-                            : '<span class="badge badge-danger">Inactive</span>';
-                        const notificationBadge = alert.notificationMethod === 'email'
-                            ? '<span class="badge badge-info">Email</span>'
-                            : alert.notificationMethod === 'website'
-                            ? '<span class="badge badge-primary">Website</span>'
-                            : '<span class="badge badge-warning">Both</span>';
-                        
-                        const formattedDate = alert.dateCreated 
-                            ? new Date(alert.dateCreated).toLocaleString('en-ZA', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })
-                            : 'N/A';
-
-                        html += `
-                                                <tr>
-                                                    <td>
-                                                        ${alert.productImage 
-                                                            ? `<img src="${escapeHtml(alert.productImage)}" alt="${escapeHtml(alert.productName)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">`
-                                                            : ''
-                                                        }
-                                                        <strong>${escapeHtml(alert.productName || 'Unknown Product')}</strong>
-                                                        ${alert.alertName ? `<br><small class="text-muted">${escapeHtml(alert.alertName)}</small>` : ''}
-                                                    </td>
-                                                    <td>${escapeHtml(alert.productBrand || 'Unknown')}</td>
-                                                    <td>R ${(alert.currentPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                    <td>R ${(alert.targetPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                                    <td>${statusBadge}</td>
-                                                    <td>${notificationBadge}</td>
-                                                    <td><small>${formattedDate}</small></td>
-                                                </tr>
-                        `;
-                    });
-
-                    html += `
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }
-            });
-
-            container.innerHTML = html;
-        }
-
-        // Toggle user alerts expansion
-        function toggleUserAlerts(userId) {
-            if (expandedUsers.has(userId)) {
-                expandedUsers.delete(userId);
-            } else {
-                expandedUsers.add(userId);
-            }
-            renderUserStats();
-        }
-
-        // Update statistics
-        function updateStats(stats) {
-            document.getElementById('totalUsersCount').textContent = stats.totalUsers || stats.totalUsersWithAlerts || 0;
-            document.getElementById('totalAlertsCount').textContent = stats.totalAlerts || 0;
-            document.getElementById('activeAlertsCount').textContent = stats.activeAlerts || stats.totalActiveAlerts || 0;
-            document.getElementById('inactiveAlertsCount').textContent = stats.inactiveAlerts || stats.totalInactiveAlerts || 0;
-        }
-
-        // Refresh price alerts
-        function refreshAlerts() {
-            loadPriceAlertStats();
-            showAlert('Refreshing price alert statistics...', 'info');
-        }
-
-        // Export price alerts
-        function exportAlerts() {
-            const csv = convertToCSV(filteredUserStats);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `price-alert-tracking-${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-
-        // Convert data to CSV
-        function convertToCSV(userStats) {
-            const headers = ['User Email', 'User ID', 'Total Alerts', 'Active Alerts', 'Inactive Alerts'];
-            const rows = userStats.map(stat => [
-                stat.userEmail || 'N/A',
-                stat.userId || 'N/A',
-                stat.totalAlerts,
-                stat.activeAlerts,
-                stat.inactiveAlerts
-            ]);
-            
-            return [
-                headers.join(','),
-                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-            ].join('\n');
-        }
-
-        // Utility functions
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function showLoading() {
-            document.getElementById('priceAlertsContainer').innerHTML = `
-                <tr>
-                    <td colspan="5" class="text-center">
-                        <div class="loading-spinner">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertId = 'alert-' + Date.now();
-            const alertHtml = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                    ${escapeHtml(message)}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-            alertContainer.innerHTML = alertHtml;
-            
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 5000);
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Check login state
-        async function checkLoginState() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/admin/admin/account/get-user-info`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.user) {
-                        const userSection = document.getElementById('userSection');
-                        const loginBtnHeader = document.getElementById('loginBtnHeader');
-                        const userName = document.getElementById('userName');
-                        const userAvatar = document.getElementById('userAvatar');
-                        
-                        if (userSection && loginBtnHeader) {
-                            userSection.style.display = 'flex';
-                            loginBtnHeader.style.display = 'none';
-                        }
-                        
-                        if (userName && data.user.email) {
-                            const email = data.user.email;
-                            userName.textContent = email.split('@')[0];
-                            if (userAvatar) {
-                                const initials = email.substring(0, 2).toUpperCase();
-                                userAvatar.textContent = initials;
-                            }
-                        }
-                    } else {
-                        throw new Error('Not logged in');
-                    }
-                } else {
-                    throw new Error('Not logged in');
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                const userSection = document.getElementById('userSection');
-                const loginBtnHeader = document.getElementById('loginBtnHeader');
-                if (userSection && loginBtnHeader) {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
-                }
-            }
-        }
-
-        // Initialize Analytics Charts
-        function initializeCharts() {
-            // Chart 1: Alerts Over Time (Line Chart)
-            const alertsOverTimeCtx = document.getElementById('alertsOverTimeChart');
-            if (alertsOverTimeCtx) {
-                const timeData = calculateAlertsOverTime();
-                alertsOverTimeChart = new Chart(alertsOverTimeCtx, {
-                    type: 'line',
-                    data: {
-                        labels: timeData.labels,
-                        datasets: [{
-                            label: 'Alerts Created',
-                            data: timeData.data,
-                            borderColor: 'rgb(0, 123, 255)',
-                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 2: Active vs Inactive Alerts (Pie Chart)
-            const alertStatusCtx = document.getElementById('alertStatusChart');
-            if (alertStatusCtx) {
-                const statusData = calculateAlertStatus();
-                alertStatusChart = new Chart(alertStatusCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: statusData.labels,
-                        datasets: [{
-                            data: statusData.data,
-                            backgroundColor: [
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(220, 53, 69, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(40, 167, 69)',
-                                'rgb(220, 53, 69)'
-                            ],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 3: Top Users by Alert Count (Bar Chart)
-            const topUsersCtx = document.getElementById('topUsersChart');
-            if (topUsersCtx) {
-                const usersData = calculateTopUsers();
-                topUsersChart = new Chart(topUsersCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: usersData.labels,
-                        datasets: [{
-                            label: 'Total Alerts',
-                            data: usersData.data,
-                            backgroundColor: 'rgba(0, 123, 255, 0.8)',
-                            borderColor: 'rgb(0, 123, 255)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Chart 4: Notification Methods Distribution (Doughnut Chart)
-            const notificationMethodsCtx = document.getElementById('notificationMethodsChart');
-            if (notificationMethodsCtx) {
-                const methodsData = calculateNotificationMethods();
-                notificationMethodsChart = new Chart(notificationMethodsCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: methodsData.labels,
-                        datasets: [{
-                            data: methodsData.data,
-                            backgroundColor: [
-                                'rgba(0, 123, 255, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(255, 193, 7, 0.8)',
-                                'rgba(220, 53, 69, 0.8)',
-                                'rgba(108, 117, 125, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(0, 123, 255)',
-                                'rgb(40, 167, 69)',
-                                'rgb(255, 193, 7)',
-                                'rgb(220, 53, 69)',
-                                'rgb(108, 117, 125)'
-                            ],
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // Calculate alerts over time data
-        function calculateAlertsOverTime() {
-            const alerts = getAllAlerts();
-            const last7Days = [];
-            const today = new Date();
-            
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                last7Days.push(dateStr);
-            }
-            
-            const labels = last7Days.map(date => {
-                const d = new Date(date);
-                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            });
-            
-            const data = last7Days.map(date => {
-                return alerts.filter(alert => {
-                    if (!alert.dateCreated) return false;
-                    const alertDate = new Date(alert.dateCreated).toISOString().split('T')[0];
-                    return alertDate === date;
-                }).length;
-            });
-            
-            return { labels, data };
-        }
-
-        // Calculate alert status distribution
-        function calculateAlertStatus() {
-            const alerts = getAllAlerts();
-            const active = alerts.filter(a => a.status === 'active').length;
-            const inactive = alerts.filter(a => a.status !== 'active').length;
-            
-            return {
-                labels: ['Active', 'Inactive'],
-                data: [active, inactive]
-            };
-        }
-
-        // Calculate top users by alert count
-        function calculateTopUsers() {
-            const sortedUsers = [...allUserStats].sort((a, b) => b.totalAlerts - a.totalAlerts).slice(0, 10);
-            const labels = sortedUsers.map(user => {
-                const email = user.userEmail || 'Unknown';
-                return email.length > 20 ? email.substring(0, 20) + '...' : email;
-            });
-            const data = sortedUsers.map(user => user.totalAlerts);
-            
-            return { labels, data };
-        }
-
-        // Calculate notification methods distribution
-        function calculateNotificationMethods() {
-            const alerts = getAllAlerts();
-            const methods = {};
-            
-            alerts.forEach(alert => {
-                const method = alert.notificationMethod || 'Unknown';
-                methods[method] = (methods[method] || 0) + 1;
-            });
-            
-            const labels = Object.keys(methods);
-            const data = Object.values(methods);
-            
-            return { labels, data };
-        }
-
-        // Get all alerts from user stats
-        function getAllAlerts() {
-            const allAlerts = [];
-            allUserStats.forEach(user => {
-                if (user.alerts && Array.isArray(user.alerts)) {
-                    allAlerts.push(...user.alerts);
-                }
-            });
-            return allAlerts;
-        }
-
-        // Update charts with real data
-        function updateCharts() {
-            if (!allUserStats || allUserStats.length === 0) {
-                return;
-            }
-
-            // Update Chart 1: Alerts Over Time
-            if (alertsOverTimeChart) {
-                const timeData = calculateAlertsOverTime();
-                alertsOverTimeChart.data.labels = timeData.labels;
-                alertsOverTimeChart.data.datasets[0].data = timeData.data;
-                alertsOverTimeChart.update();
-            }
-
-            // Update Chart 2: Alert Status
-            if (alertStatusChart) {
-                const statusData = calculateAlertStatus();
-                alertStatusChart.data.labels = statusData.labels;
-                alertStatusChart.data.datasets[0].data = statusData.data;
-                alertStatusChart.update();
-            }
-
-            // Update Chart 3: Top Users
-            if (topUsersChart) {
-                const usersData = calculateTopUsers();
-                topUsersChart.data.labels = usersData.labels;
-                topUsersChart.data.datasets[0].data = usersData.data;
-                topUsersChart.update();
-            }
-
-            // Update Chart 4: Notification Methods
-            if (notificationMethodsChart) {
-                const methodsData = calculateNotificationMethods();
-                notificationMethodsChart.data.labels = methodsData.labels;
-                notificationMethodsChart.data.datasets[0].data = methodsData.data;
-                notificationMethodsChart.update();
-            }
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            // Disable button to prevent double-clicks
-            if (logoutBtn) {
-                logoutBtn.disabled = true;
-                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
-            }
-            
-            try {
-                const result = await window.adminAWSAuthService.logout();
-                
-                if (result.success) {
-                    console.log('Logout successful:', result.message);
-                    
-                    // Show success message briefly before redirect
-                    if (result.warning) {
-                        console.warn('Logout warning:', result.warning);
-                    }
-                    
-                    // Small delay to ensure cookie is cleared
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                } else {
-                    console.error('Logout failed:', result.message || result.error);
-                }
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                // Always redirect to login page, even if logout request failed
-                // The local session is cleared by adminAWSAuthService.logout()
-                window.location.href = 'admin-login.html';
-            }
-        }
-    </script>
+    <script src="assets/scripts/admin_price_alert_tracking.js"></script>
 </body>
 </html>
 

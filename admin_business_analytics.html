@@ -6,23 +6,26 @@
     <title>Business Analytics Dashboard | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -32,115 +35,310 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        .admin-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin: 0;
-        }
-
-        .admin-header p {
-            color: var(--text);
-            margin: 0.25rem 0 0 0;
-            font-size: 0.9rem;
-        }
-
-        .container {
-            max-width: 1400px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .breadcrumb-container {
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
             background: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
         }
 
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin: 0;
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
             display: flex;
-            flex-wrap: wrap;
-            list-style: none;
             align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "/";
-            display: inline-block;
-            padding: 0 0.5rem;
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             color: var(--text);
+            margin-bottom: 0.875rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .search-box {
+            position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
             font-weight: 400;
         }
 
-        .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .page-title-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        .page-title-section h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .page-title-section p {
-            color: var(--text);
-            margin: 0;
-        }
-
+        /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
         }
 
         .stat-card {
             background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
+            border: 2px solid var(--border);
             position: relative;
             overflow: hidden;
         }
@@ -150,95 +348,91 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 4px;
+            width: 5px;
             height: 100%;
             background: var(--primary);
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary);
         }
 
         .stat-card.success::before {
-            background: var(--success);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
 
         .stat-card.warning::before {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%);
         }
 
         .stat-card.danger::before {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%);
         }
 
         .stat-card.info::before {
-            background: var(--info);
+            background: linear-gradient(135deg, var(--info) 0%, #22d3ee 100%);
         }
 
         .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             color: white;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .stat-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
         }
 
         .stat-card.success .stat-icon {
-            background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
 
         .stat-card.warning .stat-icon {
-            background: linear-gradient(135deg, var(--warning) 0%, #e0a800 100%);
+            background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%);
         }
 
         .stat-card.danger .stat-icon {
-            background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
+            background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%);
         }
 
         .stat-card.info .stat-icon {
-            background: linear-gradient(135deg, var(--info) 0%, #138496 100%);
+            background: linear-gradient(135deg, var(--info) 0%, #22d3ee 100%);
         }
 
-        .stat-change {
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .stat-change.positive {
-            background: rgba(40, 167, 69, 0.1);
-            color: var(--success);
-        }
-
-        .stat-change.negative {
-            background: rgba(220, 53, 69, 0.1);
-            color: var(--danger);
-        }
-
-        .stat-number {
+        .stat-value {
             font-size: 2.5rem;
-            font-weight: 700;
+            font-weight: 900;
             color: var(--text-dark);
-            margin-bottom: 0.25rem;
-            line-height: 1;
+            margin-bottom: 0.625rem;
+            letter-spacing: -1.5px;
         }
 
         .stat-label {
             color: var(--text);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
@@ -249,28 +443,55 @@
             margin-top: 0.5rem;
         }
 
-        .chart-section {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-        }
-
-        .chart-section h3 {
-            color: var(--text-dark);
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+        .stat-change {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.625rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
         }
 
-        .chart-section h3 i {
-            color: var(--primary);
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
         }
 
         .chart-container {
@@ -279,20 +500,22 @@
             margin-top: 1rem;
         }
 
+        /* Table Section */
         .table-section {
             background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
         }
 
         .table-section h3 {
             color: var(--text-dark);
-            font-weight: 600;
+            font-weight: 800;
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            font-size: 1.2rem;
+            padding-bottom: 1.25rem;
             border-bottom: 2px solid var(--border);
             display: flex;
             align-items: center;
@@ -313,7 +536,7 @@
 
         .table thead th {
             border-bottom: 2px solid var(--border);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-dark);
             padding: 1rem;
         }
@@ -330,7 +553,7 @@
         .business-logo {
             width: 50px;
             height: 50px;
-            border-radius: 8px;
+            border-radius: 12px;
             object-fit: cover;
             border: 2px solid var(--border);
         }
@@ -345,34 +568,34 @@
         }
 
         .badge-custom {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 0.4rem 0.875rem;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 0.85rem;
         }
 
         .badge-success {
             background: rgba(40, 167, 69, 0.1);
-            color: var(--success);
+            color: #28a745;
         }
 
         .badge-warning {
-            background: rgba(255, 193, 7, 0.1);
+            background: rgba(245, 158, 11, 0.1);
             color: #856404;
         }
 
         .badge-danger {
-            background: rgba(220, 53, 69, 0.1);
+            background: rgba(244, 63, 94, 0.1);
             color: var(--danger);
         }
 
         .badge-info {
-            background: rgba(23, 162, 184, 0.1);
+            background: rgba(6, 182, 212, 0.1);
             color: var(--info);
         }
 
         .trend-up {
-            color: var(--success);
+            color: #28a745;
         }
 
         .trend-down {
@@ -391,762 +614,417 @@
             margin-bottom: 1rem;
         }
 
-        .review-preview {
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text);
-            font-size: 0.9rem;
+        .alert {
+            border-radius: 12px;
+            border: 2px solid;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-danger {
+            background: #fff5f5;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
 
-            .chart-container {
-                height: 250px;
-            }
-
-            .table-section,
-            .chart-section {
+            .content-wrapper {
                 padding: 1.5rem;
             }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="logo">
-                    <img src="../assets/logo .png" alt="CompareHubPrices" class="logo-img">
-                    <div class="ms-3">
-                        <h1>Business Analytics Dashboard</h1>
-                        <p>Overview of all businesses performance</p>
-                    </div>
-                </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
             </div>
         </div>
-    </div>
-
-    <div class="container">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb-container">
-            <div class="container">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Admin Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Business Analytics</li>
-                    </ol>
-                </nav>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                </a>
             </div>
-        </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login History</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Page Title -->
-        <div class="page-title-section">
-            <h1><i class="fas fa-chart-line text-primary"></i> Business Analytics Overview</h1>
-            <p>Monitor all businesses' followers, ratings, and performance metrics</p>
-        </div>
-
-        <!-- Overall Stats -->
-        <div class="stats-grid">
-            <!-- Total Businesses -->
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-store"></i>
-                    </div>
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
                 </div>
-                <div class="stat-number" id="totalBusinesses">-</div>
-                <div class="stat-label">Total Businesses</div>
-                <div class="stat-description">Active businesses on platform</div>
             </div>
-
-            <!-- Total Followers -->
-            <div class="stat-card success">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <span class="stat-change positive" id="followersChange">
-                        <i class="fas fa-arrow-up"></i> +0%
-                    </span>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
                 </div>
-                <div class="stat-number" id="totalFollowers">-</div>
-                <div class="stat-label">Total Followers</div>
-                <div class="stat-description">Across all businesses</div>
-            </div>
-
-            <!-- Total Reviews -->
-            <div class="stat-card info">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-star"></i>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar">JD</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">John Doe</div>
+                        <div class="user-role">Administrator</div>
                     </div>
-                    <span class="stat-change positive" id="reviewsChange">
-                        <i class="fas fa-arrow-up"></i> +0%
-                    </span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
                 </div>
-                <div class="stat-number" id="totalReviews">-</div>
-                <div class="stat-label">Total Reviews</div>
-                <div class="stat-description">Customer reviews this month</div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Business Analytics</h1>
+                <p class="page-subtitle">Monitor all businesses' followers, ratings, and performance metrics</p>
             </div>
 
-            <!-- Average Rating -->
-            <div class="stat-card warning">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-chart-line"></i>
+            <div id="alertContainer"></div>
+
+            <!-- Overall Stats -->
+            <div class="stats-grid">
+                <!-- Total Businesses -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Businesses</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
                     </div>
-                    <span class="stat-change positive" id="ratingChange">
-                        <i class="fas fa-arrow-up"></i> +0.0
-                    </span>
+                    <div class="stat-value" id="totalBusinesses">-</div>
+                    <div class="stat-label">Active businesses on platform</div>
                 </div>
-                <div class="stat-number" id="averageRating">-</div>
-                <div class="stat-label">Average Rating</div>
-                <div class="stat-description">Platform-wide average</div>
-            </div>
 
-            <!-- Total Product Likes -->
-            <div class="stat-card danger">
-                <div class="stat-header">
-                    <div class="stat-icon">
-                        <i class="fas fa-heart"></i>
+                <!-- Total Followers -->
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Followers</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="stat-change positive" id="followersChange">
+                            <i class="fas fa-arrow-up"></i> +0%
+                        </span>
                     </div>
-                    <span class="stat-change positive" id="likesChange">
-                        <i class="fas fa-arrow-up"></i> +0%
-                    </span>
+                    <div class="stat-value" id="totalFollowers">-</div>
+                    <div class="stat-label">Across all businesses</div>
                 </div>
-                <div class="stat-number" id="totalLikes">-</div>
-                <div class="stat-label">Total Product Likes</div>
-                <div class="stat-description">Likes across all products/services</div>
-            </div>
-        </div>
 
-        <!-- Charts Row -->
-        <div class="row">
-            <!-- Total Followers by Business -->
-            <div class="col-lg-6">
-                <div class="chart-section">
-                    <h3><i class="fas fa-chart-bar"></i> Top Businesses by Followers</h3>
+                <!-- Total Reviews -->
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Reviews</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="stat-change positive" id="reviewsChange">
+                            <i class="fas fa-arrow-up"></i> +0%
+                        </span>
+                    </div>
+                    <div class="stat-value" id="totalReviews">-</div>
+                    <div class="stat-label">Customer reviews this month</div>
+                </div>
+
+                <!-- Average Rating -->
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Average Rating</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="stat-change positive" id="ratingChange">
+                            <i class="fas fa-arrow-up"></i> +0.0
+                        </span>
+                    </div>
+                    <div class="stat-value" id="averageRating">-</div>
+                    <div class="stat-label">Platform-wide average</div>
+                </div>
+
+                <!-- Total Product Likes -->
+                <div class="stat-card danger">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Product Likes</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <span class="stat-change positive" id="likesChange">
+                            <i class="fas fa-arrow-up"></i> +0%
+                        </span>
+                    </div>
+                    <div class="stat-value" id="totalLikes">-</div>
+                    <div class="stat-label">Likes across all products/services</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <!-- Total Followers by Business -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Top Businesses by Followers</h3>
+                    </div>
                     <div class="chart-container">
                         <canvas id="topFollowersChart"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <!-- Average Ratings by Business -->
-            <div class="col-lg-6">
-                <div class="chart-section">
-                    <h3><i class="fas fa-chart-pie"></i> Average Ratings Distribution</h3>
+                <!-- Average Ratings by Business -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Average Ratings Distribution</h3>
+                    </div>
                     <div class="chart-container">
                         <canvas id="ratingsDistributionChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Monthly Good Reviews Chart -->
-        <div class="chart-section">
-            <h3><i class="fas fa-thumbs-up"></i> Monthly Good Reviews (4+ Stars)</h3>
-            <div class="chart-container" style="height: 350px;">
-                <canvas id="goodReviewsChart"></canvas>
+            <!-- Monthly Good Reviews Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title"><i class="fas fa-thumbs-up"></i> Monthly Good Reviews (4+ Stars)</h3>
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="goodReviewsChart"></canvas>
+                </div>
             </div>
-        </div>
 
-        <!-- Product Likes Chart -->
-        <div class="chart-section">
-            <h3><i class="fas fa-heart"></i> Product Likes Over Time</h3>
-            <div class="chart-container" style="height: 350px;">
-                <canvas id="productLikesChart"></canvas>
+            <!-- Product Likes Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title"><i class="fas fa-heart"></i> Product Likes Over Time</h3>
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="productLikesChart"></canvas>
+                </div>
             </div>
-        </div>
 
-        <!-- Most Followed Business This Month -->
-        <div class="table-section">
-            <h3><i class="fas fa-trophy"></i> Most Followed Businesses (This Month)</h3>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Business</th>
-                            <th>Category</th>
-                            <th>New Followers</th>
-                            <th>Total Followers</th>
-                            <th>Rating</th>
-                            <th>Trend</th>
-                        </tr>
-                    </thead>
-                    <tbody id="topFollowersTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Most Followed Business This Month -->
+            <div class="table-section">
+                <h3><i class="fas fa-trophy"></i> Most Followed Businesses (This Month)</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>New Followers</th>
+                                <th>Total Followers</th>
+                                <th>Rating</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topFollowersTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Monthly Good Reviews Table -->
-        <div class="table-section">
-            <h3><i class="fas fa-star"></i> Monthly Good Reviews (4+ Stars) - Top Businesses</h3>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Business</th>
-                            <th>Category</th>
-                            <th>Good Reviews</th>
-                            <th>Total Reviews</th>
-                            <th>Success Rate</th>
-                            <th>Average Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody id="goodReviewsTableBody">
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Monthly Good Reviews Table -->
+            <div class="table-section">
+                <h3><i class="fas fa-star"></i> Monthly Good Reviews (4+ Stars) - Top Businesses</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Good Reviews</th>
+                                <th>Total Reviews</th>
+                                <th>Success Rate</th>
+                                <th>Average Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="goodReviewsTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Most Liked Products/Services -->
-        <div class="table-section">
-            <h3><i class="fas fa-heart text-danger"></i> Most Liked Products/Services</h3>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Product/Service</th>
-                            <th>Business</th>
-                            <th>Category</th>
-                            <th>Total Likes</th>
-                            <th>Likes This Month</th>
-                            <th>Trend</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mostLikedProductsTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Most Liked Products/Services -->
+            <div class="table-section">
+                <h3><i class="fas fa-heart text-danger"></i> Most Liked Products/Services</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Product/Service</th>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Total Likes</th>
+                                <th>Likes This Month</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mostLikedProductsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Underperforming Businesses -->
-        <div class="table-section">
-            <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Business</th>
-                            <th>Category</th>
-                            <th>Rating</th>
-                            <th>Total Reviews</th>
-                            <th>Followers</th>
-                            <th>Issues</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="underperformingBusinessesTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Underperforming Businesses -->
+            <div class="table-section">
+                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Rating</th>
+                                <th>Total Reviews</th>
+                                <th>Followers</th>
+                                <th>Issues</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="underperformingBusinessesTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const API_BASE_URL = 'https://acc.comparehubprices.site/admin/admin/business-analytics';
-        
-        let charts = {};
-        let analyticsData = null;
-
-        // Format number with commas
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // Render stars for rating
-        function renderStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
-            let html = '';
-            for (let i = 0; i < 5; i++) {
-                if (i < fullStars) {
-                    html += '<i class="fas fa-star"></i>';
-                } else if (i === fullStars && hasHalfStar) {
-                    html += '<i class="fas fa-star-half-alt"></i>';
-                } else {
-                    html += '<i class="far fa-star"></i>';
-                }
-            }
-            return html;
-        }
-
-        // Get badge class for category
-        function getCategoryBadgeClass(category) {
-            const categoryMap = {
-                'Technology': 'badge-info',
-                'Food': 'badge-warning',
-                'Fitness': 'badge-danger',
-                'Beauty': 'badge-info',
-                'Automotive': 'badge-info',
-                'Retail': 'badge-info',
-                'Services': 'badge-info',
-                'General': 'badge-info'
-            };
-            return categoryMap[category] || 'badge-info';
-        }
-
-        // Get badge class for rank
-        function getRankBadgeClass(rank) {
-            if (rank <= 3) return 'badge-success';
-            return 'badge-warning';
-        }
-
-        // Load analytics data
-        async function loadAnalytics() {
-            try {
-                const response = await fetch(API_BASE_URL, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.success && data.analytics) {
-                    analyticsData = data.analytics;
-                    updateStats();
-                    updateCharts();
-                    updateTables();
-                } else {
-                    throw new Error(data.message || 'Failed to load analytics');
-                }
-            } catch (error) {
-                console.error('Error loading analytics:', error);
-                showError('Failed to load analytics data. Please try again later.');
-            }
-        }
-
-        // Update statistics cards
-        function updateStats() {
-            if (!analyticsData || !analyticsData.overall) return;
-
-            const overall = analyticsData.overall;
-
-            document.getElementById('totalBusinesses').textContent = formatNumber(overall.totalBusinesses || 0);
-            document.getElementById('totalFollowers').textContent = formatNumber(overall.totalFollowers || 0);
-            document.getElementById('totalReviews').textContent = formatNumber(overall.totalReviews || 0);
-            document.getElementById('averageRating').textContent = overall.averageRating || '0.0';
-            document.getElementById('totalLikes').textContent = formatNumber(overall.totalLikes || 0);
-
-            // Update change indicators
-            const followersChange = parseFloat(overall.followersChange || 0);
-            const followersChangeEl = document.getElementById('followersChange');
-            followersChangeEl.innerHTML = `<i class="fas fa-arrow-${followersChange >= 0 ? 'up' : 'down'}"></i> ${followersChange >= 0 ? '+' : ''}${followersChange}%`;
-            followersChangeEl.className = `stat-change ${followersChange >= 0 ? 'positive' : 'negative'}`;
-
-            const reviewsChange = parseFloat(overall.reviewsChange || 0);
-            const reviewsChangeEl = document.getElementById('reviewsChange');
-            reviewsChangeEl.innerHTML = `<i class="fas fa-arrow-${reviewsChange >= 0 ? 'up' : 'down'}"></i> ${reviewsChange >= 0 ? '+' : ''}${reviewsChange}%`;
-            reviewsChangeEl.className = `stat-change ${reviewsChange >= 0 ? 'positive' : 'negative'}`;
-
-            const likesChange = parseFloat(overall.likesChange || 0);
-            const likesChangeEl = document.getElementById('likesChange');
-            likesChangeEl.innerHTML = `<i class="fas fa-arrow-${likesChange >= 0 ? 'up' : 'down'}"></i> ${likesChange >= 0 ? '+' : ''}${likesChange}%`;
-            likesChangeEl.className = `stat-change ${likesChange >= 0 ? 'positive' : 'negative'}`;
-        }
-
-        // Update charts
-        function updateCharts() {
-            if (!analyticsData || !analyticsData.charts) return;
-
-            const chartsData = analyticsData.charts;
-
-            // Top Businesses by Followers Chart
-            if (chartsData.topFollowersByBusiness) {
-                const topFollowersCtx = document.getElementById('topFollowersChart').getContext('2d');
-                if (charts.topFollowers) charts.topFollowers.destroy();
-                charts.topFollowers = new Chart(topFollowersCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: chartsData.topFollowersByBusiness.labels || [],
-                        datasets: [{
-                            label: 'Total Followers',
-                            data: chartsData.topFollowersByBusiness.data || [],
-                            backgroundColor: [
-                                'rgba(0, 123, 255, 0.8)',
-                                'rgba(40, 167, 69, 0.8)',
-                                'rgba(255, 193, 7, 0.8)',
-                                'rgba(23, 162, 184, 0.8)',
-                                'rgba(220, 53, 69, 0.8)'
-                            ],
-                            borderColor: [
-                                '#007bff',
-                                '#28a745',
-                                '#ffc107',
-                                '#17a2b8',
-                                '#dc3545'
-                            ],
-                            borderWidth: 2,
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Ratings Distribution Chart
-            if (chartsData.ratingsDistribution) {
-                const ratingsDistCtx = document.getElementById('ratingsDistributionChart').getContext('2d');
-                if (charts.ratingsDistribution) charts.ratingsDistribution.destroy();
-                charts.ratingsDistribution = new Chart(ratingsDistCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: chartsData.ratingsDistribution.labels || [],
-                        datasets: [{
-                            data: chartsData.ratingsDistribution.data || [],
-                            backgroundColor: [
-                                '#28a745',
-                                '#17a2b8',
-                                '#ffc107',
-                                '#fd7e14',
-                                '#dc3545'
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 15,
-                                    usePointStyle: true
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Monthly Good Reviews Chart
-            if (chartsData.goodReviewsByMonth) {
-                const goodReviewsCtx = document.getElementById('goodReviewsChart').getContext('2d');
-                if (charts.goodReviews) charts.goodReviews.destroy();
-                charts.goodReviews = new Chart(goodReviewsCtx, {
-                    type: 'line',
-                    data: {
-                        labels: chartsData.goodReviewsByMonth.labels || [],
-                        datasets: [
-                            {
-                                label: 'Good Reviews (4+ Stars)',
-                                data: chartsData.goodReviewsByMonth.goodReviews || [],
-                                borderColor: '#28a745',
-                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 5,
-                                pointHoverRadius: 7
-                            },
-                            {
-                                label: 'Total Reviews',
-                                data: chartsData.goodReviewsByMonth.totalReviews || [],
-                                borderColor: '#007bff',
-                                backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 5,
-                                pointHoverRadius: 7
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Product Likes Chart
-            if (chartsData.productLikesByMonth) {
-                const productLikesCtx = document.getElementById('productLikesChart');
-                if (productLikesCtx) {
-                    if (charts.productLikes) charts.productLikes.destroy();
-                    charts.productLikes = new Chart(productLikesCtx.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: chartsData.productLikesByMonth.labels || [],
-                            datasets: [
-                                {
-                                    label: 'Product Likes',
-                                    data: chartsData.productLikesByMonth.totalLikes || [],
-                                    borderColor: '#dc3545',
-                                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                                    borderWidth: 3,
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 5,
-                                    pointHoverRadius: 7
-                                },
-                                {
-                                    label: 'New Likes This Month',
-                                    data: chartsData.productLikesByMonth.newLikes || [],
-                                    borderColor: '#28a745',
-                                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                                    borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 4,
-                                    pointHoverRadius: 6
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: true,
-                                    position: 'top'
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: false,
-                                    grid: {
-                                        color: 'rgba(0, 0, 0, 0.05)'
-                                    }
-                                },
-                                x: {
-                                    grid: {
-                                        display: false
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        }
-
-        // Update tables
-        function updateTables() {
-            if (!analyticsData) return;
-
-            // Top Businesses by Followers
-            if (analyticsData.topBusinessesByFollowers) {
-                const tbody = document.getElementById('topFollowersTableBody');
-                tbody.innerHTML = analyticsData.topBusinessesByFollowers.map(business => `
-                    <tr>
-                        <td><span class="badge badge-custom ${getRankBadgeClass(business.rank)}">#${business.rank}</span></td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="business-logo me-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                                <div class="business-logo me-3 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 50px; height: 50px; display: ${business.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 18px;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
-                                <div>
-                                    <div class="fw-semibold">${business.businessName}</div>
-                                    <small class="text-muted">${business.businessCategory}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge badge-custom ${getCategoryBadgeClass(business.businessCategory)}">${business.businessCategory}</span></td>
-                        <td><strong class="text-success">+${business.newFollowersThisMonth || 0}</strong></td>
-                        <td><strong>${formatNumber(business.totalFollowers || 0)}</strong></td>
-                        <td>
-                            <div class="rating-stars">${renderStars(business.averageRating || 0)}</div>
-                            <small class="text-muted">${business.averageRating || '0.0'}</small>
-                        </td>
-                        <td><i class="fas fa-arrow-${business.followersChange >= 0 ? 'up' : 'down'} trend-${business.followersChange >= 0 ? 'up' : 'down'}"></i> <span class="${business.followersChange >= 0 ? 'text-success' : 'text-danger'}">${business.followersChange >= 0 ? '+' : ''}${business.followersChange}%</span></td>
-                    </tr>
-                `).join('');
-            }
-
-            // Top Businesses by Good Reviews
-            if (analyticsData.topBusinessesByGoodReviews) {
-                const tbody = document.getElementById('goodReviewsTableBody');
-                tbody.innerHTML = analyticsData.topBusinessesByGoodReviews.map(business => `
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="business-logo me-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                                <div class="business-logo me-3 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 50px; height: 50px; display: ${business.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 18px;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
-                                <div>
-                                    <div class="fw-semibold">${business.businessName}</div>
-                                    <small class="text-muted">${business.businessCategory}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge badge-custom ${getCategoryBadgeClass(business.businessCategory)}">${business.businessCategory}</span></td>
-                        <td><strong class="text-success">${formatNumber(business.goodReviews || 0)}</strong></td>
-                        <td>${formatNumber(business.totalReviews || 0)}</td>
-                        <td>
-                            <div class="progress" style="height: 20px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: ${business.goodReviewsRate || 0}%" aria-valuenow="${business.goodReviewsRate || 0}" aria-valuemin="0" aria-valuemax="100">${business.goodReviewsRate || 0}%</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="rating-stars">${renderStars(business.averageRating || 0)}</div>
-                            <small class="text-muted">${business.averageRating || '0.0'}</small>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Most Liked Products
-            if (analyticsData.mostLikedProducts) {
-                const tbody = document.getElementById('mostLikedProductsTableBody');
-                tbody.innerHTML = analyticsData.mostLikedProducts.map(product => `
-                    <tr>
-                        <td><span class="badge badge-custom ${getRankBadgeClass(product.rank)}">#${product.rank}</span></td>
-                        <td>
-                            <div class="fw-semibold">${product.productName}</div>
-                            <small class="text-muted">${product.businessCategory} Services</small>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                ${product.businessLogo ? `<img src="${product.businessLogo}" alt="${product.businessName}" class="business-logo me-2" style="width: 40px; height: 40px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                                <div class="business-logo me-2 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 40px; height: 40px; display: ${product.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 14px;">${(product.businessName || 'B').substring(0, 2).toUpperCase()}</div>
-                                <div>
-                                    <div class="fw-semibold">${product.businessName}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge badge-custom ${getCategoryBadgeClass(product.businessCategory)}">${product.businessCategory}</span></td>
-                        <td><strong class="text-danger">${formatNumber(product.totalLikes || 0)}</strong></td>
-                        <td><strong class="text-success">+${product.likesThisMonth || 0}</strong></td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> <span class="text-success">+${product.trend || 0}%</span></td>
-                    </tr>
-                `).join('');
-            }
-
-            // Underperforming Businesses
-            if (analyticsData.underperformingBusinesses) {
-                const tbody = document.getElementById('underperformingBusinessesTableBody');
-                if (analyticsData.underperformingBusinesses.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No underperforming businesses found</td></tr>';
-                } else {
-                    tbody.innerHTML = analyticsData.underperformingBusinesses.map(business => `
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="business-logo me-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                                <div class="business-logo me-3 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 50px; height: 50px; display: ${business.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 18px;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
-                                    <div>
-                                        <div class="fw-semibold">${business.businessName}</div>
-                                        <small class="text-muted">${business.businessCategory}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge-custom ${getCategoryBadgeClass(business.businessCategory)}">${business.businessCategory}</span></td>
-                            <td>
-                                <div class="rating-stars">${renderStars(business.averageRating || 0)}</div>
-                                <small class="${business.averageRating < 3.0 ? 'text-danger' : 'text-warning'}">${business.averageRating || '0.0'}</small>
-                            </td>
-                            <td>${formatNumber(business.totalReviews || 0)}</td>
-                            <td>${formatNumber(business.totalFollowers || 0)}</td>
-                            <td>
-                                ${(business.issues || []).map(issue => `<span class="badge badge-custom ${issue.includes('Low') || issue.includes('Very') ? 'badge-danger' : 'badge-warning'}">${issue}</span>`).join(' ')}
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary" onclick="viewBusinessDetails('${business.businessId}')">View Details</button>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-            }
-        }
-
-        // Show error message
-        function showError(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-            alertDiv.innerHTML = `
-                <strong>Error:</strong> ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
-        }
-
-        // View business details (placeholder)
-        function viewBusinessDetails(businessId) {
-            alert(`View details for business: ${businessId}\n\nThis feature will be implemented in a future update.`);
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAnalytics();
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin_business_analytics.js"></script>
 </body>
 </html>
-

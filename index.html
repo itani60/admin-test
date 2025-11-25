@@ -183,34 +183,17 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 38px;
+            width: auto;
         }
 
         .header-right {
@@ -671,9 +654,6 @@
                 display: block;
             }
 
-            .search-box {
-                width: 300px;
-            }
 
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -681,9 +661,6 @@
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
 
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -738,9 +715,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+        
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -814,9 +789,8 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
             <div class="header-right">
@@ -1181,109 +1155,209 @@
             }
         }
 
-        function initCharts() {
-            const userGrowthCtx = document.getElementById('userGrowthChart');
-            if (userGrowthCtx) {
-                // Prevent wheel/scroll events from affecting the chart
-                const preventScroll = (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
-                };
-                
-                userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
-                userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-                
-                // Prevent touch events from interfering with page scroll
-                userGrowthCtx.addEventListener('touchstart', (e) => {
-                    // Only prevent if it's a multi-touch gesture (pinch/zoom)
-                    if (e.touches.length > 1) {
-                        e.stopPropagation();
-                    }
-                }, { passive: true });
+        // Chart instance
+        let userGrowthChart = null;
 
-                const chart = new Chart(userGrowthCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        datasets: [{
-                            label: 'New Users',
-                            data: [1200, 1900, 3000, 2500, 3200, 3800, 4200, 4500, 4800, 5100, 5400, 5800],
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 3,
-                            pointRadius: 6,
-                            pointBackgroundColor: '#2563eb',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointHoverRadius: 8,
-                            pointHoverBackgroundColor: '#2563eb',
-                            pointHoverBorderColor: '#fff',
-                            pointHoverBorderWidth: 3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { 
-                                display: false 
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderColor: '#2563eb',
-                                borderWidth: 1,
-                                padding: 12,
-                                displayColors: false,
-                                callbacks: {
-                                    title: function(context) {
-                                        return 'Month: ' + context[0].label;
-                                    },
-                                    label: function(context) {
-                                        return 'New Users: ' + context.parsed.y.toLocaleString();
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { 
-                                    color: '#eff6ff',
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    color: '#64748b',
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: { 
-                                    display: false,
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    color: '#64748b',
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
+        // Load users and update growth chart
+        async function loadUserGrowthData() {
+            try {
+                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+                // Remove /data suffix if present
+                if (API_BASE_URL.endsWith('/data')) {
+                    API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+                }
+                const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
+
+                const response = await fetch(`${USERS_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
                 });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.users)) {
+                        updateUserGrowthChart(data.users);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user growth data:', error);
+                // Chart will show empty/zero data on error
             }
+        }
+
+        // Update user growth chart with real data
+        function updateUserGrowthChart(users) {
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (!userGrowthCtx) return;
+
+            // Destroy existing chart if it exists
+            if (userGrowthChart) {
+                userGrowthChart.destroy();
+            }
+
+            // Prevent scroll on chart
+            const preventScroll = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            };
+            
+            userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
+            userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            
+            // Prevent touch events from interfering with page scroll
+            userGrowthCtx.addEventListener('touchstart', (e) => {
+                // Only prevent if it's a multi-touch gesture (pinch/zoom)
+                if (e.touches.length > 1) {
+                    e.stopPropagation();
+                }
+            }, { passive: true });
+
+            // Group users by month based on createdAt
+            const monthlyData = {};
+            const currentDate = new Date();
+            const months = [];
+            
+            // Get last 12 months
+            for (let i = 11; i >= 0; i--) {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                const monthKey = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                months.push(monthKey);
+                monthlyData[monthKey] = 0;
+            }
+            
+            // Count users by month
+            users.forEach(user => {
+                if (user.createdAt) {
+                    const userDate = new Date(user.createdAt);
+                    const monthKey = userDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    if (monthlyData.hasOwnProperty(monthKey)) {
+                        monthlyData[monthKey]++;
+                    }
+                }
+            });
+            
+            // Calculate cumulative totals
+            const cumulativeData = [];
+            let runningTotal = 0;
+            months.forEach(month => {
+                runningTotal += monthlyData[month];
+                cumulativeData.push(runningTotal);
+            });
+            
+            const monthlyCounts = months.map(month => monthlyData[month]);
+            
+            // Create chart with real data
+            userGrowthChart = new Chart(userGrowthCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Total Users',
+                        data: cumulativeData,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'New Users This Month',
+                        data: monthlyCounts,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 12,
+                                    weight: 600
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#2563eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Month: ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { 
+                                color: '#eff6ff',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                },
+                                stepSize: Math.ceil(Math.max(...cumulativeData) / 10) || 1
+                            }
+                        },
+                        x: {
+                            grid: { 
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
+                }
+            });
+        }
+
+        function initCharts() {
+            // Chart will be initialized after data is loaded
+            loadUserGrowthData();
         }
 
         document.addEventListener('DOMContentLoaded', () => {

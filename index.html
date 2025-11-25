@@ -865,10 +865,10 @@
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
-                    <div class="stat-value">12,543</div>
+                    <div class="stat-value" id="totalUsersCount">0</div>
                     <div class="stat-change positive">
                         <i class="fas fa-arrow-up"></i>
-                        <span>12.5% from last month</span>
+                        <span id="totalUsersChange">Loading...</span>
                     </div>
                 </div>
 
@@ -1060,6 +1060,48 @@
             }
         }
 
+        // Load total users count
+        async function loadTotalUsers() {
+            try {
+                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+                // Remove /data suffix if present
+                if (API_BASE_URL.endsWith('/data')) {
+                    API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+                }
+                const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
+
+                const response = await fetch(`${USERS_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.users)) {
+                        const totalUsers = data.users.length;
+                        const totalUsersElement = document.getElementById('totalUsersCount');
+                        const changeElement = document.getElementById('totalUsersChange');
+                        
+                        if (totalUsersElement) {
+                            totalUsersElement.textContent = totalUsers.toLocaleString();
+                        }
+                        
+                        if (changeElement) {
+                            // Calculate change (mock calculation for now)
+                            const changePercent = 12.5; // This could be calculated from historical data
+                            changeElement.textContent = `${changePercent}% from last month`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading total users:', error);
+                // Keep default value on error
+            }
+        }
+
         function initCharts() {
             const userGrowthCtx = document.getElementById('userGrowthChart');
             if (userGrowthCtx) {
@@ -1168,6 +1210,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginState();
             initCharts();
+            loadTotalUsers();
         });
 
         function initUserDropdown() {

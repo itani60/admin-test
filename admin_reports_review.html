@@ -1930,28 +1930,48 @@
         // Check Login State
         async function checkLoginState() {
             try {
-                const response = await fetch('/api/auth/check', {
-                    credentials: 'include'
-                });
-                const data = await response.json();
+                if (typeof window.adminAWSAuthService === 'undefined') {
+                    console.warn('Admin auth service not available');
+                    return;
+                }
+
+                const result = await window.adminAWSAuthService.getUserInfo();
                 
-                if (data.loggedIn && data.user) {
+                if (result.success && result.user) {
+                    const user = result.user;
+                    let displayName = '';
+                    let initials = '';
+
+                    if (user.givenName && user.familyName) {
+                        displayName = `${user.givenName} ${user.familyName}`;
+                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+                    } else if (user.givenName) {
+                        displayName = user.givenName;
+                        initials = user.givenName.substring(0, 2).toUpperCase();
+                    } else if (user.email) {
+                        const name = user.email.split('@')[0];
+                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                        initials = name.substring(0, 2).toUpperCase();
+                    } else {
+                        displayName = 'Admin User';
+                        initials = 'AU';
+                    }
+
                     const userAvatar = document.getElementById('userAvatar');
                     const userName = document.getElementById('userName');
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
                     
-                    if (userAvatar && data.user.name) {
-                        const initials = data.user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                        userAvatar.textContent = initials;
-                    }
-                    
-                    if (userName && data.user.name) {
-                        userName.textContent = data.user.name;
-                    }
+                    if (userAvatar) userAvatar.textContent = initials;
+                    if (userName) userName.textContent = displayName;
+                    if (dropdownUserName) dropdownUserName.textContent = displayName;
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
                 } else {
-                    window.location.href = 'index.html';
+                    window.location.href = 'admin-login.html';
                 }
             } catch (error) {
                 console.error('Error checking login state:', error);
+                window.location.href = 'admin-login.html';
             }
         }
 

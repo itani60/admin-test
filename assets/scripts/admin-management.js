@@ -25,18 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     checkLoginState();
     
-    // Handle tab changes
-    const tabButtons = document.querySelectorAll('#managementTabs button[data-bs-toggle="tab"]');
-    tabButtons.forEach(btn => {
-        btn.addEventListener('shown.bs.tab', (e) => {
-            const tabId = e.target.getAttribute('data-bs-target');
-            if (tabId === '#users-tab') currentTab = 'users';
-            else if (tabId === '#admins-tab') currentTab = 'admins';
-            else if (tabId === '#regular-tab') currentTab = 'regular';
-            else if (tabId === '#business-tab') currentTab = 'business';
-            applyFilters();
-        });
-    });
+    // Initialize account type selector dropdown
+    initializeAccountTypeSelector();
 });
 
 // Setup sidebar toggle
@@ -61,17 +51,25 @@ function setupSidebar() {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('accountTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    
+    // Initialize custom dropdowns
+    initializeAccountTypeDropdown();
+    initializeStatusDropdown();
     
     document.getElementById('adminSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('adminStatusFilter').addEventListener('change', applyFilters);
+    
+    // Initialize admin status dropdown
+    initializeAdminStatusDropdown();
     
     document.getElementById('regularSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('regularStatusFilter').addEventListener('change', applyFilters);
+    
+    // Initialize regular status dropdown
+    initializeRegularStatusDropdown();
     
     document.getElementById('businessSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('businessStatusFilter').addEventListener('change', applyFilters);
+    
+    // Initialize business status dropdown
+    initializeBusinessStatusDropdown();
 }
 
 // Load users from API
@@ -155,20 +153,25 @@ function applyFilters() {
 
     if (currentTab === 'users') {
         searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        accountTypeFilter = document.getElementById('accountTypeFilter').value;
-        statusFilter = document.getElementById('statusFilter').value;
+        const accountTypeSelect = document.getElementById('accountTypeSelect');
+        const statusSelect = document.getElementById('statusSelect');
+        accountTypeFilter = accountTypeSelect ? accountTypeSelect.value : 'all';
+        statusFilter = statusSelect ? statusSelect.value : 'all';
     } else if (currentTab === 'admins') {
         searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
         accountTypeFilter = 'admin';
-        statusFilter = document.getElementById('adminStatusFilter').value;
+        const adminStatusSelect = document.getElementById('adminStatusSelect');
+        statusFilter = adminStatusSelect ? adminStatusSelect.value : 'all';
     } else if (currentTab === 'regular') {
         searchTerm = document.getElementById('regularSearchInput').value.toLowerCase();
         accountTypeFilter = 'regular';
-        statusFilter = document.getElementById('regularStatusFilter').value;
+        const regularStatusSelect = document.getElementById('regularStatusSelect');
+        statusFilter = regularStatusSelect ? regularStatusSelect.value : 'all';
     } else if (currentTab === 'business') {
         searchTerm = document.getElementById('businessSearchInput').value.toLowerCase();
         accountTypeFilter = 'business';
-        statusFilter = document.getElementById('businessStatusFilter').value;
+        const businessStatusSelect = document.getElementById('businessStatusSelect');
+        statusFilter = businessStatusSelect ? businessStatusSelect.value : 'all';
     }
 
     filteredUsers = allUsers.filter(user => {
@@ -1108,6 +1111,452 @@ async function handleLogout() {
     } finally {
         window.location.href = 'admin-login.html';
     }
+}
+
+// Initialize custom account type dropdown
+function initializeAccountTypeDropdown() {
+    const accountTypeDropdown = document.getElementById('accountTypeDropdown');
+    const accountTypeDropdownBtn = document.getElementById('accountTypeDropdownBtn');
+    const accountTypeDropdownMenu = document.getElementById('accountTypeDropdownMenu');
+    const accountTypeDropdownItems = document.getElementById('accountTypeDropdownItems');
+    const accountTypeSelect = document.getElementById('accountTypeSelect');
+    
+    if (!accountTypeDropdown || !accountTypeDropdownBtn || !accountTypeDropdownMenu || !accountTypeDropdownItems) return;
+    
+    const accountTypeOptions = [
+        { value: 'all', text: 'All Account Types' },
+        { value: 'admin', text: 'Admin' },
+        { value: 'regular', text: 'Regular' },
+        { value: 'business', text: 'Business' }
+    ];
+    
+    accountTypeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            accountTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('accountTypeDropdownText').textContent = option.text;
+            accountTypeSelect.value = option.value;
+            
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+            
+            applyFilters();
+        });
+        accountTypeDropdownItems.appendChild(itemDiv);
+    });
+    
+    accountTypeDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = accountTypeDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'accountTypeDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+        } else {
+            accountTypeDropdown.classList.add('active');
+            accountTypeDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom status dropdown
+function initializeStatusDropdown() {
+    const statusDropdown = document.getElementById('statusDropdown');
+    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+    const statusDropdownItems = document.getElementById('statusDropdownItems');
+    const statusSelect = document.getElementById('statusSelect');
+    
+    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    
+    const statusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'verified', text: 'Verified' },
+        { value: 'pending', text: 'Pending Verification' },
+        { value: 'suspended', text: 'Suspended' }
+    ];
+    
+    statusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('statusDropdownText').textContent = option.text;
+            statusSelect.value = option.value;
+            
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+            
+            applyFilters();
+        });
+        statusDropdownItems.appendChild(itemDiv);
+    });
+    
+    statusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = statusDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'statusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        } else {
+            statusDropdown.classList.add('active');
+            statusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize account type selector dropdown
+function initializeAccountTypeSelector() {
+    const accountTypeSelectorDropdown = document.getElementById('accountTypeSelectorDropdown');
+    const accountTypeSelectorBtn = document.getElementById('accountTypeSelectorBtn');
+    const accountTypeSelectorMenu = document.getElementById('accountTypeSelectorMenu');
+    const accountTypeSelectorItems = document.getElementById('accountTypeSelectorItems');
+    const accountTypeSelector = document.getElementById('accountTypeSelector');
+    
+    if (!accountTypeSelectorDropdown || !accountTypeSelectorBtn || !accountTypeSelectorMenu || !accountTypeSelectorItems) return;
+    
+    const accountTypeOptions = [
+        { value: 'users', text: 'All Users', icon: 'fa-users' },
+        { value: 'admins', text: 'Admin Accounts', icon: 'fa-user-shield' },
+        { value: 'regular', text: 'Regular Accounts', icon: 'fa-user' },
+        { value: 'business', text: 'Business Accounts', icon: 'fa-building' }
+    ];
+    
+    accountTypeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
+        if (option.value === 'users') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            accountTypeSelectorItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('accountTypeSelectorText').innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
+            accountTypeSelector.value = option.value;
+            
+            accountTypeSelectorDropdown.classList.remove('active');
+            accountTypeSelectorMenu.style.display = 'none';
+            
+            // Switch tabs
+            switchTab(option.value);
+        });
+        accountTypeSelectorItems.appendChild(itemDiv);
+    });
+    
+    accountTypeSelectorBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = accountTypeSelectorDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'accountTypeSelectorDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            accountTypeSelectorDropdown.classList.remove('active');
+            accountTypeSelectorMenu.style.display = 'none';
+        } else {
+            accountTypeSelectorDropdown.classList.add('active');
+            accountTypeSelectorMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            accountTypeSelectorDropdown.classList.remove('active');
+            accountTypeSelectorMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom admin status dropdown
+function initializeAdminStatusDropdown() {
+    const adminStatusDropdown = document.getElementById('adminStatusDropdown');
+    const adminStatusDropdownBtn = document.getElementById('adminStatusDropdownBtn');
+    const adminStatusDropdownMenu = document.getElementById('adminStatusDropdownMenu');
+    const adminStatusDropdownItems = document.getElementById('adminStatusDropdownItems');
+    const adminStatusSelect = document.getElementById('adminStatusSelect');
+    
+    if (!adminStatusDropdown || !adminStatusDropdownBtn || !adminStatusDropdownMenu || !adminStatusDropdownItems) return;
+    
+    const adminStatusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'verified', text: 'Verified' },
+        { value: 'pending', text: 'Pending' }
+    ];
+    
+    adminStatusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            adminStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('adminStatusDropdownText').textContent = option.text;
+            adminStatusSelect.value = option.value;
+            
+            adminStatusDropdown.classList.remove('active');
+            adminStatusDropdownMenu.style.display = 'none';
+            
+            applyFilters();
+        });
+        adminStatusDropdownItems.appendChild(itemDiv);
+    });
+    
+    adminStatusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = adminStatusDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'adminStatusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            adminStatusDropdown.classList.remove('active');
+            adminStatusDropdownMenu.style.display = 'none';
+        } else {
+            adminStatusDropdown.classList.add('active');
+            adminStatusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            adminStatusDropdown.classList.remove('active');
+            adminStatusDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom business status dropdown
+function initializeBusinessStatusDropdown() {
+    const businessStatusDropdown = document.getElementById('businessStatusDropdown');
+    const businessStatusDropdownBtn = document.getElementById('businessStatusDropdownBtn');
+    const businessStatusDropdownMenu = document.getElementById('businessStatusDropdownMenu');
+    const businessStatusDropdownItems = document.getElementById('businessStatusDropdownItems');
+    const businessStatusSelect = document.getElementById('businessStatusSelect');
+    
+    if (!businessStatusDropdown || !businessStatusDropdownBtn || !businessStatusDropdownMenu || !businessStatusDropdownItems) return;
+    
+    const businessStatusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'verified', text: 'Verified' },
+        { value: 'pending', text: 'Pending' }
+    ];
+    
+    businessStatusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            businessStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('businessStatusDropdownText').textContent = option.text;
+            businessStatusSelect.value = option.value;
+            
+            businessStatusDropdown.classList.remove('active');
+            businessStatusDropdownMenu.style.display = 'none';
+            
+            applyFilters();
+        });
+        businessStatusDropdownItems.appendChild(itemDiv);
+    });
+    
+    businessStatusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = businessStatusDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'businessStatusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            businessStatusDropdown.classList.remove('active');
+            businessStatusDropdownMenu.style.display = 'none';
+        } else {
+            businessStatusDropdown.classList.add('active');
+            businessStatusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            businessStatusDropdown.classList.remove('active');
+            businessStatusDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom regular status dropdown
+function initializeRegularStatusDropdown() {
+    const regularStatusDropdown = document.getElementById('regularStatusDropdown');
+    const regularStatusDropdownBtn = document.getElementById('regularStatusDropdownBtn');
+    const regularStatusDropdownMenu = document.getElementById('regularStatusDropdownMenu');
+    const regularStatusDropdownItems = document.getElementById('regularStatusDropdownItems');
+    const regularStatusSelect = document.getElementById('regularStatusSelect');
+    
+    if (!regularStatusDropdown || !regularStatusDropdownBtn || !regularStatusDropdownMenu || !regularStatusDropdownItems) return;
+    
+    const regularStatusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'verified', text: 'Verified' },
+        { value: 'pending', text: 'Pending' },
+        { value: 'suspended', text: 'Suspended' }
+    ];
+    
+    regularStatusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            regularStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('regularStatusDropdownText').textContent = option.text;
+            regularStatusSelect.value = option.value;
+            
+            regularStatusDropdown.classList.remove('active');
+            regularStatusDropdownMenu.style.display = 'none';
+            
+            applyFilters();
+        });
+        regularStatusDropdownItems.appendChild(itemDiv);
+    });
+    
+    regularStatusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = regularStatusDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'regularStatusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            regularStatusDropdown.classList.remove('active');
+            regularStatusDropdownMenu.style.display = 'none';
+        } else {
+            regularStatusDropdown.classList.add('active');
+            regularStatusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            regularStatusDropdown.classList.remove('active');
+            regularStatusDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Switch between tabs
+function switchTab(tabValue) {
+    currentTab = tabValue;
+    
+    // Hide all tab panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.style.display = 'none';
+        pane.classList.remove('show', 'active');
+    });
+    
+    // Show selected tab pane
+    const targetPane = document.getElementById(tabValue);
+    if (targetPane) {
+        targetPane.style.display = 'block';
+        targetPane.classList.add('show', 'active');
+    }
+    
+    // Apply filters for the new tab
+    applyFilters();
 }
 
 // Attach logout handler

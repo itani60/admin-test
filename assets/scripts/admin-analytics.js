@@ -12,9 +12,13 @@ if (savedUrl) {
 
 // Load analytics data
 async function loadAnalytics() {
-    const category = document.getElementById('categoryFilter').value;
-    const timeRange = document.getElementById('timeRange').value;
-    const brand = document.getElementById('brandFilter').value;
+    const categorySelect = document.getElementById('categorySelect');
+    const timeRangeSelect = document.getElementById('timeRangeSelect');
+    const brandSelect = document.getElementById('brandSelect');
+    
+    const category = categorySelect ? categorySelect.value : '';
+    const timeRange = timeRangeSelect ? timeRangeSelect.value : 'month';
+    const brand = brandSelect ? brandSelect.value : '';
 
     try {
         // Load products for statistics
@@ -280,8 +284,228 @@ if (sidebarOverlay) {
 }
 
 // Initialize
+// Initialize custom category dropdown
+function initializeCategoryDropdown() {
+    const categoryDropdown = document.getElementById('categoryDropdown');
+    const categoryDropdownBtn = document.getElementById('categoryDropdownBtn');
+    const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
+    const categoryDropdownItems = document.getElementById('categoryDropdownItems');
+    const categorySelect = document.getElementById('categorySelect');
+    
+    if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
+    
+    const categoryOptions = [
+        { value: '', text: 'All Categories' },
+        { value: 'smartphones', text: 'Smartphones' },
+        { value: 'windows-laptops', text: 'Windows Laptops' },
+        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
+        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
+        { value: 'tablets', text: 'Tablets' },
+        { value: 'wearables', text: 'Wearables' },
+        { value: 'televisions', text: 'Televisions' },
+        { value: 'audio', text: 'Audio' },
+        { value: 'gaming', text: 'Gaming' },
+        { value: 'appliances', text: 'Appliances' }
+    ];
+    
+    categoryOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === '') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('categoryDropdownText').textContent = option.text;
+            categorySelect.value = option.value;
+            
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        });
+        categoryDropdownItems.appendChild(itemDiv);
+    });
+    
+    categoryDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = categoryDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'categoryDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        } else {
+            categoryDropdown.classList.add('active');
+            categoryDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom time range dropdown
+function initializeTimeRangeDropdown() {
+    const timeRangeDropdown = document.getElementById('timeRangeDropdown');
+    const timeRangeDropdownBtn = document.getElementById('timeRangeDropdownBtn');
+    const timeRangeDropdownMenu = document.getElementById('timeRangeDropdownMenu');
+    const timeRangeDropdownItems = document.getElementById('timeRangeDropdownItems');
+    const timeRangeSelect = document.getElementById('timeRangeSelect');
+    
+    if (!timeRangeDropdown || !timeRangeDropdownBtn || !timeRangeDropdownMenu || !timeRangeDropdownItems) return;
+    
+    const timeRangeOptions = [
+        { value: 'today', text: 'Today' },
+        { value: 'week', text: 'Last 7 Days' },
+        { value: 'month', text: 'Last 30 Days' },
+        { value: 'year', text: 'Last Year' },
+        { value: 'all', text: 'All Time' }
+    ];
+    
+    timeRangeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'month') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            timeRangeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('timeRangeDropdownText').textContent = option.text;
+            timeRangeSelect.value = option.value;
+            
+            timeRangeDropdown.classList.remove('active');
+            timeRangeDropdownMenu.style.display = 'none';
+        });
+        timeRangeDropdownItems.appendChild(itemDiv);
+    });
+    
+    timeRangeDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = timeRangeDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'timeRangeDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            timeRangeDropdown.classList.remove('active');
+            timeRangeDropdownMenu.style.display = 'none';
+        } else {
+            timeRangeDropdown.classList.add('active');
+            timeRangeDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            timeRangeDropdown.classList.remove('active');
+            timeRangeDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom brand dropdown
+function initializeBrandDropdown() {
+    const brandDropdown = document.getElementById('brandDropdown');
+    const brandDropdownBtn = document.getElementById('brandDropdownBtn');
+    const brandDropdownMenu = document.getElementById('brandDropdownMenu');
+    const brandDropdownItems = document.getElementById('brandDropdownItems');
+    const brandSelect = document.getElementById('brandSelect');
+    
+    if (!brandDropdown || !brandDropdownBtn || !brandDropdownMenu || !brandDropdownItems) return;
+    
+    const brandOptions = [
+        { value: '', text: 'All Brands' },
+        { value: 'Samsung', text: 'Samsung' },
+        { value: 'Apple', text: 'Apple' },
+        { value: 'Google', text: 'Google' },
+        { value: 'OnePlus', text: 'OnePlus' },
+        { value: 'Xiaomi', text: 'Xiaomi' }
+    ];
+    
+    brandOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === '') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            brandDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('brandDropdownText').textContent = option.text;
+            brandSelect.value = option.value;
+            
+            brandDropdown.classList.remove('active');
+            brandDropdownMenu.style.display = 'none';
+        });
+        brandDropdownItems.appendChild(itemDiv);
+    });
+    
+    brandDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = brandDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'brandDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            brandDropdown.classList.remove('active');
+            brandDropdownMenu.style.display = 'none';
+        } else {
+            brandDropdown.classList.add('active');
+            brandDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            brandDropdown.classList.remove('active');
+            brandDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await checkLoginState();
+    initializeCategoryDropdown();
+    initializeTimeRangeDropdown();
+    initializeBrandDropdown();
     loadAnalytics();
 });
 

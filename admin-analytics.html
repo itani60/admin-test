@@ -183,34 +183,15 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 40px;
+            width: auto;
         }
 
         .header-right {
@@ -582,6 +563,139 @@
             outline: none;
         }
 
+        /* Custom Dropdown Styles */
+        .filter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-box:has(.custom-dropdown.active) {
+            z-index: 10001;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar {
@@ -600,20 +714,12 @@
                 display: block;
             }
 
-            .search-box {
-                width: 300px;
-            }
-
             .charts-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -663,9 +769,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+           
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -739,9 +843,8 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
             <div class="header-right">
@@ -767,41 +870,49 @@
             <div class="filter-section">
             <div class="row g-3 align-items-end">
                 <div class="col-md-3">
-                    <label for="categoryFilter" class="form-label"><strong>Category</strong></label>
-                    <select class="form-select" id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <option value="smartphones">Smartphones</option>
-                        <option value="windows-laptops">Windows Laptops</option>
-                        <option value="macbooks-laptops">MacBooks Laptops</option>
-                        <option value="chromebooks-laptops">Chromebooks Laptops</option>
-                        <option value="tablets">Tablets</option>
-                        <option value="wearables">Wearables</option>
-                        <option value="televisions">Televisions</option>
-                        <option value="audio">Audio</option>
-                        <option value="gaming">Gaming</option>
-                        <option value="appliances">Appliances</option>
-                    </select>
+                    <div class="filter-box">
+                        <label class="filter-label" for="categoryFilter"><strong>Category</strong></label>
+                        <div class="custom-dropdown" id="categoryDropdown">
+                            <button class="custom-dropdown-btn" id="categoryDropdownBtn">
+                                <span id="categoryDropdownText">All Categories</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="categoryDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="categoryDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="categorySelect" value="">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <label for="timeRange" class="form-label"><strong>Time Range</strong></label>
-                    <select class="form-select" id="timeRange">
-                        <option value="today">Today</option>
-                        <option value="week">Last 7 Days</option>
-                        <option value="month" selected>Last 30 Days</option>
-                        <option value="year">Last Year</option>
-                        <option value="all">All Time</option>
-                    </select>
+                    <div class="filter-box">
+                        <label class="filter-label" for="timeRange"><strong>Time Range</strong></label>
+                        <div class="custom-dropdown" id="timeRangeDropdown">
+                            <button class="custom-dropdown-btn" id="timeRangeDropdownBtn">
+                                <span id="timeRangeDropdownText">Last 30 Days</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="timeRangeDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="timeRangeDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="timeRangeSelect" value="month">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <label for="brandFilter" class="form-label"><strong>Brand</strong></label>
-                    <select class="form-select" id="brandFilter">
-                        <option value="">All Brands</option>
-                        <option value="Samsung">Samsung</option>
-                        <option value="Apple">Apple</option>
-                        <option value="Google">Google</option>
-                        <option value="OnePlus">OnePlus</option>
-                        <option value="Xiaomi">Xiaomi</option>
-                    </select>
+                    <div class="filter-box">
+                        <label class="filter-label" for="brandFilter"><strong>Brand</strong></label>
+                        <div class="custom-dropdown" id="brandDropdown">
+                            <button class="custom-dropdown-btn" id="brandDropdownBtn">
+                                <span id="brandDropdownText">All Brands</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="brandDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="brandDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="brandSelect" value="">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <button class="btn btn-primary w-100" onclick="loadAnalytics()">
@@ -968,9 +1079,10 @@
         </div>
         </div>
     </div>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/scripts/admin-analytics.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
 </body>
 </html>
 

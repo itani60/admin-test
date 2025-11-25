@@ -41,16 +41,9 @@ function showAlert(message, type = 'info') {
 function initFileUpload() {
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
-    const categorySelect = document.getElementById('categorySelect');
 
-    // Category selection handler
-    categorySelect.addEventListener('change', (e) => {
-        selectedCategory = e.target.value;
-        if (productsData.length > 0) {
-            // Re-validate products with new category
-            validateCategoryInProducts();
-        }
-    });
+    // Initialize custom category dropdown
+    initializeCategoryDropdown();
 
     // Click to upload
     fileInput.addEventListener('change', handleFileSelect);
@@ -118,7 +111,7 @@ function handleFileSelect(event) {
 
             // Check if category is selected
             const categorySelect = document.getElementById('categorySelect');
-            selectedCategory = categorySelect.value;
+            selectedCategory = categorySelect ? categorySelect.value : '';
             if (!selectedCategory) {
                 showAlert('Please select a product category first', 'warning');
                 return;
@@ -269,7 +262,7 @@ async function importProducts() {
 
     // Ensure category is selected
     const categorySelect = document.getElementById('categorySelect');
-    selectedCategory = categorySelect.value;
+    selectedCategory = categorySelect ? categorySelect.value : '';
     if (!selectedCategory) {
         showAlert('Please select a product category', 'warning');
         return;
@@ -446,6 +439,88 @@ function resetImport() {
     document.getElementById('resultsSection').classList.remove('active');
     document.getElementById('importBtn').disabled = false;
     document.getElementById('alertContainer').innerHTML = '';
+}
+
+// Initialize custom category dropdown
+function initializeCategoryDropdown() {
+    const categoryDropdown = document.getElementById('categoryDropdown');
+    const categoryDropdownBtn = document.getElementById('categoryDropdownBtn');
+    const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
+    const categoryDropdownItems = document.getElementById('categoryDropdownItems');
+    const categorySelect = document.getElementById('categorySelect');
+    
+    if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
+    
+    const categoryOptions = [
+        { value: '', text: '-- Select Category --' },
+        { value: 'smartphones', text: 'Smartphones' },
+        { value: 'windows-laptops', text: 'Windows Laptops' },
+        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
+        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
+        { value: 'tablets', text: 'Tablets' },
+        { value: 'wearables', text: 'Wearables' },
+        { value: 'televisions', text: 'Televisions' },
+        { value: 'audio', text: 'Audio' },
+        { value: 'gaming', text: 'Gaming' },
+        { value: 'appliances', text: 'Appliances' }
+    ];
+    
+    categoryOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === '') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('categoryDropdownText').textContent = option.text;
+            categorySelect.value = option.value;
+            selectedCategory = option.value;
+            
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+            
+            // Re-validate products with new category if products are loaded
+            if (productsData.length > 0) {
+                validateCategoryInProducts();
+            }
+        });
+        categoryDropdownItems.appendChild(itemDiv);
+    });
+    
+    categoryDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = categoryDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'categoryDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        } else {
+            categoryDropdown.classList.add('active');
+            categoryDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        }
+    });
 }
 
 // Initialize on page load

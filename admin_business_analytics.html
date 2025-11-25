@@ -184,34 +184,16 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            height: 40px;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
         }
 
         .header-right {
@@ -449,24 +431,20 @@
             gap: 0.625rem;
             font-size: 0.9rem;
             font-weight: 700;
-            padding: 0.4rem 0.75rem;
-            border-radius: 8px;
         }
 
         .stat-change.positive {
-            background: rgba(40, 167, 69, 0.1);
-            color: #28a745;
+            color: var(--success);
         }
 
         .stat-change.negative {
-            background: rgba(244, 63, 94, 0.1);
             color: var(--danger);
         }
 
         /* Charts Section */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.75rem;
             margin-bottom: 2.25rem;
         }
@@ -477,11 +455,19 @@
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
         }
 
         .chart-card canvas {
             touch-action: pan-y;
             display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
         }
 
         .chart-header {
@@ -499,12 +485,6 @@
             color: var(--text-dark);
         }
 
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 1rem;
-        }
-
         /* Table Section */
         .table-section {
             background: white;
@@ -512,7 +492,7 @@
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 2px solid var(--border);
-            margin-bottom: 2.25rem;
+            margin-bottom: 3rem;
         }
 
         .table-section h3 {
@@ -650,20 +630,12 @@
                 display: block;
             }
 
-            .search-box {
-                width: 300px;
-            }
-
             .charts-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -713,9 +685,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+            
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -788,12 +758,11 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
-          
+            <div class="header-right">
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -834,11 +803,11 @@
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <span class="stat-change positive" id="followersChange">
-                            <i class="fas fa-arrow-up"></i> +0%
-                        </span>
                     </div>
                     <div class="stat-value" id="totalFollowers">-</div>
+                    <div class="stat-change positive" id="followersChange">
+                        <i class="fas fa-arrow-up"></i> +0%
+                    </div>
                     <div class="stat-label">Across all businesses</div>
                 </div>
 
@@ -849,11 +818,11 @@
                         <div class="stat-icon">
                             <i class="fas fa-star"></i>
                         </div>
-                        <span class="stat-change positive" id="reviewsChange">
-                            <i class="fas fa-arrow-up"></i> +0%
-                        </span>
                     </div>
                     <div class="stat-value" id="totalReviews">-</div>
+                    <div class="stat-change positive" id="reviewsChange">
+                        <i class="fas fa-arrow-up"></i> +0%
+                    </div>
                     <div class="stat-label">Customer reviews this month</div>
                 </div>
 
@@ -864,11 +833,11 @@
                         <div class="stat-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
-                        <span class="stat-change positive" id="ratingChange">
-                            <i class="fas fa-arrow-up"></i> +0.0
-                        </span>
                     </div>
                     <div class="stat-value" id="averageRating">-</div>
+                    <div class="stat-change positive" id="ratingChange">
+                        <i class="fas fa-arrow-up"></i> +0.0
+                    </div>
                     <div class="stat-label">Platform-wide average</div>
                 </div>
 
@@ -879,11 +848,11 @@
                         <div class="stat-icon">
                             <i class="fas fa-heart"></i>
                         </div>
-                        <span class="stat-change positive" id="likesChange">
-                            <i class="fas fa-arrow-up"></i> +0%
-                        </span>
                     </div>
                     <div class="stat-value" id="totalLikes">-</div>
+                    <div class="stat-change positive" id="likesChange">
+                        <i class="fas fa-arrow-up"></i> +0%
+                    </div>
                     <div class="stat-label">Likes across all products/services</div>
                 </div>
             </div>

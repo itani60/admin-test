@@ -43,18 +43,14 @@ function setupSidebar() {
 // Setup event listeners
 function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
-    const statusFilter = document.getElementById('statusFilter');
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce(applyFilters, 300));
     }
-    if (typeFilter) {
-        typeFilter.addEventListener('change', applyFilters);
-    }
-    if (statusFilter) {
-        statusFilter.addEventListener('change', applyFilters);
-    }
+    
+    // Initialize custom dropdowns
+    initializeTypeDropdown();
+    initializeStatusDropdown();
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -113,12 +109,12 @@ async function loadNotifications() {
 // Apply filters
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
-    const statusFilter = document.getElementById('statusFilter');
+    const typeSelect = document.getElementById('typeSelect');
+    const statusSelect = document.getElementById('statusSelect');
     
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-    const typeFilterValue = typeFilter ? typeFilter.value : 'all';
-    const statusFilterValue = statusFilter ? statusFilter.value : 'all';
+    const typeFilterValue = typeSelect ? typeSelect.value : 'all';
+    const statusFilterValue = statusSelect ? statusSelect.value : 'all';
     const timeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
 
     filteredNotifications = allNotifications.filter(notification => {
@@ -1170,5 +1166,166 @@ function updateCharts() {
         readStatusChart.data.datasets[0].data = statusData.data;
         readStatusChart.update();
     }
+}
+
+// Initialize custom type dropdown
+function initializeTypeDropdown() {
+    const typeDropdown = document.getElementById('typeDropdown');
+    const typeDropdownBtn = document.getElementById('typeDropdownBtn');
+    const typeDropdownMenu = document.getElementById('typeDropdownMenu');
+    const typeDropdownItems = document.getElementById('typeDropdownItems');
+    const typeSelect = document.getElementById('typeSelect');
+    
+    if (!typeDropdown || !typeDropdownBtn || !typeDropdownMenu || !typeDropdownItems) return;
+    
+    // Type options
+    const typeOptions = [
+        { value: 'all', text: 'All Types' },
+        { value: 'user_registration', text: 'Regular User Registration' },
+        { value: 'business_registration', text: 'Business User Registration' },
+        { value: 'password_reset', text: 'Password Reset' },
+        { value: 'email_update', text: 'Email Update' },
+        { value: 'price_alert', text: 'Price Alert Added' }
+    ];
+    
+    // Render dropdown items
+    typeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            // Update selected state
+            typeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Update button text and hidden input
+            document.getElementById('typeDropdownText').textContent = option.text;
+            typeSelect.value = option.value;
+            
+            // Close dropdown
+            typeDropdown.classList.remove('active');
+            typeDropdownMenu.style.display = 'none';
+            
+            // Apply filters
+            applyFilters();
+        });
+        typeDropdownItems.appendChild(itemDiv);
+    });
+    
+    // Toggle dropdown
+    typeDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = typeDropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'typeDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            typeDropdown.classList.remove('active');
+            typeDropdownMenu.style.display = 'none';
+        } else {
+            typeDropdown.classList.add('active');
+            typeDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            typeDropdown.classList.remove('active');
+            typeDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom status dropdown
+function initializeStatusDropdown() {
+    const statusDropdown = document.getElementById('statusDropdown');
+    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+    const statusDropdownItems = document.getElementById('statusDropdownItems');
+    const statusSelect = document.getElementById('statusSelect');
+    
+    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    
+    // Status options
+    const statusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'unread', text: 'Unread' },
+        { value: 'read', text: 'Read' }
+    ];
+    
+    // Render dropdown items
+    statusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            // Update selected state
+            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Update button text and hidden input
+            document.getElementById('statusDropdownText').textContent = option.text;
+            statusSelect.value = option.value;
+            
+            // Close dropdown
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+            
+            // Apply filters
+            applyFilters();
+        });
+        statusDropdownItems.appendChild(itemDiv);
+    });
+    
+    // Toggle dropdown
+    statusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = statusDropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'statusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        } else {
+            statusDropdown.classList.add('active');
+            statusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        }
+    });
 }
 

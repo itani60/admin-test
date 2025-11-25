@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Alert Tracking | CompareHubPrices Admin</title>
+    <title>Admin Panel | CompareHubPrices</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -183,16 +183,34 @@
             background: var(--light);
         }
 
-        .header-logo {
-            display: flex;
-            align-items: center;
-            height: 40px;
+        .search-box {
+            position: relative;
+            width: 480px;
         }
 
-        .header-logo img {
-            height: 40px;
-            width: auto;
-            object-fit: contain;
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
         }
 
         .header-right {
@@ -399,7 +417,7 @@
         /* Charts Section */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 1.75rem;
             margin-bottom: 2.25rem;
         }
@@ -439,8 +457,8 @@
             color: var(--text-dark);
         }
 
-        /* Filters Section */
-        .filters-section {
+        /* Quick Actions */
+        .quick-actions {
             background: white;
             border-radius: 16px;
             padding: 2rem;
@@ -449,172 +467,48 @@
             margin-bottom: 2.25rem;
         }
 
-        .filters-section .search-box {
-            position: relative;
-        }
-
-        .filters-section .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .filters-section .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .filters-section .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Custom Dropdown Styles */
-        .filter-box {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .filter-box:has(.custom-dropdown.active) {
-            z-index: 10001;
-        }
-
-        .filter-label {
-            font-weight: 600;
+        .quick-actions-title {
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--text-dark);
-            font-size: 0.95rem;
-            margin: 0;
+            margin-bottom: 1.5rem;
         }
 
-        .custom-dropdown {
-            position: relative;
-            width: 100%;
-            z-index: 1;
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.125rem;
         }
 
-        .custom-dropdown.active {
-            z-index: 10001 !important;
-            position: relative;
-        }
-
-        .custom-dropdown.active .custom-dropdown-menu {
-            z-index: 10001 !important;
-        }
-
-        .custom-dropdown-btn {
-            width: 100%;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-            background: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            color: var(--text-dark);
-            font-weight: 500;
-            cursor: pointer;
+        .action-btn {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            text-align: left;
-        }
-
-        .custom-dropdown-btn:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-        }
-
-        .custom-dropdown-btn:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-            background: white;
-        }
-
-        .custom-dropdown-btn:disabled {
+            gap: 1rem;
+            padding: 1.25rem;
             background: var(--light);
-            color: var(--text);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .custom-dropdown-btn i {
-            font-size: 0.75rem;
-            transition: transform 0.3s ease;
-            color: var(--text);
-        }
-
-        .custom-dropdown.active .custom-dropdown-btn i {
-            transform: rotate(180deg);
-        }
-
-        .custom-dropdown-menu {
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 0;
-            right: 0;
-            background: white !important;
             border: 2px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
-            z-index: 10001 !important;
-            max-height: 300px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            display: none;
-        }
-
-        .custom-dropdown.active .custom-dropdown-menu {
-            display: block;
-        }
-
-        .custom-dropdown-items {
-            max-height: 300px;
-            overflow-y: auto;
-            background: white !important;
-        }
-
-        .custom-dropdown-item {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid var(--border);
+            border-radius: 14px;
+            text-decoration: none;
             color: var(--text-dark);
-            font-weight: 500;
-            background: white !important;
-        }
-
-        .custom-dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .custom-dropdown-item:hover {
-            background: var(--light) !important;
-            color: var(--primary);
-        }
-
-        .custom-dropdown-item.selected {
-            color: var(--primary);
+            transition: all 0.3s ease;
             font-weight: 600;
-            background: rgba(37, 99, 235, 0.08) !important;
+            font-size: 0.95rem;
         }
 
-        /* Table Section */
-        .table-section {
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+            border-color: var(--primary);
+        }
+
+        .action-btn i {
+            font-size: 1.4rem;
+        }
+
+        /* Recent Activity */
+        .activity-card {
             background: white;
             border-radius: 16px;
             padding: 2rem;
@@ -622,118 +516,59 @@
             border: 2px solid var(--border);
         }
 
-        .table-section .table-header {
+        .activity-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.75rem;
-            padding-bottom: 1.25rem;
+            gap: 1.125rem;
+            padding: 1.25rem 0;
             border-bottom: 2px solid var(--border);
-        }
-
-        .table-section h3 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-            background: var(--light);
-            border-bottom: 2px solid var(--border);
-            font-weight: 600;
-            color: var(--text-dark);
-            padding: 1rem;
-        }
-
-        .table tbody td {
-            padding: 1rem;
-            vertical-align: middle;
-        }
-
-        .table tbody tr:hover {
-            background: var(--light);
-        }
-
-        .badge {
-            padding: 0.35em 0.65em;
-            font-size: 0.75em;
-            font-weight: 700;
-            border-radius: 0.25rem;
-            display: inline-block;
-        }
-
-        .badge-success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .badge-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .badge-info {
-            background-color: var(--info);
-            color: white;
-        }
-
-        .badge-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .badge-warning {
-            background-color: var(--warning);
-            color: #000;
-        }
-
-        .loading-spinner {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .empty-state {
-            padding: 3rem;
-            text-align: center;
-            color: var(--text);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--text);
-        }
-
-        .expand-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            font-weight: 600;
             transition: all 0.2s ease;
         }
 
-        .expand-btn:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .alerts-detail {
-            margin-top: 1rem;
-            padding: 1rem;
+        .activity-item:hover {
             background: var(--light);
-            border-radius: 8px;
-            display: none;
+            margin: 0 -2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            border-radius: 12px;
         }
 
-        .alerts-detail.show {
-            display: block;
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .activity-icon.success { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .activity-icon.warning { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .activity-icon.danger { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
+        .activity-icon.info { background: linear-gradient(135deg, var(--info) 0%, #22d3ee 100%); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.375rem;
+            font-size: 0.95rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text);
         }
 
         /* Responsive */
@@ -754,13 +589,25 @@
                 display: block;
             }
 
+            .search-box {
+                width: 300px;
+            }
+
             .charts-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
             .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -809,12 +656,14 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
+            </div>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
-                <a href="admin-panel3.html" class="nav-item">
+                <a href="admin-panel3.html" class="nav-item active">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
@@ -835,7 +684,7 @@
                     <i class="fas fa-chart-bar"></i>
                     <span>Business Analytics</span>
                 </a>
-                <a href="admin_price_alert_tracking.html" class="nav-item active">
+                <a href="admin_price_alert_tracking.html" class="nav-item">
                     <i class="fas fa-bell"></i>
                     <span>Price Alerts Tracking</span>
                 </a>
@@ -883,12 +732,20 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="header-logo">
-                    <img src="assets/logo .png" alt="CompareHubPrices">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
                 </div>
             </div>
             <div class="header-right">
-             
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -902,166 +759,323 @@
 
         <div class="content-wrapper">
             <div class="page-header">
-                <h1 class="page-title">Price Alert Tracking</h1>
-                <p class="page-subtitle">Monitor price alerts created by users, view alert statistics, and track user engagement</p>
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back! Here's what's happening with your platform today.</p>
             </div>
 
-            <div id="alertContainer"></div>
-
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card primary">
                     <div class="stat-header">
-                        <div class="stat-title">Users with Alerts</div>
+                        <div class="stat-title">Total Users</div>
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="totalUsersCount">0</div>
+                    <div class="stat-value">12,543</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% from last month</span>
+                    </div>
                 </div>
+
                 <div class="stat-card success">
                     <div class="stat-header">
-                        <div class="stat-title">Total Alerts</div>
+                        <div class="stat-title">Active Businesses</div>
                         <div class="stat-icon">
-                            <i class="fas fa-bell"></i>
+                            <i class="fas fa-store"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="totalAlertsCount">0</div>
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% from last month</span>
+                    </div>
                 </div>
+
                 <div class="stat-card warning">
                     <div class="stat-header">
-                        <div class="stat-title">Active Alerts</div>
+                        <div class="stat-title">Pending Reviews</div>
                         <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
+                            <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="activeAlertsCount">0</div>
+                    <div class="stat-value">89</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>5.3% from last week</span>
+                    </div>
                 </div>
+
                 <div class="stat-card danger">
                     <div class="stat-header">
-                        <div class="stat-title">Inactive Alerts</div>
+                        <div class="stat-title">Revenue</div>
                         <div class="stat-icon">
-                            <i class="fas fa-times-circle"></i>
+                            <i class="fas fa-dollar-sign"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="inactiveAlertsCount">0</div>
+                    <div class="stat-value" style="font-size: 1.5rem;">Coming Soon</div>
+                    <div class="stat-change" style="color: var(--text);">
+                        <span>Data will be available shortly</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Charts Grid -->
             <div class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Alerts Created Over Time</h3>
+                        <h3 class="chart-title">User Growth</h3>
+                        <i class="fas fa-ellipsis-h" style="color: var(--text); cursor: pointer;"></i>
                     </div>
                     <div class="chart-container">
-                        <canvas id="alertsOverTimeChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Active vs Inactive Alerts</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="alertStatusChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Top Users by Alert Count</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="topUsersChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Notification Methods Distribution</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="notificationMethodsChart"></canvas>
+                        <canvas id="userGrowthChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Filters Section -->
-            <div class="filters-section">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="searchInput" 
-                                placeholder="Search by user email or product name..."
-                            >
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="statusDropdown">
-                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                    <span id="statusDropdownText">All Status</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="statusSelect" value="all">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-primary w-100" onclick="refreshAlerts()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
+            <div class="quick-actions">
+                <h3 class="quick-actions-title">Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="admin-bulk-import.html" class="action-btn">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Bulk Import</span>
+                    </a>
+                    <a href="admin-business.html" class="action-btn">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Approve Posts</span>
+                    </a>
+                    <a href="admin-management.html" class="action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add User</span>
+                    </a>
+                    <a href="admin-price-update.html" class="action-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Update Prices</span>
+                    </a>
+                    <a href="admin_alerts_notification.html" class="action-btn">
+                        <i class="fas fa-bell"></i>
+                        <span>Send Notification</span>
+                    </a>
+                    <a href="admin-settings.html" class="action-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
                 </div>
             </div>
 
-            <!-- Table Section -->
-            <div class="table-section">
-                <div class="table-header">
-                    <h3>Price Alerts by User</h3>
-                    <button class="btn btn-danger btn-sm" onclick="exportAlerts()">
-                        <i class="fas fa-download"></i> Export
-                    </button>
+            <div class="activity-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Recent Activity</h3>
+                    <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 700;">View All</a>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User Email</th>
-                                <th>Total Alerts</th>
-                                <th>Active Alerts</th>
-                                <th>Inactive Alerts</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="priceAlertsContainer">
-                            <tr>
-                                <td colspan="5" class="text-center">
-                                    <div class="loading-spinner">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Business post approved</div>
+                        <div class="activity-time">2 minutes ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon info">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">New user registered</div>
+                        <div class="activity-time">15 minutes ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon warning">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Price update failed</div>
+                        <div class="activity-time">1 hour ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Bulk import completed</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="assets/scripts/admin_price_alert_tracking.js"></script>
-   
+
+    
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        async function checkLoginState() {
+            try {
+                if (typeof window.adminAWSAuthService === 'undefined') {
+                    console.warn('Admin auth service not available');
+                    return;
+                }
+
+                const result = await window.adminAWSAuthService.getUserInfo();
+                
+                if (result.success && result.user) {
+                    const user = result.user;
+                    let displayName = '';
+                    let initials = '';
+
+                    if (user.givenName && user.familyName) {
+                        displayName = `${user.givenName} ${user.familyName}`;
+                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+                    } else if (user.givenName) {
+                        displayName = user.givenName;
+                        initials = user.givenName.substring(0, 2).toUpperCase();
+                    } else if (user.email) {
+                        const name = user.email.split('@')[0];
+                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                        initials = name.substring(0, 2).toUpperCase();
+                    } else {
+                        displayName = 'Admin User';
+                        initials = 'AU';
+                    }
+
+                    document.getElementById('userAvatar').textContent = initials;
+                    document.getElementById('userName').textContent = displayName;
+                } else {
+                    window.location.href = 'admin-login.html';
+                }
+            } catch (error) {
+                console.error('Error checking login state:', error);
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        function initCharts() {
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (userGrowthCtx) {
+                // Prevent wheel/scroll events from affecting the chart
+                const preventScroll = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                };
+                
+                userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
+                userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+                
+                // Prevent touch events from interfering with page scroll
+                userGrowthCtx.addEventListener('touchstart', (e) => {
+                    // Only prevent if it's a multi-touch gesture (pinch/zoom)
+                    if (e.touches.length > 1) {
+                        e.stopPropagation();
+                    }
+                }, { passive: true });
+
+                const chart = new Chart(userGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [1200, 1900, 3000, 2500, 3200, 3800, 4200, 4500, 4800, 5100, 5400, 5800],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#2563eb',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: '#2563eb',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                display: false 
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#2563eb',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    title: function(context) {
+                                        return 'Month: ' + context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return 'New Users: ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { 
+                                    color: '#eff6ff',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: { 
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginState();
+            initCharts();
+        });
+    </script>
 </body>
 </html>
 

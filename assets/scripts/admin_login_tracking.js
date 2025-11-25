@@ -23,10 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('accountTypeFilter').addEventListener('change', applyFilters);
-    document.getElementById('statusFilter').addEventListener('change', applyFilters);
     document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
     document.getElementById('dateToFilter').addEventListener('change', applyFilters);
+    
+    // Initialize custom dropdowns
+    initializeAccountTypeDropdown();
+    initializeStatusDropdown();
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -104,8 +106,8 @@ async function loadLoginEvents() {
 // Apply filters
 function applyFilters() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const accountTypeFilter = document.getElementById('accountTypeFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
+    const accountTypeFilter = document.getElementById('accountTypeSelect').value;
+    const statusFilter = document.getElementById('statusSelect').value;
     const dateFrom = document.getElementById('dateFromFilter').value;
     const dateTo = document.getElementById('dateToFilter').value;
     const timeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
@@ -217,7 +219,6 @@ function renderLoginEvents() {
             : 'N/A';
         
         const deviceInfo = event.device || event.userAgent || 'Unknown';
-        const location = event.location || event.country || 'Unknown';
         
         // Get failure reason for failed logins
         let failureReasonHtml = '<span class="text-muted">-</span>';
@@ -238,7 +239,6 @@ function renderLoginEvents() {
                 <td>
                     <small>${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</small>
                 </td>
-                <td>${escapeHtml(location)}</td>
                 <td>
                     <div>${escapeHtml(formattedDate)}</div>
                     <small class="text-muted">${formattedTime}</small>
@@ -270,10 +270,163 @@ function refreshLogins() {
     showAlert('Refreshing login events...', 'info');
 }
 
-// Export login events
-function exportLogins() {
-    // TODO: Implement CSV/Excel export
-    showAlert('Export functionality coming soon', 'info');
+// Export login events to PDF
+async function exportLogins() {
+    try {
+        if (filteredLoginEvents.length === 0) {
+            showAlert('No login events to export', 'warning');
+            return;
+        }
+
+        showAlert('Generating PDF...', 'info');
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'mm', 'a4');
+        
+        // Set font
+        doc.setFont('helvetica');
+        
+        // Title
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Login Events Report', 14, 15);
+        
+        // Date and filters info
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const exportDate = new Date().toLocaleString('en-ZA', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        doc.text(`Generated: ${exportDate}`, 14, 22);
+        doc.text(`Total Records: ${filteredLoginEvents.length}`, 14, 27);
+        
+        // Table headers
+        const headers = ['User', 'Account Type', 'Status', 'Failure Reason', 'IP Address', 'Device/Browser', 'Timestamp'];
+        const colWidths = [35, 25, 20, 30, 30, 50, 40];
+        const startY = 35;
+        let currentY = startY;
+        
+        // Header styling
+        doc.setFillColor(37, 99, 235); // Primary blue
+        doc.rect(14, currentY - 5, 260, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        
+        let xPos = 14;
+        headers.forEach((header, index) => {
+            doc.text(header, xPos, currentY);
+            xPos += colWidths[index];
+        });
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        
+        currentY += 5;
+        
+        // Table rows
+        filteredLoginEvents.forEach((event, index) => {
+            // Check if we need a new page
+            if (currentY > 180) {
+                doc.addPage();
+                currentY = 15;
+                
+                // Redraw header on new page
+                doc.setFillColor(37, 99, 235);
+                doc.rect(14, currentY - 5, 260, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9);
+                
+                xPos = 14;
+                headers.forEach((header, idx) => {
+                    doc.text(header, xPos, currentY);
+                    xPos += colWidths[idx];
+                });
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                currentY += 5;
+            }
+            
+            // Row background (alternating)
+            if (index % 2 === 0) {
+                doc.setFillColor(245, 247, 250);
+                doc.rect(14, currentY - 4, 260, 6, 'F');
+            }
+            
+            // Format data
+            const email = event.email || 'N/A';
+            const accountType = event.accountType === 'business' ? 'Business' : 
+                              event.accountType === 'admin' ? 'Admin' : 'Regular';
+            const status = event.status === 'success' ? 'Success' : 'Failed';
+            const failureReason = event.status === 'failed' 
+                ? (event.failureReason || event.errorCode || event.errorMessage || 'Unknown') 
+                : '-';
+            const ipAddress = event.ipAddress || 'N/A';
+            const deviceInfo = (event.device || event.userAgent || 'Unknown').substring(0, 40);
+            
+            const eventDate = timestampToDate(event.timestamp || event.createdAt);
+            const timestamp = eventDate 
+                ? eventDate.toLocaleString('en-ZA', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'N/A';
+            
+            // Draw row data
+            const rowData = [email, accountType, status, failureReason, ipAddress, deviceInfo, timestamp];
+            xPos = 14;
+            
+            rowData.forEach((data, colIndex) => {
+                // Truncate long text
+                let text = String(data);
+                if (text.length > 30 && colIndex !== 0) {
+                    text = text.substring(0, 27) + '...';
+                }
+                
+                doc.text(text, xPos, currentY);
+                xPos += colWidths[colIndex];
+            });
+            
+            currentY += 6;
+        });
+        
+        // Footer
+        const pageCount = doc.internal.pages.length - 1;
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(128, 128, 128);
+            doc.text(
+                `Page ${i} of ${pageCount}`,
+                doc.internal.pageSize.getWidth() / 2,
+                doc.internal.pageSize.getHeight() - 10,
+                { align: 'center' }
+            );
+        }
+        
+        // Generate filename
+        const filename = `login-events-${new Date().toISOString().split('T')[0]}.pdf`;
+        
+        // Save PDF
+        doc.save(filename);
+        
+        showAlert(`PDF exported successfully: ${filename}`, 'success');
+    } catch (error) {
+        console.error('Error exporting to PDF:', error);
+        showAlert('Failed to export PDF. Please try again.', 'danger');
+    }
 }
 
 // Initialize Analytics Charts
@@ -749,5 +902,164 @@ async function checkLoginState() {
         console.error('Error checking login state:', error);
         window.location.href = 'admin-login.html';
     }
+}
+
+// Initialize custom account type dropdown
+function initializeAccountTypeDropdown() {
+    const accountTypeDropdown = document.getElementById('accountTypeDropdown');
+    const accountTypeDropdownBtn = document.getElementById('accountTypeDropdownBtn');
+    const accountTypeDropdownMenu = document.getElementById('accountTypeDropdownMenu');
+    const accountTypeDropdownItems = document.getElementById('accountTypeDropdownItems');
+    const accountTypeSelect = document.getElementById('accountTypeSelect');
+    
+    if (!accountTypeDropdown || !accountTypeDropdownBtn || !accountTypeDropdownMenu || !accountTypeDropdownItems) return;
+    
+    // Account type options
+    const accountTypeOptions = [
+        { value: 'all', text: 'All Account Types' },
+        { value: 'regular', text: 'Regular Users' },
+        { value: 'business', text: 'Business Users' },
+        { value: 'admin', text: 'Admin Users' }
+    ];
+    
+    // Render dropdown items
+    accountTypeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            // Update selected state
+            accountTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Update button text and hidden input
+            document.getElementById('accountTypeDropdownText').textContent = option.text;
+            accountTypeSelect.value = option.value;
+            
+            // Close dropdown
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+            
+            // Apply filters
+            applyFilters();
+        });
+        accountTypeDropdownItems.appendChild(itemDiv);
+    });
+    
+    // Toggle dropdown
+    accountTypeDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = accountTypeDropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'accountTypeDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+        } else {
+            accountTypeDropdown.classList.add('active');
+            accountTypeDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            accountTypeDropdown.classList.remove('active');
+            accountTypeDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+// Initialize custom status dropdown
+function initializeStatusDropdown() {
+    const statusDropdown = document.getElementById('statusDropdown');
+    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+    const statusDropdownItems = document.getElementById('statusDropdownItems');
+    const statusSelect = document.getElementById('statusSelect');
+    
+    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    
+    // Status options
+    const statusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'success', text: 'Successful' },
+        { value: 'failed', text: 'Failed' }
+    ];
+    
+    // Render dropdown items
+    statusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            // Update selected state
+            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Update button text and hidden input
+            document.getElementById('statusDropdownText').textContent = option.text;
+            statusSelect.value = option.value;
+            
+            // Close dropdown
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+            
+            // Apply filters
+            applyFilters();
+        });
+        statusDropdownItems.appendChild(itemDiv);
+    });
+    
+    // Toggle dropdown
+    statusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = statusDropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'statusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        } else {
+            statusDropdown.classList.add('active');
+            statusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        }
+    });
 }
 

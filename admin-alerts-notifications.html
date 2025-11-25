@@ -183,34 +183,15 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 40px;
+            width: auto;
         }
 
         .header-right {
@@ -494,6 +475,175 @@
             color: white;
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Custom Dropdown Styles */
+        .filter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-box:has(.custom-dropdown.active) {
+            z-index: 10001;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
+        /* Custom Search Input Style */
+        .custom-search-input {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-search-input input {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .custom-search-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         /* Notifications Section */
@@ -823,20 +973,12 @@
                 display: block;
             }
 
-            .search-box {
-                width: 300px;
-            }
-
             .charts-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -886,9 +1028,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-                    </div>
+            
                 </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -961,16 +1101,11 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
             </div>
-        </div>
             <div class="header-right">
-                <div class="header-icon" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge" id="headerBadge">0</span>
-    </div>
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -1080,32 +1215,44 @@
         <div class="filters-section">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="searchInput" 
-                            placeholder="Search by user email, name, or notification type..."
-                        >
+                    <div class="filter-box">
+                        <div class="custom-search-input">
+                            <i class="fas fa-search"></i>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Search by user email, name, or notification type..."
+                            >
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select class="form-select" id="typeFilter">
-                        <option value="all">All Types</option>
-                        <option value="user_registration">Regular User Registration</option>
-                        <option value="business_registration">Business User Registration</option>
-                        <option value="password_reset">Password Reset</option>
-                        <option value="email_update">Email Update</option>
-                        <option value="price_alert">Price Alert Added</option>
-                    </select>
+                    <div class="filter-box">
+                        <div class="custom-dropdown" id="typeDropdown">
+                            <button class="custom-dropdown-btn" id="typeDropdownBtn">
+                                <span id="typeDropdownText">All Types</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="typeDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="typeDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="typeSelect" value="all">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <select class="form-select" id="statusFilter">
-                        <option value="all">All Status</option>
-                        <option value="unread">Unread</option>
-                        <option value="read">Read</option>
-                    </select>
+                    <div class="filter-box">
+                        <div class="custom-dropdown" id="statusDropdown">
+                            <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                <span id="statusDropdownText">All Status</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="statusSelect" value="all">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="filter-buttons">
@@ -1176,7 +1323,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-   
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-alerts-notifications.js"></script>
 </body>
 </html>

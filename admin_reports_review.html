@@ -183,34 +183,15 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 40px;
+            width: auto;
         }
 
         .header-right {
@@ -500,6 +481,175 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             margin-bottom: 2.25rem;
             border: 2px solid var(--border);
+        }
+
+        /* Custom Dropdown Styles */
+        .filter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-box:has(.custom-dropdown.active) {
+            z-index: 10001;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
+        /* Custom Search Input Style */
+        .custom-search-input {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-search-input input {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .custom-search-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         .filters-row {
@@ -835,16 +985,9 @@
             .menu-toggle {
                 display: block;
             }
-
-            .search-box {
-                width: 300px;
-            }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
 
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -922,9 +1065,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+          
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -998,9 +1139,8 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
             <div class="header-right">
@@ -1031,7 +1171,7 @@
                             <i class="fas fa-flag"></i>
                         </div>
                     </div>
-                    <div class="stat-value">47</div>
+                    <div class="stat-value" id="totalReportsStat">-</div>
                 </div>
 
                 <div class="stat-card warning">
@@ -1041,7 +1181,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
-                    <div class="stat-value">23</div>
+                    <div class="stat-value" id="pendingReportsStat">-</div>
                 </div>
 
                 <div class="stat-card success">
@@ -1051,7 +1191,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                     </div>
-                    <div class="stat-value">18</div>
+                    <div class="stat-value" id="resolvedReportsStat">-</div>
                 </div>
 
                 <div class="stat-card danger">
@@ -1061,7 +1201,7 @@
                             <i class="fas fa-times-circle"></i>
                         </div>
                     </div>
-                    <div class="stat-value">6</div>
+                    <div class="stat-value" id="dismissedReportsStat">-</div>
                 </div>
             </div>
 
@@ -1069,31 +1209,45 @@
         <div class="filters-section">
             <div class="filters-row">
                 <div class="filter-group">
-                    <label for="statusFilter">Filter by Status</label>
-                    <select id="statusFilter" class="form-select" onchange="filterReports()">
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="reviewed">Reviewed</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="dismissed">Dismissed</option>
-                    </select>
+                    <div class="filter-box">
+                        <label class="filter-label" for="statusFilter">Filter by Status</label>
+                        <div class="custom-dropdown" id="statusDropdown">
+                            <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                <span id="statusDropdownText">All Status</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="statusSelect" value="all">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <label for="reasonFilter">Filter by Reason</label>
-                    <select id="reasonFilter" class="form-select" onchange="filterReports()">
-                        <option value="all">All Reasons</option>
-                        <option value="spam">Spam</option>
-                        <option value="inappropriate">Inappropriate</option>
-                        <option value="fake">Fake</option>
-                        <option value="offensive">Offensive</option>
-                        <option value="other">Other</option>
-                    </select>
+                    <div class="filter-box">
+                        <label class="filter-label" for="reasonFilter">Filter by Reason</label>
+                        <div class="custom-dropdown" id="reasonDropdown">
+                            <button class="custom-dropdown-btn" id="reasonDropdownBtn">
+                                <span id="reasonDropdownText">All Reasons</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="reasonDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="reasonDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="reasonSelect" value="all">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <label for="searchFilter">Search</label>
-                    <input type="text" id="searchFilter" class="form-control" placeholder="Search by business, reviewer, or reporter..." onkeyup="filterReports()">
+                    <div class="filter-box">
+                        <label class="filter-label" for="searchFilter">Search</label>
+                        <div class="custom-search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchFilter" placeholder="Search by business, reviewer, or reporter..." onkeyup="filterReports()">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1194,7 +1348,7 @@
             </div>
         </div>
     </div>
-
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_BASE_URL = 'https://acc.comparehubprices.site/admin/admin/review-reports';
@@ -1310,8 +1464,10 @@
         }
 
         function filterReports() {
-            const statusFilter = document.getElementById('statusFilter')?.value || 'all';
-            const reasonFilter = document.getElementById('reasonFilter')?.value || 'all';
+            const statusSelect = document.getElementById('statusSelect');
+            const statusFilter = statusSelect ? statusSelect.value : 'all';
+            const reasonSelect = document.getElementById('reasonSelect');
+            const reasonFilter = reasonSelect ? reasonSelect.value : 'all';
             const searchFilter = document.getElementById('searchFilter')?.value.toLowerCase() || '';
 
             console.log('Filtering reports:', {
@@ -1344,10 +1500,15 @@
             const resolved = reportsData.filter(r => r.status === 'resolved').length;
             const dismissed = reportsData.filter(r => r.status === 'dismissed').length;
 
-            document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = total;
-            document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = pending;
-            document.querySelector('.stat-card:nth-child(3) .stat-number').textContent = resolved;
-            document.querySelector('.stat-card:nth-child(4) .stat-number').textContent = dismissed;
+            const totalEl = document.getElementById('totalReportsStat');
+            const pendingEl = document.getElementById('pendingReportsStat');
+            const resolvedEl = document.getElementById('resolvedReportsStat');
+            const dismissedEl = document.getElementById('dismissedReportsStat');
+
+            if (totalEl) totalEl.textContent = total;
+            if (pendingEl) pendingEl.textContent = pending;
+            if (resolvedEl) resolvedEl.textContent = resolved;
+            if (dismissedEl) dismissedEl.textContent = dismissed;
         }
 
         async function viewReportDetail(reportOrReviewId, reporterUserId) {
@@ -1693,16 +1854,179 @@
             }
         }
 
+        // Initialize custom status dropdown
+        function initializeStatusDropdown() {
+            const statusDropdown = document.getElementById('statusDropdown');
+            const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+            const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+            const statusDropdownItems = document.getElementById('statusDropdownItems');
+            const statusSelect = document.getElementById('statusSelect');
+            
+            if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+            
+            // Status options
+            const statusOptions = [
+                { value: 'all', text: 'All Status' },
+                { value: 'pending', text: 'Pending' },
+                { value: 'reviewed', text: 'Reviewed' },
+                { value: 'resolved', text: 'Resolved' },
+                { value: 'dismissed', text: 'Dismissed' }
+            ];
+            
+            // Render dropdown items
+            statusOptions.forEach(option => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-dropdown-item';
+                itemDiv.dataset.value = option.value;
+                itemDiv.textContent = option.text;
+                if (option.value === 'all') {
+                    itemDiv.classList.add('selected');
+                }
+                itemDiv.addEventListener('click', function() {
+                    // Update selected state
+                    statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    // Update button text and hidden input
+                    document.getElementById('statusDropdownText').textContent = option.text;
+                    statusSelect.value = option.value;
+                    
+                    // Close dropdown
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                    
+                    // Apply filters
+                    filterReports();
+                    
+                    // Reload reports if needed
+                    const status = option.value === 'all' ? null : option.value;
+                    loadReports(status);
+                });
+                statusDropdownItems.appendChild(itemDiv);
+            });
+            
+            // Toggle dropdown
+            statusDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = statusDropdown.classList.contains('active');
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd.id !== 'statusDropdown') {
+                        dd.classList.remove('active');
+                        const menu = dd.querySelector('.custom-dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    }
+                });
+                
+                if (isActive) {
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                } else {
+                    statusDropdown.classList.add('active');
+                    statusDropdownMenu.style.display = 'block';
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize custom reason dropdown
+        function initializeReasonDropdown() {
+            const reasonDropdown = document.getElementById('reasonDropdown');
+            const reasonDropdownBtn = document.getElementById('reasonDropdownBtn');
+            const reasonDropdownMenu = document.getElementById('reasonDropdownMenu');
+            const reasonDropdownItems = document.getElementById('reasonDropdownItems');
+            const reasonSelect = document.getElementById('reasonSelect');
+            
+            if (!reasonDropdown || !reasonDropdownBtn || !reasonDropdownMenu || !reasonDropdownItems) return;
+            
+            // Reason options
+            const reasonOptions = [
+                { value: 'all', text: 'All Reasons' },
+                { value: 'spam', text: 'Spam' },
+                { value: 'inappropriate', text: 'Inappropriate' },
+                { value: 'fake', text: 'Fake' },
+                { value: 'offensive', text: 'Offensive' },
+                { value: 'other', text: 'Other' }
+            ];
+            
+            // Render dropdown items
+            reasonOptions.forEach(option => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-dropdown-item';
+                itemDiv.dataset.value = option.value;
+                itemDiv.textContent = option.text;
+                if (option.value === 'all') {
+                    itemDiv.classList.add('selected');
+                }
+                itemDiv.addEventListener('click', function() {
+                    // Update selected state
+                    reasonDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    // Update button text and hidden input
+                    document.getElementById('reasonDropdownText').textContent = option.text;
+                    reasonSelect.value = option.value;
+                    
+                    // Close dropdown
+                    reasonDropdown.classList.remove('active');
+                    reasonDropdownMenu.style.display = 'none';
+                    
+                    // Apply filters
+                    filterReports();
+                });
+                reasonDropdownItems.appendChild(itemDiv);
+            });
+            
+            // Toggle dropdown
+            reasonDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = reasonDropdown.classList.contains('active');
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd.id !== 'reasonDropdown') {
+                        dd.classList.remove('active');
+                        const menu = dd.querySelector('.custom-dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    }
+                });
+                
+                if (isActive) {
+                    reasonDropdown.classList.remove('active');
+                    reasonDropdownMenu.style.display = 'none';
+                } else {
+                    reasonDropdown.classList.add('active');
+                    reasonDropdownMenu.style.display = 'block';
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    reasonDropdown.classList.remove('active');
+                    reasonDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
             await checkLoginState();
+            initializeStatusDropdown();
+            initializeReasonDropdown();
             await loadReports();
-            
-            // Update filter to reload when status filter changes
-            document.getElementById('statusFilter').addEventListener('change', async function() {
-                const status = this.value === 'all' ? null : this.value;
-                await loadReports(status);
-            });
         });
     </script>
 </body>

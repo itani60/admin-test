@@ -7,21 +7,25 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+   
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -31,10 +35,238 @@
         }
 
         body {
-            background: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
         }
 
         .admin-header {
@@ -79,10 +311,10 @@
         .settings-section {
             background: white;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
 
         .settings-section h3 {
@@ -385,20 +617,6 @@
             gap: 1rem;
         }
 
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--danger);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
         .user-info {
             display: flex;
             flex-direction: column;
@@ -452,59 +670,168 @@
             box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
             text-decoration: none;
         }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
-                    </div>
-                </div>
-                <div class="col-auto ms-auto">
-                    <!-- User Section (shown when logged in) -->
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">John Doe</div>
-                        </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                    <!-- Login Button (shown when not logged in) -->
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+           
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Products Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Business Alerts Notification</span>
+                </a>
+                <a href="admin_business_analytics.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Business Analytics</span>
+                </a>
+                <a href="admin_price_alert_tracking.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Price Alerts Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+                <a href="admin_reports_review.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports Review</span>
+                </a>
+                <a href="admin-product-management.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Product Management</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
 
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Settings
-                    </li>
-                </ol>
-            </nav>
-        </div>
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Configure API endpoints and system settings</p>
+            </div>
 
-        <!-- Page Title -->
-        <div class="page-title-section">
-            <h1><i class="fas fa-cog"></i> Settings</h1>
-            <p>Configure API endpoints and system settings</p>
-        </div>
-
-        <div id="alertContainer"></div>
+            <div id="alertContainer"></div>
 
         <!-- API Configuration Section -->
         <div class="settings-section">
@@ -925,583 +1252,14 @@
                 </button>
             </div>
         </div>
+        </div>
     </div>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Load saved settings on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
-        });
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-settings.js"></script>
 
-        // Load settings from localStorage
-        function loadSettings() {
-            // API Base URL (Products)
-            const savedApiUrl = localStorage.getItem('comparehubprices_api_url');
-            if (savedApiUrl) {
-                document.getElementById('apiBaseUrl').value = savedApiUrl;
-            }
-
-            // Admin API Base URL
-            const savedAdminUrl = localStorage.getItem('comparehubprices_api_url_admin');
-            if (savedAdminUrl) {
-                document.getElementById('apiBaseUrlAdmin').value = savedAdminUrl;
-            }
-
-            // Wishlist API Base URL
-            const savedWishlistUrl = localStorage.getItem('comparehubprices_api_url_wishlist');
-            if (savedWishlistUrl) {
-                document.getElementById('apiBaseUrlWishlist').value = savedWishlistUrl;
-            }
-
-            // Price Alerts API Base URL
-            const savedPriceAlertsUrl = localStorage.getItem('comparehubprices_api_url_price_alerts');
-            if (savedPriceAlertsUrl) {
-                document.getElementById('apiBaseUrlPriceAlerts').value = savedPriceAlertsUrl;
-            }
-
-            // Notifications API Base URL
-            const savedNotificationsUrl = localStorage.getItem('comparehubprices_api_url_notifications');
-            if (savedNotificationsUrl) {
-                document.getElementById('apiBaseUrlNotifications').value = savedNotificationsUrl;
-            }
-
-            // Business API Base URL
-            const savedBusinessUrl = localStorage.getItem('comparehubprices_api_url_business');
-            if (savedBusinessUrl) {
-                document.getElementById('apiBaseUrlBusiness').value = savedBusinessUrl;
-            }
-
-            // Account API Base URL
-            const savedAccUrl = localStorage.getItem('comparehubprices_api_url_acc');
-            if (savedAccUrl) {
-                document.getElementById('apiBaseUrlAcc').value = savedAccUrl;
-            }
-
-            // API Region
-            const savedRegion = localStorage.getItem('comparehubprices_api_region');
-            if (savedRegion) {
-                document.getElementById('apiRegion').value = savedRegion;
-            }
-
-            // Table names
-            const categories = [
-                'smartphones', 'windows-laptops', 'macbooks-laptops', 
-                'chromebooks-laptops', 'tablets', 'wearables', 
-                'televisions', 'audio', 'gaming', 'appliances'
-            ];
-            
-            categories.forEach(category => {
-                const savedTable = localStorage.getItem(`table_${category}`);
-                if (savedTable) {
-                    document.getElementById(`table_${category}`).value = savedTable;
-                }
-            });
-
-            // Price History Table
-            const savedPriceHistory = localStorage.getItem('price_history_table');
-            if (savedPriceHistory) {
-                document.getElementById('priceHistoryTable').value = savedPriceHistory;
-            }
-
-            // System Settings
-            const savedPageSize = localStorage.getItem('default_page_size');
-            if (savedPageSize) {
-                document.getElementById('defaultPageSize').value = savedPageSize;
-            }
-
-            const savedBatchSize = localStorage.getItem('max_batch_size');
-            if (savedBatchSize) {
-                document.getElementById('maxBatchSize').value = savedBatchSize;
-            }
-
-            const savedPriceAlerts = localStorage.getItem('enable_price_alerts');
-            if (savedPriceAlerts !== null) {
-                document.getElementById('enablePriceAlerts').checked = savedPriceAlerts === 'true';
-            }
-
-            const savedAutoUpdate = localStorage.getItem('auto_update_prices');
-            if (savedAutoUpdate !== null) {
-                document.getElementById('autoUpdatePrices').checked = savedAutoUpdate === 'true';
-            }
-        }
-
-        // Save API Settings
-        function saveApiSettings() {
-            const apiUrl = document.getElementById('apiBaseUrl').value.trim();
-            const apiUrlAdmin = document.getElementById('apiBaseUrlAdmin').value.trim();
-            const apiUrlWishlist = document.getElementById('apiBaseUrlWishlist').value.trim();
-            const apiUrlPriceAlerts = document.getElementById('apiBaseUrlPriceAlerts').value.trim();
-            const apiUrlNotifications = document.getElementById('apiBaseUrlNotifications').value.trim();
-            const apiUrlBusiness = document.getElementById('apiBaseUrlBusiness').value.trim();
-            const apiUrlAcc = document.getElementById('apiBaseUrlAcc').value.trim();
-            const region = document.getElementById('apiRegion').value;
-
-            if (!apiUrl) {
-                showAlert('Please enter a valid Products API URL', 'danger');
-                return;
-            }
-
-            localStorage.setItem('comparehubprices_api_url', apiUrl);
-            if (apiUrlAdmin) localStorage.setItem('comparehubprices_api_url_admin', apiUrlAdmin);
-            if (apiUrlWishlist) localStorage.setItem('comparehubprices_api_url_wishlist', apiUrlWishlist);
-            if (apiUrlPriceAlerts) localStorage.setItem('comparehubprices_api_url_price_alerts', apiUrlPriceAlerts);
-            if (apiUrlNotifications) localStorage.setItem('comparehubprices_api_url_notifications', apiUrlNotifications);
-            if (apiUrlBusiness) localStorage.setItem('comparehubprices_api_url_business', apiUrlBusiness);
-            if (apiUrlAcc) localStorage.setItem('comparehubprices_api_url_acc', apiUrlAcc);
-            localStorage.setItem('comparehubprices_api_region', region);
-
-            showAlert('API settings saved successfully!', 'success');
-        }
-
-        // Test API Connection
-        async function testApiConnection() {
-            const apiUrl = document.getElementById('apiBaseUrl').value.trim();
-            const resultDiv = document.getElementById('apiTestResult');
-            
-            resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
-
-            try {
-                const response = await fetch(`${apiUrl}/products?category=smartphones&limit=1`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful!</div>';
-                } else {
-                    resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: HTTP ${response.status}</div>`;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${error.message}</div>`;
-            }
-        }
-
-        // Generic Test API Connection for other endpoints
-        async function testApiConnectionGeneric(inputId, resultDivId) {
-            const apiUrl = document.getElementById(inputId).value.trim();
-            const resultDiv = document.getElementById(resultDivId);
-            
-            if (!apiUrl) {
-                resultDiv.innerHTML = '<div class="test-result error"><i class="fas fa-times-circle"></i> Please enter a valid API URL</div>';
-                return;
-            }
-            
-            resultDiv.innerHTML = '<div class="test-result">Testing connection...</div>';
-
-            // Normalize base URL - remove trailing /business or /acc if present
-            let normalizedBaseUrl = apiUrl;
-            let testPaths = [];
-            
-            if (normalizedBaseUrl.endsWith('/business')) {
-                normalizedBaseUrl = normalizedBaseUrl.replace(/\/business$/, '');
-                // Business API endpoints from aws-auth-business.js - exact paths as defined
-                testPaths = ['/business/business/login', '/business/business/user-info', '/business/business/get-services', '/business/business/session'];
-            } else if (normalizedBaseUrl.endsWith('/acc')) {
-                normalizedBaseUrl = normalizedBaseUrl.replace(/\/acc$/, '');
-                // Account API endpoints from aws-auth.js - exact paths as defined
-                testPaths = ['/acc/auth/login', '/acc/auth/get-user-info', '/acc/auth/get-session'];
-            } else if (normalizedBaseUrl.includes('/admin')) {
-                testPaths = ['/admin/admin/account/login', '/admin/account/user-info', '/admin'];
-            } else if (normalizedBaseUrl.includes('/wishlist')) {
-                testPaths = ['/wishlist', '/wishlist/wishlist'];
-            } else if (normalizedBaseUrl.includes('/price-alerts')) {
-                testPaths = ['/alerts', '/alerts'];
-            } else if (normalizedBaseUrl.includes('/notifications')) {
-                testPaths = ['/notifications', '/notifications/notifications'];
-            } else {
-                testPaths = [''];
-            }
-
-            try {
-                // First, try OPTIONS request (CORS preflight) - this is the best way to test CORS
-                try {
-                    const optionsResponse = await fetch(normalizedBaseUrl, {
-                        method: 'OPTIONS',
-                        mode: 'cors',
-                        headers: {
-                            'Origin': window.location.origin,
-                            'Access-Control-Request-Method': 'GET'
-                        }
-                    });
-
-                    // If OPTIONS succeeds, CORS is definitely configured
-                    if (optionsResponse.status >= 200 && optionsResponse.status < 600) {
-                        const corsOrigin = optionsResponse.headers.get('Access-Control-Allow-Origin');
-                        if (corsOrigin) {
-                            resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! CORS is properly configured (OPTIONS preflight works).</div>';
-                            return;
-                        }
-                    }
-                } catch (optionsError) {
-                    // OPTIONS might not be supported, continue to try GET
-                }
-
-                // Try GET requests to actual endpoint paths
-                let lastError = null;
-                let corsErrorDetected = false;
-
-                for (const path of testPaths) {
-                    const testUrl = normalizedBaseUrl + path;
-                    try {
-                        const response = await fetch(testUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            mode: 'cors',
-                            credentials: 'omit'
-                        });
-
-                        // Check for CORS headers
-                        const corsOrigin = response.headers.get('Access-Control-Allow-Origin');
-                        
-                        // If we get ANY response status (200-599), it means:
-                        // 1. The endpoint is reachable
-                        // 2. CORS is configured (otherwise browser would block it before we get here)
-                        if (response.status >= 200 && response.status < 600) {
-                            if (corsOrigin) {
-                                resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! CORS is properly configured.</div>';
-                                return;
-                            } else {
-                                // Got response but no CORS header visible
-                                // This might still be OK if API Gateway adds headers automatically
-                                resultDiv.innerHTML = '<div class="test-result success"><i class="fas fa-check-circle"></i> Connection successful! API is reachable and responding.</div>';
-                                return;
-                            }
-                        }
-                    } catch (fetchError) {
-                        const errorMsg = fetchError.message || '';
-                        
-                        // Check if it's a real CORS error
-                        if (errorMsg.includes('CORS policy') || 
-                            errorMsg.includes('Access-Control-Allow-Origin') ||
-                            (fetchError.name === 'TypeError' && errorMsg.includes('Failed to fetch'))) {
-                            corsErrorDetected = true;
-                            lastError = fetchError;
-                            // Continue to try other paths
-                            continue;
-                        } else {
-                            lastError = fetchError;
-                            // Continue to try other paths
-                            continue;
-                        }
-                    }
-                }
-
-                // If we got here, all paths failed
-                if (corsErrorDetected) {
-                    // CORS error detected - verify endpoint is reachable with no-cors
-                    try {
-                        await fetch(normalizedBaseUrl, {
-                            method: 'GET',
-                            mode: 'no-cors'
-                        });
-                        // If no-cors works, endpoint exists but CORS is NOT configured for actual requests
-                        resultDiv.innerHTML = '<div class="test-result warning"><i class="fas fa-exclamation-triangle"></i> CORS Error: OPTIONS preflight may work, but actual GET requests are blocked. Ensure your API Gateway CORS is configured to return CORS headers in ALL responses (not just OPTIONS). Also check that your Lambda functions return CORS headers in their responses.</div>';
-                        return;
-                    } catch (noCorsError) {
-                        // Endpoint not reachable
-                        resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: Endpoint not reachable. Check if the URL is correct and the service is running.</div>`;
-                        return;
-                    }
-                } else {
-                    // Network/connection error
-                    const errorMsg = lastError ? lastError.message : 'Unable to reach endpoint';
-                    resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${errorMsg}. Check if the URL is correct and the service is running.</div>`;
-                    return;
-                }
-            } catch (error) {
-                // Final error handler
-                const errorMsg = error.message || 'Unknown error';
-                resultDiv.innerHTML = `<div class="test-result error"><i class="fas fa-times-circle"></i> Connection failed: ${errorMsg}. Check if the URL is correct and the service is running.</div>`;
-            }
-        }
-
-        // Test Table
-        async function testTable(category) {
-            const tableName = document.getElementById(`table_${category}`).value.trim();
-            const apiUrl = document.getElementById('apiBaseUrl').value.trim();
-
-            if (!tableName) {
-                showAlert(`Please enter a table name for ${category}`, 'danger');
-                return;
-            }
-
-            try {
-                // Test by trying to list products from that category
-                const response = await fetch(`${apiUrl}/products?category=${category}&limit=1`);
-                
-                if (response.ok) {
-                    showAlert(`Table "${tableName}" is accessible`, 'success');
-                } else {
-                    showAlert(`Table "${tableName}" test failed: HTTP ${response.status}`, 'danger');
-                }
-            } catch (error) {
-                showAlert(`Table test failed: ${error.message}`, 'danger');
-            }
-        }
-
-        // Save Table Settings
-        function saveTableSettings() {
-            const categories = [
-                'smartphones', 'windows-laptops', 'macbooks-laptops', 
-                'chromebooks-laptops', 'tablets', 'wearables', 
-                'televisions', 'audio', 'gaming', 'appliances'
-            ];
-
-            categories.forEach(category => {
-                const tableName = document.getElementById(`table_${category}`).value.trim();
-                if (tableName) {
-                    localStorage.setItem(`table_${category}`, tableName);
-                }
-            });
-
-            showAlert('Table settings saved successfully!', 'success');
-        }
-
-        // Save Price History Settings
-        function savePriceHistorySettings() {
-            const tableName = document.getElementById('priceHistoryTable').value.trim();
-            
-            if (!tableName) {
-                showAlert('Please enter a price history table name', 'danger');
-                return;
-            }
-
-            localStorage.setItem('price_history_table', tableName);
-            showAlert('Price history settings saved successfully!', 'success');
-        }
-
-        // Save System Settings
-        function saveSystemSettings() {
-            const pageSize = document.getElementById('defaultPageSize').value;
-            const batchSize = document.getElementById('maxBatchSize').value;
-            const priceAlerts = document.getElementById('enablePriceAlerts').checked;
-            const autoUpdate = document.getElementById('autoUpdatePrices').checked;
-
-            localStorage.setItem('default_page_size', pageSize);
-            localStorage.setItem('max_batch_size', batchSize);
-            localStorage.setItem('enable_price_alerts', priceAlerts);
-            localStorage.setItem('auto_update_prices', autoUpdate);
-
-            showAlert('System settings saved successfully!', 'success');
-        }
-
-        // Clear All Settings
-        function clearAllSettings() {
-            if (!confirm('Are you sure you want to clear all settings? This action cannot be undone.')) {
-                return;
-            }
-
-            // Clear all localStorage items related to settings
-            const keys = Object.keys(localStorage);
-            keys.forEach(key => {
-                if (key.startsWith('comparehubprices_') || key.startsWith('table_') || 
-                    key.startsWith('price_history_') || key.startsWith('default_') || 
-                    key.startsWith('max_') || key.startsWith('enable_') || key.startsWith('auto_')) {
-                    localStorage.removeItem(key);
-                }
-            });
-            
-            // Clear the new API URL settings
-            localStorage.removeItem('comparehubprices_api_url_admin');
-            localStorage.removeItem('comparehubprices_api_url_wishlist');
-            localStorage.removeItem('comparehubprices_api_url_price_alerts');
-            localStorage.removeItem('comparehubprices_api_url_notifications');
-            localStorage.removeItem('comparehubprices_api_url_business');
-            localStorage.removeItem('comparehubprices_api_url_acc');
-
-            // Reload page to reset form
-            location.reload();
-        }
-
-        // Export Settings
-        function exportSettings() {
-            const settings = {
-                apiUrl: document.getElementById('apiBaseUrl').value,
-                apiUrlAdmin: document.getElementById('apiBaseUrlAdmin').value,
-                apiUrlWishlist: document.getElementById('apiBaseUrlWishlist').value,
-                apiUrlPriceAlerts: document.getElementById('apiBaseUrlPriceAlerts').value,
-                apiUrlNotifications: document.getElementById('apiBaseUrlNotifications').value,
-                apiUrlBusiness: document.getElementById('apiBaseUrlBusiness').value,
-                apiUrlAcc: document.getElementById('apiBaseUrlAcc').value,
-                region: document.getElementById('apiRegion').value,
-                tables: {},
-                priceHistoryTable: document.getElementById('priceHistoryTable').value,
-                defaultPageSize: document.getElementById('defaultPageSize').value,
-                maxBatchSize: document.getElementById('maxBatchSize').value,
-                enablePriceAlerts: document.getElementById('enablePriceAlerts').checked,
-                autoUpdatePrices: document.getElementById('autoUpdatePrices').checked
-            };
-
-            const categories = [
-                'smartphones', 'windows-laptops', 'macbooks-laptops', 
-                'chromebooks-laptops', 'tablets', 'wearables', 
-                'televisions', 'audio', 'gaming', 'appliances'
-            ];
-
-            categories.forEach(category => {
-                settings.tables[category] = document.getElementById(`table_${category}`).value;
-            });
-
-            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'comparehubprices-settings.json';
-            a.click();
-            URL.revokeObjectURL(url);
-
-            showAlert('Settings exported successfully!', 'success');
-        }
-
-        // Import Settings
-        function importSettings() {
-            const fileInput = document.getElementById('importSettingsFile');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                showAlert('Please select a settings file to import', 'danger');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const settings = JSON.parse(e.target.result);
-
-                    // Apply settings
-                    if (settings.apiUrl) document.getElementById('apiBaseUrl').value = settings.apiUrl;
-                    if (settings.apiUrlAdmin) document.getElementById('apiBaseUrlAdmin').value = settings.apiUrlAdmin;
-                    if (settings.apiUrlWishlist) document.getElementById('apiBaseUrlWishlist').value = settings.apiUrlWishlist;
-                    if (settings.apiUrlPriceAlerts) document.getElementById('apiBaseUrlPriceAlerts').value = settings.apiUrlPriceAlerts;
-                    if (settings.apiUrlNotifications) document.getElementById('apiBaseUrlNotifications').value = settings.apiUrlNotifications;
-                    if (settings.apiUrlBusiness) document.getElementById('apiBaseUrlBusiness').value = settings.apiUrlBusiness;
-                    if (settings.apiUrlAcc) document.getElementById('apiBaseUrlAcc').value = settings.apiUrlAcc;
-                    if (settings.region) document.getElementById('apiRegion').value = settings.region;
-                    if (settings.priceHistoryTable) document.getElementById('priceHistoryTable').value = settings.priceHistoryTable;
-                    if (settings.defaultPageSize) document.getElementById('defaultPageSize').value = settings.defaultPageSize;
-                    if (settings.maxBatchSize) document.getElementById('maxBatchSize').value = settings.maxBatchSize;
-                    if (settings.enablePriceAlerts !== undefined) document.getElementById('enablePriceAlerts').checked = settings.enablePriceAlerts;
-                    if (settings.autoUpdatePrices !== undefined) document.getElementById('autoUpdatePrices').checked = settings.autoUpdatePrices;
-
-                    if (settings.tables) {
-                        Object.keys(settings.tables).forEach(category => {
-                            const input = document.getElementById(`table_${category}`);
-                            if (input) input.value = settings.tables[category];
-                        });
-                    }
-
-                    // Save all settings
-                    saveApiSettings();
-                    saveTableSettings();
-                    savePriceHistorySettings();
-                    saveSystemSettings();
-
-                    showAlert('Settings imported successfully!', 'success');
-                } catch (error) {
-                    showAlert('Error importing settings: ' + error.message, 'danger');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Show alert
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertId = 'alert-' + Date.now();
-            
-            const alertHTML = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            alertContainer.innerHTML = alertHTML;
-            
-            setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 5000);
-        }
-
-        // Check login state and update header
-        async function checkLoginState() {
-            const userSection = document.getElementById('userSection');
-            const loginBtnHeader = document.getElementById('loginBtnHeader');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            try {
-                const result = await window.adminAWSAuthService.getUserInfo();
-                
-                if (result.success && result.user) {
-                    const user = result.user;
-                    let displayName = '';
-                    let initials = '';
-
-                    if (user.givenName && user.familyName) {
-                        displayName = `${user.givenName} ${user.familyName}`;
-                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                    } else if (user.givenName) {
-                        displayName = user.givenName;
-                        initials = user.givenName.substring(0, 2).toUpperCase();
-                    } else if (user.email) {
-                        const name = user.email.split('@')[0];
-                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                        initials = name.substring(0, 2).toUpperCase();
-                    } else {
-                        displayName = 'Admin User';
-                        initials = 'AU';
-                    }
-
-                    userAvatar.textContent = initials;
-                    userName.textContent = displayName;
-
-                    userSection.style.display = 'flex';
-                    loginBtnHeader.style.display = 'none';
-                } else {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                userSection.style.display = 'none';
-                loginBtnHeader.style.display = 'inline-flex';
-            }
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            try {
-                await window.adminAWSAuthService.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                // HttpOnly cookie is cleared by server on logout
-                window.location.href = 'admin-login.html';
-            }
-        }
-
-        // Initialize login state check
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLoginState();
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-        });
-    </script>
+      
 </body>
 </html>
 

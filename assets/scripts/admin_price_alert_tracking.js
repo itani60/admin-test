@@ -44,14 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // Setup event listeners
 function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
     
     if (searchInput) {
         searchInput.addEventListener('input', debounce(applyFilters, 300));
     }
-    if (statusFilter) {
-        statusFilter.addEventListener('change', applyFilters);
-    }
+    
+    // Initialize custom status dropdown
+    initializeStatusDropdown();
 
     // Attach logout handler
     const userProfile = document.getElementById('userProfile');
@@ -109,10 +108,10 @@ async function loadPriceAlertStats() {
 // Apply filters
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
+    const statusSelect = document.getElementById('statusSelect');
     
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-    const status = statusFilter ? statusFilter.value : 'all';
+    const status = statusSelect ? statusSelect.value : 'all';
 
     filteredUserStats = allUserStats.filter(userStat => {
         // Search filter
@@ -806,5 +805,84 @@ async function handleLogout() {
     } finally {
         window.location.href = 'admin-login.html';
     }
+}
+
+// Initialize custom status dropdown
+function initializeStatusDropdown() {
+    const statusDropdown = document.getElementById('statusDropdown');
+    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+    const statusDropdownItems = document.getElementById('statusDropdownItems');
+    const statusSelect = document.getElementById('statusSelect');
+    
+    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    
+    // Status options
+    const statusOptions = [
+        { value: 'all', text: 'All Status' },
+        { value: 'active', text: 'Active' },
+        { value: 'inactive', text: 'Inactive' }
+    ];
+    
+    // Render dropdown items
+    statusOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === 'all') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            // Update selected state
+            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Update button text and hidden input
+            document.getElementById('statusDropdownText').textContent = option.text;
+            statusSelect.value = option.value;
+            
+            // Close dropdown
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+            
+            // Apply filters
+            applyFilters();
+        });
+        statusDropdownItems.appendChild(itemDiv);
+    });
+    
+    // Toggle dropdown
+    statusDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = statusDropdown.classList.contains('active');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'statusDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        } else {
+            statusDropdown.classList.add('active');
+            statusDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            statusDropdown.classList.remove('active');
+            statusDropdownMenu.style.display = 'none';
+        }
+    });
 }
 

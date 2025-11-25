@@ -183,34 +183,15 @@
             background: var(--light);
         }
 
-        .search-box {
-            position: relative;
-            width: 480px;
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1.125rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text);
+        .header-logo img {
+            height: 40px;
+            width: auto;
         }
 
         .header-right {
@@ -396,20 +377,173 @@
             margin-bottom: 2rem;
         }
 
-        .search-box {
+        /* Custom Dropdown Styles */
+        .filter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-box:has(.custom-dropdown.active) {
+            z-index: 10001;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
             position: relative;
         }
 
-        .search-box i {
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
+        /* Custom Search Input Style */
+        .custom-search-input {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-search-input input {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .custom-search-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-search-input i {
             position: absolute;
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text);
-        }
-
-        .search-box input {
-            padding-left: 2.5rem;
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         .business-posts-section {
@@ -491,17 +625,9 @@
             .menu-toggle {
                 display: block;
             }
-
-            .search-box {
-                width: 300px;
-            }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
-
             .content-wrapper {
                 padding: 1.5rem;
             }
@@ -881,9 +1007,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+           
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -957,9 +1081,8 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
             <div class="header-right">
@@ -1027,25 +1150,25 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number warning" id="pendingCount">5</div>
+                        <div class="stat-number warning" id="pendingCount">-</div>
                         <div class="stat-label">Pending Approval</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number success" id="approvedCount">12</div>
+                        <div class="stat-number success" id="approvedCount">-</div>
                         <div class="stat-label">Approved</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number danger" id="rejectedCount">2</div>
+                        <div class="stat-number danger" id="rejectedCount">-</div>
                         <div class="stat-label">Rejected</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-item">
-                        <div class="stat-number info" id="totalBusinessesCount">8</div>
+                        <div class="stat-number info" id="totalBusinessesCount">-</div>
                         <div class="stat-label">Total Businesses</div>
                     </div>
                 </div>
@@ -1056,39 +1179,58 @@
         <div class="filters-section">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="searchInput" 
-                            placeholder="Search by business name, email, or post title..."
-                        >
+                    <div class="filter-box">
+                        <div class="custom-search-input">
+                            <i class="fas fa-search"></i>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Search by business name, email, or post title..."
+                            >
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" id="statusFilter">
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
+                    <div class="filter-box">
+                        <div class="custom-dropdown" id="statusDropdown">
+                            <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                <span id="statusDropdownText">All Status</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="statusSelect" value="all">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" id="permissionFilter">
-                        <option value="all">All Permissions</option>
-                        <option value="granted">Granted</option>
-                        <option value="pending">Pending</option>
-                        <option value="revoked">Revoked</option>
-                    </select>
+                    <div class="filter-box">
+                        <div class="custom-dropdown" id="permissionDropdown">
+                            <button class="custom-dropdown-btn" id="permissionDropdownBtn">
+                                <span id="permissionDropdownText">All Permissions</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="permissionDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="permissionDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="permissionSelect" value="all">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" id="postTypeFilter">
-                        <option value="all">All Types</option>
-                        <option value="service">Service</option>
-                        <option value="product">Product</option>
-                        <option value="announcement">Announcement</option>
-                    </select>
+                    <div class="filter-box">
+                        <div class="custom-dropdown" id="postTypeDropdown">
+                            <button class="custom-dropdown-btn" id="postTypeDropdownBtn">
+                                <span id="postTypeDropdownText">All Types</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="postTypeDropdownMenu" style="display: none;">
+                                <div class="custom-dropdown-items" id="postTypeDropdownItems"></div>
+                            </div>
+                            <input type="hidden" id="postTypeSelect" value="all">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" onclick="applyFilters()">
@@ -1249,8 +1391,8 @@
         </div>
         </div>
     </div>
-
     <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-business.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
@@ -1281,12 +1423,227 @@
             initializeCharts();
         });
 
+        // Initialize custom status dropdown
+        function initializeStatusDropdown() {
+            const statusDropdown = document.getElementById('statusDropdown');
+            const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+            const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+            const statusDropdownItems = document.getElementById('statusDropdownItems');
+            const statusSelect = document.getElementById('statusSelect');
+            
+            if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+            
+            const statusOptions = [
+                { value: 'all', text: 'All Status' },
+                { value: 'pending', text: 'Pending' },
+                { value: 'approved', text: 'Approved' },
+                { value: 'rejected', text: 'Rejected' }
+            ];
+            
+            statusOptions.forEach(option => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-dropdown-item';
+                itemDiv.dataset.value = option.value;
+                itemDiv.textContent = option.text;
+                if (option.value === 'all') {
+                    itemDiv.classList.add('selected');
+                }
+                itemDiv.addEventListener('click', function() {
+                    statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    document.getElementById('statusDropdownText').textContent = option.text;
+                    statusSelect.value = option.value;
+                    
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                    
+                    applyFilters();
+                });
+                statusDropdownItems.appendChild(itemDiv);
+            });
+            
+            statusDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = statusDropdown.classList.contains('active');
+                
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd.id !== 'statusDropdown') {
+                        dd.classList.remove('active');
+                        const menu = dd.querySelector('.custom-dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    }
+                });
+                
+                if (isActive) {
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                } else {
+                    statusDropdown.classList.add('active');
+                    statusDropdownMenu.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    statusDropdown.classList.remove('active');
+                    statusDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize custom permission dropdown
+        function initializePermissionDropdown() {
+            const permissionDropdown = document.getElementById('permissionDropdown');
+            const permissionDropdownBtn = document.getElementById('permissionDropdownBtn');
+            const permissionDropdownMenu = document.getElementById('permissionDropdownMenu');
+            const permissionDropdownItems = document.getElementById('permissionDropdownItems');
+            const permissionSelect = document.getElementById('permissionSelect');
+            
+            if (!permissionDropdown || !permissionDropdownBtn || !permissionDropdownMenu || !permissionDropdownItems) return;
+            
+            const permissionOptions = [
+                { value: 'all', text: 'All Permissions' },
+                { value: 'granted', text: 'Granted' },
+                { value: 'pending', text: 'Pending' },
+                { value: 'revoked', text: 'Revoked' }
+            ];
+            
+            permissionOptions.forEach(option => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-dropdown-item';
+                itemDiv.dataset.value = option.value;
+                itemDiv.textContent = option.text;
+                if (option.value === 'all') {
+                    itemDiv.classList.add('selected');
+                }
+                itemDiv.addEventListener('click', function() {
+                    permissionDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    document.getElementById('permissionDropdownText').textContent = option.text;
+                    permissionSelect.value = option.value;
+                    
+                    permissionDropdown.classList.remove('active');
+                    permissionDropdownMenu.style.display = 'none';
+                    
+                    applyFilters();
+                });
+                permissionDropdownItems.appendChild(itemDiv);
+            });
+            
+            permissionDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = permissionDropdown.classList.contains('active');
+                
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd.id !== 'permissionDropdown') {
+                        dd.classList.remove('active');
+                        const menu = dd.querySelector('.custom-dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    }
+                });
+                
+                if (isActive) {
+                    permissionDropdown.classList.remove('active');
+                    permissionDropdownMenu.style.display = 'none';
+                } else {
+                    permissionDropdown.classList.add('active');
+                    permissionDropdownMenu.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    permissionDropdown.classList.remove('active');
+                    permissionDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize custom post type dropdown
+        function initializePostTypeDropdown() {
+            const postTypeDropdown = document.getElementById('postTypeDropdown');
+            const postTypeDropdownBtn = document.getElementById('postTypeDropdownBtn');
+            const postTypeDropdownMenu = document.getElementById('postTypeDropdownMenu');
+            const postTypeDropdownItems = document.getElementById('postTypeDropdownItems');
+            const postTypeSelect = document.getElementById('postTypeSelect');
+            
+            if (!postTypeDropdown || !postTypeDropdownBtn || !postTypeDropdownMenu || !postTypeDropdownItems) return;
+            
+            const postTypeOptions = [
+                { value: 'all', text: 'All Types' },
+                { value: 'service', text: 'Service' },
+                { value: 'product', text: 'Product' },
+                { value: 'announcement', text: 'Announcement' }
+            ];
+            
+            postTypeOptions.forEach(option => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'custom-dropdown-item';
+                itemDiv.dataset.value = option.value;
+                itemDiv.textContent = option.text;
+                if (option.value === 'all') {
+                    itemDiv.classList.add('selected');
+                }
+                itemDiv.addEventListener('click', function() {
+                    postTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    
+                    document.getElementById('postTypeDropdownText').textContent = option.text;
+                    postTypeSelect.value = option.value;
+                    
+                    postTypeDropdown.classList.remove('active');
+                    postTypeDropdownMenu.style.display = 'none';
+                    
+                    applyFilters();
+                });
+                postTypeDropdownItems.appendChild(itemDiv);
+            });
+            
+            postTypeDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isActive = postTypeDropdown.classList.contains('active');
+                
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd.id !== 'postTypeDropdown') {
+                        dd.classList.remove('active');
+                        const menu = dd.querySelector('.custom-dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    }
+                });
+                
+                if (isActive) {
+                    postTypeDropdown.classList.remove('active');
+                    postTypeDropdownMenu.style.display = 'none';
+                } else {
+                    postTypeDropdown.classList.add('active');
+                    postTypeDropdownMenu.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-dropdown')) {
+                    postTypeDropdown.classList.remove('active');
+                    postTypeDropdownMenu.style.display = 'none';
+                }
+            });
+        }
+
         // Setup event listeners
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-            document.getElementById('statusFilter').addEventListener('change', applyFilters);
-            document.getElementById('permissionFilter').addEventListener('change', applyFilters);
-            document.getElementById('postTypeFilter').addEventListener('change', applyFilters);
+            
+            // Initialize custom dropdowns
+            initializeStatusDropdown();
+            initializePermissionDropdown();
+            initializePostTypeDropdown();
 
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) {
@@ -1424,9 +1781,13 @@
         // Apply filters
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            const permissionFilter = document.getElementById('permissionFilter').value;
-            const postTypeFilter = document.getElementById('postTypeFilter').value;
+            const statusSelect = document.getElementById('statusSelect');
+            const permissionSelect = document.getElementById('permissionSelect');
+            const postTypeSelect = document.getElementById('postTypeSelect');
+            
+            const statusFilter = statusSelect ? statusSelect.value : 'all';
+            const permissionFilter = permissionSelect ? permissionSelect.value : 'all';
+            const postTypeFilter = postTypeSelect ? postTypeSelect.value : 'all';
 
             filteredPosts = allPosts.filter(post => {
                 const matchesSearch = !searchTerm || 

@@ -1131,6 +1131,77 @@ async function handleLogout() {
     }
 }
 
+// Initialize custom page size dropdown
+function initializePageSizeDropdown() {
+    const pageSizeDropdown = document.getElementById('pageSizeDropdown');
+    const pageSizeDropdownBtn = document.getElementById('pageSizeDropdownBtn');
+    const pageSizeDropdownMenu = document.getElementById('pageSizeDropdownMenu');
+    const pageSizeDropdownItems = document.getElementById('pageSizeDropdownItems');
+    const pageSizeSelect = document.getElementById('pageSize');
+    
+    if (!pageSizeDropdown || !pageSizeDropdownBtn || !pageSizeDropdownMenu || !pageSizeDropdownItems) return;
+    
+    const pageSizeOptions = [
+        { value: '10', text: '10 per page' },
+        { value: '25', text: '25 per page' },
+        { value: '50', text: '50 per page' },
+        { value: '100', text: '100 per page' }
+    ];
+    
+    pageSizeOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === '25') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            pageSizeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('pageSizeDropdownText').textContent = option.text;
+            pageSizeSelect.value = option.value;
+            
+            pageSizeDropdown.classList.remove('active');
+            pageSizeDropdownMenu.style.display = 'none';
+            
+            loadProducts();
+        });
+        pageSizeDropdownItems.appendChild(itemDiv);
+    });
+    
+    pageSizeDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = pageSizeDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'pageSizeDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            pageSizeDropdown.classList.remove('active');
+            pageSizeDropdownMenu.style.display = 'none';
+        } else {
+            pageSizeDropdown.classList.add('active');
+            pageSizeDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-dropdown')) {
+            pageSizeDropdown.classList.remove('active');
+            pageSizeDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     setupSidebar();
@@ -1164,13 +1235,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Page size change
-    const pageSizeSelect = document.getElementById('pageSize');
-    if (pageSizeSelect) {
-        pageSizeSelect.addEventListener('change', () => {
-            loadProducts();
-        });
-    }
+    // Initialize page size dropdown
+    initializePageSizeDropdown();
 
     // Filter button click handlers
     const categoryFilterBtn = document.getElementById('categoryFilterBtn');
@@ -1259,9 +1325,32 @@ function restoreState() {
                     // Restore page size
                     if (state.pageSize) {
                         const pageSizeSelect = document.getElementById('pageSize');
+                        const pageSizeDropdownText = document.getElementById('pageSizeDropdownText');
                         if (pageSizeSelect) {
                             pageSizeSelect.value = state.pageSize;
                             pageSize = parseInt(state.pageSize);
+                            
+                            // Update dropdown text
+                            if (pageSizeDropdownText) {
+                                const pageSizeOptions = {
+                                    '10': '10 per page',
+                                    '25': '25 per page',
+                                    '50': '50 per page',
+                                    '100': '100 per page'
+                                };
+                                pageSizeDropdownText.textContent = pageSizeOptions[state.pageSize] || '25 per page';
+                            }
+                            
+                            // Update selected item in dropdown
+                            const pageSizeDropdownItems = document.getElementById('pageSizeDropdownItems');
+                            if (pageSizeDropdownItems) {
+                                pageSizeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                                    item.classList.remove('selected');
+                                    if (item.dataset.value === state.pageSize) {
+                                        item.classList.add('selected');
+                                    }
+                                });
+                            }
                         }
                     }
                     

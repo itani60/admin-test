@@ -184,34 +184,35 @@
             background: var(--light);
         }
 
-        .search-box {
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        /* Filters section search-box styles (keep these) */
+        .filters-section .search-box {
             position: relative;
-            width: 480px;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            background: var(--light);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .search-box i {
+        .filters-section .search-box i {
             position: absolute;
-            left: 1.125rem;
+            left: 1rem;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .filters-section .search-box input {
+            width: 100%;
+            padding-left: 2.5rem;
         }
 
         .header-right {
@@ -285,18 +286,18 @@
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
-        .user-info {
+        .user-profile .user-info {
             display: flex;
             flex-direction: column;
         }
 
-        .user-name {
+        .user-profile .user-name {
             font-weight: 700;
             font-size: 0.9rem;
             color: var(--text-dark);
         }
 
-        .user-role {
+        .user-profile .user-role {
             font-size: 0.7rem;
             color: var(--text);
         }
@@ -425,28 +426,21 @@
             border: 2px solid var(--border);
         }
 
-        .nav-tabs {
-            border-bottom: 2px solid var(--border);
-            padding: 0 1rem;
+        /* Account Type Selector Dropdown */
+        .account-type-selector {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2.25rem;
+            border: 2px solid var(--border);
         }
 
-        .nav-tabs .nav-link {
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: var(--text);
-            padding: 1rem 1.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .nav-tabs .nav-link:hover {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .nav-tabs .nav-link.active {
-            border-bottom-color: var(--primary);
-            color: var(--text-dark);
+        .account-type-selector-label {
             font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
         }
 
         .tab-content {
@@ -461,6 +455,193 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             margin-bottom: 2.25rem;
             border: 2px solid var(--border);
+        }
+
+        /* Custom Dropdown Styles */
+        .filter-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-box:has(.custom-dropdown.active) {
+            z-index: 10001;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .custom-dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .custom-dropdown-item:hover i,
+        .custom-dropdown-item.selected i {
+            color: var(--primary);
+        }
+
+        .custom-dropdown-btn span i {
+            margin-right: 0.5rem;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.08) !important;
+        }
+
+        /* Custom Search Input Style */
+        .custom-search-input {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-search-input input {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .custom-search-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            background: white;
+        }
+
+        .custom-search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         /* Users Table */
@@ -541,29 +722,20 @@
             color: white;
         }
 
-        .user-info {
+        .user-profile .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #usersTableContainer .user-info,
+        #adminsTableContainer .user-info {
             display: flex;
             align-items: center;
             gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-
-        .user-info {
             transition: background-color 0.2s;
         }
-        .user-info:hover {
+        #usersTableContainer .user-info:hover,
+        #adminsTableContainer .user-info:hover {
             background-color: rgba(0, 0, 0, 0.05);
             border-radius: 4px;
             padding: 4px;
@@ -788,17 +960,9 @@
             .menu-toggle {
                 display: block;
             }
-
-            .search-box {
-                width: 300px;
-            }
         }
 
         @media (max-width: 768px) {
-            .search-box {
-                display: none;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -848,9 +1012,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="assets/logo .png" alt="CompareHubPrices">
-            </div>
+            
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -924,9 +1086,8 @@
                 <button class="menu-toggle" id="menuToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search users, businesses, products...">
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
             <div class="header-right">
@@ -1018,62 +1179,71 @@
                 </div>
             </div>
 
-        <!-- Management Tabs -->
-        <div class="management-tabs">
-            <ul class="nav nav-tabs" id="managementTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
-                        <i class="fas fa-users"></i> All Users
+        <!-- Account Type Selector -->
+        <div class="account-type-selector">
+            <div class="filter-box">
+                <label class="account-type-selector-label">Select Account Type</label>
+                <div class="custom-dropdown" id="accountTypeSelectorDropdown">
+                    <button class="custom-dropdown-btn" id="accountTypeSelectorBtn">
+                        <span id="accountTypeSelectorText">
+                            <i class="fas fa-users"></i> All Users
+                        </span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="admins-tab" data-bs-toggle="tab" data-bs-target="#admins" type="button" role="tab">
-                        <i class="fas fa-user-shield"></i> Admin Accounts
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="regular-tab" data-bs-toggle="tab" data-bs-target="#regular" type="button" role="tab">
-                        <i class="fas fa-user"></i> Regular Accounts
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="business-tab" data-bs-toggle="tab" data-bs-target="#business" type="button" role="tab">
-                        <i class="fas fa-building"></i> Business Accounts
-                    </button>
-                </li>
-            </ul>
-            <div class="tab-content" id="managementTabContent">
+                    <div class="custom-dropdown-menu" id="accountTypeSelectorMenu" style="display: none;">
+                        <div class="custom-dropdown-items" id="accountTypeSelectorItems"></div>
+                    </div>
+                    <input type="hidden" id="accountTypeSelector" value="users">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content (now controlled by dropdown) -->
+        <div class="tab-content" id="managementTabContent">
                 <!-- All Users Tab -->
-                <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <div class="tab-pane fade show active" id="users" role="tabpanel" style="display: block;">
                     <!-- Filters Section -->
                     <div class="filters-section">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="searchInput" 
-                                        placeholder="Search by name, email, or account type..."
-                                    >
+                                <div class="filter-box">
+                                    <div class="custom-search-input">
+                                        <i class="fas fa-search"></i>
+                                        <input 
+                                            type="text" 
+                                            id="searchInput" 
+                                            placeholder="Search by name, email, or account type..."
+                                        >
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="accountTypeFilter">
-                                    <option value="all">All Account Types</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="regular">Regular</option>
-                                    <option value="business">Business</option>
-                                </select>
+                                <div class="filter-box">
+                                    <div class="custom-dropdown" id="accountTypeDropdown">
+                                        <button class="custom-dropdown-btn" id="accountTypeDropdownBtn">
+                                            <span id="accountTypeDropdownText">All Account Types</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="custom-dropdown-menu" id="accountTypeDropdownMenu" style="display: none;">
+                                            <div class="custom-dropdown-items" id="accountTypeDropdownItems"></div>
+                                        </div>
+                                        <input type="hidden" id="accountTypeSelect" value="all">
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="statusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="verified">Verified</option>
-                                    <option value="pending">Pending Verification</option>
-                                    <option value="suspended">Suspended</option>
-                                </select>
+                                <div class="filter-box">
+                                    <div class="custom-dropdown" id="statusDropdown">
+                                        <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                            <span id="statusDropdownText">All Status</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                            <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                                        </div>
+                                        <input type="hidden" id="statusSelect" value="all">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1109,26 +1279,34 @@
                 </div>
 
                 <!-- Admin Accounts Tab -->
-                <div class="tab-pane fade" id="admins" role="tabpanel">
+                <div class="tab-pane fade" id="admins" role="tabpanel" style="display: none;">
                     <div class="filters-section">
                         <div class="row g-3">
                             <div class="col-md-9">
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="adminSearchInput" 
-                                        placeholder="Search admin users..."
-                                    >
+                                <div class="filter-box">
+                                    <div class="custom-search-input">
+                                        <i class="fas fa-search"></i>
+                                        <input 
+                                            type="text" 
+                                            id="adminSearchInput" 
+                                            placeholder="Search admin users..."
+                                        >
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="adminStatusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="verified">Verified</option>
-                                    <option value="pending">Pending</option>
-                                </select>
+                                <div class="filter-box">
+                                    <div class="custom-dropdown" id="adminStatusDropdown">
+                                        <button class="custom-dropdown-btn" id="adminStatusDropdownBtn">
+                                            <span id="adminStatusDropdownText">All Status</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="custom-dropdown-menu" id="adminStatusDropdownMenu" style="display: none;">
+                                            <div class="custom-dropdown-items" id="adminStatusDropdownItems"></div>
+                                        </div>
+                                        <input type="hidden" id="adminStatusSelect" value="all">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1157,27 +1335,34 @@
                 </div>
 
                 <!-- Regular Accounts Tab -->
-                <div class="tab-pane fade" id="regular" role="tabpanel">
+                <div class="tab-pane fade" id="regular" role="tabpanel" style="display: none;">
                     <div class="filters-section">
                         <div class="row g-3">
                             <div class="col-md-9">
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="regularSearchInput" 
-                                        placeholder="Search regular users..."
-                                    >
+                                <div class="filter-box">
+                                    <div class="custom-search-input">
+                                        <i class="fas fa-search"></i>
+                                        <input 
+                                            type="text" 
+                                            id="regularSearchInput" 
+                                            placeholder="Search regular users..."
+                                        >
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="regularStatusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="verified">Verified</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="suspended">Suspended</option>
-                                </select>
+                                <div class="filter-box">
+                                    <div class="custom-dropdown" id="regularStatusDropdown">
+                                        <button class="custom-dropdown-btn" id="regularStatusDropdownBtn">
+                                            <span id="regularStatusDropdownText">All Status</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="custom-dropdown-menu" id="regularStatusDropdownMenu" style="display: none;">
+                                            <div class="custom-dropdown-items" id="regularStatusDropdownItems"></div>
+                                        </div>
+                                        <input type="hidden" id="regularStatusSelect" value="all">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1203,26 +1388,34 @@
                 </div>
 
                 <!-- Business Accounts Tab -->
-                <div class="tab-pane fade" id="business" role="tabpanel">
+                <div class="tab-pane fade" id="business" role="tabpanel" style="display: none;">
                     <div class="filters-section">
                         <div class="row g-3">
                             <div class="col-md-9">
-                                <div class="search-box">
-                                    <i class="fas fa-search"></i>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="businessSearchInput" 
-                                        placeholder="Search business accounts..."
-                                    >
+                                <div class="filter-box">
+                                    <div class="custom-search-input">
+                                        <i class="fas fa-search"></i>
+                                        <input 
+                                            type="text" 
+                                            id="businessSearchInput" 
+                                            placeholder="Search business accounts..."
+                                        >
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="businessStatusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="verified">Verified</option>
-                                    <option value="pending">Pending</option>
-                                </select>
+                                <div class="filter-box">
+                                    <div class="custom-dropdown" id="businessStatusDropdown">
+                                        <button class="custom-dropdown-btn" id="businessStatusDropdownBtn">
+                                            <span id="businessStatusDropdownText">All Status</span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="custom-dropdown-menu" id="businessStatusDropdownMenu" style="display: none;">
+                                            <div class="custom-dropdown-items" id="businessStatusDropdownItems"></div>
+                                        </div>
+                                        <input type="hidden" id="businessStatusSelect" value="all">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1313,9 +1506,10 @@
         </div>
     </div>
 
-    <script src="assets/scripts/admin-aws-auth.js"></script>
+  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/scripts/admin-management.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-management.js"></script>  
 </body>
 </html>
 

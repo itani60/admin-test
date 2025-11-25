@@ -6,22 +6,25 @@
     <title>Product Management | CompareHubPrices Admin</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -31,66 +34,310 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        .admin-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin: 0;
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
         }
 
-        .admin-header p {
-            color: var(--text);
-            margin: 0.25rem 0 0 0;
-            font-size: 0.9rem;
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
         }
 
-        .container {
-            max-width: 1400px;
-        }
-
-        .logo {
+        .sidebar-logo {
             display: flex;
             align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .logo-img {
-            height: 50px;
+        .sidebar-logo img {
+            height: 38px;
             width: auto;
-            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .search-box {
+            position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
         }
 
         .filters-section {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
         }
 
         .products-section {
             background: white;
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
         }
 
         #productsContainer {
@@ -299,11 +546,11 @@
 
         .stats-bar {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
         }
 
         .stat-item {
@@ -846,323 +1093,326 @@
             }
         }
 
-        /* Breadcrumb Styles */
-        .breadcrumb-container {
-            background: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
         }
 
-        .breadcrumb {
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
             background: transparent;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            list-style: none;
-            align-items: center;
         }
 
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "/";
-            display: inline-block;
-            padding: 0 0.5rem;
-            color: var(--text);
-            font-weight: 400;
-        }
-
-        .breadcrumb-item a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .breadcrumb-item.active {
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .breadcrumb-item.active a {
-            color: var(--text-dark);
-            pointer-events: none;
-            cursor: default;
-        }
-
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: var(--danger);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .user-name {
-            margin: 0;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95rem;
-        }
-
-        .logout-btn {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-
-        .login-btn-header {
+        .sidebar::-webkit-scrollbar-thumb:hover {
             background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .login-btn-header:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
-                    </div>
-                </div>
-                <div class="col-auto ms-auto">
-                    <!-- User Section (shown when logged in) -->
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">John Doe</div>
-                        </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                    <!-- Login Button (shown when not logged in) -->
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
             </div>
         </div>
-    </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Products Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="admin-alerts-notifications.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Business Alerts Notification</span>
+                </a>
+                <a href="admin_business_analytics.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Business Analytics</span>
+                </a>
+                <a href="admin_price_alert_tracking.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Price Alerts Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+                <a href="admin_reports_review.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports Review</span>
+                </a>
+                <a href="admin-product-management.html" class="nav-item active">
+                    <i class="fas fa-box"></i>
+                    <span>Product Management</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login Tracking</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
 
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Product Management
-                    </li>
-                </ol>
-            </nav>
-        </div>
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
 
-        <!-- Page Title Section -->
-        <div class="page-title-section" style="margin-bottom: 2rem; padding: 1.5rem 0;">
-            <h1 style="font-size: 2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem;">
-                Product Management
-            </h1>
-            <p style="color: var(--text); margin: 0; font-size: 1rem;">View, edit, and manage your product catalog</p>
-        </div>
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Product Management</h1>
+                <p class="page-subtitle">View, edit, and manage your product catalog</p>
+            </div>
 
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalProductsCount">0</div>
-                        <div class="stat-label">Total Products</div>
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalProductsCount">0</div>
+                            <div class="stat-label">Total Products</div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="currentCategoryCount">0</div>
-                        <div class="stat-label">In Current Category</div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number" id="currentCategoryCount">0</div>
+                            <div class="stat-label">In Current Category</div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="filteredCount">0</div>
-                        <div class="stat-label">Filtered Results</div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number" id="filteredCount">0</div>
+                            <div class="stat-label">Filtered Results</div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalPages">0</div>
-                        <div class="stat-label">Total Pages</div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalPages">0</div>
+                            <div class="stat-label">Total Pages</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Filters Section -->
-        <div class="filters-section">
-            <div class="row g-3">
-                <div class="col-12">
-                    <div class="filter-buttons">
-                        <button class="filter-btn" data-filter="category" id="categoryFilterBtn">
-                            <i class="fas fa-th-large"></i>
-                            Category
-                        </button>
-                        <button class="filter-btn" data-filter="brand" id="brandFilterBtn" style="display: none;">
-                            <i class="fas fa-tag"></i>
-                            Brand
-                        </button>
-                    </div>
-                    
-                    <!-- Category Filter Options -->
-                    <div class="filter-options" id="categoryOptions" style="display: none;">
-                        <div class="filter-options-content">
-                            <h4>Select Category</h4>
-                            <div class="category-grid" id="categoryGrid">
-                                <!-- Category buttons will be dynamically added here -->
-                            </div>
-                            <div class="filter-actions">
-                                <button class="btn-clear" data-filter="category">Clear All</button>
-                                <button class="btn-apply" data-filter="category">Apply</button>
-                                <button class="btn-cancel" data-filter="category">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Brand Filter Options -->
-                    <div class="filter-options" id="brandOptions" style="display: none;">
-                        <div class="filter-options-content">
-                            <h4>Select Brand</h4>
-                            <div class="brand-grid" id="brandGrid">
-                                <!-- Brand buttons will be dynamically added here for smartphones -->
-                            </div>
-                            <div id="brandTextInputContainer" style="display: none;">
-                                <input type="text" class="form-control" id="brandFilterText" placeholder="Enter brand name...">
-                            </div>
-                            <div class="filter-actions">
-                                <button class="btn-clear" data-filter="brand">Clear All</button>
-                                <button class="btn-apply" data-filter="brand">Apply</button>
-                                <button class="btn-cancel" data-filter="brand">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <select class="form-select" id="categoryFilter" style="display: none;">
-                        <option value="">All Categories</option>
-                        <option value="smartphones">Smartphones</option>
-                        <option value="windows-laptops">Windows Laptops</option>
-                        <option value="macbooks-laptops">MacBooks Laptops</option>
-                        <option value="chromebooks-laptops">Chromebooks Laptops</option>
-                        <option value="tablets">Tablets</option>
-                        <option value="wearables">Wearables</option>
-                        <option value="televisions">Televisions</option>
-                        <option value="audio">Audio</option>
-                        <option value="gaming">Gaming</option>
-                        <option value="appliances">Appliances</option>
-                    </select>
-                    <select class="form-select" id="brandFilter" style="display: none;">
-                        <option value="">All Brands</option>
-                    </select>
-                </div>
-                <div class="col-12">
-                    <label class="form-label"><strong>Search</strong></label>
-                    <div class="search-wrapper">
-                        <div class="input-group search-input-group">
-                            <input type="text" class="form-control search-input" id="searchInput" placeholder="Search products...">
-                            <button type="button" class="btn btn-danger search-btn" onclick="loadProducts()">
-                                <i class="fas fa-search"></i>
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="filter-buttons">
+                            <button class="filter-btn" data-filter="category" id="categoryFilterBtn">
+                                <i class="fas fa-th-large"></i>
+                                Category
+                            </button>
+                            <button class="filter-btn" data-filter="brand" id="brandFilterBtn" style="display: none;">
+                                <i class="fas fa-tag"></i>
+                                Brand
                             </button>
                         </div>
+                        
+                        <!-- Category Filter Options -->
+                        <div class="filter-options" id="categoryOptions" style="display: none;">
+                            <div class="filter-options-content">
+                                <h4>Select Category</h4>
+                                <div class="category-grid" id="categoryGrid">
+                                    <!-- Category buttons will be dynamically added here -->
+                                </div>
+                                <div class="filter-actions">
+                                    <button class="btn-clear" data-filter="category">Clear All</button>
+                                    <button class="btn-apply" data-filter="category">Apply</button>
+                                    <button class="btn-cancel" data-filter="category">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Brand Filter Options -->
+                        <div class="filter-options" id="brandOptions" style="display: none;">
+                            <div class="filter-options-content">
+                                <h4>Select Brand</h4>
+                                <div class="brand-grid" id="brandGrid">
+                                    <!-- Brand buttons will be dynamically added here for smartphones -->
+                                </div>
+                                <div id="brandTextInputContainer" style="display: none;">
+                                    <input type="text" class="form-control" id="brandFilterText" placeholder="Enter brand name...">
+                                </div>
+                                <div class="filter-actions">
+                                    <button class="btn-clear" data-filter="brand">Clear All</button>
+                                    <button class="btn-apply" data-filter="brand">Apply</button>
+                                    <button class="btn-cancel" data-filter="brand">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <select class="form-select" id="categoryFilter" style="display: none;">
+                            <option value="">All Categories</option>
+                            <option value="smartphones">Smartphones</option>
+                            <option value="windows-laptops">Windows Laptops</option>
+                            <option value="macbooks-laptops">MacBooks Laptops</option>
+                            <option value="chromebooks-laptops">Chromebooks Laptops</option>
+                            <option value="tablets">Tablets</option>
+                            <option value="wearables">Wearables</option>
+                            <option value="televisions">Televisions</option>
+                            <option value="audio">Audio</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="appliances">Appliances</option>
+                        </select>
+                        <select class="form-select" id="brandFilter" style="display: none;">
+                            <option value="">All Brands</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label"><strong>Search</strong></label>
+                        <div class="search-wrapper">
+                            <div class="input-group search-input-group">
+                                <input type="text" class="form-control search-input" id="searchInput" placeholder="Search products...">
+                                <button type="button" class="btn btn-danger search-btn" onclick="loadProducts()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Products Section -->
-        <div class="products-section">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Products</h3>
-                <div>
-                    <select class="form-select d-inline-block" id="pageSize" style="width: auto;">
-                        <option value="10">10 per page</option>
-                        <option value="25" selected>25 per page</option>
-                        <option value="50">50 per page</option>
-                        <option value="100">100 per page</option>
-                    </select>
+            <!-- Products Section -->
+            <div class="products-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Products</h3>
+                    <div>
+                        <select class="form-select d-inline-block" id="pageSize" style="width: auto;">
+                            <option value="10">10 per page</option>
+                            <option value="25" selected>25 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                        </select>
+                    </div>
                 </div>
+
+                <div id="productsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h4>No products found</h4>
+                        <p>Select a category to load products</p>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Product pagination" id="paginationContainer" style="display: none;">
+                    <ul class="pagination" id="pagination">
+                    </ul>
+                </nav>
             </div>
 
-            <div id="productsContainer">
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <h4>No products found</h4>
-                    <p>Select a category to load products</p>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <nav aria-label="Product pagination" id="paginationContainer" style="display: none;">
-                <ul class="pagination" id="pagination">
-                </ul>
-            </nav>
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
         </div>
     </div>
 
@@ -1256,1140 +1506,9 @@
             </div>
         </div>
     </div>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Configuration
-        const API_CONFIG = {
-            BASE_URL: 'https://acc.comparehubprices.site/data',
-            LIST_PRODUCTS_ENDPOINT: '/products',
-            GET_PRODUCT_ENDPOINT: '/products',
-            UPDATE_PRODUCT_ENDPOINT: '/products',
-            DELETE_PRODUCT_ENDPOINT: '/products',
-        };
-
-        let currentPage = 1;
-        let pageSize = 25;
-        let lastKey = null;
-        let currentCategory = '';
-
-        // Load saved API URL
-        const savedUrl = localStorage.getItem('comparehubprices_api_url');
-        if (savedUrl) {
-            API_CONFIG.BASE_URL = savedUrl;
-        }
-
-        // Categories
-        const CATEGORIES = [
-            { value: 'smartphones', label: 'Smartphones' },
-            { value: 'windows-laptops', label: 'Windows Laptops' },
-            { value: 'macbooks-laptops', label: 'MacBooks' },
-            { value: 'chromebooks-laptops', label: 'Chromebooks' },
-            { value: 'tablets', label: 'Tablets' },
-            { value: 'wearables', label: 'Wearables' },
-            { value: 'televisions', label: 'Televisions' },
-            { value: 'audio', label: 'Audio' },
-            { value: 'gaming', label: 'Gaming' },
-            { value: 'appliances', label: 'Appliances' }
-        ];
-
-        // Smartphone brands
-        const SMARTPHONE_BRANDS = [
-            'Apple',
-            'Huawei',
-            'Samsung',
-            'Xiaomi',
-            'OPPO',
-            'Honor',
-            'Motorola',
-            'Nokia',
-            'Tecno',
-            'Vivo',
-            'Realme'
-        ];
-
-        // Initialize category grid
-        function initializeCategoryGrid() {
-            const categoryGrid = document.getElementById('categoryGrid');
-            categoryGrid.innerHTML = '';
-            
-            // Add category buttons
-            CATEGORIES.forEach(cat => {
-                const catBtn = document.createElement('button');
-                catBtn.type = 'button';
-                catBtn.className = 'category-option';
-                catBtn.textContent = cat.label;
-                catBtn.dataset.category = cat.value;
-                catBtn.onclick = () => toggleCategoryOption(cat.value);
-                categoryGrid.appendChild(catBtn);
-            });
-        }
-
-        // Toggle category option selection (for multi-select in panel)
-        function toggleCategoryOption(category) {
-            const optionBtn = document.querySelector(`.category-option[data-category="${category}"]`);
-            if (optionBtn) {
-                optionBtn.classList.toggle('active');
-            }
-        }
-
-        // Apply category filter
-        function applyCategoryFilter() {
-            const activeCategory = document.querySelector('.category-option.active');
-            const category = activeCategory ? activeCategory.dataset.category : '';
-            
-            // Update the hidden select for compatibility
-            const categorySelect = document.getElementById('categoryFilter');
-            categorySelect.value = category;
-            
-            // Update category filter button active state
-            const categoryFilterBtn = document.getElementById('categoryFilterBtn');
-            if (category) {
-                categoryFilterBtn.classList.add('filter-active');
-            } else {
-                categoryFilterBtn.classList.remove('filter-active');
-            }
-            
-            // Update brand filter based on category
-            updateBrandFilter();
-            
-            // Close the filter panel
-            closeFilterPanel('category');
-            
-            // Load products if category is selected
-            if (category) {
-                loadProducts();
-            }
-        }
-
-        // Clear category filter
-        function clearCategoryFilter() {
-            document.querySelectorAll('.category-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-        }
-
-        // Select category from grid (for direct selection - used by restoreState)
-        function selectCategory(category) {
-            // Remove active class from all category options
-            document.querySelectorAll('.category-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Add active class to selected category
-            const selectedBtn = document.querySelector(`.category-option[data-category="${category}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-            }
-            
-            // Update the hidden select for compatibility
-            const categorySelect = document.getElementById('categoryFilter');
-            categorySelect.value = category;
-            
-            // Update category filter button active state
-            const categoryFilterBtn = document.getElementById('categoryFilterBtn');
-            if (category) {
-                categoryFilterBtn.classList.add('filter-active');
-            } else {
-                categoryFilterBtn.classList.remove('filter-active');
-            }
-            
-            // Update brand filter based on category
-            updateBrandFilter();
-        }
-
-        // Update brand filter based on category
-        function updateBrandFilter() {
-            const category = document.getElementById('categoryFilter').value;
-            const brandSelect = document.getElementById('brandFilter');
-            const brandText = document.getElementById('brandFilterText');
-            const brandGrid = document.getElementById('brandGrid');
-            const brandOptions = document.getElementById('brandOptions');
-            const brandFilterBtn = document.getElementById('brandFilterBtn');
-            
-            // Clear existing options
-            brandSelect.innerHTML = '<option value="">All Brands</option>';
-            brandGrid.innerHTML = '';
-            
-            if (category === 'smartphones') {
-                // Show brand filter button and grid
-                brandFilterBtn.style.display = 'inline-flex';
-                brandSelect.style.display = 'none';
-                brandText.style.display = 'none';
-                
-                // Populate brand grid
-                SMARTPHONE_BRANDS.forEach(brand => {
-                    const brandBtn = document.createElement('button');
-                    brandBtn.type = 'button';
-                    brandBtn.className = 'brand-option';
-                    brandBtn.textContent = brand;
-                    brandBtn.dataset.brand = brand.toLowerCase();
-                    brandBtn.onclick = () => toggleBrandOption(brand.toLowerCase());
-                    brandGrid.appendChild(brandBtn);
-                });
-            } else if (category) {
-                // For other categories, show brand filter button (but use text input in panel)
-                brandFilterBtn.style.display = 'inline-flex';
-                // Keep brand options panel available but it will use text input
-                brandSelect.style.display = 'none';
-                brandText.style.display = 'none'; // Will show in panel when opened
-                brandGrid.style.display = 'none';
-            } else {
-                // No category selected, hide brand filter
-                brandFilterBtn.style.display = 'none';
-                brandOptions.style.display = 'none';
-                brandSelect.style.display = 'none';
-                brandText.style.display = 'none';
-                brandGrid.style.display = 'none';
-            }
-        }
-
-        // Toggle brand option selection (for multi-select in panel)
-        function toggleBrandOption(brand) {
-            const optionBtn = document.querySelector(`.brand-option[data-brand="${brand}"]`);
-            if (optionBtn) {
-                optionBtn.classList.toggle('active');
-            }
-        }
-
-        // Apply brand filter
-        function applyBrandFilter() {
-            const category = document.getElementById('categoryFilter').value;
-            let brand = '';
-            
-            if (category === 'smartphones') {
-                // Get brand from active button
-                const activeBrand = document.querySelector('.brand-option.active');
-                brand = activeBrand ? activeBrand.dataset.brand : '';
-                // Convert to proper case for API
-                if (brand && SMARTPHONE_BRANDS.includes(brand.charAt(0).toUpperCase() + brand.slice(1))) {
-                    brand = brand.charAt(0).toUpperCase() + brand.slice(1);
-                }
-            } else {
-                // Get brand from text input
-                brand = document.getElementById('brandFilterText').value.trim();
-            }
-            
-            // Update the hidden select for compatibility
-            const brandSelect = document.getElementById('brandFilter');
-            brandSelect.value = brand;
-            
-            // Update brand filter button active state
-            const brandFilterBtn = document.getElementById('brandFilterBtn');
-            if (brand) {
-                brandFilterBtn.classList.add('filter-active');
-            } else {
-                brandFilterBtn.classList.remove('filter-active');
-            }
-            
-            // Close the filter panel
-            closeFilterPanel('brand');
-            
-            // Load products if category is selected
-            if (category) {
-                loadProducts();
-            }
-        }
-
-        // Clear brand filter
-        function clearBrandFilter() {
-            document.querySelectorAll('.brand-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById('brandFilterText').value = '';
-        }
-
-        // Select brand from grid (for direct selection - legacy)
-        function selectBrand(brand) {
-            // Remove active class from all brand options
-            document.querySelectorAll('.brand-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Add active class to selected brand
-            const selectedBtn = document.querySelector(`.brand-option[data-brand="${brand}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-            }
-            
-            // Update the hidden select for compatibility
-            const brandSelect = document.getElementById('brandFilter');
-            brandSelect.value = brand;
-            
-            // Auto-load products if category is selected
-            const category = document.getElementById('categoryFilter').value;
-            if (category) {
-                loadProducts();
-            }
-        }
-
-        // Toggle filter panel
-        function toggleFilterPanel(filterType) {
-            const panel = document.getElementById(`${filterType}Options`);
-            const btn = document.getElementById(`${filterType}FilterBtn`);
-            
-            // Close other panels
-            document.querySelectorAll('.filter-options').forEach(p => {
-                if (p.id !== `${filterType}Options`) {
-                    p.style.display = 'none';
-                }
-            });
-            
-            // Remove active from other buttons
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                if (b.id !== `${filterType}FilterBtn`) {
-                    b.classList.remove('filter-active');
-                }
-            });
-            
-            // Toggle current panel
-            if (panel.style.display === 'none' || !panel.style.display) {
-                panel.style.display = 'block';
-                btn.classList.add('filter-active');
-                
-                // If brand panel and not smartphones, show text input
-                if (filterType === 'brand') {
-                    const category = document.getElementById('categoryFilter').value;
-                    const brandGrid = document.getElementById('brandGrid');
-                    const brandTextContainer = document.getElementById('brandTextInputContainer');
-                    
-                    if (category === 'smartphones') {
-                        brandGrid.style.display = 'grid';
-                        brandTextContainer.style.display = 'none';
-                    } else if (category) {
-                        brandGrid.style.display = 'none';
-                        brandTextContainer.style.display = 'block';
-                    }
-                }
-            } else {
-                panel.style.display = 'none';
-                btn.classList.remove('filter-active');
-            }
-        }
-
-        // Close filter panel
-        function closeFilterPanel(filterType) {
-            const panel = document.getElementById(`${filterType}Options`);
-            const btn = document.getElementById(`${filterType}FilterBtn`);
-            panel.style.display = 'none';
-            btn.classList.remove('filter-active');
-        }
-
-        // Load products from API
-        async function loadProducts() {
-            // Get category from active button or select
-            let category = '';
-            const activeCategory = document.querySelector('.category-option.active');
-            if (activeCategory) {
-                category = activeCategory.dataset.category || '';
-            } else {
-                category = document.getElementById('categoryFilter').value;
-            }
-            const brandSelect = document.getElementById('brandFilter');
-            const brandText = document.getElementById('brandFilterText');
-            const brandGrid = document.getElementById('brandGrid');
-            
-            // Get brand value - check grid first (for smartphones), then select, then text input
-            let brand = '';
-            if (category === 'smartphones') {
-                const activeBrand = document.querySelector('.brand-option.active');
-                brand = activeBrand ? (activeBrand.dataset.brand || '').trim() : '';
-                // Convert to proper case for API (e.g., "apple" -> "Apple")
-                if (brand && SMARTPHONE_BRANDS.includes(brand.charAt(0).toUpperCase() + brand.slice(1))) {
-                    brand = brand.charAt(0).toUpperCase() + brand.slice(1);
-                }
-            } else {
-                brand = brandText.value.trim();
-            }
-            const search = document.getElementById('searchInput').value.trim();
-            const size = parseInt(document.getElementById('pageSize').value);
-
-            // Category is required - API requires it
-            if (!category) {
-                showAlert('Please select a category first', 'warning');
-                return;
-            }
-
-            currentCategory = category;
-            pageSize = size;
-            currentPage = 1;
-            lastKey = null;
-
-            try {
-                // Build query parameters (API requires category, search is handled client-side)
-                let url = `${API_CONFIG.BASE_URL}${API_CONFIG.LIST_PRODUCTS_ENDPOINT}?category=${encodeURIComponent(category)}&limit=${pageSize}`;
-                if (brand) url += `&brand=${encodeURIComponent(brand)}`;
-                // Note: Search is handled client-side since API doesn't support search parameter
-                if (lastKey) url += `&lastKey=${encodeURIComponent(lastKey)}`;
-
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                const products = data.body ? JSON.parse(data.body) : data;
-                let allProducts = products.products || products.items || [];
-
-                // Client-side filtering for search term
-                if (search && allProducts.length > 0) {
-                    const searchLower = search.toLowerCase();
-                    allProducts = allProducts.filter(product => {
-                        const model = (product.model || '').toLowerCase();
-                        const brand = (product.brand || '').toLowerCase();
-                        const productId = (product.product_id || '').toLowerCase();
-                        const description = (product.description || '').toLowerCase();
-                        
-                        return model.includes(searchLower) || 
-                               brand.includes(searchLower) || 
-                               productId.includes(searchLower) ||
-                               description.includes(searchLower);
-                    });
-                }
-
-                displayProducts(allProducts);
-                updateStats(allProducts.length);
-                updatePagination(products.lastKey);
-
-            } catch (error) {
-                console.error('Error loading products:', error);
-                showAlert('Error loading products: ' + error.message, 'danger');
-            }
-        }
-
-        // Display products
-        function displayProducts(products) {
-            const container = document.getElementById('productsContainer');
-            
-            if (products.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <i class="fas fa-box-open"></i>
-                        <h4>No products found</h4>
-                        <p>Try adjusting your filters or select a different category</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = products.map(product => {
-                const lowestPrice = getLowestPrice(product.offers);
-                const formattedPrice = lowestPrice ? lowestPrice.toLocaleString('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0, maximumFractionDigits: 0 }) : 'Price not available';
-                const imageUrl = product.imageUrl || product.image || product.img || 'https://via.placeholder.com/150?text=No+Image';
-                const productName = product.model || product.title || 'Unknown Product';
-                const brandName = product.brand || 'Unknown Brand';
-
-                // Extract specs
-                const specs = [];
-                if (product.specs?.Performance?.Ram) specs.push(product.specs.Performance.Ram);
-                if (product.specs?.Performance?.Storage) specs.push(product.specs.Performance.Storage);
-                if (product.specs?.Os?.['Operating System']) specs.push(product.specs.Os['Operating System']);
-                if (product.color) specs.push(product.color);
-
-                const specsHtml = specs.length > 0 ? `<div class="product-specs"><span>${specs.join(' • ')}</span></div>` : '';
-
-                // Get retailer count
-                const retailerCount = product.offers?.length || 0;
-
-                return `
-                    <div class="smartphone-card">
-                        <div class="card-image-container">
-                            <img src="${imageUrl}" alt="${productName}" class="card-image" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
-                        </div>
-                        <div class="card-content">
-                            <span class="brand-badge">${brandName}</span>
-                            <h3 class="product-name">${productName}</h3>
-                            ${specsHtml}
-                            <div class="product-price">
-                                <span class="current-price">${formattedPrice}</span>
-                            </div>
-                            <div class="retailer-info">
-                                <span>${retailerCount} retailer${retailerCount !== 1 ? 's' : ''}</span>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn-view" onclick="viewProduct('${product.product_id}', '${product.category}')">View</button>
-                            <button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>
-                            <button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Get lowest price from offers
-        function getLowestPrice(offers) {
-            if (!offers || offers.length === 0) return 0;
-            const prices = offers.map(o => o.price || o.originalPrice || 0).filter(p => p > 0);
-            return prices.length > 0 ? Math.min(...prices) : 0;
-        }
-
-        // Update stats
-        function updateStats(count) {
-            document.getElementById('filteredCount').textContent = count;
-            document.getElementById('currentCategoryCount').textContent = count;
-        }
-
-        // Update pagination
-        function updatePagination(nextKey) {
-            const paginationContainer = document.getElementById('paginationContainer');
-            const pagination = document.getElementById('pagination');
-            
-            if (!nextKey && currentPage === 1) {
-                paginationContainer.style.display = 'none';
-                return;
-            }
-
-            paginationContainer.style.display = 'block';
-            pagination.innerHTML = `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="previousPage(); return false;">Previous</a>
-                </li>
-                <li class="page-item active">
-                    <span class="page-link">Page ${currentPage}</span>
-                </li>
-                <li class="page-item ${!nextKey ? 'disabled' : ''}">
-                    <a class="page-link" href="#" onclick="nextPage(); return false;">Next</a>
-                </li>
-            `;
-        }
-
-        // Pagination functions
-        function nextPage() {
-            if (lastKey) {
-                currentPage++;
-                loadProducts();
-            }
-        }
-
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                // Note: DynamoDB doesn't support backward pagination easily
-                // You may need to reload from start
-                loadProducts();
-            }
-        }
-
-        // View product
-        function viewProduct(productId, category) {
-            // Save current state before navigating
-            let categoryValue = '';
-            const activeCategory = document.querySelector('.category-option.active');
-            if (activeCategory) {
-                categoryValue = activeCategory.dataset.category || '';
-            } else {
-                categoryValue = document.getElementById('categoryFilter').value;
-            }
-            
-            let brandValue = '';
-            
-            // Get brand value based on category type
-            if (categoryValue === 'smartphones') {
-                const brandGrid = document.getElementById('brandGrid');
-                if (brandGrid && brandGrid.style.display !== 'none') {
-                    const activeBrand = document.querySelector('.brand-option.active');
-                    brandValue = activeBrand ? (activeBrand.dataset.brand || '') : '';
-                } else {
-                    brandValue = document.getElementById('brandFilter').value;
-                }
-            } else {
-                brandValue = document.getElementById('brandFilterText').value;
-            }
-            
-            const state = {
-                category: categoryValue,
-                brand: brandValue,
-                search: document.getElementById('searchInput').value,
-                pageSize: document.getElementById('pageSize').value,
-                currentPage: currentPage,
-                lastKey: lastKey
-            };
-            sessionStorage.setItem('productManagementState', JSON.stringify(state));
-            
-            window.location.href = `admin-view-info.html?product_id=${encodeURIComponent(productId)}&category=${encodeURIComponent(category)}`;
-        }
-
-        // Handle image upload and show preview
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-            
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showAlert('Image file size must be less than 5MB', 'danger');
-                event.target.value = '';
-                return;
-            }
-            
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showAlert('Please select a valid image file', 'danger');
-                event.target.value = '';
-                return;
-            }
-            
-            // Show preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('imagePreview').src = e.target.result;
-                document.getElementById('imagePreviewContainer').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        // Clear image preview
-        function clearImagePreview() {
-            document.getElementById('editImageFile').value = '';
-            document.getElementById('imagePreview').src = '';
-            document.getElementById('imagePreviewContainer').style.display = 'none';
-        }
-
-        // Edit product
-        async function editProduct(productId, category) {
-            try {
-                // Show loading state
-                const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
-                modal.show();
-                
-                document.getElementById('editProductModalLabel').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                document.getElementById('editProductForm').style.opacity = '0.5';
-                document.querySelector('.modal-footer').style.display = 'none';
-
-                // Fetch product data
-                const response = await fetch(
-                    `${API_CONFIG.BASE_URL}${API_CONFIG.GET_PRODUCT_ENDPOINT}/${productId}?category=${category}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                const product = data.body ? JSON.parse(data.body) : data;
-                const productData = product.product || product;
-
-                // Populate form
-                document.getElementById('editProductId').value = productId;
-                document.getElementById('editProductCategory').value = category;
-                document.getElementById('editBrand').value = productData.brand || '';
-                document.getElementById('editModel').value = productData.model || '';
-                document.getElementById('editColor').value = productData.color || '';
-                document.getElementById('editImageUrl').value = productData.imageUrl || '';
-                document.getElementById('editImageFile').value = ''; // Clear file input
-                document.getElementById('imagePreviewContainer').style.display = 'none';
-                document.getElementById('imagePreview').src = '';
-                document.getElementById('editDescription').value = productData.description || '';
-                
-                // Show current image if exists
-                if (productData.imageUrl) {
-                    document.getElementById('imagePreview').src = productData.imageUrl;
-                    document.getElementById('imagePreviewContainer').style.display = 'block';
-                }
-                document.getElementById('editSpecs').value = productData.specs ? JSON.stringify(productData.specs, null, 2) : '';
-
-                // Populate offers
-                populateOffers(productData.offers || []);
-
-                // Show form
-                document.getElementById('editProductModalLabel').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
-                document.getElementById('editProductForm').style.opacity = '1';
-                document.querySelector('.modal-footer').style.display = 'flex';
-
-            } catch (error) {
-                console.error('Error loading product:', error);
-                showAlert('Error loading product: ' + error.message, 'danger');
-                bootstrap.Modal.getInstance(document.getElementById('editProductModal'))?.hide();
-            }
-        }
-
-        // Populate offers in the form
-        function populateOffers(offers) {
-            const container = document.getElementById('offersContainer');
-            container.innerHTML = '';
-
-            if (offers.length === 0) {
-                container.innerHTML = '<p class="text-muted">No offers available. Click "Add Offer" to add one.</p>';
-                return;
-            }
-
-            offers.forEach((offer, index) => {
-                addOfferToForm(offer, index);
-            });
-        }
-
-        // Add offer to form
-        function addOfferToForm(offer = {}, index = null) {
-            const container = document.getElementById('offersContainer');
-            const offerIndex = index !== null ? index : container.children.length;
-            
-            const offerHTML = `
-                <div class="offer-item" data-offer-index="${offerIndex}">
-                    <div class="offer-item-header">
-                        <span class="offer-item-title">Offer #${offerIndex + 1}</span>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="removeOffer(${offerIndex})">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Retailer <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control offer-retailer" value="${offer.retailer || ''}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">URL</label>
-                            <input type="url" class="form-control offer-url" value="${offer.url || ''}">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Price (R) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control offer-price" value="${offer.price || ''}" step="0.01" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Original Price (R)</label>
-                            <input type="number" class="form-control offer-original-price" value="${offer.originalPrice || ''}" step="0.01">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Sale Ends</label>
-                            <input type="text" class="form-control offer-sale-ends" value="${offer.saleEnds || ''}" placeholder="e.g., 15 December 2024">
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Logo URL</label>
-                            <input type="url" class="form-control offer-logo-url" value="${offer.logoUrl || ''}">
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            container.insertAdjacentHTML('beforeend', offerHTML);
-        }
-
-        // Add new offer
-        function addOffer() {
-            addOfferToForm();
-        }
-
-        // Remove offer
-        function removeOffer(index) {
-            const offerItem = document.querySelector(`.offer-item[data-offer-index="${index}"]`);
-            if (offerItem) {
-                offerItem.remove();
-                // Reindex remaining offers
-                document.querySelectorAll('.offer-item').forEach((item, idx) => {
-                    item.setAttribute('data-offer-index', idx);
-                    item.querySelector('.offer-item-title').textContent = `Offer #${idx + 1}`;
-                });
-            }
-        }
-
-        // Save product changes
-        async function saveProductChanges() {
-            const productId = document.getElementById('editProductId').value;
-            const category = document.getElementById('editProductCategory').value;
-            
-            if (!productId || !category) {
-                showAlert('Missing product ID or category', 'danger');
-                return;
-            }
-
-            try {
-                // Handle image upload if file is selected
-                const imageFile = document.getElementById('editImageFile').files[0];
-                if (imageFile) {
-                    // Validate file size (max 5MB)
-                    if (imageFile.size > 5 * 1024 * 1024) {
-                        showAlert('Image file size must be less than 5MB', 'danger');
-                        return;
-                    }
-                    
-                    // Validate file type
-                    if (!imageFile.type.startsWith('image/')) {
-                        showAlert('Please select a valid image file', 'danger');
-                        return;
-                    }
-                }
-                
-                // Collect form data
-                const updateData = {
-                    category: category,
-                    brand: document.getElementById('editBrand').value.trim(),
-                    model: document.getElementById('editModel').value.trim(),
-                    color: document.getElementById('editColor').value.trim(),
-                    description: document.getElementById('editDescription').value.trim(),
-                };
-                
-                // Add image URL if no new file is uploaded (keep existing)
-                const existingImageUrl = document.getElementById('editImageUrl').value.trim();
-                if (!imageFile && existingImageUrl) {
-                    updateData.imageUrl = existingImageUrl;
-                }
-
-                // Collect offers
-                const offers = [];
-                document.querySelectorAll('.offer-item').forEach((item) => {
-                    const offer = {
-                        retailer: item.querySelector('.offer-retailer').value.trim(),
-                        url: item.querySelector('.offer-url').value.trim(),
-                        price: parseFloat(item.querySelector('.offer-price').value) || 0,
-                        originalPrice: parseFloat(item.querySelector('.offer-original-price').value) || null,
-                        saleEnds: item.querySelector('.offer-sale-ends').value.trim() || null,
-                        logoUrl: item.querySelector('.offer-logo-url').value.trim() || null,
-                    };
-                    
-                    if (offer.retailer && offer.price > 0) {
-                        offers.push(offer);
-                    }
-                });
-
-                if (offers.length > 0) {
-                    updateData.offers = offers;
-                }
-
-                // Parse specs if provided
-                const specsText = document.getElementById('editSpecs').value.trim();
-                if (specsText) {
-                    try {
-                        updateData.specs = JSON.parse(specsText);
-                    } catch (e) {
-                        showAlert('Invalid JSON in specifications field. Please check the format.', 'danger');
-                        return;
-                    }
-                }
-
-                // Convert image file to base64 if file is selected
-                if (imageFile) {
-                    const base64 = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(imageFile);
-                    });
-                    
-                    updateData.imageBase64 = base64;
-                    updateData.imageContentType = imageFile.type;
-                }
-
-                // Remove empty fields
-                Object.keys(updateData).forEach(key => {
-                    if (updateData[key] === '' || updateData[key] === null) {
-                        delete updateData[key];
-                    }
-                });
-
-                // Show loading state
-                const saveBtn = document.querySelector('.modal-footer .btn-primary');
-                const originalText = saveBtn.innerHTML;
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-                // Send update request
-                const response = await fetch(
-                    `${API_CONFIG.BASE_URL}${API_CONFIG.UPDATE_PRODUCT_ENDPOINT}/${productId}`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(updateData),
-                    }
-                );
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                const resultData = result.body ? JSON.parse(result.body) : result;
-
-                if (resultData.success) {
-                    showAlert(`Product "${productId}" updated successfully!`, 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('editProductModal'))?.hide();
-                    loadProducts(); // Reload product list
-                } else {
-                    throw new Error(resultData.message || 'Update failed');
-                }
-
-            } catch (error) {
-                console.error('Error updating product:', error);
-                showAlert('Error updating product: ' + error.message, 'danger');
-            } finally {
-                const saveBtn = document.querySelector('.modal-footer .btn-primary');
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-            }
-        }
-
-        // Delete product
-        async function deleteProduct(productId, category) {
-            if (!confirm(`Are you sure you want to delete product "${productId}"? This action cannot be undone.`)) {
-                return;
-            }
-
-            try {
-                const response = await fetch(
-                    `${API_CONFIG.BASE_URL}${API_CONFIG.DELETE_PRODUCT_ENDPOINT}/${productId}?category=${category}`,
-                    { method: 'DELETE' }
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                showAlert(`Product "${productId}" deleted successfully`, 'success');
-                loadProducts(); // Reload list
-
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showAlert('Error deleting product: ' + error.message, 'danger');
-            }
-        }
-
-        // Show alert
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer') || createAlertContainer();
-            const alertId = 'alert-' + Date.now();
-            
-            const alertHTML = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            alertContainer.innerHTML = alertHTML;
-            
-            setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 5000);
-        }
-
-        function createAlertContainer() {
-            // Check if alert container already exists
-            let alertContainer = document.getElementById('alertContainer');
-            if (alertContainer) {
-                return alertContainer;
-            }
-            
-            // Create new alert container
-            alertContainer = document.createElement('div');
-            alertContainer.id = 'alertContainer';
-            alertContainer.className = 'mb-3';
-            
-            // Find the main content container (not the header one)
-            const mainContainer = document.querySelector('.admin-header').nextElementSibling;
-            const statsBar = document.querySelector('.stats-bar');
-            
-            // Insert before stats-bar if it exists, otherwise prepend to main container
-            if (mainContainer && statsBar && mainContainer.contains(statsBar)) {
-                mainContainer.insertBefore(alertContainer, statsBar);
-            } else if (mainContainer) {
-                mainContainer.insertBefore(alertContainer, mainContainer.firstChild);
-            } else {
-                // Fallback: append to body
-                document.body.insertBefore(alertContainer, document.body.firstChild);
-            }
-            
-            return alertContainer;
-        }
-
-        // Enter key to search
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loadProducts();
-        });
-
-        document.getElementById('brandFilterText').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loadProducts();
-        });
-
-        // Category change - update brand filter (for hidden select compatibility)
-        document.getElementById('categoryFilter').addEventListener('change', () => {
-            const category = document.getElementById('categoryFilter').value;
-            selectCategory(category);
-        });
-
-        // Page size change
-        document.getElementById('pageSize').addEventListener('change', () => {
-            loadProducts();
-        });
-
-        // Initialize category and brand filters on page load
-        initializeCategoryGrid();
-        updateBrandFilter();
-
-        // Filter button click handlers
-        document.getElementById('categoryFilterBtn').addEventListener('click', () => {
-            toggleFilterPanel('category');
-        });
-
-        document.getElementById('brandFilterBtn').addEventListener('click', () => {
-            toggleFilterPanel('brand');
-        });
-
-        // Filter action button handlers
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('btn-apply')) {
-                const filterType = e.target.dataset.filter;
-                if (filterType === 'category') {
-                    applyCategoryFilter();
-                } else if (filterType === 'brand') {
-                    applyBrandFilter();
-                }
-            } else if (e.target.classList.contains('btn-cancel')) {
-                const filterType = e.target.dataset.filter;
-                closeFilterPanel(filterType);
-            } else if (e.target.classList.contains('btn-clear')) {
-                const filterType = e.target.dataset.filter;
-                if (filterType === 'category') {
-                    clearCategoryFilter();
-                } else if (filterType === 'brand') {
-                    clearBrandFilter();
-                }
-            }
-        });
-
-        // Restore state from sessionStorage when returning from view page
-        function restoreState() {
-            const savedState = sessionStorage.getItem('productManagementState');
-            if (savedState) {
-                try {
-                    const state = JSON.parse(savedState);
-                    
-                    // Restore filters
-                    if (state.category) {
-                        // Restore category selection in grid (this will also update brand filter)
-                        selectCategory(state.category);
-                        
-                        // Restore brand after a small delay to ensure grid/inputs are updated
-                        setTimeout(() => {
-                            if (state.category === 'smartphones') {
-                                // Restore brand selection in grid
-                                if (state.brand) {
-                                    // Find and activate the brand button
-                                    const brandLower = state.brand.toLowerCase();
-                                    const brandBtn = document.querySelector(`.brand-option[data-brand="${brandLower}"]`);
-                                    if (brandBtn) {
-                                        brandBtn.classList.add('active');
-                                        document.getElementById('brandFilter').value = brandLower;
-                                        // Update brand filter button active state
-                                        const brandFilterBtn = document.getElementById('brandFilterBtn');
-                                        brandFilterBtn.classList.add('filter-active');
-                                    }
-                                }
-                            } else {
-                                document.getElementById('brandFilterText').value = state.brand || '';
-                            }
-                            
-                            // Restore search
-                            if (state.search) {
-                                document.getElementById('searchInput').value = state.search;
-                            }
-                            
-                            // Restore page size
-                            if (state.pageSize) {
-                                document.getElementById('pageSize').value = state.pageSize;
-                                pageSize = parseInt(state.pageSize);
-                            }
-                            
-                            // Auto-load products if category is set
-                            // Note: We reset to page 1 since DynamoDB doesn't support backward pagination easily
-                            if (state.category) {
-                                currentPage = 1;
-                                lastKey = null;
-                                loadProducts();
-                            }
-                        }, 150);
-                    }
-                    
-                    // Clear saved state after restoring
-                    sessionStorage.removeItem('productManagementState');
-                } catch (error) {
-                    console.error('Error restoring state:', error);
-                }
-            }
-        }
-
-        // Restore state on page load (before other initialization)
-        window.addEventListener('load', () => {
-            restoreState();
-        });
-
-        // Check login state and update header
-        async function checkLoginState() {
-            const userSection = document.getElementById('userSection');
-            const loginBtnHeader = document.getElementById('loginBtnHeader');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            try {
-                const result = await window.adminAWSAuthService.getUserInfo();
-                
-                if (result.success && result.user) {
-                    const user = result.user;
-                    let displayName = '';
-                    let initials = '';
-
-                    if (user.givenName && user.familyName) {
-                        displayName = `${user.givenName} ${user.familyName}`;
-                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                    } else if (user.givenName) {
-                        displayName = user.givenName;
-                        initials = user.givenName.substring(0, 2).toUpperCase();
-                    } else if (user.email) {
-                        const name = user.email.split('@')[0];
-                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                        initials = name.substring(0, 2).toUpperCase();
-                    } else {
-                        displayName = 'Admin User';
-                        initials = 'AU';
-                    }
-
-                    userAvatar.textContent = initials;
-                    userName.textContent = displayName;
-
-                    userSection.style.display = 'flex';
-                    loginBtnHeader.style.display = 'none';
-                } else {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                userSection.style.display = 'none';
-                loginBtnHeader.style.display = 'inline-flex';
-            }
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            try {
-                await window.adminAWSAuthService.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                // HttpOnly cookie is cleared by server on logout
-                window.location.href = 'admin-login.html';
-            }
-        }
-
-        // Initialize login state check
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLoginState();
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-        });
-    </script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-product-management.js"></script>
 </body>
 </html>
-

@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | CompareHubPrices</title>
+    <title>Admin Panel | CompareHubPrices</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #007bff;
-            --primary-dark: #0056b3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #dee2e6;
-            --text: #6c757d;
-            --text-dark: #333;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #0ea5e9;
+            --success: #2563eb;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --dark: #1e293b;
+            --light: #eff6ff;
+            --border: #bfdbfe;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
         }
 
         * {
@@ -31,539 +34,877 @@
         }
 
         body {
-            background: #f8f9fa;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 3rem;
-        }
-
-        .admin-header {
-            background: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eff6ff;
             color: var(--text-dark);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin: 0 1rem 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        .admin-header h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin: 0;
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
         }
 
-        .admin-header p {
-            color: var(--text);
-            margin: 0.25rem 0 0 0;
-            font-size: 0.9rem;
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
         }
 
-        .container {
-            max-width: 1200px;
-        }
-
-        .logo {
+        .sidebar-logo {
             display: flex;
             align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
-        .logo-img {
-            height: 50px;
+        .sidebar-logo img {
+            height: 38px;
             width: auto;
-            object-fit: contain;
+            filter: brightness(0) invert(1);
         }
 
-        .dashboard-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            height: 100%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            color: inherit;
-            display: block;
+        .sidebar-nav {
+            padding: 1.5rem 0;
         }
 
-        .dashboard-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            transform: translateY(-4px);
-            text-decoration: none;
-            color: inherit;
+        .nav-section {
+            margin-bottom: 2.5rem;
         }
 
-        .dashboard-card-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .dashboard-card-icon img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            margin-bottom: 1rem;
-        }
-
-        .dashboard-card.success .dashboard-card-icon {
-            color: var(--success);
-        }
-
-        .dashboard-card.danger .dashboard-card-icon {
-            color: var(--danger);
-        }
-
-        .dashboard-card.warning .dashboard-card-icon {
-            color: var(--warning);
-        }
-
-        .dashboard-card.info .dashboard-card-icon {
-            color: var(--info);
-        }
-
-        .dashboard-card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.75rem;
-        }
-
-        .dashboard-card p {
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             color: var(--text);
-            font-size: 0.95rem;
-            margin: 0;
+            margin-bottom: 0.875rem;
         }
 
-        .stats-section {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 1.5rem;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: var(--text);
-            font-size: 0.95rem;
-        }
-
-        .welcome-section {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .welcome-section h2 {
-            color: var(--text-dark);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .welcome-section p {
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        .btn-outline-primary {
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            background: transparent;
-            padding: 0.75rem 2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-primary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .header-login-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .header-login-btn:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
-        }
-
-        .user-section {
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+        }
+
+        .search-box {
+            position: relative;
+            width: 480px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: var(--light);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1.125rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
         }
 
         .user-avatar {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .user-info {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
         }
 
         .user-name {
-            margin: 0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text);
             font-weight: 600;
-            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.primary .stat-icon { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1.5px;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
+        }
+
+        .quick-actions-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.125rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            font-weight: 600;
             font-size: 0.95rem;
         }
 
-
-        .logout-btn {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-
-        .logout-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .logout-btn .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .login-btn-header {
+        .action-btn:hover {
             background: var(--primary);
             color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+            border-color: var(--primary);
         }
 
-        .login-btn-header:hover {
-            background: var(--primary-dark);
+        .action-btn i {
+            font-size: 1.4rem;
+        }
+
+        /* Recent Activity */
+        .activity-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+            padding: 1.25rem 0;
+            border-bottom: 2px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .activity-item:hover {
+            background: var(--light);
+            margin: 0 -2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            border-radius: 12px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .activity-icon.success { background: linear-gradient(135deg, var(--success) 0%, #3b82f6 100%); }
+        .activity-icon.warning { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
+        .activity-icon.danger { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
+        .activity-icon.info { background: linear-gradient(135deg, var(--info) 0%, #22d3ee 100%); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.375rem;
+            font-size: 0.95rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .search-box {
+                width: 300px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="logo">
-                        <img src="assets/logo .png" alt="CompareHubPrices" class="logo-img">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="assets/logo .png" alt="CompareHubPrices">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="admin-panel3.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admin-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="admin-business.html" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Business Posts</span>
+                    <span class="nav-badge">12</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="admin-management.html" class="nav-item">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="admin-bulk-import.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Bulk Import</span>
+                </a>
+                <a href="admin-price-update.html" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Price Updates</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="admin-settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="admin_alerts_notification.html" class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                    <span class="nav-badge">5</span>
+                </a>
+                <a href="admin_login_tracking.html" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>Login History</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search users, businesses, products...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="header-icon" title="Messages">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar">JD</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">John Doe</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back! Here's what's happening with your platform today.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">12,543</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% from last month</span>
                     </div>
                 </div>
-                <div class="col-auto ms-auto">
-                    <!-- User Section (shown when logged in) -->
-                    <div class="user-section" id="userSection">
-                        <div class="user-avatar" id="userAvatar">JD</div>
-                        <div class="user-info">
-                            <div class="user-name" id="userName">John Doe</div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Businesses</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-store"></i>
                         </div>
-                        <button class="logout-btn" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
+                    </div>
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% from last month</span>
+                    </div>
                 </div>
-                    <!-- Login Button (shown when not logged in) -->
-                    <a href="admin-login.html" class="login-btn-header" id="loginBtnHeader" style="display: none;">
-                        <i class="fas fa-sign-in-alt"></i> Login
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Pending Reviews</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">89</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>5.3% from last week</span>
+                    </div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-header">
+                        <div class="stat-title">Revenue</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">$45,231</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>23.1% from last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">User Growth</h3>
+                        <i class="fas fa-ellipsis-h" style="color: var(--text); cursor: pointer;"></i>
+                    </div>
+                    <canvas id="userGrowthChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3 class="quick-actions-title">Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="admin-bulk-import.html" class="action-btn">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Bulk Import</span>
+                    </a>
+                    <a href="admin-business.html" class="action-btn">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Approve Posts</span>
+                    </a>
+                    <a href="admin-management.html" class="action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add User</span>
+                    </a>
+                    <a href="admin-price-update.html" class="action-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Update Prices</span>
+                    </a>
+                    <a href="admin_alerts_notification.html" class="action-btn">
+                        <i class="fas fa-bell"></i>
+                        <span>Send Notification</span>
+                    </a>
+                    <a href="admin-settings.html" class="action-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
                     </a>
                 </div>
             </div>
+
+            <div class="activity-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Recent Activity</h3>
+                    <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 700;">View All</a>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Business post approved</div>
+                        <div class="activity-time">2 minutes ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon info">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">New user registered</div>
+                        <div class="activity-time">15 minutes ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon warning">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Price update failed</div>
+                        <div class="activity-time">1 hour ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon success">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Bulk import completed</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <h2>Welcome to CompareHubPrices Admin Panel</h2>
-            <p>Manage your product catalog, update prices, and track inventory from this central dashboard.</p>
-            <p class="mb-0"><strong>Quick Actions:</strong> Use the cards below to access different admin functions.</p>
-        </div>
-
-        <!-- Dashboard Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-bulk-import.html" class="dashboard-card">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/folder.png" alt="Bulk Import">
-                    </div>
-                    <h3>Bulk Import</h3>
-                    <p>Import multiple products at once from JSON files</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-price-update.html" class="dashboard-card success">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/sale.png" alt="Price Update">
-                    </div>
-                    <h3>Price Update</h3>
-                    <p>Update product prices and track price history</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-product-management.html" class="dashboard-card info">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/features.png" alt="Product Management">
-                    </div>
-                    <h3>Product Management</h3>
-                    <p>View, edit, and manage individual products</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-analytics.html" class="dashboard-card warning">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/sales-report.png" alt="Analytics">
-                    </div>
-                    <h3>Analytics</h3>
-                    <p>View product statistics and performance metrics</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-alerts-notifications.html" class="dashboard-card danger">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/warning.png" alt="Alerts & Notifications">
-                    </div>
-                    <h3>Alerts & Notifications</h3>
-                    <p>Manage price alerts and system notifications</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin_login_tracking.html" class="dashboard-card info">
-                    <div class="dashboard-card-icon">
-                        <i class="fas fa-sign-in-alt"></i>
-                    </div>
-                    <h3>Login Tracking</h3>
-                    <p>Monitor user login activities and authentication events</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin_price_alert_tracking.html" class="dashboard-card warning">
-                    <div class="dashboard-card-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>Price Alert Tracking</h3>
-                    <p>Monitor price alerts created by users and track alert statistics</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-business.html" class="dashboard-card info">
-                    <div class="dashboard-card-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <h3>Business Management</h3>
-                    <p>Approve or reject business posts and manage business permissions</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-settings.html" class="dashboard-card">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/setting.png" alt="Settings">
-                    </div>
-                    <h3>Settings</h3>
-                    <p>Configure API endpoints and system settings</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-api-test.html" class="dashboard-card warning">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/gear.png" alt="API Testing">
-                    </div>
-                    <h3>API Testing</h3>
-                    <p>Test all API endpoints from the frontend</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="#" class="dashboard-card success" id="userAnalyticsCard">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/user.png" alt="User Analytics">
-                    </div>
-                    <h3>User Analytics</h3>
-                    <p>Track users, page visits, and business follows</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin_reports_review.html" class="dashboard-card danger">
-                    <div class="dashboard-card-icon">
-                        <i class="fas fa-flag"></i>
-                    </div>
-                    <h3>Reviews Reports</h3>
-                    <p>Review and manage reported business reviews</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin_business_analytics.html" class="dashboard-card info" id="businessAnalyticsCard">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/accounting.png" alt="Business Analytics">
-                    </div>
-                    <h3>Business Analytics</h3>
-                    <p>Track business accounts, listings, and performance</p>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="admin-management.html" class="dashboard-card" id="adminManagementCard">
-                    <div class="dashboard-card-icon">
-                        <img src="assets/images/cards/user-setting.png" alt="Admin Management">
-                    </div>
-                    <h3>Admin Management</h3>
-                    <p>Manage admin accounts, permissions, and access</p>
-                </a>
-            </div>
-        </div>
-
-        <!-- Quick Stats Section -->
-        <div class="stats-section">
-            <h3 class="mb-4"><i class="fas fa-chart-bar"></i> Quick Statistics</h3>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalProducts">-</div>
-                        <div class="stat-label">Total Products</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalCategories">-</div>
-                        <div class="stat-label">Categories</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="priceUpdates">-</div>
-                        <div class="stat-label">Price Updates Today</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-item">
-                        <div class="stat-number" id="activeAlerts">-</div>
-                        <div class="stat-label">Active Alerts</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity Section -->
-        <div class="stats-section">
-            <h3 class="mb-4"><i class="fas fa-clock"></i> Recent Activity</h3>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Recent activity will be displayed here once you start using the admin panel.
-            </div>
-        </div>
-    </div>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
- 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    
     <script>
-        // Check login state and update header
-        async function checkLoginState() {
-            const userSection = document.getElementById('userSection');
-            const loginBtnHeader = document.getElementById('loginBtnHeader');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const logoutBtn = document.getElementById('logoutBtn');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
 
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        async function checkLoginState() {
             try {
+                if (typeof window.adminAWSAuthService === 'undefined') {
+                    console.warn('Admin auth service not available');
+                    return;
+                }
+
                 const result = await window.adminAWSAuthService.getUserInfo();
                 
                 if (result.success && result.user) {
@@ -586,78 +927,106 @@
                         initials = 'AU';
                     }
 
-                userAvatar.textContent = initials;
-                    userName.textContent = displayName;
-
-                userSection.style.display = 'flex';
-                loginBtnHeader.style.display = 'none';
-            } else {
-                    userSection.style.display = 'none';
-                    loginBtnHeader.style.display = 'inline-flex';
+                    document.getElementById('userAvatar').textContent = initials;
+                    document.getElementById('userName').textContent = displayName;
+                } else {
+                    window.location.href = 'admin-login.html';
                 }
             } catch (error) {
                 console.error('Error checking login state:', error);
-                userSection.style.display = 'none';
-                loginBtnHeader.style.display = 'inline-flex';
-            }
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            
-            // Disable button to prevent double-clicks
-            if (logoutBtn) {
-                logoutBtn.disabled = true;
-                logoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
-            }
-            
-            try {
-                const result = await window.adminAWSAuthService.logout();
-                
-                if (result.success) {
-                    console.log('Logout successful:', result.message);
-                    
-                    // Show success message briefly before redirect
-                    if (result.warning) {
-                        console.warn('Logout warning:', result.warning);
-                    }
-                    
-                    // Small delay to ensure cookie is cleared
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                } else {
-                    console.error('Logout failed:', result.message || result.error);
-                }
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                // Always redirect to login page, even if logout request failed
-                // The local session is cleared by adminAWSAuthService.logout()
                 window.location.href = 'admin-login.html';
             }
         }
 
-        // Initialize on page load
+        function initCharts() {
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (userGrowthCtx) {
+                new Chart(userGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [1200, 1900, 3000, 2500, 3200, 3800, 4200, 4500, 4800, 5100, 5400, 5800],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#2563eb',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8,
+                            pointHoverBackgroundColor: '#2563eb',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                display: false 
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#2563eb',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    title: function(context) {
+                                        return 'Month: ' + context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return 'New Users: ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { 
+                                    color: '#eff6ff',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: { 
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginState();
-
-            // Attach logout handler
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', handleLogout);
-            }
-
-            // Placeholder for future stats loading
-            // This can be connected to your API later
-            // Example: Load stats from API
-            // fetch('https://acc.comparehubprices.site/data/stats')
-            //     .then(res => res.json())
-            //     .then(data => {
-            //         document.getElementById('totalProducts').textContent = data.totalProducts || '-';
-            //         document.getElementById('totalCategories').textContent = data.categories || '-';
-            //         document.getElementById('priceUpdates').textContent = data.priceUpdates || '-';
-            //         document.getElementById('activeAlerts').textContent = data.activeAlerts || '-';
-            //     });
+            initCharts();
         });
     </script>
 </body>

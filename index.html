@@ -879,10 +879,10 @@
                             <i class="fas fa-store"></i>
                         </div>
                     </div>
-                    <div class="stat-value">1,234</div>
+                    <div class="stat-value" id="activeBusinessesCount">0</div>
                     <div class="stat-change positive">
                         <i class="fas fa-arrow-up"></i>
-                        <span>8.2% from last month</span>
+                        <span id="activeBusinessesChange">Loading...</span>
                     </div>
                 </div>
 
@@ -1140,6 +1140,47 @@
             }
         }
 
+        // Load active businesses count
+        async function loadActiveBusinesses() {
+            try {
+                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+                // Remove /data suffix if present
+                if (API_BASE_URL.endsWith('/data')) {
+                    API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+                }
+                const ACTIVE_BUSINESSES_API = `${API_BASE_URL}/admin/admin/active-businesses/count`;
+
+                const response = await fetch(`${ACTIVE_BUSINESSES_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && typeof data.count === 'number') {
+                        const activeElement = document.getElementById('activeBusinessesCount');
+                        const changeElement = document.getElementById('activeBusinessesChange');
+                        
+                        if (activeElement) {
+                            activeElement.textContent = data.count.toLocaleString();
+                        }
+                        
+                        if (changeElement) {
+                            // Calculate change (mock calculation for now)
+                            const changePercent = 8.2; // This could be calculated from historical data
+                            changeElement.textContent = `${changePercent}% from last month`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading active businesses:', error);
+                // Keep default value on error
+            }
+        }
+
         function initCharts() {
             const userGrowthCtx = document.getElementById('userGrowthChart');
             if (userGrowthCtx) {
@@ -1250,6 +1291,7 @@
             initCharts();
             loadTotalUsers();
             loadPendingReviews();
+            loadActiveBusinesses();
         });
 
         function initUserDropdown() {

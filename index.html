@@ -935,40 +935,11 @@
                     <h3 class="chart-title">Recent Activity</h3>
                     <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 700;">View All</a>
                 </div>
-                <div class="activity-item">
-                    <div class="activity-icon success">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Business post approved</div>
-                        <div class="activity-time">2 minutes ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon info">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">New user registered</div>
-                        <div class="activity-time">15 minutes ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon warning">
-                        <i class="fas fa-exclamation"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Price update failed</div>
-                        <div class="activity-time">1 hour ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon success">
-                        <i class="fas fa-upload"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Bulk import completed</div>
-                        <div class="activity-time">2 hours ago</div>
+                <div id="activitiesContainer">
+                    <div class="loading-spinner" style="text-align: center; padding: 2rem;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1360,12 +1331,112 @@
             loadUserGrowthData();
         }
 
+        // Load recent activities
+        async function loadRecentActivities() {
+            try {
+                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+                // Remove /data suffix if present
+                if (API_BASE_URL.endsWith('/data')) {
+                    API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+                }
+                const ACTIVITIES_API = `${API_BASE_URL}/admin/admin/recent-activities?limit=10`;
+
+                const response = await fetch(`${ACTIVITIES_API}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.activities)) {
+                        renderActivities(data.activities);
+                    } else {
+                        showEmptyActivities();
+                    }
+                } else {
+                    showEmptyActivities();
+                }
+            } catch (error) {
+                console.error('Error loading recent activities:', error);
+                showEmptyActivities();
+            }
+        }
+
+        // Render activities
+        function renderActivities(activities) {
+            const container = document.getElementById('activitiesContainer');
+            if (!container) return;
+
+            if (!activities || activities.length === 0) {
+                showEmptyActivities();
+                return;
+            }
+
+            container.innerHTML = activities.map(activity => {
+                // Map icon names to Font Awesome classes
+                const iconMap = {
+                    'user': 'fa-user',
+                    'check': 'fa-check',
+                    'sign-in-alt': 'fa-sign-in-alt',
+                    'upload': 'fa-upload',
+                    'exclamation': 'fa-exclamation'
+                };
+
+                // Map icon colors to CSS classes
+                const colorMap = {
+                    'info': 'info',
+                    'success': 'success',
+                    'warning': 'warning',
+                    'danger': 'danger'
+                };
+
+                const iconClass = iconMap[activity.icon] || 'fa-info-circle';
+                const colorClass = colorMap[activity.iconColor] || 'info';
+
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon ${colorClass}">
+                            <i class="fas ${iconClass}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${escapeHtml(activity.title)}</div>
+                            <div class="activity-time">${activity.timeAgo || 'Just now'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show empty state
+        function showEmptyActivities() {
+            const container = document.getElementById('activitiesContainer');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
+                    <i class="fas fa-inbox" style="font-size: 3rem; color: var(--border); margin-bottom: 1rem;"></i>
+                    <div>No recent activities</div>
+                </div>
+            `;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginState();
             initCharts();
             loadTotalUsers();
             loadPendingReviews();
             loadActiveBusinesses();
+            loadRecentActivities();
         });
 
         function initUserDropdown() {

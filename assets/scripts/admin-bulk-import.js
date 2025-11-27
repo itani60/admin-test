@@ -461,7 +461,9 @@ function initializeCategoryDropdown() {
         { value: 'wearables', text: 'Wearables' },
         { value: 'televisions', text: 'Televisions' },
         { value: 'audio', text: 'Audio' },
-        { value: 'gaming', text: 'Gaming' },
+        { value: 'gaming-consoles', text: 'Gaming Consoles' },
+        { value: 'gaming-laptops', text: 'Gaming Laptops' },
+        { value: 'gaming-monitors', text: 'Gaming Monitors' },
         { value: 'appliances', text: 'Appliances' }
     ];
     

@@ -152,10 +152,10 @@ function displaySpecs(specs) {
     keySpecs.forEach(spec => {
         if (spec.value) {
             const specItem = document.createElement('div');
-            specItem.className = 'spec-item';
+            specItem.className = 'spec-item-modern';
             specItem.innerHTML = `
-                <strong>${spec.label}</strong>
-                <span>${spec.value}</span>
+                <span class="spec-label-modern">${spec.label}</span>
+                <span class="spec-value-modern">${spec.value}</span>
             `;
             specsGrid.appendChild(specItem);
         }
@@ -187,71 +187,75 @@ function displayOffers(offers) {
             : 0;
 
         offerCard.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
+            <div class="offer-card-header">
+                <div class="retailer-info">
                     ${offer.logoUrl ? `<img src="${offer.logoUrl}" alt="${offer.retailer}" class="retailer-logo">` : ''}
-                    <h5>${offer.retailer}</h5>
+                    <h5 class="retailer-name">${offer.retailer}</h5>
                 </div>
-                <button class="btn btn-sm btn-outline-primary" onclick="editOffer(${index})">
+                <button class="btn-edit-modern" onclick="editOffer(${index})">
                     <i class="fas fa-edit"></i> Edit
                 </button>
             </div>
             
-            <div class="price-display">
-                ${formatCurrency(offer.price)}
-                ${priceChanged ? `
-                    <span class="price-change ${priceChange < 0 ? 'decrease' : 'increase'}">
-                        ${priceChange > 0 ? '+' : ''}${formatCurrency(priceChange)} (${priceChangePercent}%)
-                    </span>
-                ` : ''}
-            </div>
-            
-            <div class="mt-2">
-                <small class="text-muted">
-                    Original: ${formatCurrency(offer.originalPrice || offer.price)}
-                </small>
-            </div>
-            
-            ${offer.saleEnds ? `
-                <div class="mt-2">
-                    <small class="text-warning">
-                        <i class="fas fa-clock"></i> Sale ends: ${offer.saleEnds}
-                    </small>
+            <div class="offer-card-body">
+                <div class="price-display-modern">
+                    <span class="price-main">${formatCurrency(offer.price)}</span>
+                    ${priceChanged ? `
+                        <span class="price-change-modern ${priceChange < 0 ? 'decrease' : 'increase'}">
+                            <i class="fas fa-arrow-${priceChange < 0 ? 'down' : 'up'}"></i>
+                            ${priceChange > 0 ? '+' : ''}${formatCurrency(priceChange)} (${priceChangePercent}%)
+                        </span>
+                    ` : ''}
                 </div>
-            ` : ''}
-            
-            <div class="mt-2">
-                <a href="${offer.url}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                
+                <div class="price-meta">
+                    <div class="price-meta-item">
+                        <i class="fas fa-tag"></i>
+                        <span>Original: <strong>${formatCurrency(offer.originalPrice || offer.price)}</strong></span>
+                    </div>
+                    ${offer.saleEnds ? `
+                        <div class="price-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Sale ends: <strong>${offer.saleEnds}</strong></span>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <a href="${offer.url}" target="_blank" class="btn-view-retailer">
                     <i class="fas fa-external-link-alt"></i> View on Retailer
                 </a>
-            </div>
-            
-            <div class="edit-form mt-3" id="edit-form-${index}" style="display: none;">
-                <div class="price-input-group">
-                    <div class="form-group">
-                        <label>Current Price (R)</label>
-                        <input type="number" class="form-control" id="price-${index}" value="${offer.price}" step="0.01">
+                
+                <div class="edit-form-modern" id="edit-form-${index}" style="display: none;">
+                    <div class="edit-form-header">
+                        <i class="fas fa-edit"></i>
+                        <h6>Edit Price Information</h6>
                     </div>
-                    <div class="form-group">
-                        <label>Original Price (R)</label>
-                        <input type="number" class="form-control" id="originalPrice-${index}" value="${offer.originalPrice || offer.price}" step="0.01">
+                    <div class="price-input-group-modern">
+                        <div class="form-group-modern">
+                            <label><i class="fas fa-money-bill-wave"></i> Current Price (R)</label>
+                            <input type="number" class="form-control-modern" id="price-${index}" value="${offer.price}" step="0.01">
+                        </div>
+                        <div class="form-group-modern">
+                            <label><i class="fas fa-tag"></i> Original Price (R)</label>
+                            <input type="number" class="form-control-modern" id="originalPrice-${index}" value="${offer.originalPrice || offer.price}" step="0.01">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group mt-2">
-                    <label>Sale Ends (optional)</label>
-                    <input type="text" class="form-control" id="saleEnds-${index}" value="${offer.saleEnds || ''}" placeholder="e.g., 15 December 2024">
-                </div>
-                <div class="form-group mt-2">
-                    <label>Product URL</label>
-                    <input type="url" class="form-control" id="url-${index}" value="${offer.url}">
-                </div>
-                <div class="mt-3">
-                    <button class="btn btn-update" onclick="saveOffer(${index}, '${offer.retailer}')">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                    <button class="btn btn-cancel ms-2" onclick="cancelEdit(${index})">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-calendar-alt"></i> Sale Ends (optional)</label>
+                        <input type="text" class="form-control-modern" id="saleEnds-${index}" value="${offer.saleEnds || ''}" placeholder="e.g., 15 December 2024">
+                    </div>
+                    <div class="form-group-modern">
+                        <label><i class="fas fa-link"></i> Product URL</label>
+                        <input type="url" class="form-control-modern" id="url-${index}" value="${offer.url}">
+                    </div>
+                    <div class="form-actions-modern">
+                        <button class="btn-update-modern" onclick="saveOffer(${index}, '${offer.retailer}')">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <button class="btn-cancel-modern" onclick="cancelEdit(${index})">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -806,92 +810,6 @@ function updateSuggestionHighlight(items) {
 document.getElementById('productSearch').addEventListener('keypress', function(e) {
     if (e.key === 'Enter' && currentSuggestions.length === 0) {
         searchProduct();
-    }
-});
-
-// Setup sidebar toggle
-function setupSidebar() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-}
-
-// Check login state and update header
-async function checkLoginState() {
-    try {
-        if (typeof window.adminAWSAuthService === 'undefined') {
-            console.warn('Admin auth service not available');
-            return;
-        }
-
-        const result = await window.adminAWSAuthService.getUserInfo();
-        
-        if (result.success && result.user) {
-            const user = result.user;
-            let displayName = '';
-            let initials = '';
-
-            if (user.givenName && user.familyName) {
-                displayName = `${user.givenName} ${user.familyName}`;
-                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-            } else if (user.givenName) {
-                displayName = user.givenName;
-                initials = user.givenName.substring(0, 2).toUpperCase();
-            } else if (user.email) {
-                const name = user.email.split('@')[0];
-                displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                initials = name.substring(0, 2).toUpperCase();
-            } else {
-                displayName = 'Admin User';
-                initials = 'AU';
-            }
-
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            
-            if (userAvatar) userAvatar.textContent = initials;
-            if (userName) userName.textContent = displayName;
-        } else {
-            window.location.href = 'admin-login.html';
-        }
-    } catch (error) {
-        console.error('Error checking login state:', error);
-        window.location.href = 'admin-login.html';
-    }
-}
-
-// Handle logout
-async function handleLogout() {
-    try {
-        await window.adminAWSAuthService.logout();
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        window.location.href = 'admin-login.html';
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    setupSidebar();
-    checkLoginState();
-    
-    // Attach logout handler
-    const userProfile = document.getElementById('userProfile');
-    if (userProfile) {
-        userProfile.addEventListener('click', handleLogout);
     }
 });
 

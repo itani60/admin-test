@@ -491,6 +491,99 @@ async function loadPriceHistory(productId) {
 }
 
 /**
+ * Transform price history data for charting
+ * Converts Lambda response into chart-ready format
+ * 
+ * @param {Object} historyData - Response from price history Lambda
+ * @param {string} retailer - Optional: filter by specific retailer
+ * @returns {Array} Chart-ready data points
+ */
+function transformPriceHistoryForChart(historyData, retailer = null) {
+    const history = historyData.history || historyData.items || [];
+    const historyByRetailer = historyData.historyByRetailer || {};
+    
+    // Get data for specific retailer or all retailers
+    let dataToProcess = [];
+    if (retailer && historyByRetailer[retailer]) {
+        dataToProcess = historyByRetailer[retailer];
+    } else if (retailer) {
+        // Filter from flat array if not grouped
+        dataToProcess = history.filter(item => item.retailer === retailer);
+    } else {
+        // Use all history
+        dataToProcess = history;
+    }
+    
+    // Sort by timestamp (oldest first for chronological chart)
+    dataToProcess.sort((a, b) => {
+        const timeA = a.timestamp || new Date(a.createdAt || a.date).getTime();
+        const timeB = b.timestamp || new Date(b.createdAt || b.date).getTime();
+        return timeA - timeB;
+    });
+    
+    // Transform to chart format
+    const chartData = [];
+    let currentPrice = null;
+    
+    dataToProcess.forEach((item, index) => {
+        const timestamp = item.timestamp || new Date(item.createdAt || item.date).getTime();
+        const date = new Date(item.createdAt || item.date || timestamp);
+        
+        // For first point, use oldPrice as starting point
+        if (index === 0 && item.oldPrice) {
+            chartData.push({
+                x: date,
+                y: item.oldPrice,
+                timestamp: timestamp,
+                date: date.toISOString(),
+                formattedDate: formatDate(item.createdAt || item.date),
+                retailer: item.retailer,
+                priceChange: 0,
+                priceChangePercent: 0,
+                type: 'initial'
+            });
+        }
+        
+        // Add the new price point
+        chartData.push({
+            x: date,
+            y: item.newPrice,
+            timestamp: timestamp,
+            date: date.toISOString(),
+            formattedDate: formatDate(item.createdAt || item.date),
+            retailer: item.retailer,
+            priceChange: item.priceChange || (item.newPrice - item.oldPrice),
+            priceChangePercent: item.priceChangePercent || 
+                (item.oldPrice > 0 ? ((item.newPrice - item.oldPrice) / item.oldPrice * 100).toFixed(2) : 0),
+            oldPrice: item.oldPrice,
+            newPrice: item.newPrice,
+            type: 'update'
+        });
+        
+        currentPrice = item.newPrice;
+    });
+    
+    return chartData;
+}
+
+/**
+ * Get price history data grouped by retailer for multi-line charts
+ * 
+ * @param {Object} historyData - Response from price history Lambda
+ * @returns {Object} Chart datasets grouped by retailer
+ */
+function getPriceHistoryByRetailer(historyData) {
+    const historyByRetailer = historyData.historyByRetailer || {};
+    const datasets = {};
+    
+    Object.keys(historyByRetailer).forEach(retailer => {
+        datasets[retailer] = transformPriceHistoryForChart(historyData, retailer);
+    });
+    
+    return datasets;
+}
+
+/**
  * Fetch search suggestions based on model or product_id
  */
 async function fetchSearchSuggestions(query) {

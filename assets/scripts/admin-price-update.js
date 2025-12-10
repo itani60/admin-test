@@ -1,6 +1,6 @@
 // Configuration - API endpoints matching admin-product-management.html
 const API_CONFIG = {
-    BASE_URL: 'https://acc.comparehubprices.site/data',
+    BASE_URL: 'https://hub.comparehubprices.co.za/data',
     PRODUCTS_ENDPOINT: '/products',
     PRICE_UPDATE_ENDPOINT: '/products/prices',
     PRICE_HISTORY_ENDPOINT: '/products/price-history',

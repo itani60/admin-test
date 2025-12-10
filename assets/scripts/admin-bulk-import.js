@@ -1,6 +1,6 @@
 // Configuration - API Base URL
 const API_CONFIG = {
-    BASE_URL: 'https://acc.comparehubprices.site/data', // Custom API domain
+    BASE_URL: 'https://hub.comparehubprices.co.za/data', // Custom API domain
     BATCH_CREATE_ENDPOINT: '/products/batch', // POST - Batch create products
     CREATE_PRODUCT_ENDPOINT: '/products/single', // POST - Single product creation
 };

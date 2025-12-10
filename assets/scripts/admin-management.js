@@ -1,5 +1,5 @@
 // Configuration
-let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za';
 // Remove /data suffix if present
 if (API_BASE_URL.endsWith('/data')) {
     API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');

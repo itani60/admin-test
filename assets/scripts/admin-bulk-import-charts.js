@@ -1,7 +1,7 @@
 // Load saved API URL from localStorage
 function loadApiUrl() {
     const savedUrl = localStorage.getItem('comparehubprices_api_url');
-    const defaultUrl = 'https://acc.comparehubprices.site/data';
+    const defaultUrl = 'https://hub.comparehubprices.co.za/data';
     
     if (savedUrl) {
         if (typeof API_CONFIG !== 'undefined') {

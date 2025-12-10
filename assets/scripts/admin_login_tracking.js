@@ -1,5 +1,5 @@
 // Configuration
-const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://acc.comparehubprices.site';
+const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za';
 const ADMIN_LOGIN_TRACKING_API = `${API_BASE_URL}/admin/admin/login-tracking`;
 
 // State

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://acc.comparehubprices.site/admin/admin/business-analytics';
+const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin/admin/business-analytics';
 
 let charts = {};
 let analyticsData = null;

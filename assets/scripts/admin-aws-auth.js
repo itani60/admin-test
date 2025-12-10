@@ -1,5 +1,5 @@
 (function initAdminAWSAuthService() {
-  const BASE_URL = 'https://acc.comparehubprices.site/admin/admin';
+  const BASE_URL = 'https://hub.comparehubprices.co.za/admin/admin';
   const ENDPOINTS = {
     REGISTER: `${BASE_URL}/account/register`,
     VERIFY_EMAIL: `${BASE_URL}/account/verify-email`,

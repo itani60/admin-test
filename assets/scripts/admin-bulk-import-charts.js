@@ -676,7 +676,11 @@ async function saveBulkImportSession() {
         if (response.ok) {
             console.log('Bulk import session saved successfully');
         } else {
-            console.warn('Failed to save bulk import session:', response.status);
+            if (response.status === 400 || response.status === 404) {
+                console.log('Session endpoint not available');
+            } else {
+                console.warn('Failed to save bulk import session:', response.status);
+            }
         }
     } catch (error) {
         console.warn('Error saving bulk import session (non-critical):', error.message);
@@ -697,7 +701,11 @@ async function loadBulkImportSession() {
         });
 
         if (!response.ok) {
-            console.log('No saved session found or error loading session');
+            if (response.status === 400 || response.status === 404) {
+                console.log('Session endpoint not available or no saved session');
+            } else {
+                console.log('No saved session found or error loading session');
+            }
             return;
         }
 
@@ -711,6 +719,28 @@ async function loadBulkImportSession() {
             const categorySelect = document.getElementById('categorySelect');
             if (categorySelect && selectedCategory) {
                 categorySelect.value = selectedCategory;
+                const categoryDropdownText = document.getElementById('categoryDropdownText');
+                if (categoryDropdownText) {
+                    const categoryOptions = [
+                        { value: '', text: '-- Select Category --' },
+                        { value: 'smartphones', text: 'Smartphones' },
+                        { value: 'windows-laptops', text: 'Windows Laptops' },
+                        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
+                        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
+                        { value: 'tablets', text: 'Tablets' },
+                        { value: 'wearables', text: 'Wearables' },
+                        { value: 'televisions', text: 'Televisions' },
+                        { value: 'audio', text: 'Audio' },
+                        { value: 'gaming-consoles', text: 'Gaming Consoles' },
+                        { value: 'gaming-laptops', text: 'Gaming Laptops' },
+                        { value: 'gaming-monitors', text: 'Gaming Monitors' },
+                        { value: 'appliances', text: 'Appliances' }
+                    ];
+                    const selectedOption = categoryOptions.find(opt => opt.value === selectedCategory);
+                    if (selectedOption) {
+                        categoryDropdownText.textContent = selectedOption.text;
+                    }
+                }
             }
 
             if (currentFileName) {

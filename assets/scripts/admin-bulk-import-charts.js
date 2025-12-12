@@ -3,7 +3,6 @@ const API_CONFIG = {
     BASE_URL: 'https://acc.comparehubprices.site/data',
     BATCH_CREATE_ENDPOINT: '/products/batch',
     CREATE_PRODUCT_ENDPOINT: '/products/single',
-    BULK_IMPORT_SESSION_ENDPOINT: '/products/bulk-import-session',
 };
 
 // Declare TRACK_STATS_API in global scope
@@ -163,7 +162,6 @@ function initializeCategoryDropdown() {
             
             if (productsData.length > 0) {
                 validateCategoryInProducts();
-                saveBulkImportSession();
             }
         });
         categoryDropdownItems.appendChild(itemDiv);
@@ -275,7 +273,6 @@ function handleFileSelect(event) {
             currentFileName = file.name;
             
             validateCategoryInProducts();
-            saveBulkImportSession();
             showPreview();
             updateCharts();
             showAlert(`Loaded ${productsData.length} products successfully!`, 'success');
@@ -490,8 +487,6 @@ async function importProducts() {
             console.warn('Error recording import stats:', error);
         }
 
-        await clearBulkImportSession();
-
         setTimeout(() => {
             showResults(data);
         }, 1000);
@@ -635,8 +630,6 @@ async function resetImport() {
     selectedCategory = '';
     currentFileName = '';
     
-    await clearBulkImportSession();
-    
     document.getElementById('fileInput').value = '';
     document.getElementById('fileName').style.display = 'none';
     document.getElementById('previewSection').classList.remove('active');
@@ -653,109 +646,6 @@ async function resetImport() {
     updateCharts();
 }
 
-/**
- * Save bulk import session to server
- */
-async function saveBulkImportSession() {
-    if (productsData.length === 0) return;
-
-    try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'omit',
-            body: JSON.stringify({
-                productsData: productsData,
-                selectedCategory: selectedCategory,
-                fileName: currentFileName
-            })
-        });
-    } catch (error) {
-    }
-}
-
-/**
- * Load bulk import session from server
- */
-async function loadBulkImportSession() {
-    try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'omit'
-        });
-
-        if (!response.ok) {
-            return;
-        }
-
-        const result = await response.json();
-        
-        if (result.success && result.data && result.data.productsData && result.data.productsData.length > 0) {
-            productsData = result.data.productsData;
-            selectedCategory = result.data.selectedCategory || '';
-            currentFileName = result.data.fileName || '';
-
-            const categorySelect = document.getElementById('categorySelect');
-            if (categorySelect && selectedCategory) {
-                categorySelect.value = selectedCategory;
-                const categoryDropdownText = document.getElementById('categoryDropdownText');
-                if (categoryDropdownText) {
-                    const categoryOptions = [
-                        { value: '', text: '-- Select Category --' },
-                        { value: 'smartphones', text: 'Smartphones' },
-                        { value: 'windows-laptops', text: 'Windows Laptops' },
-                        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
-                        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
-                        { value: 'tablets', text: 'Tablets' },
-                        { value: 'wearables', text: 'Wearables' },
-                        { value: 'televisions', text: 'Televisions' },
-                        { value: 'audio', text: 'Audio' },
-                        { value: 'gaming-consoles', text: 'Gaming Consoles' },
-                        { value: 'gaming-laptops', text: 'Gaming Laptops' },
-                        { value: 'gaming-monitors', text: 'Gaming Monitors' },
-                        { value: 'appliances', text: 'Appliances' }
-                    ];
-                    const selectedOption = categoryOptions.find(opt => opt.value === selectedCategory);
-                    if (selectedOption) {
-                        categoryDropdownText.textContent = selectedOption.text;
-                    }
-                }
-            }
-
-            if (currentFileName) {
-                document.getElementById('fileNameText').textContent = currentFileName;
-                document.getElementById('fileName').style.display = 'block';
-            }
-
-            showPreview();
-            updateCharts();
-            console.log(`Restored ${productsData.length} products from saved session`);
-        }
-    } catch (error) {
-    }
-}
-
-/**
- * Clear bulk import session from server
- */
-async function clearBulkImportSession() {
-    try {
-        await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'omit'
-        });
-    } catch (error) {
-        console.warn('Error clearing bulk import session (non-critical):', error.message);
-    }
-}
 
 /**
  * Check Login State
@@ -1224,6 +1114,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     initFileUpload();
     initializeCharts();
     await loadStats();
-    await loadBulkImportSession();
 });
 

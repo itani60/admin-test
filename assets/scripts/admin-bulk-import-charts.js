@@ -588,7 +588,7 @@ async function saveBulkImportSession() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
+            credentials: 'omit',
             body: JSON.stringify({
                 productsData: productsData,
                 selectedCategory: selectedCategory,
@@ -602,7 +602,7 @@ async function saveBulkImportSession() {
             console.warn('Failed to save bulk import session:', response.status);
         }
     } catch (error) {
-        console.error('Error saving bulk import session:', error);
+        console.warn('Error saving bulk import session (non-critical):', error.message);
     }
 }
 
@@ -616,7 +616,7 @@ async function loadBulkImportSession() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include'
+            credentials: 'omit'
         });
 
         if (!response.ok) {
@@ -646,7 +646,7 @@ async function loadBulkImportSession() {
             console.log(`Restored ${productsData.length} products from saved session`);
         }
     } catch (error) {
-        console.error('Error loading bulk import session:', error);
+        console.warn('Error loading bulk import session (non-critical):', error.message);
     }
 }
 
@@ -660,10 +660,10 @@ async function clearBulkImportSession() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include'
+            credentials: 'omit'
         });
     } catch (error) {
-        console.error('Error clearing bulk import session:', error);
+        console.warn('Error clearing bulk import session (non-critical):', error.message);
     }
 }
 

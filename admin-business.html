@@ -1697,6 +1697,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             loadPosts();
+            loadStats();
             checkLoginState();
             initializeCharts();
         });
@@ -2239,11 +2240,44 @@
             return div.innerHTML;
         }
 
+        // Load statistics from tracking API
+        async function loadStats() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+                
+                const response = await fetch(`${TRACK_STATS_API}?startDate=${startDate}&endDate=${today}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.stats) {
+                        window.statsData = {
+                            approved: data.stats.approved || 0,
+                            declined: data.stats.declined || 0
+                        };
+                        updateStats();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                window.statsData = { approved: 0, declined: 0 };
+                updateStats();
+            }
+        }
+
         // Update stats
         function updateStats() {
             const pending = allPosts.filter(p => p.status === 'pending').length;
-            const approved = allPosts.filter(p => p.status === 'approved').length;
-            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            const approved = window.statsData?.approved || 0;
+            const rejected = window.statsData?.declined || 0;
             const totalBusinesses = new Set(allPosts.map(p => p.businessEmail)).size;
 
             document.getElementById('pendingCount').textContent = pending;
@@ -2340,6 +2374,8 @@
                                 businessEmail: post.businessEmail
                             }
                         })
+                    }).then(() => {
+                        loadStats(); // Reload stats after tracking
                     }).catch(err => console.error('Stats tracking failed:', err));
                     
                     await loadPosts(); // Reload posts to get updated status
@@ -2464,6 +2500,8 @@
                                 reason: reason
                             }
                         })
+                    }).then(() => {
+                        loadStats(); // Reload stats after tracking
                     }).catch(err => console.error('Stats tracking failed:', err));
                     
                     await loadPosts(); // Reload posts to get updated status

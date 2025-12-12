@@ -6,7 +6,9 @@ const API_CONFIG = {
     BULK_IMPORT_SESSION_ENDPOINT: '/products/bulk-import-session', // GET/POST - Save/load session
 };
 
-const TRACK_STATS_API = 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
+// TRACK_STATS_API will be available from admin-bulk-import-charts.js
+// Use window.TRACK_STATS_API if available, otherwise use default
+const TRACK_STATS_API = (typeof window !== 'undefined' && window.TRACK_STATS_API) || 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
 
 let productsData = [];
 let fileContent = null;

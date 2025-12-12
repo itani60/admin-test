@@ -76,7 +76,9 @@ let brandChart = null;
 let importHistory = JSON.parse(localStorage.getItem('importHistory') || '[]');
 let statsData = { successful: 0, failed: 0, skipped: 0, total: 0, byDate: {}, byCategory: {}, byBrand: {} };
 
-const TRACK_STATS_API = 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
+// Declare TRACK_STATS_API in global scope so it can be accessed by other scripts
+window.TRACK_STATS_API = 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
+const TRACK_STATS_API = window.TRACK_STATS_API;
 
 async function loadStats() {
     try {

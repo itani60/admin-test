@@ -672,18 +672,7 @@ async function saveBulkImportSession() {
                 fileName: currentFileName
             })
         });
-
-        if (response.ok) {
-            console.log('Bulk import session saved successfully');
-        } else {
-            if (response.status === 400 || response.status === 404) {
-                console.log('Session endpoint not available');
-            } else {
-                console.warn('Failed to save bulk import session:', response.status);
-            }
-        }
     } catch (error) {
-        console.warn('Error saving bulk import session (non-critical):', error.message);
     }
 }
 
@@ -701,11 +690,6 @@ async function loadBulkImportSession() {
         });
 
         if (!response.ok) {
-            if (response.status === 400 || response.status === 404) {
-                console.log('Session endpoint not available or no saved session');
-            } else {
-                console.log('No saved session found or error loading session');
-            }
             return;
         }
 
@@ -753,7 +737,6 @@ async function loadBulkImportSession() {
             console.log(`Restored ${productsData.length} products from saved session`);
         }
     } catch (error) {
-        console.warn('Error loading bulk import session (non-critical):', error.message);
     }
 }
 

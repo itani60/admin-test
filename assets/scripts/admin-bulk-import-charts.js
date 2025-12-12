@@ -74,6 +74,50 @@ let importStatusChart = null;
 let categoryChart = null;
 let brandChart = null;
 let importHistory = JSON.parse(localStorage.getItem('importHistory') || '[]');
+let statsData = { successful: 0, failed: 0, skipped: 0, total: 0, byDate: {}, byCategory: {}, byBrand: {} };
+
+const TRACK_STATS_API = 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
+
+async function loadStats() {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+        
+        const url = `${TRACK_STATS_API}?startDate=${startDate}&endDate=${today}`;
+        console.log('Loading import stats from:', url);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.stats) {
+                statsData = data.stats;
+                console.log('Import stats loaded successfully:', statsData);
+                updateCharts();
+            } else {
+                console.warn('Stats API returned unsuccessful response:', data);
+                statsData = { successful: 0, failed: 0, skipped: 0, total: 0, byDate: {}, byCategory: {}, byBrand: {} };
+                updateCharts();
+            }
+        } else {
+            console.warn(`Stats API returned status ${response.status}`);
+            statsData = { successful: 0, failed: 0, skipped: 0, total: 0, byDate: {}, byCategory: {}, byBrand: {} };
+            updateCharts();
+        }
+    } catch (error) {
+        console.warn('Error loading import stats:', error);
+        statsData = { successful: 0, failed: 0, skipped: 0, total: 0, byDate: {}, byCategory: {}, byBrand: {} };
+        updateCharts();
+    }
+}
 
 // Check Login State
 async function checkLoginState() {
@@ -330,6 +374,9 @@ function calculateImportsOverTime() {
     });
     
     const data = last7Days.map(date => {
+        if (statsData.byDate && statsData.byDate[date]) {
+            return statsData.byDate[date].total || 0;
+        }
         return importHistory.filter(importItem => {
             if (!importItem.date) return false;
             const importDate = new Date(importItem.date).toISOString().split('T')[0];
@@ -342,9 +389,19 @@ function calculateImportsOverTime() {
 
 // Calculate import status distribution
 function calculateImportStatus() {
-    const totalSuccessful = importHistory.reduce((sum, item) => sum + (item.successful || 0), 0);
-    const totalFailed = importHistory.reduce((sum, item) => sum + (item.failed || 0), 0);
-    const totalSkipped = importHistory.reduce((sum, item) => sum + (item.skipped || 0), 0);
+    const totalSuccessful = statsData.successful || 0;
+    const totalFailed = statsData.failed || 0;
+    const totalSkipped = statsData.skipped || 0;
+    
+    if (totalSuccessful === 0 && totalFailed === 0 && totalSkipped === 0) {
+        const historySuccessful = importHistory.reduce((sum, item) => sum + (item.successful || 0), 0);
+        const historyFailed = importHistory.reduce((sum, item) => sum + (item.failed || 0), 0);
+        const historySkipped = importHistory.reduce((sum, item) => sum + (item.skipped || 0), 0);
+        return {
+            labels: ['Successful', 'Failed', 'Skipped'],
+            data: [historySuccessful, historyFailed, historySkipped]
+        };
+    }
     
     return {
         labels: ['Successful', 'Failed', 'Skipped'],
@@ -354,12 +411,21 @@ function calculateImportStatus() {
 
 // Calculate category distribution
 function calculateCategoryDistribution() {
+    if (statsData.byCategory && Object.keys(statsData.byCategory).length > 0) {
+        const sorted = Object.entries(statsData.byCategory)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
+        return {
+            labels: sorted.map(([cat]) => cat),
+            data: sorted.map(([, count]) => count)
+        };
+    }
+    
     if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
-        return { labels: [], data: [] };
+        return { labels: ['No Data'], data: [0] };
     }
     
     const categories = {};
-    
     productsData.forEach(product => {
         const category = product.category || 'Unknown';
         categories[category] = (categories[category] || 0) + 1;
@@ -370,19 +436,28 @@ function calculateCategoryDistribution() {
         .slice(0, 10);
     
     return {
-        labels: sorted.map(([cat]) => cat),
-        data: sorted.map(([, count]) => count)
+        labels: sorted.length > 0 ? sorted.map(([cat]) => cat) : ['No Data'],
+        data: sorted.length > 0 ? sorted.map(([, count]) => count) : [0]
     };
 }
 
 // Calculate brand distribution
 function calculateBrandDistribution() {
+    if (statsData.byBrand && Object.keys(statsData.byBrand).length > 0) {
+        const sorted = Object.entries(statsData.byBrand)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8);
+        return {
+            labels: sorted.map(([brand]) => brand),
+            data: sorted.map(([, count]) => count)
+        };
+    }
+    
     if (typeof productsData === 'undefined' || !productsData || productsData.length === 0) {
-        return { labels: [], data: [] };
+        return { labels: ['No Data'], data: [0] };
     }
     
     const brands = {};
-    
     productsData.forEach(product => {
         const brand = product.brand || 'Unknown';
         brands[brand] = (brands[brand] || 0) + 1;
@@ -393,8 +468,8 @@ function calculateBrandDistribution() {
         .slice(0, 8);
     
     return {
-        labels: sorted.map(([brand]) => brand),
-        data: sorted.map(([, count]) => count)
+        labels: sorted.length > 0 ? sorted.map(([brand]) => brand) : ['No Data'],
+        data: sorted.length > 0 ? sorted.map(([, count]) => count) : [0]
     };
 }
 
@@ -466,7 +541,7 @@ window.showResults = function(data) {
     
     // Save import history and update charts
     saveImportHistory(data);
-    updateCharts();
+    loadStats().then(() => updateCharts());
 };
 
 // Override or extend file processing to update charts
@@ -505,5 +580,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadApiUrl();
     await checkLoginState();
     initializeCharts();
+    await loadStats();
 });
 

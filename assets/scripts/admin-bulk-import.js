@@ -1,13 +1,17 @@
 // Configuration - API Base URL
 const API_CONFIG = {
-    BASE_URL: 'https://hub.comparehubprices.co.za/data', // Custom API domain
+    BASE_URL: 'https://acc.comparehubprices.site/data', // Custom API domain
     BATCH_CREATE_ENDPOINT: '/products/batch', // POST - Batch create products
     CREATE_PRODUCT_ENDPOINT: '/products/single', // POST - Single product creation
+    BULK_IMPORT_SESSION_ENDPOINT: '/products/bulk-import-session', // GET/POST - Save/load session
 };
+
+const TRACK_STATS_API = 'https://hub.comparehubprices.co.za/admin/admin/track-import-stats';
 
 let productsData = [];
 let fileContent = null;
 let selectedCategory = '';
+let currentFileName = '';
 
 /**
  * Show alert message
@@ -41,9 +45,18 @@ function showAlert(message, type = 'info') {
 function initFileUpload() {
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
+    const categorySelect = document.getElementById('categorySelect');
 
-    // Initialize custom category dropdown
-    initializeCategoryDropdown();
+    // Category selection handler
+    categorySelect.addEventListener('change', (e) => {
+        selectedCategory = e.target.value;
+        if (productsData.length > 0) {
+            // Re-validate products with new category
+            validateCategoryInProducts();
+            // Save session when category changes
+            saveBulkImportSession();
+        }
+    });
 
     // Click to upload
     fileInput.addEventListener('change', handleFileSelect);
@@ -111,16 +124,20 @@ function handleFileSelect(event) {
 
             // Check if category is selected
             const categorySelect = document.getElementById('categorySelect');
-            selectedCategory = categorySelect ? categorySelect.value : '';
+            selectedCategory = categorySelect.value;
             if (!selectedCategory) {
                 showAlert('Please select a product category first', 'warning');
                 return;
             }
 
             productsData = fileContent.products;
+            currentFileName = file.name;
             
             // Validate that all products have the correct category
             validateCategoryInProducts();
+            
+            // Save session data
+            saveBulkImportSession();
             
             showPreview();
             showAlert(`Loaded ${productsData.length} products successfully!`, 'success');
@@ -262,7 +279,7 @@ async function importProducts() {
 
     // Ensure category is selected
     const categorySelect = document.getElementById('categorySelect');
-    selectedCategory = categorySelect ? categorySelect.value : '';
+    selectedCategory = categorySelect.value;
     if (!selectedCategory) {
         showAlert('Please select a product category', 'warning');
         return;
@@ -340,6 +357,16 @@ async function importProducts() {
 
         updateProgress(100, 'Import complete!');
 
+        // Record import stats
+        try {
+            await recordImportStats(data);
+        } catch (error) {
+            console.warn('Error recording import stats:', error);
+        }
+
+        // Clear session after successful import
+        await clearBulkImportSession();
+
         // Show results
         setTimeout(() => {
             showResults(data);
@@ -363,6 +390,57 @@ function updateProgress(percentage, text) {
     progressBar.style.width = percentage + '%';
     progressBar.textContent = percentage + '%';
     progressText.textContent = text;
+}
+
+/**
+ * Record import statistics to Lambda
+ */
+async function recordImportStats(data) {
+    try {
+        const resultData = typeof data.body === 'string' ? JSON.parse(data.body) : data;
+        const successful = resultData.results?.created || resultData.created || 0;
+        const failed = resultData.results?.failed || resultData.failed || 0;
+        const skipped = resultData.results?.skipped || 0;
+        const total = productsData.length;
+        
+        const categories = {};
+        const brands = {};
+        
+        productsData.forEach(product => {
+            const category = product.category || 'Unknown';
+            const brand = product.brand || 'Unknown';
+            categories[category] = (categories[category] || 0) + 1;
+            brands[brand] = (brands[brand] || 0) + 1;
+        });
+        
+        const metadata = {
+            successful,
+            failed,
+            skipped,
+            total,
+            category: selectedCategory || null,
+            categories,
+            brands
+        };
+        
+        const response = await fetch(TRACK_STATS_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ metadata })
+        });
+        
+        if (!response.ok) {
+            console.warn(`Stats API returned status ${response.status}`);
+        } else {
+            const result = await response.json();
+            console.log('Import stats recorded:', result);
+        }
+    } catch (error) {
+        console.warn('Error recording import stats:', error);
+    }
 }
 
 /**
@@ -428,9 +506,14 @@ function showResults(data) {
 /**
  * Reset import form
  */
-function resetImport() {
+async function resetImport() {
     productsData = [];
     fileContent = null;
+    selectedCategory = '';
+    currentFileName = '';
+    
+    // Clear session from server
+    await clearBulkImportSession();
     
     document.getElementById('fileInput').value = '';
     document.getElementById('fileName').style.display = 'none';
@@ -439,94 +522,115 @@ function resetImport() {
     document.getElementById('resultsSection').classList.remove('active');
     document.getElementById('importBtn').disabled = false;
     document.getElementById('alertContainer').innerHTML = '';
+    
+    // Reset category select
+    const categorySelect = document.getElementById('categorySelect');
+    if (categorySelect) {
+        categorySelect.value = '';
+    }
 }
 
-// Initialize custom category dropdown
-function initializeCategoryDropdown() {
-    const categoryDropdown = document.getElementById('categoryDropdown');
-    const categoryDropdownBtn = document.getElementById('categoryDropdownBtn');
-    const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
-    const categoryDropdownItems = document.getElementById('categoryDropdownItems');
-    const categorySelect = document.getElementById('categorySelect');
-    
-    if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
-    
-    const categoryOptions = [
-        { value: '', text: '-- Select Category --' },
-        { value: 'smartphones', text: 'Smartphones' },
-        { value: 'windows-laptops', text: 'Windows Laptops' },
-        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
-        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
-        { value: 'tablets', text: 'Tablets' },
-        { value: 'wearables', text: 'Wearables' },
-        { value: 'televisions', text: 'Televisions' },
-        { value: 'audio', text: 'Audio' },
-        { value: 'gaming-consoles', text: 'Gaming Consoles' },
-        { value: 'gaming-laptops', text: 'Gaming Laptops' },
-        { value: 'gaming-monitors', text: 'Gaming Monitors' },
-        { value: 'appliances', text: 'Appliances' }
-    ];
-    
-    categoryOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === '') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function() {
-            categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-            
-            document.getElementById('categoryDropdownText').textContent = option.text;
-            categorySelect.value = option.value;
-            selectedCategory = option.value;
-            
-            categoryDropdown.classList.remove('active');
-            categoryDropdownMenu.style.display = 'none';
-            
-            // Re-validate products with new category if products are loaded
-            if (productsData.length > 0) {
-                validateCategoryInProducts();
-            }
+/**
+ * Save bulk import session to server
+ */
+async function saveBulkImportSession() {
+    if (productsData.length === 0) return;
+
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                productsData: productsData,
+                selectedCategory: selectedCategory,
+                fileName: currentFileName
+            })
         });
-        categoryDropdownItems.appendChild(itemDiv);
-    });
-    
-    categoryDropdownBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const isActive = categoryDropdown.classList.contains('active');
-        
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'categoryDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-        
-        if (isActive) {
-            categoryDropdown.classList.remove('active');
-            categoryDropdownMenu.style.display = 'none';
+
+        if (response.ok) {
+            console.log('Bulk import session saved successfully');
         } else {
-            categoryDropdown.classList.add('active');
-            categoryDropdownMenu.style.display = 'block';
+            console.warn('Failed to save bulk import session:', response.status);
         }
-    });
-    
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            categoryDropdown.classList.remove('active');
-            categoryDropdownMenu.style.display = 'none';
+    } catch (error) {
+        console.error('Error saving bulk import session:', error);
+        // Don't show error to user - this is a background operation
+    }
+}
+
+/**
+ * Load bulk import session from server
+ */
+async function loadBulkImportSession() {
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            console.log('No saved session found or error loading session');
+            return;
         }
-    });
+
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.productsData && result.data.productsData.length > 0) {
+            // Restore session data
+            productsData = result.data.productsData;
+            selectedCategory = result.data.selectedCategory || '';
+            currentFileName = result.data.fileName || '';
+
+            // Restore UI state
+            const categorySelect = document.getElementById('categorySelect');
+            if (categorySelect && selectedCategory) {
+                categorySelect.value = selectedCategory;
+            }
+
+            // Show file name if available
+            if (currentFileName) {
+                document.getElementById('fileNameText').textContent = currentFileName;
+                document.getElementById('fileName').style.display = 'block';
+            }
+
+            // Show preview
+            showPreview();
+            
+            console.log(`Restored ${productsData.length} products from saved session`);
+        }
+    } catch (error) {
+        console.error('Error loading bulk import session:', error);
+        // Don't show error to user - just continue without restored data
+    }
+}
+
+/**
+ * Clear bulk import session from server
+ */
+async function clearBulkImportSession() {
+    try {
+        await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.BULK_IMPORT_SESSION_ENDPOINT}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
+    } catch (error) {
+        console.error('Error clearing bulk import session:', error);
+    }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initFileUpload();
+    // Load saved session data
+    loadBulkImportSession();
 });
 

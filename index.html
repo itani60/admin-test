@@ -1478,6 +1478,8 @@
                 }
                 const ACTIVITIES_API = `${API_BASE_URL}/admin/admin/recent-activities?limit=10`;
 
+                console.log('Loading recent activities from:', ACTIVITIES_API);
+
                 const response = await fetch(`${ACTIVITIES_API}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -1486,19 +1488,47 @@
                     }
                 });
 
+                console.log('Recent activities response status:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Recent activities response data:', data);
+                    
                     if (data.success && Array.isArray(data.activities)) {
+                        console.log(`Found ${data.activities.length} activities`);
                         renderActivities(data.activities);
                     } else {
+                        console.warn('Activities response format unexpected:', data);
                         showEmptyActivities();
                     }
                 } else {
-                    showEmptyActivities();
+                    const errorText = await response.text();
+                    console.error('Failed to load recent activities:', response.status, errorText);
+                    
+                    // Show error message to user
+                    const container = document.getElementById('activitiesContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+                                <div>Failed to load activities (${response.status})</div>
+                                <div style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text);">Check console for details</div>
+                            </div>
+                        `;
+                    }
                 }
             } catch (error) {
                 console.error('Error loading recent activities:', error);
-                showEmptyActivities();
+                const container = document.getElementById('activitiesContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+                            <div>Error loading activities</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text);">${error.message}</div>
+                        </div>
+                    `;
+                }
             }
         }
 

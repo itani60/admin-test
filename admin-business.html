@@ -1697,9 +1697,9 @@
         document.addEventListener('DOMContentLoaded', async () => {
             setupEventListeners();
             checkLoginState();
-            initializeCharts();
             await loadPosts();
             await loadStats();
+            initializeCharts();
         });
 
         // Initialize custom status dropdown
@@ -2953,6 +2953,24 @@
 
         // Initialize Analytics Charts
         function initializeCharts() {
+            // Destroy existing charts if they exist
+            if (postsOverTimeChart) {
+                postsOverTimeChart.destroy();
+                postsOverTimeChart = null;
+            }
+            if (postStatusChart) {
+                postStatusChart.destroy();
+                postStatusChart = null;
+            }
+            if (postTypeChart) {
+                postTypeChart.destroy();
+                postTypeChart = null;
+            }
+            if (permissionStatusChart) {
+                permissionStatusChart.destroy();
+                permissionStatusChart = null;
+            }
+            
             // Chart 1: Posts Over Time (Line Chart)
             const postsOverTimeCtx = document.getElementById('postsOverTimeChart');
             if (postsOverTimeCtx) {
@@ -2998,9 +3016,9 @@
                 postStatusChart = new Chart(postStatusCtx, {
                     type: 'pie',
                     data: {
-                        labels: statusData.labels,
+                        labels: statusData.labels || ['Pending', 'Approved', 'Rejected'],
                         datasets: [{
-                            data: statusData.data,
+                            data: statusData.data || [0, 0, 0],
                             backgroundColor: [
                                 'rgba(255, 193, 7, 0.8)',
                                 'rgba(40, 167, 69, 0.8)',
@@ -3079,9 +3097,9 @@
                 permissionStatusChart = new Chart(permissionStatusCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: permissionData.labels,
+                        labels: permissionData.labels || ['Pending', 'Approved', 'Rejected'],
                         datasets: [{
-                            data: permissionData.data,
+                            data: permissionData.data || [0, 0, 0],
                             backgroundColor: [
                                 'rgba(40, 167, 69, 0.8)',
                                 'rgba(255, 193, 7, 0.8)',
@@ -3171,13 +3189,15 @@
         function calculatePostType() {
             const types = {};
             
-            allPosts.forEach(post => {
-                const type = post.type || 'Unknown';
-                types[type] = (types[type] || 0) + 1;
-            });
+            if (allPosts && allPosts.length > 0) {
+                allPosts.forEach(post => {
+                    const type = post.type || 'Unknown';
+                    types[type] = (types[type] || 0) + 1;
+                });
+            }
             
-            const labels = Object.keys(types);
-            const data = Object.values(types);
+            const labels = Object.keys(types).length > 0 ? Object.keys(types) : ['No Data'];
+            const data = Object.keys(types).length > 0 ? Object.values(types) : [0];
             
             return { labels, data };
         }
@@ -3196,41 +3216,33 @@
 
         // Update charts with real data
         function updateCharts() {
-            if (!allPosts || allPosts.length === 0) {
+            if (!postsOverTimeChart || !postStatusChart || !postTypeChart || !permissionStatusChart) {
                 return;
             }
 
             // Update Chart 1: Posts Over Time
-            if (postsOverTimeChart) {
-                const timeData = calculatePostsOverTime();
-                postsOverTimeChart.data.labels = timeData.labels;
-                postsOverTimeChart.data.datasets[0].data = timeData.data;
-                postsOverTimeChart.update();
-            }
+            const timeData = calculatePostsOverTime();
+            postsOverTimeChart.data.labels = timeData.labels;
+            postsOverTimeChart.data.datasets[0].data = timeData.data;
+            postsOverTimeChart.update();
 
             // Update Chart 2: Post Status
-            if (postStatusChart) {
-                const statusData = calculatePostStatus();
-                postStatusChart.data.labels = statusData.labels;
-                postStatusChart.data.datasets[0].data = statusData.data;
-                postStatusChart.update();
-            }
+            const statusData = calculatePostStatus();
+            postStatusChart.data.labels = statusData.labels;
+            postStatusChart.data.datasets[0].data = statusData.data;
+            postStatusChart.update();
 
             // Update Chart 3: Post Type
-            if (postTypeChart) {
-                const typeData = calculatePostType();
-                postTypeChart.data.labels = typeData.labels;
-                postTypeChart.data.datasets[0].data = typeData.data;
-                postTypeChart.update();
-            }
+            const typeData = calculatePostType();
+            postTypeChart.data.labels = typeData.labels;
+            postTypeChart.data.datasets[0].data = typeData.data;
+            postTypeChart.update();
 
             // Update Chart 4: Permission Status
-            if (permissionStatusChart) {
-                const permissionData = calculatePermissionStatus();
-                permissionStatusChart.data.labels = permissionData.labels;
-                permissionStatusChart.data.datasets[0].data = permissionData.data;
-                permissionStatusChart.update();
-            }
+            const permissionData = calculatePermissionStatus();
+            permissionStatusChart.data.labels = permissionData.labels;
+            permissionStatusChart.data.datasets[0].data = permissionData.data;
+            permissionStatusChart.update();
         }
 
         // Check login state

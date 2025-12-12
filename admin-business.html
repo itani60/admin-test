@@ -2248,7 +2248,10 @@
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                 const startDate = thirtyDaysAgo.toISOString().split('T')[0];
                 
-                const response = await fetch(`${TRACK_STATS_API}?startDate=${startDate}&endDate=${today}`, {
+                const url = `${TRACK_STATS_API}?startDate=${startDate}&endDate=${today}`;
+                console.log('Loading stats from:', url);
+                
+                const response = await fetch(url, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -2263,11 +2266,20 @@
                             approved: data.stats.approved || 0,
                             declined: data.stats.declined || 0
                         };
+                        console.log('Stats loaded successfully:', window.statsData);
+                        updateStats();
+                    } else {
+                        console.warn('Stats API returned unsuccessful response:', data);
+                        window.statsData = { approved: 0, declined: 0 };
                         updateStats();
                     }
+                } else {
+                    console.warn(`Stats API returned status ${response.status}`);
+                    window.statsData = { approved: 0, declined: 0 };
+                    updateStats();
                 }
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.warn('Stats API not available (Lambda may not be deployed yet):', error.message);
                 window.statsData = { approved: 0, declined: 0 };
                 updateStats();
             }

@@ -113,20 +113,97 @@ function saveApiUrl() {
 }
 
 /**
- * Initialize file upload handlers and category selection
+ * Initialize custom category dropdown
+ */
+function initializeCategoryDropdown() {
+    const categoryDropdown = document.getElementById('categoryDropdown');
+    const categoryDropdownBtn = document.getElementById('categoryDropdownBtn');
+    const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
+    const categoryDropdownItems = document.getElementById('categoryDropdownItems');
+    const categorySelect = document.getElementById('categorySelect');
+    
+    if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
+    
+    const categoryOptions = [
+        { value: '', text: '-- Select Category --' },
+        { value: 'smartphones', text: 'Smartphones' },
+        { value: 'windows-laptops', text: 'Windows Laptops' },
+        { value: 'macbooks-laptops', text: 'MacBooks Laptops' },
+        { value: 'chromebooks-laptops', text: 'Chromebooks Laptops' },
+        { value: 'tablets', text: 'Tablets' },
+        { value: 'wearables', text: 'Wearables' },
+        { value: 'televisions', text: 'Televisions' },
+        { value: 'audio', text: 'Audio' },
+        { value: 'gaming-consoles', text: 'Gaming Consoles' },
+        { value: 'gaming-laptops', text: 'Gaming Laptops' },
+        { value: 'gaming-monitors', text: 'Gaming Monitors' },
+        { value: 'appliances', text: 'Appliances' }
+    ];
+    
+    categoryOptions.forEach(option => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'custom-dropdown-item';
+        itemDiv.dataset.value = option.value;
+        itemDiv.textContent = option.text;
+        if (option.value === '') {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.addEventListener('click', function() {
+            categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            document.getElementById('categoryDropdownText').textContent = option.text;
+            categorySelect.value = option.value;
+            selectedCategory = option.value;
+            
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+            
+            if (productsData.length > 0) {
+                validateCategoryInProducts();
+                saveBulkImportSession();
+            }
+        });
+        categoryDropdownItems.appendChild(itemDiv);
+    });
+    
+    categoryDropdownBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isActive = categoryDropdown.classList.contains('active');
+        
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd.id !== 'categoryDropdown') {
+                dd.classList.remove('active');
+                const menu = dd.querySelector('.custom-dropdown-menu');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+        
+        if (isActive) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        } else {
+            categoryDropdown.classList.add('active');
+            categoryDropdownMenu.style.display = 'block';
+        }
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!categoryDropdown.contains(e.target)) {
+            categoryDropdown.classList.remove('active');
+            categoryDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Initialize file upload handlers
  */
 function initFileUpload() {
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
-    const categorySelect = document.getElementById('categorySelect');
-
-    categorySelect.addEventListener('change', (e) => {
-        selectedCategory = e.target.value;
-        if (productsData.length > 0) {
-            validateCategoryInProducts();
-            saveBulkImportSession();
-        }
-    });
 
     fileInput.addEventListener('change', handleFileSelect);
 
@@ -1130,6 +1207,7 @@ function updateCharts() {
 document.addEventListener('DOMContentLoaded', async () => {
     loadApiUrl();
     await checkLoginState();
+    initializeCategoryDropdown();
     initFileUpload();
     initializeCharts();
     await loadStats();

@@ -1694,12 +1694,12 @@
         // Sample data removed - now loading from API
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             setupEventListeners();
-            loadPosts();
-            loadStats();
             checkLoginState();
             initializeCharts();
+            await loadPosts();
+            await loadStats();
         });
 
         // Initialize custom status dropdown
@@ -2264,24 +2264,29 @@
                     if (data.success && data.stats) {
                         window.statsData = {
                             approved: data.stats.approved || 0,
-                            declined: data.stats.declined || 0
+                            declined: data.stats.declined || 0,
+                            byDate: data.stats.byDate || {}
                         };
                         console.log('Stats loaded successfully:', window.statsData);
                         updateStats();
+                        updateCharts();
                     } else {
                         console.warn('Stats API returned unsuccessful response:', data);
-                        window.statsData = { approved: 0, declined: 0 };
+                        window.statsData = { approved: 0, declined: 0, byDate: {} };
                         updateStats();
+                        updateCharts();
                     }
                 } else {
                     console.warn(`Stats API returned status ${response.status}`);
-                    window.statsData = { approved: 0, declined: 0 };
+                    window.statsData = { approved: 0, declined: 0, byDate: {} };
                     updateStats();
+                    updateCharts();
                 }
             } catch (error) {
                 console.warn('Stats API not available (Lambda may not be deployed yet):', error.message);
-                window.statsData = { approved: 0, declined: 0 };
+                window.statsData = { approved: 0, declined: 0, byDate: {} };
                 updateStats();
+                updateCharts();
             }
         }
 
@@ -3122,13 +3127,18 @@
             });
             
             const data = last7Days.map(date => {
+                // Use stats data if available (approved + declined for that date)
+                if (window.statsData?.byDate && window.statsData.byDate[date]) {
+                    const dayStats = window.statsData.byDate[date];
+                    return (dayStats.approved || 0) + (dayStats.declined || 0);
+                }
+                
+                // Fallback to counting from allPosts if stats not available
                 return allPosts.filter(post => {
-                    // Use submittedAt (raw date) instead of submitted (formatted string)
                     if (!post.submittedAt) return false;
                     
                     try {
                         const postDate = new Date(post.submittedAt);
-                        // Check if date is valid
                         if (isNaN(postDate.getTime())) {
                             console.warn('Invalid date for post:', post.postId, post.submittedAt);
                             return false;
@@ -3136,7 +3146,6 @@
                         const postDateStr = postDate.toISOString().split('T')[0];
                         return postDateStr === date;
                     } catch (error) {
-                        // Invalid date, skip this post
                         console.warn('Error parsing date for post:', post.postId, error);
                         return false;
                     }
@@ -3149,8 +3158,8 @@
         // Calculate post status distribution
         function calculatePostStatus() {
             const pending = allPosts.filter(p => p.status === 'pending').length;
-            const approved = allPosts.filter(p => p.status === 'approved').length;
-            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            const approved = window.statsData?.approved || 0;
+            const rejected = window.statsData?.declined || 0;
             
             return {
                 labels: ['Pending', 'Approved', 'Rejected'],
@@ -3176,8 +3185,8 @@
         // Calculate permission status distribution (using approval status as proxy)
         function calculatePermissionStatus() {
             const pending = allPosts.filter(p => p.status === 'pending').length;
-            const approved = allPosts.filter(p => p.status === 'approved').length;
-            const rejected = allPosts.filter(p => p.status === 'rejected').length;
+            const approved = window.statsData?.approved || 0;
+            const rejected = window.statsData?.declined || 0;
             
             return {
                 labels: ['Pending', 'Approved', 'Rejected'],

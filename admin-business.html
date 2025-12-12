@@ -1678,6 +1678,7 @@
         const GET_PENDING_POSTS_API = `${API_BASE_URL}/admin/admin/get-pending-business-posts`; // For GET posts (new Lambda)
         const PUBLISH_BUSINESS_API = `${API_BASE_URL}/admin/admin/publish-business`; // For APPROVE (new Lambda)
         const REJECT_BUSINESS_API = `${API_BASE_URL}/admin/admin/reject-business-post`; // For REJECT (new Lambda)
+        const TRACK_STATS_API = `${API_BASE_URL}/admin/admin/track-business-stats`; // For tracking approvals/declines
         
         // State
         let allPosts = [];
@@ -2323,6 +2324,24 @@
 
                 if (response.ok && data.success) {
                     showAlert(`Post "${post.title || post.businessName}" has been published successfully!`, 'success');
+                    
+                    // Track approval statistic
+                    fetch(`${TRACK_STATS_API}`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'approved',
+                            metadata: {
+                                postId: postId,
+                                businessName: post.title || post.businessName,
+                                businessEmail: post.businessEmail
+                            }
+                        })
+                    }).catch(err => console.error('Stats tracking failed:', err));
+                    
                     await loadPosts(); // Reload posts to get updated status
                 } else {
                     throw new Error(data.message || 'Failed to approve post');
@@ -2428,6 +2447,25 @@
 
                 if (response.ok && data.success) {
                     showAlert(`Post "${post.title || post.businessName}" has been rejected. Reason: ${reason}`, 'danger');
+                    
+                    // Track decline statistic
+                    fetch(`${TRACK_STATS_API}`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            type: 'declined',
+                            metadata: {
+                                postId: postId,
+                                businessName: post.title || post.businessName,
+                                businessEmail: post.businessEmail,
+                                reason: reason
+                            }
+                        })
+                    }).catch(err => console.error('Stats tracking failed:', err));
+                    
                     await loadPosts(); // Reload posts to get updated status
                 } else {
                     throw new Error(data.message || 'Failed to reject post');

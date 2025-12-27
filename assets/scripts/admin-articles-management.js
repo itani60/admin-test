@@ -10,7 +10,7 @@ let articles = [];
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     loadArticles();
-    
+
     // Set default date to today
     const dateInput = document.getElementById('articleDate');
     if (dateInput) {
@@ -89,21 +89,48 @@ function renderArticles(articlesData) {
 }
 
 // Create Article
-document.getElementById('addArticleForm')?.addEventListener('submit', async function(e) {
+document.getElementById('addArticleForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Publishing...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading & Publishing...';
 
     try {
+        const title = document.getElementById('articleTitle').value;
+        const category = document.getElementById('articleCategory').value;
+        const date = document.getElementById('articleDate').value;
+        const content = document.getElementById('articleExcerpt').value;
+        const authorName = document.getElementById('articleAuthorName').value;
+
+        // Handle Image Uploads
+        const imageFile = document.getElementById('articleImageFile').files[0];
+        const authorImageFile = document.getElementById('articleAuthorImageFile').files[0];
+
+        let imageUrl = '';
+        let authorImageUrl = '';
+
+        if (imageFile) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading Article Image...';
+            imageUrl = await uploadFileToS3(imageFile);
+        }
+
+        if (authorImageFile) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading Author Image...';
+            authorImageUrl = await uploadFileToS3(authorImageFile);
+        }
+
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Publishing...';
+
         const articleData = {
-            title: document.getElementById('articleTitle').value,
-            category: document.getElementById('articleCategory').value,
-            image: document.getElementById('articleImage').value,
-            date: document.getElementById('articleDate').value,
-            content: document.getElementById('articleExcerpt').value
+            title,
+            category,
+            image: imageUrl,
+            date,
+            content,
+            authorName,
+            authorImage: authorImageUrl
         };
 
         const response = await fetch(`${API_CONFIG.BASE_URL}`, {
@@ -133,6 +160,43 @@ document.getElementById('addArticleForm')?.addEventListener('submit', async func
         submitBtn.innerHTML = originalText;
     }
 });
+
+/**
+ * Uploads a file to S3 using a presigned URL
+ * @param {File} file 
+ * @returns {Promise<string>} The final public URL of the uploaded file
+ */
+async function uploadFileToS3(file) {
+    // 1. Get Presigned URL
+    const urlParams = new URLSearchParams({
+        action: 'get-upload-url',
+        fileName: file.name,
+        fileType: file.type
+    });
+
+    const presignResponse = await fetch(`${API_CONFIG.BASE_URL}?${urlParams.toString()}`);
+
+    if (!presignResponse.ok) {
+        throw new Error('Failed to get upload URL');
+    }
+
+    const { uploadUrl, fileUrl } = await presignResponse.json();
+
+    // 2. Upload File to S3
+    const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+            'Content-Type': file.type
+        }
+    });
+
+    if (!uploadResponse.ok) {
+        throw new Error('Failed to upload file to S3');
+    }
+
+    return fileUrl;
+}
 
 // Delete Article
 async function deleteArticle(id) {

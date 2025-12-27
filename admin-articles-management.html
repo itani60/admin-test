@@ -715,15 +715,33 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Image URL</label>
-                                <input type="url" class="form-control" id="articleImage"
-                                    placeholder="https://example.com/image.jpg" required>
+                                <label class="form-label">Article Image</label>
+                                <input type="file" class="form-control" id="articleImageFile" accept="image/*" required>
+                                <small class="text-muted">Upload article cover image</small>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Publish Date</label>
                                 <input type="date" class="form-control" id="articleDate" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Author Name</label>
+                                <input type="text" class="form-control" id="articleAuthorName"
+                                    placeholder="e.g. John Doe" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Author Image</label>
+                                <input type="file" class="form-control" id="articleAuthorImageFile" accept="image/*"
+                                    required>
+                                <small class="text-muted">Upload author profile picture</small>
                             </div>
                         </div>
                     </div>

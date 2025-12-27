@@ -80,7 +80,7 @@ function renderArticles(articlesData) {
                 <p class="article-excerpt">${article.content}</p>
             </div>
             <div class="article-actions">
-                <button class="btn-delete" onclick="deleteArticle('${article.id}')">
+                <button class="btn-delete" onclick="confirmDelete('${article.id}')">
                     <i class="fas fa-trash me-1"></i> Delete
                 </button>
             </div>
@@ -150,7 +150,10 @@ document.getElementById('addArticleForm')?.addEventListener('submit', async func
         this.reset();
         document.getElementById('articleDate').valueAsDate = new Date();
         loadArticles();
-        alert('Article published successfully!');
+
+        // Show Success Modal
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
 
     } catch (error) {
         console.error('Error creating article:', error);
@@ -199,8 +202,25 @@ async function uploadFileToS3(file) {
 }
 
 // Delete Article
+function confirmDelete(id) {
+    // Set the ID on the modal's confirm button
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => deleteArticle(id);
+    }
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    modal.show();
+}
+
 async function deleteArticle(id) {
-    if (!confirm('Are you sure you want to delete this article?')) return;
+    // Hide modal if open
+    const modalEl = document.getElementById('deleteConfirmationModal');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
 
     try {
         const response = await fetch(`${API_CONFIG.BASE_URL}?id=${id}`, {

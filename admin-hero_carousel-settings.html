@@ -1255,8 +1255,17 @@
         const overlay = document.getElementById('sidebarOverlay');
         const mainContent = document.querySelector('.main-content');
 
-        // API Endpoint
-        const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin'; // Placeholder API Gateway URL
+        // --- API CONFIGURATION ---
+        const API_CONFIG = {
+            BASE_URL: 'https://hub.comparehubprices.co.za/admin', // Change this if needed
+            get ENDPOINTS() {
+                return {
+                    SETTINGS: `${this.BASE_URL}/carousel-settings`,
+                    SLIDES: `${this.BASE_URL}/carousel-slides`,
+                    UPLOAD: `${this.BASE_URL}/upload-url`
+                };
+            }
+        };
 
         // Toggle sidebar visibility
         if (menuToggle) {
@@ -1372,7 +1381,7 @@
 
                 // --- UPLOAD TO S3 ---
                 try {
-                    const getUrlRes = await fetch(`${API_BASE_URL}/upload-url`, {
+                    const getUrlRes = await fetch(API_CONFIG.ENDPOINTS.UPLOAD, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1475,7 +1484,7 @@
 
         async function loadCarouselSettings() {
             try {
-                const res = await fetch(`${API_BASE_URL}/carousel-settings`);
+                const res = await fetch(API_CONFIG.ENDPOINTS.SETTINGS);
                 if (!res.ok) throw new Error('Failed to load settings');
                 const data = await res.json();
 
@@ -1524,7 +1533,7 @@
             btn.disabled = true;
 
             try {
-                const res = await fetch(`${API_BASE_URL}/carousel-settings`, {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SETTINGS, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
@@ -1557,7 +1566,7 @@
 
             try {
                 // Fetch slides
-                const res = await fetch(`${API_BASE_URL}/carousel-slides?page=${page}`);
+                const res = await fetch(`${API_CONFIG.ENDPOINTS.SLIDES}?page=${page}`);
                 if (!res.ok) throw new Error('Failed to load slides');
 
                 const data = await res.json();
@@ -1713,7 +1722,7 @@
 
             try {
                 // Call API here
-                const res = await fetch(`${API_BASE_URL}/carousel-slides`, {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SLIDES, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ page: currentPage, slides: slidesData })

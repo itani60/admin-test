@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Carousel Settings | CompareHubPrices Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #dc2626;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #b91c1c;
+            --dark: #1e293b;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-section-title:hover {
+            color: var(--primary);
+        }
+
+        .nav-section-title i {
+            font-size: 0.65rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-section-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .nav-section-items {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-section-items.collapsed {
+            max-height: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(220, 38, 38, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active img {
+            opacity: 1;
+            filter: brightness(1.2);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* Carousel Settings Section */
+        .settings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
+        }
+
+        .settings-section h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .settings-section h3 i {
+            color: var(--primary);
+        }
+
+        /* Carousel Item Card */
+        .carousel-item-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .carousel-item-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .carousel-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .carousel-item-number {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .carousel-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon.btn-edit {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .btn-icon.btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-icon.btn-delete {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .btn-icon.btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            outline: none;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(220, 38, 38, 0.08) !important;
+        }
+
+        .custom-dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .image-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .upload-placeholder {
+            color: var(--text);
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Sidebar Toggle States */
+        .sidebar.hidden {
+            transform: translateX(-100%);
+            left: -100%;
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
+        }
+
+        /* Desktop toggle support */
+        @media (min-width: 1025px) {
+            .sidebar.hidden {
+                transform: translateX(-100%);
+                left: -100%;
+            }
+
+            .main-content.sidebar-hidden {
+                margin-left: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 2px solid;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" onclick="toggleNavSection(this)">
+                    <span>Main</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="nav-section-items">
+                    <a href="index.html" class="nav-item">
+                        <img src="assets/cards/dashboard.png" alt="Dashboard">
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="admin-analytics.html" class="nav-item">
+                        <img src="assets/cards/product analytics.png" alt="Analytics">
+                        <span>Products Analytics</span>
+                    </a>
+                    <a href="admin-business.html" class="nav-item">
+                        <img src="assets/cards/business post.png" alt="Business">
+                        <span>Business Posts</span>
+                        <span class="nav-badge"></span>
+                    </a>
+                    <a href="admin-alerts-notifications.html" class="nav-item">
+                        <img src="assets/cards/notification.png" alt="Alerts">
+                        <span>Alerts & Notifications</span>
+                    </a>
+                    <a href="admin_business_analytics.html" class="nav-item">
+                        <img src="assets/cards/analysis.png" alt="Analytics">
+                        <span>Business Analytics</span>
+                    </a>
+                    <a href="admin_price_alert_tracking.html" class="nav-item">
+                        <img src="assets/cards/alert.png" alt="Tracking">
+                        <span>Price Alerts Tracking</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" onclick="toggleNavSection(this)">
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="nav-section-items">
+                    <a href="admin-management.html" class="nav-item">
+                        <img src="assets/cards/admin.png" alt="Management">
+                        <span>User Management</span>
+                    </a>
+                    <a href="admin-bulk-import.html" class="nav-item">
+                        <img src="assets/cards/data-collection.png" alt="Import">
+                        <span>Bulk Import</span>
+                    </a>
+                    <a href="admin-price-update.html" class="nav-item">
+                        <img src="assets/cards/price update.png" alt="Price">
+                        <span>Price Updates</span>
+                    </a>
+                    <a href="admin_reports_review.html" class="nav-item">
+                        <img src="assets/cards/complaint.png" alt="Reports">
+                        <span>Reports Review</span>
+                    </a>
+                    <a href="admin-product-management.html" class="nav-item">
+                        <img src="assets/cards/features.png" alt="Products">
+                        <span>Product Management</span>
+                    </a>
+                    <a href="admin_login_tracking.html" class="nav-item">
+                        <img src="assets/cards/log.png" alt="Tracking">
+                        <span>Login Tracking</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" onclick="toggleNavSection(this)">
+                    <span>System</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="nav-section-items">
+                    <a href="admin-settings.html" class="nav-item">
+                        <img src="assets/cards/setting.png" alt="Settings">
+                        <span>Settings</span>
+                    </a>
+                    <a href="admin-hero_carousel-settings.html" class="nav-item active">
+                        <i class="fas fa-images"></i>
+                        <span>Hero Carousel</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName"></div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail"></div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Hero Carousel Settings</h1>
+                <p class="page-subtitle">Manage homepage hero carousel slides by page</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Carousel Settings -->
+            <div class="settings-section">
+                <h3>
+                    <i class="fas fa-cog"></i>
+                    Carousel Configuration
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Auto-play Interval (seconds)</label>
+                            <input type="number" class="form-control" id="autoplayInterval" value="5" min="3" max="10">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Transition Speed (ms)</label>
+                            <input type="number" class="form-control" id="transitionSpeed" value="500" min="200"
+                                max="1000" step="100">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Enable Auto-play</label>
+                            <div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="enableAutoplay" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Show Navigation Arrows</label>
+                            <div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showArrows" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Animation Effect</label>
+                            <div class="custom-dropdown" id="animationDropdown">
+                                <button class="custom-dropdown-btn" id="animationDropdownBtn" type="button">
+                                    <span id="animationDropdownText">Slide</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="animationDropdownMenu">
+                                    <div class="custom-dropdown-items" id="animationDropdownItems">
+                                        <div class="custom-dropdown-item selected" data-value="slide">Slide</div>
+                                        <div class="custom-dropdown-item" data-value="fade">Fade</div>
+                                        <div class="custom-dropdown-item" data-value="zoom">Zoom</div>
+                                        <div class="custom-dropdown-item" data-value="flip">Flip</div>
+                                        <div class="custom-dropdown-item" data-value="cube">Cube</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="animationEffect" value="slide">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Pagination Style</label>
+                            <div class="custom-dropdown" id="paginationDropdown">
+                                <button class="custom-dropdown-btn" id="paginationDropdownBtn" type="button">
+                                    <span id="paginationDropdownText">Dots</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="paginationDropdownMenu">
+                                    <div class="custom-dropdown-items" id="paginationDropdownItems">
+                                        <div class="custom-dropdown-item selected" data-value="dots">Dots</div>
+                                        <div class="custom-dropdown-item" data-value="numbers">Numbers</div>
+                                        <div class="custom-dropdown-item" data-value="thumbnails">Thumbnails</div>
+                                        <div class="custom-dropdown-item" data-value="none">None</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="paginationStyle" value="dots">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="saveCarouselSettings()">
+                    <i class="fas fa-save"></i> Save Configuration
+                </button>
+            </div>
+
+            <!-- Page Selection & Carousel Slides -->
+            <div class="settings-section">
+                <h3>
+                    <i class="fas fa-images"></i>
+                    Manage Carousel Slides by Page
+                </h3>
+
+                <!-- Page Selection Dropdown -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label"><strong>Select Page to Manage</strong></label>
+                            <div class="custom-dropdown" id="pageSelectionDropdown">
+                                <button class="custom-dropdown-btn" id="pageSelectionDropdownBtn" type="button">
+                                    <span id="pageSelectionDropdownText">Select a page...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="pageSelectionDropdownMenu">
+                                    <div class="custom-dropdown-items" id="pageSelectionDropdownItems">
+                                        <div class="custom-dropdown-item" data-value="home">
+                                            <i class="fas fa-home"></i> Home Page
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="smartphones">
+                                            <i class="fas fa-mobile-alt"></i> Smartphones
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="tablets">
+                                            <i class="fas fa-tablet-alt"></i> Tablets
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="laptops">
+                                            <i class="fas fa-laptop"></i> Laptops
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="gaming">
+                                            <i class="fas fa-gamepad"></i> Gaming
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="smartwatches">
+                                            <i class="fas fa-clock"></i> Smartwatches
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="tvs">
+                                            <i class="fas fa-tv"></i> TVs
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="cameras">
+                                            <i class="fas fa-camera"></i> Cameras
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedPage" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button class="btn btn-outline-primary" onclick="addSlideForPage()" id="addSlideBtn" disabled>
+                            <i class="fas fa-plus"></i> Add Slide for Selected Page
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Page Info Display -->
+                <div id="pageInfoDisplay" style="display: none;" class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    Managing carousel slides for: <strong id="currentPageName"></strong>
+                </div>
+
+                <!-- Carousel Slides Container -->
+                <div id="carouselSlidesContainer">
+                    <!-- Slides will be dynamically added here based on selected page -->
+                    <div class="text-center py-5" id="emptyState">
+                        <i class="fas fa-images" style="font-size: 4rem; color: var(--border);"></i>
+                        <p class="mt-3" style="color: var(--text); font-size: 1.1rem;">
+                            Select a page from the dropdown above to manage its carousel slides
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-4" id="saveButtonContainer" style="display: none;">
+                    <button class="btn btn-success" onclick="savePageSlides()">
+                        <i class="fas fa-save"></i> Save Slides for Current Page
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.querySelector('.main-content');
+
+        // API Endpoint
+        const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin'; // Placeholder API Gateway URL
+
+        // Toggle sidebar visibility
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                if (window.innerWidth > 1024) {
+                    sidebar.classList.toggle('hidden');
+                    mainContent.classList.toggle('sidebar-hidden');
+                } else {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                }
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+            } else {
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('sidebar-hidden');
+            }
+        });
+
+        function toggleNavSection(element) {
+            const navSection = element.closest('.nav-section');
+            const navItems = navSection.querySelector('.nav-section-items');
+            element.classList.toggle('collapsed');
+            navItems.classList.toggle('collapsed');
+        }
+
+        function initUserDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (!userProfile || !userDropdown || !logoutBtn) return;
+
+            userProfile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!userProfile.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    if (typeof window.adminAWSAuthService !== 'undefined') {
+                        await window.adminAWSAuthService.logout();
+                    }
+                    window.location.href = 'admin-login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = 'admin-login.html';
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUserDropdown);
+        } else {
+            initUserDropdown();
+        }
+
+        // --- CAROUSEL LOGIC ---
+        let currentPage = '';
+        let slideCounters = {};
+        let pageSlides = {};
+
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // --- PREVIEW & UPLOAD LOGIC ---
+        async function previewImage(slideId) {
+            const fileInput = document.getElementById(`slideImage_${slideId}`);
+            const uploadArea = fileInput.parentElement;
+            const placeholder = document.getElementById(`uploadPlaceholder_${slideId}`);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+
+                // Show local preview immediately
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadArea.classList.add('has-image');
+                    placeholder.innerHTML = `
+                        <div style="position: relative;">
+                            <img src="${e.target.result}" class="image-preview" alt="Slide ${slideId}" style="opacity: 0.5;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--primary); font-weight: bold;">
+                                <i class="fas fa-spinner fa-spin"></i> Uploading...
+                            </div>
+                        </div>`;
+                };
+                reader.readAsDataURL(file);
+
+                // --- UPLOAD TO S3 ---
+                try {
+                    const getUrlRes = await fetch(`${API_BASE_URL}/upload-url`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileName: file.name,
+                            fileType: file.type
+                        })
+                    });
+
+                    if (!getUrlRes.ok) throw new Error('Failed to get upload URL');
+                    const { uploadUrl, publicUrl } = await getUrlRes.json();
+
+                    // Upload File to S3
+                    const uploadRes = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': file.type },
+                        body: file
+                    });
+
+                    if (!uploadRes.ok) throw new Error('Failed to upload to S3');
+
+                    // Success: Show clean image and store URL
+                    placeholder.innerHTML = `
+                        <img src="${publicUrl}" class="image-preview" alt="Slide ${slideId}">
+                        <input type="hidden" id="uploadedUrl_${slideId}" value="${publicUrl}">
+                    `;
+
+                    showAlert('Image uploaded successfully!', 'success');
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    // FALLBACK: Use local data URL so UI doesn't break if API fails in testing
+                    placeholder.innerHTML = `
+                         <img src="${reader.result}" class="image-preview" alt="Slide ${slideId}" style="border: 2px solid var(--danger);">
+                         <input type="hidden" id="uploadedUrl_${slideId}" value="${reader.result}">
+                         <div class="text-danger small mt-2">Upload Failed (Local Preview)</div>
+                    `;
+                    showAlert('Upload failed, using local preview', 'danger');
+                }
+            }
+        }
+
+        function deleteSlide(slideId) {
+            if (confirm(`Are you sure you want to delete this slide?`)) {
+                const slideCard = document.querySelector(`[data-slide-id="${slideId}"]`);
+                if (slideCard) {
+                    slideCard.remove();
+                    const remainingSlides = document.querySelectorAll('.carousel-item-card');
+                    if (remainingSlides.length === 0) {
+                        document.getElementById('emptyState').style.display = 'block';
+                        document.getElementById('saveButtonContainer').style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        function initCustomDropdown(dropdownId, textId, hiddenInputId, onSelect) {
+            const dropdown = document.getElementById(dropdownId);
+            const dropdownBtn = dropdown.querySelector('.custom-dropdown-btn');
+            const dropdownText = document.getElementById(textId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const dropdownItems = dropdown.querySelectorAll('.custom-dropdown-item');
+
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd !== dropdown) dd.classList.remove('active');
+                });
+                dropdown.classList.toggle('active');
+            });
+
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownItems.forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const value = item.getAttribute('data-value');
+                    const text = item.innerHTML;
+                    dropdownText.innerHTML = text;
+                    hiddenInput.value = value;
+                    dropdown.classList.remove('active');
+                    if (onSelect) onSelect(value, text);
+                });
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown').forEach(dd => dd.classList.remove('active'));
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCustomDropdown('animationDropdown', 'animationDropdownText', 'animationEffect');
+            initCustomDropdown('paginationDropdown', 'paginationDropdownText', 'paginationStyle');
+            initCustomDropdown('pageSelectionDropdown', 'pageSelectionDropdownText', 'selectedPage', onPageSelect);
+
+            // Load Settings
+            loadCarouselSettings();
+        });
+
+        async function loadCarouselSettings() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/carousel-settings`);
+                if (!res.ok) throw new Error('Failed to load settings');
+                const data = await res.json();
+
+                // Use fetched settings or defaults if empty
+                const mockSettings = data.settings || {
+                    autoplayInterval: 5,
+                    transitionSpeed: 500,
+                    enableAutoplay: true,
+                    showArrows: true,
+                    animationEffect: 'slide',
+                    paginationStyle: 'dots'
+                };
+
+                document.getElementById('autoplayInterval').value = mockSettings.autoplayInterval;
+                document.getElementById('transitionSpeed').value = mockSettings.transitionSpeed;
+                document.getElementById('enableAutoplay').checked = mockSettings.enableAutoplay;
+                document.getElementById('showArrows').checked = mockSettings.showArrows;
+
+                // Update dropdowns
+                updateDropdownSelection('animationDropdown', mockSettings.animationEffect);
+                updateDropdownSelection('paginationDropdown', mockSettings.paginationStyle);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function updateDropdownSelection(id, value) {
+            const dropdown = document.getElementById(id);
+            const item = dropdown.querySelector(`.custom-dropdown-item[data-value="${value}"]`);
+            if (item) item.click();
+        }
+
+        async function saveCarouselSettings() {
+            const settings = {
+                autoplayInterval: document.getElementById('autoplayInterval').value,
+                transitionSpeed: document.getElementById('transitionSpeed').value,
+                enableAutoplay: document.getElementById('enableAutoplay').checked,
+                showArrows: document.getElementById('showArrows').checked,
+                animationEffect: document.getElementById('animationEffect').value,
+                paginationStyle: document.getElementById('paginationStyle').value
+            };
+
+            const btn = document.querySelector('button[onclick="saveCarouselSettings()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/carousel-settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                if (!res.ok) throw new Error('Failed to save settings');
+
+                showAlert('Carousel settings saved successfully!', 'success');
+            } catch (error) {
+                showAlert('Failed to save settings', 'danger');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function onPageSelect(pageValue, pageHTML) {
+            currentPage = pageValue;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = pageHTML;
+            document.getElementById('currentPageName').textContent = tempDiv.textContent.trim();
+            document.getElementById('pageInfoDisplay').style.display = 'block';
+            document.getElementById('addSlideBtn').disabled = false;
+            loadSlidesForPage(pageValue);
+        }
+
+        async function loadSlidesForPage(page) {
+            const container = document.getElementById('carouselSlidesContainer');
+            container.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+            try {
+                // Fetch slides
+                const res = await fetch(`${API_BASE_URL}/carousel-slides?page=${page}`);
+                if (!res.ok) throw new Error('Failed to load slides');
+
+                const data = await res.json();
+                const slides = data.slides || [];
+
+                container.innerHTML = '';
+                const emptyState = document.getElementById('emptyState');
+
+                if (slides.length > 0) {
+                    slides.forEach((slide) => {
+                        if (!slideCounters[page]) slideCounters[page] = 0;
+                        slideCounters[page]++;
+                        const displayId = slide.id || `${page}_${slideCounters[page]}`;
+                        createSlideCard(displayId, slide);
+                    });
+                    emptyState.style.display = 'none';
+                    document.getElementById('saveButtonContainer').style.display = 'block';
+                } else {
+                    emptyState.style.display = 'block';
+                    container.appendChild(emptyState);
+                    document.getElementById('saveButtonContainer').style.display = 'none';
+                }
+
+                pageSlides[page] = slides;
+            } catch (error) {
+                container.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+                container.appendChild(document.getElementById('emptyState'));
+            }
+        }
+
+        function addSlideForPage() {
+            if (!currentPage) return;
+            if (!slideCounters[currentPage]) slideCounters[currentPage] = 0;
+            slideCounters[currentPage]++;
+            const slideId = `${currentPage}_${slideCounters[currentPage]}`;
+
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) emptyState.style.display = 'none';
+            createSlideCard(slideId);
+            document.getElementById('saveButtonContainer').style.display = 'block';
+        }
+
+        function createSlideCard(slideId, slideData = null) {
+            const container = document.getElementById('carouselSlidesContainer');
+            const slideCard = document.createElement('div');
+            slideCard.className = 'carousel-item-card';
+            slideCard.setAttribute('data-slide-id', slideId);
+
+            slideCard.innerHTML = `
+                <div class="carousel-item-header">
+                    <div class="carousel-item-number"><i class="fas fa-grip-lines"></i></div>
+                    <div class="carousel-item-actions">
+                        <button class="btn-icon btn-delete" onclick="deleteSlide('${slideId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Slide Title</label>
+                            <input type="text" class="form-control" id="slideTitle_${slideId}" placeholder="Enter slide title" value="${slideData?.title || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Slide Subtitle</label>
+                            <input type="text" class="form-control" id="slideSubtitle_${slideId}" placeholder="Enter slide subtitle" value="${slideData?.subtitle || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label">Slide Description</label>
+                            <textarea class="form-control" id="slideDescription_${slideId}" rows="3" placeholder="Enter slide description">${slideData?.description || ''}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Button Text</label>
+                            <input type="text" class="form-control" id="slideButtonText_${slideId}" placeholder="e.g., Shop Now" value="${slideData?.buttonText || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Button Link</label>
+                            <input type="text" class="form-control" id="slideButtonLink_${slideId}" placeholder="e.g., /products" value="${slideData?.buttonLink || ''}">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label">Slide Image</label>
+                            <div class="image-upload-area ${slideData?.imageUrl ? 'has-image' : ''}" onclick="document.getElementById('slideImage_${slideId}').click()">
+                                <input type="file" id="slideImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}')">
+                                <div class="upload-placeholder" id="uploadPlaceholder_${slideId}">
+                                    ${slideData?.imageUrl ?
+                    `<img src="${slideData.imageUrl}" class="image-preview" alt="Slide">
+                                       <input type="hidden" id="uploadedUrl_${slideId}" value="${slideData.imageUrl}">` :
+                    `<i class="fas fa-cloud-upload-alt"></i><p>Click to upload image</p><small>Recommended size: 1920x600px</small>`
+                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Active</label>
+                            <div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="slideActive_${slideId}" ${slideData?.active !== false ? 'checked' : ''}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(slideCard);
+        }
+
+        async function savePageSlides() {
+            if (!currentPage) return;
+            const slides = document.querySelectorAll('.carousel-item-card');
+            const slidesData = [];
+            slides.forEach((slide) => {
+                const slideId = slide.getAttribute('data-slide-id');
+                const uploadedUrlInput = document.getElementById(`uploadedUrl_${slideId}`);
+                // Fallback for demo mode local blob or if loading from DB
+                const imgPreview = document.querySelector(`#uploadPlaceholder_${slideId} img`);
+                const finalImageUrl = uploadedUrlInput ? uploadedUrlInput.value : (imgPreview ? imgPreview.src : '');
+
+                slidesData.push({
+                    id: slideId,
+                    title: document.getElementById(`slideTitle_${slideId}`)?.value || '',
+                    subtitle: document.getElementById(`slideSubtitle_${slideId}`)?.value || '',
+                    description: document.getElementById(`slideDescription_${slideId}`)?.value || '',
+                    buttonText: document.getElementById(`slideButtonText_${slideId}`)?.value || '',
+                    buttonLink: document.getElementById(`slideButtonLink_${slideId}`)?.value || '',
+                    active: document.getElementById(`slideActive_${slideId}`)?.checked || false,
+                    imageUrl: finalImageUrl
+                });
+            });
+
+            pageSlides[currentPage] = slidesData;
+
+            const btn = document.querySelector('button[onclick="savePageSlides()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                // Call API here
+                const res = await fetch(`${API_BASE_URL}/carousel-slides`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ page: currentPage, slides: slidesData })
+                });
+
+                if (!res.ok) throw new Error('Failed to save slides');
+                showAlert(`Slides for ${currentPage} saved successfully!`, 'success');
+            } catch (err) {
+                showAlert('Failed to save slides', 'danger');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

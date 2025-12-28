@@ -1350,6 +1350,16 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+
+            /* Responsive Background Handling via CSS Variables */
+            background-image: var(--bg-desktop);
+        }
+
+        /* Mobile Image Override */
+        @media (max-width: 768px) {
+            .hero-slide {
+                background-image: var(--bg-mobile);
+            }
         }
 
         .hero-slide.active {
@@ -1622,8 +1632,14 @@
             const track = document.getElementById('heroTrack');
             const indicators = document.getElementById('heroIndicators');
 
-            track.innerHTML = slidesData.map((slide, index) => `
-                <div class="hero-slide ${index === 0 ? 'active' : ''}" style="background-image: url('${escapeHtml(slide.imageUrl || 'https://via.placeholder.com/1920x1080')}');">
+            track.innerHTML = slidesData.map((slide, index) => {
+                // Ensure URLs are valid strings
+                const desktopImg = escapeHtml(slide.imageUrl || 'https://via.placeholder.com/1920x1080');
+                const mobileImg = escapeHtml(slide.mobileImageUrl || desktopImg); // Fallback to desktop if no mobile
+
+                return `
+                <div class="hero-slide ${index === 0 ? 'active' : ''}" 
+                     style="--bg-desktop: url('${desktopImg}'); --bg-mobile: url('${mobileImg}');">
                     <div class="hero-content">
                         ${slide.subtitle ? `<div class="hero-subtitle">${escapeHtml(slide.subtitle)}</div>` : ''}
                         <h1 class="hero-title">${escapeHtml(slide.title)}</h1>
@@ -1631,7 +1647,8 @@
                         ${slide.buttonText ? `<a href="${escapeHtml(slide.buttonLink || '#')}" class="hero-btn">${escapeHtml(slide.buttonText)}</a>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             indicators.innerHTML = slidesData.map((_, index) => `
                 <button class="hero-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></button>

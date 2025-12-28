@@ -1325,13 +1325,14 @@
 
 
     <style>
-        /* DESIGN 2: THE SPLIT (Carousel Adaptation) */
+        /* DESIGN 1: THE IMPACT (Fullscreen Carousel) */
         #heroCarouselSection {
             position: relative;
-            height: 600px;
-            /* Adjust height as needed */
+            height: 85vh;
+            /* Full impactful height */
+            min-height: 600px;
             overflow: hidden;
-            background: #fff;
+            background: #000;
         }
 
         .hero-slide {
@@ -1340,12 +1341,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
+            background-size: cover;
+            background-position: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.6s ease-in-out, visibility 0.6s;
-            background: white;
+            transition: opacity 1s ease-in-out, visibility 1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .hero-slide.active {
@@ -1353,202 +1357,217 @@
             visibility: visible;
         }
 
-        .hero-text-side {
-            width: 45%;
-            padding: 4rem 2rem 4rem 5%;
-            /* Left padding adjusted for container alignment */
-            background: white;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .hero-img-side {
+        /* Gradient Overlay for Text Readability */
+        .hero-slide::before {
+            content: '';
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 65%;
-            /* Overlaps text side slightly for the angle */
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 1;
         }
 
-        /* Text Animations using simple transforms */
-        .hero-slide.active .hero-text-side>* {
-            animation: slideInLeft 0.8s forwards;
-            opacity: 0;
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 900px;
+            padding: 2rem;
+            transform: translateY(30px);
+            transition: transform 0.8s ease-out;
         }
 
-        .hero-slide.active .hero-badge {
-            animation-delay: 0.1s;
+        .hero-slide.active .hero-content {
+            transform: translateY(0);
         }
 
-        .hero-slide.active h1 {
-            animation-delay: 0.2s;
-        }
-
-        .hero-slide.active p {
-            animation-delay: 0.3s;
-        }
-
-        .hero-slide.active .cta-btn {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-30px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .hero-badge {
+        /* Typography & Elements */
+        .hero-subtitle {
             display: inline-block;
-            background: #f8f9fa;
-            color: #dc3545;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
+            font-size: 1.1rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             margin-bottom: 1.5rem;
-            width: fit-content;
+            color: #ffc107;
+            opacity: 0;
+            animation: fadeInDown 0.8s forwards 0.3s;
         }
 
         .hero-title {
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #212529;
+            font-size: 4.5rem;
+            font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards 0.5s;
         }
 
         .hero-description {
-            font-size: 1.15rem;
-            color: #6c757d;
-            margin-bottom: 2rem;
-            max-width: 500px;
+            font-size: 1.3rem;
             line-height: 1.6;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards 0.7s;
         }
 
         .hero-btn {
             display: inline-block;
-            padding: 14px 40px;
-            background: #212529;
+            padding: 16px 45px;
+            background: #dc3545;
+            /* Brand Red */
             color: white;
-            border-radius: 50px;
-            font-weight: 600;
             text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
             transition: all 0.3s ease;
-            width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #dc3545;
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards 0.9s;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
         }
 
         .hero-btn:hover {
-            background: #dc3545;
-            transform: translateY(-2px);
+            background: transparent;
             color: white;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 4px 25px rgba(220, 53, 69, 0.6);
         }
 
-        /* Simple Navigation */
-        .carousel-nav-btn {
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navigation Arrows */
+        .hero-nav {
             position: absolute;
-            bottom: 30px;
-            left: 5%;
-            /* Align with text */
-            z-index: 10;
-            display: flex;
-            gap: 10px;
-        }
-
-        .nav-arrow {
-            width: 45px;
-            height: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border: 2px solid #e9ecef;
-            background: white;
-            color: #212529;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .nav-arrow:hover {
-            border-color: #212529;
-            background: #212529;
-            color: white;
+        .hero-nav:hover {
+            background: white;
+            color: black;
+            border-color: white;
+        }
+
+        .hero-prev {
+            left: 40px;
+        }
+
+        .hero-next {
+            right: 40px;
+        }
+
+        /* Indicators */
+        .hero-indicators {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .hero-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hero-dot.active {
+            background: #dc3545;
+            transform: scale(1.2);
         }
 
         /* Mobile Responsive */
-        @media (max-width: 991px) {
+        @media (max-width: 768px) {
             #heroCarouselSection {
-                height: auto;
-                min-height: 600px;
-            }
-
-            .hero-slide {
-                position: relative;
-                flex-direction: column-reverse;
-                opacity: 1;
-                visibility: visible;
-                display: none;
-            }
-
-            .hero-slide.active {
-                display: flex;
-            }
-
-            .hero-text-side {
-                width: 100%;
-                padding: 2rem;
-                text-align: center;
-                align-items: center;
-            }
-
-            .hero-img-side {
-                position: relative;
-                width: 100%;
-                height: 300px;
-                clip-path: none;
-                right: auto;
-                top: auto;
+                height: 600px;
             }
 
             .hero-title {
                 font-size: 2.5rem;
             }
 
-            .carousel-nav-btn {
-                left: 50%;
-                transform: translateX(-50%);
-                bottom: 10px;
+            .hero-description {
+                font-size: 1rem;
+            }
+
+            .hero-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .hero-prev {
+                left: 10px;
+            }
+
+            .hero-next {
+                right: 10px;
             }
         }
     </style>
 
     <main class="main">
         <section id="heroCarouselSection">
-            <!-- Slides Container -->
-            <div id="heroSlidesContainer">
-                <!-- Javascript will inject slides here -->
+            <div id="heroTrack">
+                <!-- Slides Injected Here -->
             </div>
 
-            <!-- Navigation Controls -->
-            <div class="carousel-nav-btn">
-                <button class="nav-arrow" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
-                <button class="nav-arrow" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+            <!-- Controls -->
+            <button class="hero-nav hero-prev" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="hero-nav hero-next" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+
+            <div class="hero-indicators" id="heroIndicators">
+                <!-- Dots Injected Here -->
             </div>
         </section>
 
@@ -1567,8 +1586,6 @@
 
         async function initHeroCarousel() {
             try {
-                // Show loader (optional, if you have one globally)
-
                 const response = await fetch(API_URL);
                 if (!response.ok) throw new Error('API Error');
 
@@ -1579,15 +1596,14 @@
                     renderSlides();
                     startAutoPlay();
                 } else {
-                    // Fallback content if no slides
-                    document.getElementById('heroSlidesContainer').innerHTML = `
-                        <div class="hero-slide active">
-                             <div class="hero-text-side">
-                                <h1>Welcome to CompareHub</h1>
+                    // Fallback
+                    document.getElementById('heroTrack').innerHTML = `
+                        <div class="hero-slide active" style="background-color: #333;">
+                             <div class="hero-content">
+                                <h1 class="hero-title">Welcome to CompareHub</h1>
                                 <p class="hero-description">No slides configured yet.</p>
                              </div>
                         </div>`;
-                    document.getElementById('pageLoadingOverlay').classList.add('hidden');
                 }
 
                 // Hide loader
@@ -1603,49 +1619,55 @@
         }
 
         function renderSlides() {
-            const container = document.getElementById('heroSlidesContainer');
-            container.innerHTML = slidesData.map((slide, index) => {
-                const isActive = index === 0 ? 'active' : '';
-                return `
-                    <div class="hero-slide ${isActive}" data-index="${index}">
-                        <div class="hero-text-side">
-                            ${slide.subtitle ? `<span class="hero-badge hero-badge">${escapeHtml(slide.subtitle)}</span>` : '<span class="hero-badge">Featured</span>'}
-                            <h1 class="hero-title">${escapeHtml(slide.title)}</h1>
-                            ${slide.description ? `<p class="hero-description">${escapeHtml(slide.description)}</p>` : ''}
-                            ${slide.buttonText ? `<a href="${escapeHtml(slide.buttonLink || '#')}" class="hero-btn">${escapeHtml(slide.buttonText)}</a>` : ''}
-                        </div>
-                        <div class="hero-img-side" style="background-image: url('${escapeHtml(slide.imageUrl || 'https://via.placeholder.com/1200x800')}');"></div>
+            const track = document.getElementById('heroTrack');
+            const indicators = document.getElementById('heroIndicators');
+
+            track.innerHTML = slidesData.map((slide, index) => `
+                <div class="hero-slide ${index === 0 ? 'active' : ''}" style="background-image: url('${escapeHtml(slide.imageUrl || 'https://via.placeholder.com/1920x1080')}');">
+                    <div class="hero-content">
+                        ${slide.subtitle ? `<div class="hero-subtitle">${escapeHtml(slide.subtitle)}</div>` : ''}
+                        <h1 class="hero-title">${escapeHtml(slide.title)}</h1>
+                        ${slide.description ? `<p class="hero-description">${escapeHtml(slide.description)}</p>` : ''}
+                        ${slide.buttonText ? `<a href="${escapeHtml(slide.buttonLink || '#')}" class="hero-btn">${escapeHtml(slide.buttonText)}</a>` : ''}
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
+
+            indicators.innerHTML = slidesData.map((_, index) => `
+                <button class="hero-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></button>
+            `).join('');
         }
 
-        function showSlide(index) {
+        function goToSlide(index) {
             const slides = document.querySelectorAll('.hero-slide');
-            slides.forEach(s => s.classList.remove('active'));
+            const dots = document.querySelectorAll('.hero-dot');
 
-            // Handle wrapping
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+
             if (index >= slides.length) index = 0;
             if (index < 0) index = slides.length - 1;
 
             currentIndex = index;
-            slides[currentIndex].classList.add('active');
+
+            if (slides[currentIndex]) slides[currentIndex].classList.add('active');
+            if (dots[currentIndex]) dots[currentIndex].classList.add('active');
+
+            resetAutoPlay();
         }
 
         function nextSlide() {
-            showSlide(currentIndex + 1);
-            resetAutoPlay();
+            goToSlide(currentIndex + 1);
         }
 
         function prevSlide() {
-            showSlide(currentIndex - 1);
-            resetAutoPlay();
+            goToSlide(currentIndex - 1);
         }
 
         function startAutoPlay() {
             autoPlayTimer = setInterval(() => {
-                showSlide(currentIndex + 1);
-            }, 6000); // 6 seconds
+                nextSlide();
+            }, 6000);
         }
 
         function resetAutoPlay() {
@@ -1663,7 +1685,7 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // Initialize on load
+        // Initialize
         document.addEventListener('DOMContentLoaded', initHeroCarousel);
     </script>
 

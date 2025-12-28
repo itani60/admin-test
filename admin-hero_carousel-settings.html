@@ -1564,7 +1564,6 @@
                 const slides = data.slides || [];
 
                 container.innerHTML = '';
-                const emptyState = document.getElementById('emptyState');
 
                 if (slides.length > 0) {
                     slides.forEach((slide) => {
@@ -1573,11 +1572,15 @@
                         const displayId = slide.id || `${page}_${slideCounters[page]}`;
                         createSlideCard(displayId, slide);
                     });
-                    emptyState.style.display = 'none';
                     document.getElementById('saveButtonContainer').style.display = 'block';
                 } else {
-                    emptyState.style.display = 'block';
-                    container.appendChild(emptyState);
+                    container.innerHTML = `
+                        <div class="text-center py-5" id="emptyState">
+                            <i class="fas fa-images" style="font-size: 4rem; color: var(--border);"></i>
+                            <p class="mt-3" style="color: var(--text); font-size: 1.1rem;">
+                                No slides found for this page. Click 'Add Slide' to start.
+                            </p>
+                        </div>`;
                     document.getElementById('saveButtonContainer').style.display = 'none';
                 }
 

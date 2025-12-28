@@ -1357,10 +1357,14 @@
         }
 
         // --- PREVIEW & UPLOAD LOGIC ---
-        async function previewImage(slideId) {
-            const fileInput = document.getElementById(`slideImage_${slideId}`);
+        async function previewImage(slideId, type = 'desktop') {
+            const inputId = type === 'mobile' ? `slideMobileImage_${slideId}` : `slideImage_${slideId}`;
+            const placeholderId = type === 'mobile' ? `uploadMobilePlaceholder_${slideId}` : `uploadPlaceholder_${slideId}`;
+            const hiddenInputId = type === 'mobile' ? `uploadedMobileUrl_${slideId}` : `uploadedUrl_${slideId}`;
+
+            const fileInput = document.getElementById(inputId);
             const uploadArea = fileInput.parentElement;
-            const placeholder = document.getElementById(`uploadPlaceholder_${slideId}`);
+            const placeholder = document.getElementById(placeholderId);
 
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
@@ -1405,7 +1409,7 @@
                     // Success: Show clean image and store URL
                     placeholder.innerHTML = `
                         <img src="${publicUrl}" class="image-preview" alt="Slide ${slideId}">
-                        <input type="hidden" id="uploadedUrl_${slideId}" value="${publicUrl}">
+                        <input type="hidden" id="${hiddenInputId}" value="${publicUrl}">
                     `;
 
                     showAlert('Image uploaded successfully!', 'success');
@@ -1415,7 +1419,7 @@
                     // FALLBACK: Use local data URL so UI doesn't break if API fails in testing
                     placeholder.innerHTML = `
                          <img src="${reader.result}" class="image-preview" alt="Slide ${slideId}" style="border: 2px solid var(--danger);">
-                         <input type="hidden" id="uploadedUrl_${slideId}" value="${reader.result}">
+                         <input type="hidden" id="${hiddenInputId}" value="${reader.result}">
                          <div class="text-danger small mt-2">Upload Failed (Local Preview)</div>
                     `;
                     showAlert('Upload failed, using local preview', 'danger');
@@ -1659,21 +1663,41 @@
                             <input type="text" class="form-control" id="slideButtonLink_${slideId}" placeholder="e.g., /products" value="${slideData?.buttonLink || ''}">
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    
+                    <!-- Desktop Image -->
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label">Slide Image</label>
+                            <label class="form-label">Desktop Image (Landscape)</label>
                             <div class="image-upload-area ${slideData?.imageUrl ? 'has-image' : ''}" onclick="document.getElementById('slideImage_${slideId}').click()">
-                                <input type="file" id="slideImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}')">
+                                <input type="file" id="slideImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}', 'desktop')">
                                 <div class="upload-placeholder" id="uploadPlaceholder_${slideId}">
                                     ${slideData?.imageUrl ?
                     `<img src="${slideData.imageUrl}" class="image-preview" alt="Slide">
                                        <input type="hidden" id="uploadedUrl_${slideId}" value="${slideData.imageUrl}">` :
-                    `<i class="fas fa-cloud-upload-alt"></i><p>Click to upload image</p><small>Recommended size: 1920x600px</small>`
+                    `<i class="fas fa-desktop"></i><p>Click to upload</p><small>1920x800px</small>`
                 }
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Mobile Image -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Mobile Image (Portrait)</label>
+                            <div class="image-upload-area ${slideData?.mobileImageUrl ? 'has-image' : ''}" onclick="document.getElementById('slideMobileImage_${slideId}').click()">
+                                <input type="file" id="slideMobileImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}', 'mobile')">
+                                <div class="upload-placeholder" id="uploadMobilePlaceholder_${slideId}">
+                                    ${slideData?.mobileImageUrl ?
+                    `<img src="${slideData.mobileImageUrl}" class="image-preview" alt="Slide Mobile">
+                                       <input type="hidden" id="uploadedMobileUrl_${slideId}" value="${slideData.mobileImageUrl}">` :
+                    `<i class="fas fa-mobile-alt"></i><p>Click to upload</p><small>600x800px</small>`
+                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label">Active</label>
@@ -1696,10 +1720,16 @@
             const slidesData = [];
             slides.forEach((slide) => {
                 const slideId = slide.getAttribute('data-slide-id');
+
+                // Desktop Image URL
                 const uploadedUrlInput = document.getElementById(`uploadedUrl_${slideId}`);
-                // Fallback for demo mode local blob or if loading from DB
                 const imgPreview = document.querySelector(`#uploadPlaceholder_${slideId} img`);
                 const finalImageUrl = uploadedUrlInput ? uploadedUrlInput.value : (imgPreview ? imgPreview.src : '');
+
+                // Mobile Image URL
+                const uploadedMobileUrlInput = document.getElementById(`uploadedMobileUrl_${slideId}`);
+                const mobImgPreview = document.querySelector(`#uploadMobilePlaceholder_${slideId} img`);
+                const finalMobileImageUrl = uploadedMobileUrlInput ? uploadedMobileUrlInput.value : (mobImgPreview ? mobImgPreview.src : '');
 
                 slidesData.push({
                     id: slideId,
@@ -1709,7 +1739,8 @@
                     buttonText: document.getElementById(`slideButtonText_${slideId}`)?.value || '',
                     buttonLink: document.getElementById(`slideButtonLink_${slideId}`)?.value || '',
                     active: document.getElementById(`slideActive_${slideId}`)?.checked || false,
-                    imageUrl: finalImageUrl
+                    imageUrl: finalImageUrl,
+                    mobileImageUrl: finalMobileImageUrl
                 });
             });
 

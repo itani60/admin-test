@@ -619,23 +619,21 @@ function initializeCharts() {
                 datasets: [{
                     data: statusData.data,
                     backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(220, 53, 69, 0.8)'
+                        '#10b981', // Success (Emerald)
+                        '#ef4444'  // Failed (Red)
                     ],
-                    borderColor: [
-                        'rgb(40, 167, 69)',
-                        'rgb(220, 53, 69)'
-                    ],
-                    borderWidth: 2
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Thinner ring
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right',
+                        labels: { usePointStyle: true, boxWidth: 6, padding: 20 }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']

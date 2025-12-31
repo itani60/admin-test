@@ -930,6 +930,94 @@
             border-color: #bfdbfe;
             color: #1e40af;
         }
+
+        /* --- Design 3: Split Preview Layout --- */
+        .d3-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            min-height: 600px;
+        }
+
+        .d3-sidebar {
+            border-right: 1px solid var(--border);
+            padding-right: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d3-list-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 2rem;
+        }
+
+        .d3-list-item {
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .d3-list-item:hover {
+            background: var(--light);
+        }
+
+        .d3-list-item.active {
+            background: #fef2f2;
+            border-color: var(--border);
+        }
+
+        .d3-editor-form {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .d3-preview {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .d3-preview-mockup {
+            background: #1e293b;
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .d3-mockup-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .d3-mockup-content {
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -1165,17 +1253,16 @@
             </div>
 
             <!-- Page Selection & Carousel Slides -->
-            <div class="settings-section">
-                <h3>
-                    <i class="fas fa-images"></i>
-                    Manage Carousel Slides by Page
-                </h3>
+            <!-- Manage Slides Area -->
+            <div class="d-flex flex-column gap-4">
 
-                <!-- Page Selection Dropdown -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label"><strong>Select Page to Manage</strong></label>
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <h4 class="fw-bold mb-1">Select Page</h4>
+                            <p class="text-muted small mb-0">Choose which page's carousel to edit</p>
+                        </div>
+                        <div class="col-md-7">
                             <div class="custom-dropdown" id="pageSelectionDropdown">
                                 <button class="custom-dropdown-btn" id="pageSelectionDropdownBtn" type="button">
                                     <span id="pageSelectionDropdownText">Select a page...</span>
@@ -1183,67 +1270,202 @@
                                 </button>
                                 <div class="custom-dropdown-menu" id="pageSelectionDropdownMenu">
                                     <div class="custom-dropdown-items" id="pageSelectionDropdownItems">
-                                        <div class="custom-dropdown-item" data-value="home">
-                                            <i class="fas fa-home"></i> Home Page
+                                        <div class="custom-dropdown-item" data-value="home"><i class="fas fa-home"></i>
+                                            Home Page</div>
+                                        <div class="custom-dropdown-item" data-value="smartphones"><i
+                                                class="fas fa-mobile-alt"></i> Smartphones</div>
+                                        <div class="custom-dropdown-item" data-value="tablets"><i
+                                                class="fas fa-tablet-alt"></i> Tablets</div>
+                                        <div class="custom-dropdown-item" data-value="laptops"><i
+                                                class="fas fa-laptop"></i> Laptops</div>
+                                        <div class="custom-dropdown-item" data-value="gaming"><i
+                                                class="fas fa-gamepad"></i> Gaming</div>
+                                        <div class="custom-dropdown-item" data-value="smartwatches"><i
+                                                class="fas fa-clock"></i> Smartwatches</div>
+                                        <div class="custom-dropdown-item" data-value="tvs"><i class="fas fa-tv"></i> TVs
                                         </div>
-                                        <div class="custom-dropdown-item" data-value="smartphones">
-                                            <i class="fas fa-mobile-alt"></i> Smartphones
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="tablets">
-                                            <i class="fas fa-tablet-alt"></i> Tablets
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="laptops">
-                                            <i class="fas fa-laptop"></i> Laptops
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="gaming">
-                                            <i class="fas fa-gamepad"></i> Gaming
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="smartwatches">
-                                            <i class="fas fa-clock"></i> Smartwatches
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="tvs">
-                                            <i class="fas fa-tv"></i> TVs
-                                        </div>
-                                        <div class="custom-dropdown-item" data-value="cameras">
-                                            <i class="fas fa-camera"></i> Cameras
-                                        </div>
+                                        <div class="custom-dropdown-item" data-value="cameras"><i
+                                                class="fas fa-camera"></i> Cameras</div>
                                     </div>
                                 </div>
                                 <input type="hidden" id="selectedPage" value="">
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 d-flex align-items-end">
-                        <button class="btn btn-outline-primary" onclick="addSlideForPage()" id="addSlideBtn" disabled>
-                            <i class="fas fa-plus"></i> Add Slide for Selected Page
-                        </button>
+                </div>
+
+                <!-- Design 3 Layout -->
+                <div class="d3-container" id="d3Container">
+                    <!-- Sidebar -->
+                    <div class="d3-sidebar">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold m-0 text-uppercase text-secondary small ls-1">Slides List</h6>
+                            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="addSlideForPage()"
+                                id="d3AddBtn" disabled>
+                                <i class="fas fa-plus me-1"></i> New
+                            </button>
+                        </div>
+                        <div class="d3-list-container flex-grow-1" id="d3SlideList">
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-arrow-up mb-2"></i><br>Select a page to start
+                            </div>
+                        </div>
+
+                        <div class="d3-editor-form mt-auto" id="d3EditorForm">
+                            <div class="text-center text-muted py-5" id="d3EmptyFormState">
+                                Select a slide to edit properties
+                            </div>
+                            <div id="d3RealForm" style="display:none;">
+                                <h6 class="fw-bold mb-3 border-bottom pb-2">Edit Slide</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Title</label>
+                                    <input type="text" class="form-control form-control-sm" id="d3Title"
+                                        oninput="updatePreviewText()">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Subtitle</label>
+                                    <input type="text" class="form-control form-control-sm" id="d3Subtitle"
+                                        oninput="updatePreviewText()">
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Button Text</label>
+                                        <input type="text" class="form-control form-control-sm" id="d3BtnText"
+                                            oninput="updatePreviewText()">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Link</label>
+                                        <input type="text" class="form-control form-control-sm" id="d3BtnLink">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Desktop Image</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" id="d3ImgDesktop"
+                                            onchange="updatePreviewBg()">
+                                        <button class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('slideImageUpload').click()"><i
+                                                class="fas fa-upload"></i></button>
+                                    </div>
+                                    <input type="file" id="slideImageUpload" style="display:none;"
+                                        onchange="handleD3Upload('desktop')">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Mobile Image</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" id="d3ImgMobile">
+                                        <button class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('slideMobileImageUpload').click()"><i
+                                                class="fas fa-upload"></i></button>
+                                    </div>
+                                    <input type="file" id="slideMobileImageUpload" style="display:none;"
+                                        onchange="handleD3Upload('mobile')">
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="d3Active">
+                                        <label class="form-check-label small fw-bold">Active</label>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-light btn-sm text-danger"
+                                            onclick="deleteCurrentSlide()"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-dark btn-sm px-3" onclick="savePageSlides()">Save
+                                            Changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Page Info Display -->
-                <div id="pageInfoDisplay" style="display: none;" class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle"></i>
-                    Managing carousel slides for: <strong id="currentPageName"></strong>
-                </div>
-
-                <!-- Carousel Slides Container -->
-                <div id="carouselSlidesContainer">
-                    <!-- Slides will be dynamically added here based on selected page -->
-                    <div class="text-center py-5" id="emptyState">
-                        <i class="fas fa-images" style="font-size: 4rem; color: var(--border);"></i>
-                        <p class="mt-3" style="color: var(--text); font-size: 1.1rem;">
-                            Select a page from the dropdown above to manage its carousel slides
-                        </p>
+                    <!-- Preview -->
+                    <div class="d3-preview">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-dark text-uppercase ls-1">Live Preview</span>
+                            <div class="small text-muted"><i class="fas fa-desktop me-1"></i> Desktop Mode</div>
+                        </div>
+                        <div class="d3-preview-mockup" id="d3PreviewMockup">
+                            <div class="d3-mockup-overlay"></div>
+                            <div class="d3-mockup-content">
+                                <h2 class="display-6 fw-bold" id="pTitle">Title</h2>
+                                <p class="lead" id="pSubtitle">Subtitle</p>
+                                <button class="btn btn-light rounded-pill px-4 mt-3 fw-bold"
+                                    id="pButton">Button</button>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted fst-italic">This is a representation. Actual rendering may
+                                vary.</small>
+                        </div>
                     </div>
-                </div>
-
-                <div class="mt-4" id="saveButtonContainer" style="display: none;">
-                    <button class="btn btn-success" onclick="savePageSlides()">
-                        <i class="fas fa-save"></i> Save Slides for Current Page
-                    </button>
                 </div>
             </div>
+
+            <!-- Page Selection Dropdown -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label"><strong>Select Page to Manage</strong></label>
+                        <div class="custom-dropdown" id="pageSelectionDropdown">
+                            <button class="custom-dropdown-btn" id="pageSelectionDropdownBtn" type="button">
+                                <span id="pageSelectionDropdownText">Select a page...</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="pageSelectionDropdownMenu">
+                                <div class="custom-dropdown-items" id="pageSelectionDropdownItems">
+                                    <div class="custom-dropdown-item" data-value="home">
+                                        <i class="fas fa-home"></i> Home Page
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="smartphones">
+                                        <i class="fas fa-mobile-alt"></i> Smartphones
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="tablets">
+                                        <i class="fas fa-tablet-alt"></i> Tablets
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="laptops">
+                                        <i class="fas fa-laptop"></i> Laptops
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="gaming">
+                                        <i class="fas fa-gamepad"></i> Gaming
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="smartwatches">
+                                        <i class="fas fa-clock"></i> Smartwatches
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="tvs">
+                                        <i class="fas fa-tv"></i> TVs
+                                    </div>
+                                    <div class="custom-dropdown-item" data-value="cameras">
+                                        <i class="fas fa-camera"></i> Cameras
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedPage" value="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
         </div>
+    </div>
+    </div>
+
+
+
+    </div>
+    </div>
+    </div>
+
+
+    </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1342,13 +1564,14 @@
             initUserDropdown();
         }
 
-        // --- CAROUSEL LOGIC ---
+        // --- CAROUSEL LOGIC (Design 3 Refactor) ---
         let currentPage = '';
-        let slideCounters = {};
         let pageSlides = {};
+        let currentSlideIndex = -1;
 
         function showAlert(message, type = 'success') {
             const alertContainer = document.getElementById('alertContainer');
+            if (!alertContainer) return;
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
             alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
@@ -1356,90 +1579,253 @@
             setTimeout(() => alertDiv.remove(), 5000);
         }
 
-        // --- PREVIEW & UPLOAD LOGIC ---
-        async function previewImage(slideId, type = 'desktop') {
-            const inputId = type === 'mobile' ? `slideMobileImage_${slideId}` : `slideImage_${slideId}`;
-            const placeholderId = type === 'mobile' ? `uploadMobilePlaceholder_${slideId}` : `uploadPlaceholder_${slideId}`;
-            const hiddenInputId = type === 'mobile' ? `uploadedMobileUrl_${slideId}` : `uploadedUrl_${slideId}`;
+        function onPageSelect(pageValue, pageHTML) {
+            currentPage = pageValue;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = pageHTML;
+
+            // Update info display if it exists, or just ensure Title is known
+            const infoDisplay = document.getElementById('pageInfoDisplay');
+            if (infoDisplay) {
+                document.getElementById('currentPageName').textContent = tempDiv.textContent.trim();
+                infoDisplay.style.display = 'block';
+            }
+
+            // Hide old Add Button if it exists
+            const oldAddBtn = document.getElementById('addSlideBtn');
+            if (oldAddBtn) oldAddBtn.style.display = 'none';
+
+            // Show D3 Container
+            const d3Container = document.getElementById('d3Container');
+            if (d3Container) d3Container.style.display = 'grid';
+
+            loadSlidesForPage(pageValue);
+        }
+
+        async function loadSlidesForPage(page) {
+            const listContainer = document.getElementById('d3SlideList');
+            listContainer.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+            try {
+                const res = await fetch(`${API_CONFIG.ENDPOINTS.SLIDES}?page=${page}`);
+                if (!res.ok) throw new Error('Failed to load slides');
+                const data = await res.json();
+                const slides = data.slides || [];
+                pageSlides[page] = slides;
+
+                // Enable Add Button
+                const addBtn = document.getElementById('d3AddBtn');
+                if (addBtn) addBtn.disabled = false;
+
+                renderSlideList();
+
+                if (slides.length > 0) {
+                    selectSlide(0);
+                } else {
+                    document.getElementById('d3EmptyFormState').style.display = 'block';
+                    document.getElementById('d3RealForm').style.display = 'none';
+                    resetPreview();
+                }
+
+            } catch (e) {
+                console.error(e);
+                listContainer.innerHTML = '<div class="text-danger text-center">Failed to load slides</div>';
+            }
+        }
+
+        function renderSlideList() {
+            const listContainer = document.getElementById('d3SlideList');
+            listContainer.innerHTML = '';
+            const slides = pageSlides[currentPage] || [];
+
+            if (slides.length === 0) {
+                listContainer.innerHTML = '<div class="text-center text-muted py-3">No slides found.</div>';
+                return;
+            }
+
+            slides.forEach((slide, index) => {
+                const div = document.createElement('div');
+                div.className = `d3-list-item ${index === currentSlideIndex ? 'active' : ''}`;
+                div.onclick = () => selectSlide(index);
+                div.innerHTML = `
+                    <div class="fw-bold text-truncate" style="max-width: 200px;">${slide.title || 'Untitled Slide'}</div>
+                    <div class="badge bg-light text-dark border">${index + 1}</div>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function selectSlide(index) {
+            currentSlideIndex = index;
+            renderSlideList(); // Update active class
+
+            const slide = pageSlides[currentPage][index];
+            if (!slide) return;
+
+            // Populate Form
+            document.getElementById('d3EmptyFormState').style.display = 'none';
+            document.getElementById('d3RealForm').style.display = 'block';
+
+            document.getElementById('d3Title').value = slide.title || '';
+            document.getElementById('d3Subtitle').value = slide.subtitle || '';
+            document.getElementById('d3BtnText').value = slide.buttonText || '';
+            document.getElementById('d3BtnLink').value = slide.buttonLink || '';
+            document.getElementById('d3ImgDesktop').value = slide.imageUrl || '';
+            document.getElementById('d3ImgMobile').value = slide.mobileImageUrl || '';
+            document.getElementById('d3Active').checked = slide.active !== false;
+
+            updatePreview();
+        }
+
+        function addSlideForPage() {
+            if (!currentPage) return;
+            const newSlide = {
+                id: Date.now().toString(),
+                title: 'New Slide',
+                subtitle: 'Enter subtitle',
+                buttonText: 'Learn More',
+                imageUrl: '',
+                active: true
+            };
+
+            if (!pageSlides[currentPage]) pageSlides[currentPage] = [];
+            pageSlides[currentPage].push(newSlide);
+            selectSlide(pageSlides[currentPage].length - 1);
+        }
+
+        function deleteCurrentSlide() {
+            if (currentSlideIndex === -1) return;
+            if (confirm('Delete this slide?')) {
+                pageSlides[currentPage].splice(currentSlideIndex, 1);
+
+                // Select previous or next or reset
+                const slides = pageSlides[currentPage];
+                if (slides.length > 0) {
+                    currentSlideIndex = Math.min(currentSlideIndex, slides.length - 1);
+                    if (currentSlideIndex < 0) currentSlideIndex = 0;
+                    selectSlide(currentSlideIndex);
+                } else {
+                    currentSlideIndex = -1;
+                    renderSlideList();
+                    document.getElementById('d3EmptyFormState').style.display = 'block';
+                    document.getElementById('d3RealForm').style.display = 'none';
+                    resetPreview();
+                }
+            }
+        }
+
+        function updatePreviewText() {
+            if (currentSlideIndex === -1) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+            slide.title = document.getElementById('d3Title').value;
+            slide.subtitle = document.getElementById('d3Subtitle').value;
+            slide.buttonText = document.getElementById('d3BtnText').value;
+
+            // Update List Title in UI immediately for better UX
+            const listItems = document.querySelectorAll('.d3-list-item');
+            if (listItems[currentSlideIndex]) {
+                listItems[currentSlideIndex].querySelector('.fw-bold').textContent = slide.title || 'Untitled';
+            }
+
+            updatePreview();
+        }
+
+        function updatePreviewBg() {
+            if (currentSlideIndex === -1) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+            slide.imageUrl = document.getElementById('d3ImgDesktop').value;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            if (currentSlideIndex === -1 || !pageSlides[currentPage]) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+
+            document.getElementById('pTitle').textContent = slide.title;
+            document.getElementById('pSubtitle').textContent = slide.subtitle;
+            document.getElementById('pButton').textContent = slide.buttonText;
+
+            const mockup = document.getElementById('d3PreviewMockup');
+            if (slide.imageUrl) {
+                mockup.style.backgroundImage = `url('${slide.imageUrl}')`;
+            } else {
+                mockup.style.backgroundImage = 'none';
+                mockup.style.backgroundColor = '#1e293b';
+            }
+        }
+
+        function resetPreview() {
+            document.getElementById('pTitle').textContent = 'Title';
+            document.getElementById('pSubtitle').textContent = 'Subtitle';
+            document.getElementById('pButton').textContent = 'Button';
+            const mockup = document.getElementById('d3PreviewMockup');
+            mockup.style.backgroundImage = 'none';
+            mockup.style.backgroundColor = '#1e293b';
+        }
+
+        async function handleD3Upload(type) {
+            const inputId = type === 'mobile' ? 'slideMobileImageUpload' : 'slideImageUpload';
+            const textId = type === 'mobile' ? 'd3ImgMobile' : 'd3ImgDesktop';
 
             const fileInput = document.getElementById(inputId);
-            const uploadArea = fileInput.parentElement;
-            const placeholder = document.getElementById(placeholderId);
-
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
 
-                // Show local preview immediately
+                // Show Local Preview (assume uploads handled elsewhere for now or simplified)
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    uploadArea.classList.add('has-image');
-                    placeholder.innerHTML = `
-                        <div style="position: relative;">
-                            <img src="${e.target.result}" class="image-preview" alt="Slide ${slideId}" style="opacity: 0.5;">
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--primary); font-weight: bold;">
-                                <i class="fas fa-spinner fa-spin"></i> Uploading...
-                            </div>
-                        </div>`;
+                reader.onload = (e) => {
+                    document.getElementById(textId).value = e.target.result;
+                    if (type !== 'mobile') updatePreviewBg();
+
+                    // In a real app, trigger S3 upload here
+                    // For now we just put the Data URL in the field
                 };
                 reader.readAsDataURL(file);
+            }
+        }
 
-                // --- UPLOAD TO S3 ---
-                try {
-                    const getUrlRes = await fetch(API_CONFIG.ENDPOINTS.UPLOAD, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            fileName: file.name,
-                            fileType: file.type
-                        })
-                    });
+        async function savePageSlides() {
+            if (currentSlideIndex !== -1) {
+                const slide = pageSlides[currentPage][currentSlideIndex];
+                slide.title = document.getElementById('d3Title').value;
+                slide.subtitle = document.getElementById('d3Subtitle').value;
+                slide.buttonText = document.getElementById('d3BtnText').value;
+                slide.buttonLink = document.getElementById('d3BtnLink').value;
+                slide.imageUrl = document.getElementById('d3ImgDesktop').value;
+                slide.mobileImageUrl = document.getElementById('d3ImgMobile').value;
+                slide.active = document.getElementById('d3Active').checked;
+            }
 
-                    if (!getUrlRes.ok) throw new Error('Failed to get upload URL');
-                    const { uploadUrl, publicUrl } = await getUrlRes.json();
+            // Save to API
+            const slidesData = pageSlides[currentPage];
+            const btn = document.querySelector('button[onclick="savePageSlides()"]');
+            if (btn) {
+                var originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+            }
 
-                    // Upload File to S3
-                    const uploadRes = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': file.type },
-                        body: file
-                    });
+            try {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SLIDES, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ page: currentPage, slides: slidesData })
+                });
 
-                    if (!uploadRes.ok) throw new Error('Failed to upload to S3');
-
-                    // Success: Show clean image and store URL
-                    placeholder.innerHTML = `
-                        <img src="${publicUrl}" class="image-preview" alt="Slide ${slideId}">
-                        <input type="hidden" id="${hiddenInputId}" value="${publicUrl}">
-                    `;
-
-                    showAlert('Image uploaded successfully!', 'success');
-
-                } catch (error) {
-                    console.error('Upload error:', error);
-                    // FALLBACK: Use local data URL so UI doesn't break if API fails in testing
-                    placeholder.innerHTML = `
-                         <img src="${reader.result}" class="image-preview" alt="Slide ${slideId}" style="border: 2px solid var(--danger);">
-                         <input type="hidden" id="${hiddenInputId}" value="${reader.result}">
-                         <div class="text-danger small mt-2">Upload Failed (Local Preview)</div>
-                    `;
-                    showAlert('Upload failed, using local preview', 'danger');
+                if (!res.ok) throw new Error('Failed to save slides');
+                showAlert(`Slides for ${currentPage} saved successfully!`, 'success');
+            } catch (err) {
+                console.error(err);
+                showAlert('Failed to save slides', 'danger');
+            } finally {
+                if (btn) {
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
                 }
             }
         }
 
-        function deleteSlide(slideId) {
-            if (confirm(`Are you sure you want to delete this slide?`)) {
-                const slideCard = document.querySelector(`[data-slide-id="${slideId}"]`);
-                if (slideCard) {
-                    slideCard.remove();
-                    const remainingSlides = document.querySelectorAll('.carousel-item-card');
-                    if (remainingSlides.length === 0) {
-                        document.getElementById('emptyState').style.display = 'block';
-                        document.getElementById('saveButtonContainer').style.display = 'none';
-                    }
-                }
-            }
-        }
+
 
         function initCustomDropdown(dropdownId, textId, hiddenInputId, onSelect) {
             const dropdown = document.getElementById(dropdownId);
@@ -1554,220 +1940,15 @@
             }
         }
 
-        function onPageSelect(pageValue, pageHTML) {
-            currentPage = pageValue;
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = pageHTML;
-            document.getElementById('currentPageName').textContent = tempDiv.textContent.trim();
-            document.getElementById('pageInfoDisplay').style.display = 'block';
-            document.getElementById('addSlideBtn').disabled = false;
-            loadSlidesForPage(pageValue);
-        }
 
-        async function loadSlidesForPage(page) {
-            const container = document.getElementById('carouselSlidesContainer');
-            container.innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
 
-            try {
-                // Fetch slides
-                const res = await fetch(`${API_CONFIG.ENDPOINTS.SLIDES}?page=${page}`);
-                if (!res.ok) throw new Error('Failed to load slides');
 
-                const data = await res.json();
-                const slides = data.slides || [];
 
-                container.innerHTML = '';
 
-                if (slides.length > 0) {
-                    slides.forEach((slide) => {
-                        if (!slideCounters[page]) slideCounters[page] = 0;
-                        slideCounters[page]++;
-                        const displayId = slide.id || `${page}_${slideCounters[page]}`;
-                        createSlideCard(displayId, slide);
-                    });
-                    document.getElementById('saveButtonContainer').style.display = 'block';
-                } else {
-                    container.innerHTML = `
-                        <div class="text-center py-5" id="emptyState">
-                            <i class="fas fa-images" style="font-size: 4rem; color: var(--border);"></i>
-                            <p class="mt-3" style="color: var(--text); font-size: 1.1rem;">
-                                No slides found for this page. Click 'Add Slide' to start.
-                            </p>
-                        </div>`;
-                    document.getElementById('saveButtonContainer').style.display = 'none';
-                }
 
-                pageSlides[page] = slides;
-            } catch (error) {
-                container.innerHTML = '';
-                document.getElementById('emptyState').style.display = 'block';
-                container.appendChild(document.getElementById('emptyState'));
-            }
-        }
 
-        function addSlideForPage() {
-            if (!currentPage) return;
-            if (!slideCounters[currentPage]) slideCounters[currentPage] = 0;
-            slideCounters[currentPage]++;
-            const slideId = `${currentPage}_${slideCounters[currentPage]}`;
 
-            const emptyState = document.getElementById('emptyState');
-            if (emptyState) emptyState.style.display = 'none';
-            createSlideCard(slideId);
-            document.getElementById('saveButtonContainer').style.display = 'block';
-        }
 
-        function createSlideCard(slideId, slideData = null) {
-            const container = document.getElementById('carouselSlidesContainer');
-            const slideCard = document.createElement('div');
-            slideCard.className = 'carousel-item-card';
-            slideCard.setAttribute('data-slide-id', slideId);
-
-            slideCard.innerHTML = `
-                <div class="carousel-item-header">
-                    <div class="carousel-item-number"><i class="fas fa-grip-lines"></i></div>
-                    <div class="carousel-item-actions">
-                        <button class="btn-icon btn-delete" onclick="deleteSlide('${slideId}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Slide Title</label>
-                            <input type="text" class="form-control" id="slideTitle_${slideId}" placeholder="Enter slide title" value="${slideData?.title || ''}">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Slide Subtitle</label>
-                            <input type="text" class="form-control" id="slideSubtitle_${slideId}" placeholder="Enter slide subtitle" value="${slideData?.subtitle || ''}">
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="form-label">Slide Description</label>
-                            <textarea class="form-control" id="slideDescription_${slideId}" rows="3" placeholder="Enter slide description">${slideData?.description || ''}</textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Button Text</label>
-                            <input type="text" class="form-control" id="slideButtonText_${slideId}" placeholder="e.g., Shop Now" value="${slideData?.buttonText || ''}">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Button Link</label>
-                            <input type="text" class="form-control" id="slideButtonLink_${slideId}" placeholder="e.g., /products" value="${slideData?.buttonLink || ''}">
-                        </div>
-                    </div>
-                    
-                    <!-- Desktop Image -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Desktop Image (Landscape)</label>
-                            <div class="image-upload-area ${slideData?.imageUrl ? 'has-image' : ''}" onclick="document.getElementById('slideImage_${slideId}').click()">
-                                <input type="file" id="slideImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}', 'desktop')">
-                                <div class="upload-placeholder" id="uploadPlaceholder_${slideId}">
-                                    ${slideData?.imageUrl ?
-                    `<img src="${slideData.imageUrl}" class="image-preview" alt="Slide">
-                                       <input type="hidden" id="uploadedUrl_${slideId}" value="${slideData.imageUrl}">` :
-                    `<i class="fas fa-desktop"></i><p>Click to upload</p><small>1920x800px</small>`
-                }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mobile Image -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Mobile Image (Portrait)</label>
-                            <div class="image-upload-area ${slideData?.mobileImageUrl ? 'has-image' : ''}" onclick="document.getElementById('slideMobileImage_${slideId}').click()">
-                                <input type="file" id="slideMobileImage_${slideId}" accept="image/*" style="display: none;" onchange="previewImage('${slideId}', 'mobile')">
-                                <div class="upload-placeholder" id="uploadMobilePlaceholder_${slideId}">
-                                    ${slideData?.mobileImageUrl ?
-                    `<img src="${slideData.mobileImageUrl}" class="image-preview" alt="Slide Mobile">
-                                       <input type="hidden" id="uploadedMobileUrl_${slideId}" value="${slideData.mobileImageUrl}">` :
-                    `<i class="fas fa-mobile-alt"></i><p>Click to upload</p><small>600x800px</small>`
-                }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Active</label>
-                            <div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="slideActive_${slideId}" ${slideData?.active !== false ? 'checked' : ''}>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(slideCard);
-        }
-
-        async function savePageSlides() {
-            if (!currentPage) return;
-            const slides = document.querySelectorAll('.carousel-item-card');
-            const slidesData = [];
-            slides.forEach((slide) => {
-                const slideId = slide.getAttribute('data-slide-id');
-
-                // Desktop Image URL
-                const uploadedUrlInput = document.getElementById(`uploadedUrl_${slideId}`);
-                const imgPreview = document.querySelector(`#uploadPlaceholder_${slideId} img`);
-                const finalImageUrl = uploadedUrlInput ? uploadedUrlInput.value : (imgPreview ? imgPreview.src : '');
-
-                // Mobile Image URL
-                const uploadedMobileUrlInput = document.getElementById(`uploadedMobileUrl_${slideId}`);
-                const mobImgPreview = document.querySelector(`#uploadMobilePlaceholder_${slideId} img`);
-                const finalMobileImageUrl = uploadedMobileUrlInput ? uploadedMobileUrlInput.value : (mobImgPreview ? mobImgPreview.src : '');
-
-                slidesData.push({
-                    id: slideId,
-                    title: document.getElementById(`slideTitle_${slideId}`)?.value || '',
-                    subtitle: document.getElementById(`slideSubtitle_${slideId}`)?.value || '',
-                    description: document.getElementById(`slideDescription_${slideId}`)?.value || '',
-                    buttonText: document.getElementById(`slideButtonText_${slideId}`)?.value || '',
-                    buttonLink: document.getElementById(`slideButtonLink_${slideId}`)?.value || '',
-                    active: document.getElementById(`slideActive_${slideId}`)?.checked || false,
-                    imageUrl: finalImageUrl,
-                    mobileImageUrl: finalMobileImageUrl
-                });
-            });
-
-            pageSlides[currentPage] = slidesData;
-
-            const btn = document.querySelector('button[onclick="savePageSlides()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-
-            try {
-                // Call API here
-                const res = await fetch(API_CONFIG.ENDPOINTS.SLIDES, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ page: currentPage, slides: slidesData })
-                });
-
-                if (!res.ok) throw new Error('Failed to save slides');
-                showAlert(`Slides for ${currentPage} saved successfully!`, 'success');
-            } catch (err) {
-                showAlert('Failed to save slides', 'danger');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
     </script>
 </body>
 

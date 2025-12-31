@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Tracking | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -424,87 +425,84 @@
             font-weight: 400;
         }
 
-        /* Stats Cards */
+        /* Stats Grid - Design 62 Layout */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-            gap: 1.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2.25rem;
         }
 
-        .stat-card {
+        /* Design 62: Circle Progress Card (Design G) - White Theme */
+        .stat-card-design-g {
             background: white;
             border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-            border: 2px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.15);
-            border-color: var(--primary);
-        }
-
-        .stat-header {
+            padding: 1.5rem;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 1.5rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
         }
 
-        .stat-title {
-            font-size: 0.875rem;
-            color: var(--text);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
+        .design-g-ring {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 4px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            background: transparent;
-        }
-
-        .stat-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 8px;
-        }
-
-        .stat-card.primary .stat-icon { background: transparent; }
-        .stat-card.success .stat-icon { background: transparent; }
-        .stat-card.warning .stat-icon { background: transparent; }
-        .stat-card.danger .stat-icon { background: transparent; }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 900;
+            font-size: 0.8rem;
+            font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.625rem;
-            letter-spacing: -1.5px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Border color variants */
+        .design-g-ring.primary {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+        }
+
+        .design-g-ring.success {
+            border-top-color: #10b981;
+            border-right-color: #10b981;
+        }
+
+        .design-g-ring.warning {
+            border-top-color: #f59e0b;
+            border-right-color: #f59e0b;
+        }
+
+        .design-g-ring.danger {
+            border-top-color: #ef4444;
+            border-right-color: #ef4444;
+        }
+
+        .design-g-content h4 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .design-g-content .design-g-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.25rem;
+            line-height: 1.2;
         }
 
         /* Charts Section */
@@ -573,7 +571,7 @@
             align-items: center;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
+        .breadcrumb-item+.breadcrumb-item::before {
             content: "/";
             display: inline-block;
             padding: 0 0.5rem;
@@ -1094,7 +1092,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -1234,11 +1232,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-           
+
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -1331,7 +1330,7 @@
                 </div>
             </div>
             <div class="header-right">
-              
+
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -1339,7 +1338,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -1365,48 +1364,57 @@
         <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Login Tracking</h1>
-                <p class="page-subtitle">Monitor user login activities, track authentication events, and analyze access patterns</p>
+                <p class="page-subtitle">Monitor user login activities, track authentication events, and analyze access
+                    patterns</p>
             </div>
 
             <div id="alertContainer"></div>
 
             <!-- Stats Cards -->
+            <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-header">
-                        <div class="stat-title">Total Logins</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/login.png" alt="Total Logins">
-                        </div>
+                <!-- Total Logins -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring primary">
+                        <i class="fas fa-sign-in-alt"></i>
                     </div>
-                    <div class="stat-value" id="totalLoginsCount">0</div>
+                    <div class="design-g-content">
+                        <h4>Total Logins</h4>
+                        <div class="design-g-value" id="totalLoginsCount">0</div>
+                    </div>
                 </div>
-                <div class="stat-card success">
-                    <div class="stat-header">
-                        <div class="stat-title">Today</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/schedule.png" alt="Today">
-                        </div>
+
+                <!-- Today -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning">
+                        <i class="fas fa-calendar-day"></i>
                     </div>
-                    <div class="stat-value" id="todayLoginsCount">0</div>
+                    <div class="design-g-content">
+                        <h4>Today</h4>
+                        <div class="design-g-value" id="todayLoginsCount">0</div>
+                    </div>
                 </div>
-                <div class="stat-card warning">
-                    <div class="stat-header">
-                        <div class="stat-title">Successful</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/checked.png" alt="Successful">
-                        </div>
+
+                <!-- Successful -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success">
+                        <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="stat-value" id="successfulLoginsCount">0</div>
+                    <div class="design-g-content">
+                        <h4>Successful</h4>
+                        <div class="design-g-value" id="successfulLoginsCount">0</div>
+                    </div>
                 </div>
-                <div class="stat-card danger">
-                    <div class="stat-header">
-                        <div class="stat-title">Failed</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/dismissed.png" alt="Failed">
-                        </div>
+
+                <!-- Failed -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger">
+                        <i class="fas fa-times-circle"></i>
                     </div>
-                    <div class="stat-value" id="failedLoginsCount">0</div>
+                    <div class="design-g-content">
+                        <h4>Failed</h4>
+                        <div class="design-g-value" id="failedLoginsCount">0</div>
+                    </div>
                 </div>
             </div>
 
@@ -1449,122 +1457,118 @@
                 </div>
             </div>
 
-        <!-- Filters Section -->
-        <div class="filters-section">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="searchInput" 
-                            placeholder="Search by email, IP address, or device..."
-                        >
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="filter-box">
-                        <div class="custom-dropdown" id="accountTypeDropdown">
-                            <button class="custom-dropdown-btn" id="accountTypeDropdownBtn">
-                                <span id="accountTypeDropdownText">All Account Types</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="custom-dropdown-menu" id="accountTypeDropdownMenu" style="display: none;">
-                                <div class="custom-dropdown-items" id="accountTypeDropdownItems"></div>
-                            </div>
-                            <input type="hidden" id="accountTypeSelect" value="all">
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" id="searchInput"
+                                placeholder="Search by email, IP address, or device...">
                         </div>
                     </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="filter-box">
-                        <div class="custom-dropdown" id="statusDropdown">
-                            <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                <span id="statusDropdownText">All Status</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                <div class="custom-dropdown-items" id="statusDropdownItems"></div>
-                            </div>
-                            <input type="hidden" id="statusSelect" value="all">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="filter-box">
-                        <div class="custom-date-input">
-                            <input type="date" class="custom-date-field" id="dateFromFilter" title="From Date">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="filter-box">
-                        <div class="custom-date-input">
-                            <input type="date" class="custom-date-field" id="dateToFilter" title="To Date">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all" id="filterAll">
-                    All
-                </button>
-                <button class="filter-btn" data-filter="today" id="filterToday">
-                    Today
-                </button>
-                <button class="filter-btn" data-filter="week" id="filterWeek">
-                    This Week
-                </button>
-                <button class="filter-btn" data-filter="month" id="filterMonth">
-                    This Month
-                </button>
-            </div>
-        </div>
-
-        <!-- Login Events Section -->
-        <div class="login-events-section">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Login Events</h3>
-                <div>
-                    <button class="btn btn-primary btn-sm" onclick="refreshLogins()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="exportLogins()">
-                        <i class="fas fa-file-pdf"></i> Export to PDF
-                    </button>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Account Type</th>
-                            <th>Status</th>
-                            <th>Failure Reason</th>
-                            <th>IP Address</th>
-                            <th>Device/Browser</th>
-                            <th>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody id="loginEventsContainer">
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                <div class="loading-spinner">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-box">
+                            <div class="custom-dropdown" id="accountTypeDropdown">
+                                <button class="custom-dropdown-btn" id="accountTypeDropdownBtn">
+                                    <span id="accountTypeDropdownText">All Account Types</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="accountTypeDropdownMenu" style="display: none;">
+                                    <div class="custom-dropdown-items" id="accountTypeDropdownItems"></div>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <input type="hidden" id="accountTypeSelect" value="all">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-box">
+                            <div class="custom-dropdown" id="statusDropdown">
+                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                    <span id="statusDropdownText">All Status</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                                </div>
+                                <input type="hidden" id="statusSelect" value="all">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-box">
+                            <div class="custom-date-input">
+                                <input type="date" class="custom-date-field" id="dateFromFilter" title="From Date">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="filter-box">
+                            <div class="custom-date-input">
+                                <input type="date" class="custom-date-field" id="dateToFilter" title="To Date">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all" id="filterAll">
+                        All
+                    </button>
+                    <button class="filter-btn" data-filter="today" id="filterToday">
+                        Today
+                    </button>
+                    <button class="filter-btn" data-filter="week" id="filterWeek">
+                        This Week
+                    </button>
+                    <button class="filter-btn" data-filter="month" id="filterMonth">
+                        This Month
+                    </button>
+                </div>
             </div>
-        </div>
+
+            <!-- Login Events Section -->
+            <div class="login-events-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Login Events</h3>
+                    <div>
+                        <button class="btn btn-primary btn-sm" onclick="refreshLogins()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="exportLogins()">
+                            <i class="fas fa-file-pdf"></i> Export to PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Account Type</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>IP Address</th>
+                                <th>Device/Browser</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loginEventsContainer">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1572,17 +1576,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin_login_tracking.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script>
         // Toggle navigation section collapse/expand
         function toggleNavSection(element) {
             const navSection = element.closest('.nav-section');
             const navItems = navSection.querySelector('.nav-section-items');
-            
+
             // Toggle collapsed class on title
             element.classList.toggle('collapsed');
-            
+
             // Toggle collapsed class on items container
             navItems.classList.toggle('collapsed');
         }
@@ -1664,4 +1668,5 @@
         }
     </script>
 </body>
+
 </html>

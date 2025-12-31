@@ -42,7 +42,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -133,7 +133,7 @@ async function loadAnalytics() {
         }
 
         const data = await response.json();
-        
+
         if (data.success && data.analytics) {
             analyticsData = data.analytics;
             updateStats();
@@ -205,53 +205,43 @@ function updateCharts() {
                 e.preventDefault();
                 return false;
             };
-            
+
             topFollowersCtx.addEventListener('wheel', preventScroll, { passive: false });
             topFollowersCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-            
+
             if (charts.topFollowers) charts.topFollowers.destroy();
-            charts.topFollowers = new Chart(topFollowersCtx.getContext('2d'), {
+
+            const ctx3 = topFollowersCtx.getContext('2d');
+            const gradient3 = ctx3.createLinearGradient(0, 0, 0, 300);
+            gradient3.addColorStop(0, '#8b5cf6');
+            gradient3.addColorStop(1, '#6366f1');
+
+            charts.topFollowers = new Chart(ctx3, {
                 type: 'bar',
                 data: {
                     labels: chartsData.topFollowersByBusiness.labels || [],
                     datasets: [{
                         label: 'Total Followers',
                         data: chartsData.topFollowersByBusiness.data || [],
-                        backgroundColor: [
-                            'rgba(37, 99, 235, 0.8)',
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(6, 182, 212, 0.8)',
-                            'rgba(244, 63, 94, 0.8)'
-                        ],
-                        borderColor: [
-                            '#2563eb',
-                            '#28a745',
-                            '#f59e0b',
-                            '#06b6d4',
-                            '#f43f5e'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 8
+                        backgroundColor: gradient3,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barPercentage: 0.6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             titleColor: '#fff',
                             bodyColor: '#fff',
-                            borderColor: '#2563eb',
-                            borderWidth: 1,
                             padding: 12,
-                            displayColors: true,
+                            displayColors: false,
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return 'Followers: ' + context.parsed.y.toLocaleString();
                                 }
                             }
@@ -260,34 +250,15 @@ function updateCharts() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                color: '#eff6ff',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#64748b',
-                                font: {
-                                    size: 12
-                                }
-                            }
+                            grid: { color: '#eff6ff', drawBorder: false },
+                            ticks: { color: '#64748b', font: { size: 12 } }
                         },
                         x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#64748b',
-                                font: {
-                                    size: 12
-                                }
-                            }
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#64748b', font: { size: 12 } }
                         }
                     },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
+                    interaction: { intersect: false, mode: 'index' },
                     events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
                 }
             });
@@ -304,10 +275,10 @@ function updateCharts() {
                 e.preventDefault();
                 return false;
             };
-            
+
             ratingsDistCtx.addEventListener('wheel', preventScroll, { passive: false });
             ratingsDistCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-            
+
             if (charts.ratingsDistribution) charts.ratingsDistribution.destroy();
             charts.ratingsDistribution = new Chart(ratingsDistCtx.getContext('2d'), {
                 type: 'doughnut',
@@ -316,34 +287,28 @@ function updateCharts() {
                     datasets: [{
                         data: chartsData.ratingsDistribution.data || [],
                         backgroundColor: [
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(6, 182, 212, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(253, 126, 20, 0.8)',
-                            'rgba(244, 63, 94, 0.8)'
+                            '#3b82f6', // Blue
+                            '#06b6d4', // Cyan
+                            '#ec4899', // Pink
+                            '#f59e0b', // Amber
+                            '#10b981'  // Green
                         ],
-                        borderColor: [
-                            '#28a745',
-                            '#06b6d4',
-                            '#f59e0b',
-                            '#fd7e14',
-                            '#f43f5e'
-                        ],
-                        borderWidth: 2
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '75%', // Design 2
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                            position: 'right', // Design 2
                             labels: {
-                                padding: 15,
                                 usePointStyle: true,
-                                font: {
-                                    size: 12
-                                },
+                                boxWidth: 6,
+                                padding: 20,
+                                font: { size: 12 },
                                 color: '#64748b'
                             }
                         },
@@ -351,12 +316,10 @@ function updateCharts() {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
                             titleColor: '#fff',
                             bodyColor: '#fff',
-                            borderColor: '#2563eb',
-                            borderWidth: 1,
                             padding: 12,
                             displayColors: true,
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const label = context.label || '';
                                     const value = context.parsed || 0;
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -382,10 +345,10 @@ function updateCharts() {
                 e.preventDefault();
                 return false;
             };
-            
+
             goodReviewsCtx.addEventListener('wheel', preventScroll, { passive: false });
             goodReviewsCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-            
+
             if (charts.goodReviews) charts.goodReviews.destroy();
             charts.goodReviews = new Chart(goodReviewsCtx.getContext('2d'), {
                 type: 'line',
@@ -458,10 +421,10 @@ function updateCharts() {
                 e.preventDefault();
                 return false;
             };
-            
+
             productLikesCtx.addEventListener('wheel', preventScroll, { passive: false });
             productLikesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-            
+
             if (charts.productLikes) charts.productLikes.destroy();
             charts.productLikes = new Chart(productLikesCtx.getContext('2d'), {
                 type: 'line',
@@ -664,7 +627,7 @@ function updateTables() {
 function showError(message) {
     const alertContainer = document.getElementById('alertContainer');
     if (!alertContainer) return;
-    
+
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-danger alert-dismissible fade show';
     alertDiv.innerHTML = `

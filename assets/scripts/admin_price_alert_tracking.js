@@ -44,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Setup event listeners
 function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', debounce(applyFilters, 300));
     }
-    
+
     // Initialize custom status dropdown
     initializeStatusDropdown();
 
@@ -63,7 +63,7 @@ function setupEventListeners() {
 async function loadPriceAlertStats() {
     try {
         showLoading();
-        
+
         const response = await fetch(`${PRICE_ALERT_TRACKING_API}`, {
             method: 'GET',
             credentials: 'include',
@@ -85,7 +85,7 @@ async function loadPriceAlertStats() {
             }
         } else {
             const errorData = await response.json().catch(() => ({}));
-            
+
             if (response.status === 401) {
                 showAlert('Please log in to view price alert tracking', 'warning');
                 setTimeout(() => {
@@ -93,7 +93,7 @@ async function loadPriceAlertStats() {
                 }, 2000);
                 return;
             }
-            
+
             throw new Error(errorData.message || `Failed to load price alert statistics: ${response.statusText}`);
         }
     } catch (error) {
@@ -109,15 +109,15 @@ async function loadPriceAlertStats() {
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
     const status = statusSelect ? statusSelect.value : 'all';
 
     filteredUserStats = allUserStats.filter(userStat => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             (userStat.userEmail && userStat.userEmail.toLowerCase().includes(searchTerm)) ||
-            (userStat.alerts && userStat.alerts.some(alert => 
+            (userStat.alerts && userStat.alerts.some(alert =>
                 alert.productName && alert.productName.toLowerCase().includes(searchTerm)
             ));
 
@@ -142,7 +142,7 @@ function applyFilters() {
 function renderUserStats() {
     const container = document.getElementById('priceAlertsContainer');
     if (!container) return;
-    
+
     if (filteredUserStats.length === 0) {
         container.innerHTML = `
             <tr>
@@ -162,7 +162,7 @@ function renderUserStats() {
 
     filteredUserStats.forEach(userStat => {
         const isExpanded = expandedUsers.has(userStat.userId);
-        const activeBadge = userStat.activeAlerts > 0 
+        const activeBadge = userStat.activeAlerts > 0
             ? `<span class="badge badge-success">${userStat.activeAlerts}</span>`
             : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
         const inactiveBadge = userStat.inactiveAlerts > 0
@@ -212,7 +212,7 @@ function renderUserStats() {
                                     </thead>
                                     <tbody>
             `;
-            
+
             userStat.alerts.forEach(alert => {
                 const statusBadge = alert.status === 'active'
                     ? '<span class="badge badge-success">Active</span>'
@@ -220,10 +220,10 @@ function renderUserStats() {
                 const notificationBadge = alert.notificationMethod === 'email'
                     ? '<span class="badge badge-info">Email</span>'
                     : alert.notificationMethod === 'website'
-                    ? '<span class="badge badge-primary">Website</span>'
-                    : '<span class="badge badge-warning">Both</span>';
-                
-                const formattedDate = alert.dateCreated 
+                        ? '<span class="badge badge-primary">Website</span>'
+                        : '<span class="badge badge-warning">Both</span>';
+
+                const formattedDate = alert.dateCreated
                     ? new Date(alert.dateCreated).toLocaleString('en-ZA', {
                         year: 'numeric',
                         month: 'short',
@@ -236,10 +236,10 @@ function renderUserStats() {
                 html += `
                                         <tr>
                                             <td>
-                                                ${alert.productImage 
-                                                    ? `<img src="${escapeHtml(alert.productImage)}" alt="${escapeHtml(alert.productName)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">`
-                                                    : ''
-                                                }
+                                                ${alert.productImage
+                        ? `<img src="${escapeHtml(alert.productImage)}" alt="${escapeHtml(alert.productName)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">`
+                        : ''
+                    }
                                                 <strong>${escapeHtml(alert.productName || 'Unknown Product')}</strong>
                                                 ${alert.alertName ? `<br><small class="text-muted">${escapeHtml(alert.alertName)}</small>` : ''}
                                             </td>
@@ -283,7 +283,7 @@ function updateStats(stats) {
     const totalAlertsCount = document.getElementById('totalAlertsCount');
     const activeAlertsCount = document.getElementById('activeAlertsCount');
     const inactiveAlertsCount = document.getElementById('inactiveAlertsCount');
-    
+
     if (totalUsersCount) totalUsersCount.textContent = stats.totalUsers || stats.totalUsersWithAlerts || 0;
     if (totalAlertsCount) totalAlertsCount.textContent = stats.totalAlerts || 0;
     if (activeAlertsCount) activeAlertsCount.textContent = stats.activeAlerts || stats.totalActiveAlerts || 0;
@@ -320,7 +320,7 @@ function convertToCSV(userStats) {
         stat.activeAlerts,
         stat.inactiveAlerts
     ]);
-    
+
     return [
         headers.join(','),
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
@@ -338,7 +338,7 @@ function escapeHtml(text) {
 function showLoading() {
     const container = document.getElementById('priceAlertsContainer');
     if (!container) return;
-    
+
     container.innerHTML = `
         <tr>
             <td colspan="5" class="text-center">
@@ -368,7 +368,7 @@ function showAlert(message, type = 'info') {
             }
         }
     }
-    
+
     const alertId = 'alert-' + Date.now();
     const alertHtml = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
@@ -377,7 +377,7 @@ function showAlert(message, type = 'info') {
         </div>
     `;
     alertContainer.innerHTML = alertHtml;
-    
+
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
         const alert = document.getElementById(alertId);
@@ -409,7 +409,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -432,7 +432,7 @@ async function checkLoginState() {
 
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
-            
+
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
         } else {
@@ -509,7 +509,7 @@ function initializeCharts() {
         });
     }
 
-    // Chart 2: Active vs Inactive Alerts (Pie Chart)
+    // Chart 2: Active vs Inactive Alerts (Design 2: Doughnut Chart)
     const alertStatusCtx = document.getElementById('alertStatusChart');
     if (alertStatusCtx) {
         // Add scroll prevention
@@ -531,29 +531,34 @@ function initializeCharts() {
 
         const statusData = calculateAlertStatus();
         alertStatusChart = new Chart(alertStatusCtx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: statusData.labels,
                 datasets: [{
                     data: statusData.data,
                     backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(220, 53, 69, 0.8)'
+                        '#10b981', // Active (Emerald)
+                        '#ef4444'  // Inactive (Red)
                     ],
-                    borderColor: [
-                        'rgb(40, 167, 69)',
-                        'rgb(220, 53, 69)'
-                    ],
-                    borderWidth: 2
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Design 2: Thin ring
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right', // Design 2: Legend Right
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
@@ -616,7 +621,7 @@ function initializeCharts() {
         });
     }
 
-    // Chart 4: Notification Methods Distribution (Doughnut Chart)
+    // Chart 4: Notification Methods Distribution (Design 2: Doughnut Chart)
     const notificationMethodsCtx = document.getElementById('notificationMethodsChart');
     if (notificationMethodsCtx) {
         // Add scroll prevention
@@ -644,29 +649,31 @@ function initializeCharts() {
                 datasets: [{
                     data: methodsData.data,
                     backgroundColor: [
-                        'rgba(37, 99, 235, 0.8)',
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(244, 63, 94, 0.8)',
-                        'rgba(108, 117, 125, 0.8)'
+                        '#3b82f6', // Blue
+                        '#06b6d4', // Cyan
+                        '#ec4899', // Pink
+                        '#f59e0b', // Amber
+                        '#10b981'  // Emerald
                     ],
-                    borderColor: [
-                        'rgb(37, 99, 235)',
-                        'rgb(40, 167, 69)',
-                        'rgb(245, 158, 11)',
-                        'rgb(244, 63, 94)',
-                        'rgb(108, 117, 125)'
-                    ],
-                    borderWidth: 2
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Design 2: Thin ring
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right', // Design 2: Legend Right
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
@@ -680,19 +687,19 @@ function calculateAlertsOverTime() {
     const alerts = getAllAlerts();
     const last7Days = [];
     const today = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
         last7Days.push(dateStr);
     }
-    
+
     const labels = last7Days.map(date => {
         const d = new Date(date);
         return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     });
-    
+
     const data = last7Days.map(date => {
         return alerts.filter(alert => {
             if (!alert.dateCreated) return false;
@@ -700,7 +707,7 @@ function calculateAlertsOverTime() {
             return alertDate === date;
         }).length;
     });
-    
+
     return { labels, data };
 }
 
@@ -709,7 +716,7 @@ function calculateAlertStatus() {
     const alerts = getAllAlerts();
     const active = alerts.filter(a => a.status === 'active').length;
     const inactive = alerts.filter(a => a.status !== 'active').length;
-    
+
     return {
         labels: ['Active', 'Inactive'],
         data: [active, inactive]
@@ -724,7 +731,7 @@ function calculateTopUsers() {
         return email.length > 20 ? email.substring(0, 20) + '...' : email;
     });
     const data = sortedUsers.map(user => user.totalAlerts);
-    
+
     return { labels, data };
 }
 
@@ -732,15 +739,15 @@ function calculateTopUsers() {
 function calculateNotificationMethods() {
     const alerts = getAllAlerts();
     const methods = {};
-    
+
     alerts.forEach(alert => {
         const method = alert.notificationMethod || 'Unknown';
         methods[method] = (methods[method] || 0) + 1;
     });
-    
+
     const labels = Object.keys(methods);
     const data = Object.values(methods);
-    
+
     return { labels, data };
 }
 
@@ -814,16 +821,16 @@ function initializeStatusDropdown() {
     const statusDropdownMenu = document.getElementById('statusDropdownMenu');
     const statusDropdownItems = document.getElementById('statusDropdownItems');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
-    
+
     // Status options
     const statusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'active', text: 'Active' },
         { value: 'inactive', text: 'Inactive' }
     ];
-    
+
     // Render dropdown items
     statusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
@@ -833,32 +840,32 @@ function initializeStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             // Update selected state
             statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             // Update button text and hidden input
             document.getElementById('statusDropdownText').textContent = option.text;
             statusSelect.value = option.value;
-            
+
             // Close dropdown
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
-            
+
             // Apply filters
             applyFilters();
         });
         statusDropdownItems.appendChild(itemDiv);
     });
-    
+
     // Toggle dropdown
-    statusDropdownBtn.addEventListener('click', function(e) {
+    statusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains('active');
-        
+
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'statusDropdown') {
@@ -867,7 +874,7 @@ function initializeStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
@@ -876,9 +883,9 @@ function initializeStatusDropdown() {
             statusDropdownMenu.style.display = 'block';
         }
     });
-    
+
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';

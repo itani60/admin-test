@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Price Alert Tracking | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -436,7 +437,7 @@
             font-weight: 400;
         }
 
-        /* Stats Cards */
+        /* Stats Cards - Design 62: Circle Progress Card (White Theme) */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
@@ -444,95 +445,152 @@
             margin-bottom: 2.25rem;
         }
 
-        .stat-card {
+        .stat-card-design-g {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.15);
-            border-color: var(--primary);
-        }
-
-        .stat-header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
+            min-height: 160px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        .stat-title {
-            font-size: 0.875rem;
-            color: var(--text);
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .design-g-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .design-g-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .design-g-label {
+            color: #64748b;
+            font-size: 0.95rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
         }
 
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
+        .design-g-bg-icon {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-design-g:hover .design-g-bg-icon {
+            transform: rotate(0) scale(1.1);
+            opacity: 0.1;
+        }
+
+        .design-g-ring {
+            position: relative;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            background: transparent;
+            flex-shrink: 0;
+            margin-left: 1rem;
         }
 
-        .stat-icon img {
+        .design-g-ring svg {
+            transform: rotate(-90deg);
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            padding: 8px;
         }
 
-        .stat-card.primary .stat-icon { background: transparent; }
-        .stat-card.success .stat-icon { background: transparent; }
-        .stat-card.warning .stat-icon { background: transparent; }
-        .stat-card.danger .stat-icon { background: transparent; }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--text-dark);
-            margin-bottom: 0.625rem;
-            letter-spacing: -1.5px;
+        .design-g-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
         }
 
-        .stat-change {
-            display: flex;
-            align-items: center;
-            gap: 0.625rem;
-            font-size: 0.9rem;
-            font-weight: 700;
+        .design-g-ring .bg {
+            stroke: #f1f5f9;
         }
 
-        .stat-change.positive {
-            color: var(--success);
+        .design-g-ring .progress {
+            stroke-dasharray: 251;
+            stroke-dashoffset: 60;
+            transition: stroke-dashoffset 1s ease-in-out;
         }
 
-        .stat-change.negative {
-            color: var(--danger);
+        .design-g-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            z-index: 3;
+        }
+
+        /* Color Variants - White Theme */
+        .stat-card-design-g.primary .progress {
+            stroke: #3b82f6;
+        }
+
+        .stat-card-design-g.primary .design-g-icon {
+            color: #3b82f6;
+        }
+
+        .stat-card-design-g.primary .design-g-label {
+            color: #3b82f6;
+        }
+
+        .stat-card-design-g.success .progress {
+            stroke: #10b981;
+        }
+
+        .stat-card-design-g.success .design-g-icon {
+            color: #10b981;
+        }
+
+        .stat-card-design-g.success .design-g-label {
+            color: #10b981;
+        }
+
+        .stat-card-design-g.warning .progress {
+            stroke: #f59e0b;
+        }
+
+        .stat-card-design-g.warning .design-g-icon {
+            color: #f59e0b;
+        }
+
+        .stat-card-design-g.warning .design-g-label {
+            color: #f59e0b;
+        }
+
+        .stat-card-design-g.danger .progress {
+            stroke: #ef4444;
+        }
+
+        .stat-card-design-g.danger .design-g-icon {
+            color: #ef4444;
+        }
+
+        .stat-card-design-g.danger .design-g-label {
+            color: #ef4444;
         }
 
         /* Charts Section */
@@ -891,7 +949,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -966,11 +1024,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
+
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -1064,7 +1123,7 @@
                 </div>
             </div>
             <div class="header-right">
-             
+
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -1072,7 +1131,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -1098,48 +1157,77 @@
         <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Price Alert Tracking</h1>
-                <p class="page-subtitle">Monitor price alerts created by users, view alert statistics, and track user engagement</p>
+                <p class="page-subtitle">Monitor price alerts created by users, view alert statistics, and track user
+                    engagement</p>
             </div>
 
             <div id="alertContainer"></div>
 
             <!-- Stats Grid -->
+            <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-header">
-                        <div class="stat-title">Users with Alerts</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/man.png" alt="Users">
-                        </div>
+                <!-- Users with Alerts -->
+                <div class="stat-card-design-g primary">
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="totalUsersCount">0</div>
+                        <div class="design-g-label">Users with Alerts</div>
                     </div>
-                    <div class="stat-value" id="totalUsersCount">0</div>
+                    <i class="fas fa-user-tag design-g-bg-icon"></i>
+                    <div class="design-g-ring">
+                        <svg>
+                            <circle class="bg" cx="40" cy="40" r="35" />
+                            <circle class="progress" cx="40" cy="40" r="35" />
+                        </svg>
+                        <i class="fas fa-user-tag design-g-icon"></i>
+                    </div>
                 </div>
-                <div class="stat-card success">
-                    <div class="stat-header">
-                        <div class="stat-title">Total Alerts</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/price alets.png" alt="Alerts">
-                        </div>
+
+                <!-- Total Alerts -->
+                <div class="stat-card-design-g success">
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="totalAlertsCount">0</div>
+                        <div class="design-g-label">Total Alerts</div>
                     </div>
-                    <div class="stat-value" id="totalAlertsCount">0</div>
+                    <i class="fas fa-bell design-g-bg-icon"></i>
+                    <div class="design-g-ring">
+                        <svg>
+                            <circle class="bg" cx="40" cy="40" r="35" />
+                            <circle class="progress" cx="40" cy="40" r="35" />
+                        </svg>
+                        <i class="fas fa-bell design-g-icon"></i>
+                    </div>
                 </div>
-                <div class="stat-card warning">
-                    <div class="stat-header">
-                        <div class="stat-title">Active Alerts</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/checked.png" alt="Active">
-                        </div>
+
+                <!-- Active Alerts -->
+                <div class="stat-card-design-g warning">
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="activeAlertsCount">0</div>
+                        <div class="design-g-label">Active Alerts</div>
                     </div>
-                    <div class="stat-value" id="activeAlertsCount">0</div>
+                    <i class="fas fa-check-circle design-g-bg-icon"></i>
+                    <div class="design-g-ring">
+                        <svg>
+                            <circle class="bg" cx="40" cy="40" r="35" />
+                            <circle class="progress" cx="40" cy="40" r="35" />
+                        </svg>
+                        <i class="fas fa-check-circle design-g-icon"></i>
+                    </div>
                 </div>
-                <div class="stat-card danger">
-                    <div class="stat-header">
-                        <div class="stat-title">Inactive Alerts</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/dismissed.png" alt="Inactive">
-                        </div>
+
+                <!-- Inactive Alerts -->
+                <div class="stat-card-design-g danger">
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="inactiveAlertsCount">0</div>
+                        <div class="design-g-label">Inactive Alerts</div>
                     </div>
-                    <div class="stat-value" id="inactiveAlertsCount">0</div>
+                    <i class="fas fa-times-circle design-g-bg-icon"></i>
+                    <div class="design-g-ring">
+                        <svg>
+                            <circle class="bg" cx="40" cy="40" r="35" />
+                            <circle class="progress" cx="40" cy="40" r="35" />
+                        </svg>
+                        <i class="fas fa-times-circle design-g-icon"></i>
+                    </div>
                 </div>
             </div>
 
@@ -1185,12 +1273,8 @@
                     <div class="col-md-6">
                         <div class="search-box">
                             <i class="fas fa-search"></i>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                id="searchInput" 
-                                placeholder="Search by user email or product name..."
-                            >
+                            <input type="text" class="form-control" id="searchInput"
+                                placeholder="Search by user email or product name...">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -1255,17 +1339,17 @@
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
+
     <script src="assets/scripts/admin_price_alert_tracking.js"></script>
     <script>
         // Toggle navigation section collapse/expand
         function toggleNavSection(element) {
             const navSection = element.closest('.nav-section');
             const navItems = navSection.querySelector('.nav-section-items');
-            
+
             // Toggle collapsed class on title
             element.classList.toggle('collapsed');
-            
+
             // Toggle collapsed class on items container
             navItems.classList.toggle('collapsed');
         }
@@ -1347,5 +1431,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>

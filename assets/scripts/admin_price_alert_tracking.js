@@ -566,7 +566,7 @@ function initializeCharts() {
         });
     }
 
-    // Chart 3: Top Users by Alert Count (Bar Chart)
+    // Chart 3: Top Users by Alert Count (Design 3: Vertical Bar with Gradient)
     const topUsersCtx = document.getElementById('topUsersChart');
     if (topUsersCtx) {
         // Add scroll prevention
@@ -586,6 +586,11 @@ function initializeCharts() {
             }
         }, { passive: false });
 
+        const ctx3 = topUsersCtx.getContext('2d');
+        const gradient3 = ctx3.createLinearGradient(0, 0, 0, 300);
+        gradient3.addColorStop(0, '#8b5cf6');
+        gradient3.addColorStop(1, '#6366f1');
+
         const usersData = calculateTopUsers();
         topUsersChart = new Chart(topUsersCtx, {
             type: 'bar',
@@ -594,19 +599,17 @@ function initializeCharts() {
                 datasets: [{
                     label: 'Total Alerts',
                     data: usersData.data,
-                    backgroundColor: 'rgba(37, 99, 235, 0.8)',
-                    borderColor: 'rgb(37, 99, 235)',
-                    borderWidth: 1
+                    backgroundColor: gradient3,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barPercentage: 0.6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
@@ -614,6 +617,9 @@ function initializeCharts() {
                         ticks: {
                             stepSize: 1
                         }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']

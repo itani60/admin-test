@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSidebar();
     loadUsers();
     checkLoginState();
-    
+
     // Initialize account type selector dropdown
     initializeAccountTypeSelector();
 });
@@ -51,23 +51,23 @@ function setupSidebar() {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-    
+
     // Initialize custom dropdowns
     initializeAccountTypeDropdown();
     initializeStatusDropdown();
-    
+
     document.getElementById('adminSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    
+
     // Initialize admin status dropdown
     initializeAdminStatusDropdown();
-    
+
     document.getElementById('regularSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    
+
     // Initialize regular status dropdown
     initializeRegularStatusDropdown();
-    
+
     document.getElementById('businessSearchInput').addEventListener('input', debounce(applyFilters, 300));
-    
+
     // Initialize business status dropdown
     initializeBusinessStatusDropdown();
 }
@@ -80,7 +80,7 @@ async function loadUsers() {
         filteredUsers = [];
         updateStats();
         showLoading();
-        
+
         const response = await fetch(`${USERS_API}`, {
             method: 'GET',
             credentials: 'include',
@@ -91,7 +91,7 @@ async function loadUsers() {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            
+
             // Check if it's a non-admin session error
             if (errorData.error === 'NOT_ADMIN_SESSION' || errorData.message?.includes('requires an admin session')) {
                 showAlert('Your session was replaced by a regular user login. Please log in as admin again.', 'warning');
@@ -101,12 +101,12 @@ async function loadUsers() {
                 }, 2000);
                 return;
             }
-            
+
             throw new Error(errorData.message || `Failed to load users (HTTP ${response.status})`);
         }
 
         const data = await response.json();
-        
+
         if (!data.success) {
             // Check if it's a non-admin session error
             if (data.error === 'NOT_ADMIN_SESSION' || data.message?.includes('requires an admin session')) {
@@ -117,13 +117,13 @@ async function loadUsers() {
                 }, 2000);
                 return;
             }
-            
+
             throw new Error(data.message || 'Failed to load users');
         }
-        
+
         // Only use data from successful API response
         allUsers = Array.isArray(data.users) ? data.users : [];
-        
+
         // Debug: Log users with suspension reasons
         const usersWithSuspension = allUsers.filter(u => u.suspensionReason);
         if (usersWithSuspension.length > 0) {
@@ -131,7 +131,7 @@ async function loadUsers() {
         } else {
             console.log('No users with suspension reasons found in API response');
         }
-        
+
         updateStats();
         applyFilters();
     } catch (error) {
@@ -176,7 +176,7 @@ function applyFilters() {
 
     filteredUsers = allUsers.filter(user => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             user.email.toLowerCase().includes(searchTerm) ||
             (user.displayName && user.displayName.toLowerCase().includes(searchTerm)) ||
             (user.givenName && user.givenName.toLowerCase().includes(searchTerm)) ||
@@ -210,7 +210,7 @@ function renderUsers() {
         containerId = 'businessTableContainer';
     }
     const container = document.getElementById(containerId);
-    
+
     if (filteredUsers.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -252,7 +252,7 @@ function renderUsers() {
         const createdDate = formatDate(user.createdAt);
         const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
         const initials = getInitials(user.displayName || user.email);
-        
+
         // Display suspension reason if it exists (regardless of current status - for historical record)
         let suspensionReason = '<span class="text-muted">-</span>';
         if (user.suspensionReason) {
@@ -283,20 +283,20 @@ function renderUsers() {
                             <i class="fas fa-eye"></i>
                         </button>
                         ${user.accountType !== 'admin' ? (
-                            user.status !== 'suspended' ? 
-                                `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
+                user.status !== 'suspended' ?
+                    `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
                                     <i class="fas fa-ban"></i>
                                 </button>` :
-                                `<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
+                    `<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
                                     <i class="fas fa-check"></i>
                                 </button>`
-                        ) : ''}
-                        ${user.accountType !== 'admin' ? 
-                            `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
+            ) : ''}
+                        ${user.accountType !== 'admin' ?
+                `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
                                 <i class="fas fa-trash"></i>
-                            </button>` : 
-                            '<span class="text-muted small">Protected</span>'
-                        }
+                            </button>` :
+                '<span class="text-muted small">Protected</span>'
+            }
                     </div>
                 </td>
             </tr>
@@ -310,7 +310,7 @@ function renderUsers() {
     `;
 
     container.innerHTML = html;
-    
+
     if (currentTab === 'users') {
         renderPagination();
     }
@@ -374,7 +374,7 @@ function updateStats() {
     document.getElementById('adminUsersCount').textContent = allUsers.filter(u => u.accountType === 'admin').length;
     document.getElementById('regularUsersCount').textContent = allUsers.filter(u => u.accountType === 'regular').length;
     document.getElementById('businessUsersCount').textContent = allUsers.filter(u => u.accountType === 'business').length;
-    
+
     // Update charts
     updateCharts();
 }
@@ -385,11 +385,11 @@ function updateCharts() {
     const adminCount = allUsers.filter(u => u.accountType === 'admin').length;
     const regularCount = allUsers.filter(u => u.accountType === 'regular').length;
     const businessCount = allUsers.filter(u => u.accountType === 'business').length;
-    
+
     if (accountTypeChart) {
         accountTypeChart.destroy();
     }
-    
+
     const accountTypeCtx = document.getElementById('accountTypeChart');
     if (accountTypeCtx) {
         // Prevent scroll on chart
@@ -398,10 +398,10 @@ function updateCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         accountTypeCtx.addEventListener('wheel', preventScroll, { passive: false });
         accountTypeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         accountTypeChart = new Chart(accountTypeCtx, {
             type: 'doughnut',
             data: {
@@ -409,21 +409,25 @@ function updateCharts() {
                 datasets: [{
                     data: [regularCount, businessCount, adminCount],
                     backgroundColor: [
-                        '#2563eb',
-                        '#0ea5e9',
-                        '#ef4444'
+                        '#3b82f6', // Blue (Regular)
+                        '#06b6d4', // Cyan (Business)
+                        '#ec4899'  // Pink (Admin)
                     ],
-                    borderWidth: 0
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Design 2: Thin ring
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'right', // Design 2: Legend Right
                         labels: {
-                            padding: 15,
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 20,
                             font: {
                                 size: 12
                             }
@@ -431,7 +435,7 @@ function updateCharts() {
                     },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 let label = context.label || '';
                                 if (label) {
                                     label += ': ';
@@ -458,13 +462,13 @@ function updateCharts() {
     const pendingCount = allUsers.filter(u => !u.verified && u.status !== 'suspended').length;
     const suspendedCount = allUsers.filter(u => u.status === 'suspended').length;
     const total = allUsers.length;
-    
+
     const statusChartContainer = document.getElementById('statusDistributionChart');
     if (statusChartContainer && total > 0) {
         const verifiedPercent = ((verifiedCount / total) * 100).toFixed(1);
         const pendingPercent = ((pendingCount / total) * 100).toFixed(1);
         const suspendedPercent = ((suspendedCount / total) * 100).toFixed(1);
-        
+
         statusChartContainer.innerHTML = `
             <div style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
@@ -500,7 +504,7 @@ function updateCharts() {
     if (userGrowthChart) {
         userGrowthChart.destroy();
     }
-    
+
     const userGrowthCtx = document.getElementById('userGrowthChart');
     if (userGrowthCtx && allUsers.length > 0) {
         // Prevent scroll on chart
@@ -509,15 +513,15 @@ function updateCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
         userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         // Group users by month based on createdAt
         const monthlyData = {};
         const currentDate = new Date();
         const months = [];
-        
+
         // Get last 12 months
         for (let i = 11; i >= 0; i--) {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
@@ -525,7 +529,7 @@ function updateCharts() {
             months.push(monthKey);
             monthlyData[monthKey] = 0;
         }
-        
+
         // Count users by month
         allUsers.forEach(user => {
             if (user.createdAt) {
@@ -536,7 +540,7 @@ function updateCharts() {
                 }
             }
         });
-        
+
         // Calculate cumulative totals
         const cumulativeData = [];
         let runningTotal = 0;
@@ -544,9 +548,9 @@ function updateCharts() {
             runningTotal += monthlyData[month];
             cumulativeData.push(runningTotal);
         });
-        
+
         const monthlyCounts = months.map(month => monthlyData[month]);
-        
+
         userGrowthChart = new Chart(userGrowthCtx, {
             type: 'line',
             data: {
@@ -606,10 +610,10 @@ function updateCharts() {
 function showUserDetailsModal(email, accountType) {
     const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
     const content = document.getElementById('userDetailsContent');
-    
+
     // Determine account type from current tab (source of truth)
     let targetAccountType = accountType;
-    
+
     // Override with current tab if we're in a specific account type tab
     if (currentTab === 'regular') {
         targetAccountType = 'regular';
@@ -618,19 +622,19 @@ function showUserDetailsModal(email, accountType) {
     } else if (currentTab === 'admins') {
         targetAccountType = 'admin';
     }
-    
+
     // Find user in allUsers array by both email AND accountType
     let user = null;
-    
+
     if (targetAccountType) {
         user = allUsers.find(u => u.email === email && u.accountType === targetAccountType);
     }
-    
+
     // If not found and we're in 'users' tab, try to find any match
     if (!user && currentTab === 'users') {
         user = allUsers.find(u => u.email === email);
     }
-    
+
     if (!user) {
         content.innerHTML = `<div class="alert alert-danger">
             <strong>User not found</strong><br>
@@ -641,14 +645,14 @@ function showUserDetailsModal(email, accountType) {
         modal.show();
         return;
     }
-    
+
     // Format dates
     const createdDate = formatDate(user.createdAt) || 'N/A';
     const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
     const updatedDate = user.updatedAt ? formatDate(user.updatedAt) : 'N/A';
     const suspendedDate = user.suspendedAt ? formatDate(user.suspendedAt) : null;
     const unsuspendedDate = user.unsuspendedAt ? formatDate(user.unsuspendedAt) : null;
-    
+
     // Build user details HTML with modern card-based design
     let detailsHTML = `
         <style>
@@ -884,11 +888,11 @@ function showUserDetailsModal(email, accountType) {
             
             <!-- Additional Information Card -->
             ${(() => {
-                const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
-                const hasMetadata = metadataFields.some(field => user[field]);
-                if (!hasMetadata) return '';
-                
-                let metadataHTML = `
+            const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
+            const hasMetadata = metadataFields.some(field => user[field]);
+            if (!hasMetadata) return '';
+
+            let metadataHTML = `
             <div class="user-detail-card">
                 <div class="user-detail-card-header">
                     <i class="fas fa-map-marker-alt"></i>
@@ -896,49 +900,49 @@ function showUserDetailsModal(email, accountType) {
                 </div>
                 <div class="user-detail-grid">
                 `;
-                
-                if (user.city || user.province) {
-                    metadataHTML += `
+
+            if (user.city || user.province) {
+                metadataHTML += `
                     <div class="user-detail-item">
                         <div class="user-detail-label"><i class="fas fa-location-dot"></i> Location</div>
                         <div class="user-detail-value">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
                     </div>
                     `;
-                }
-                
-                if (user.phoneNumber) {
-                    metadataHTML += `
+            }
+
+            if (user.phoneNumber) {
+                metadataHTML += `
                     <div class="user-detail-item">
                         <div class="user-detail-label"><i class="fas fa-phone"></i> Phone Number</div>
                         <div class="user-detail-value">${escapeHtml(user.phoneNumber)}</div>
                     </div>
                     `;
-                }
-                
-                if (user.address) {
-                    metadataHTML += `
+            }
+
+            if (user.address) {
+                metadataHTML += `
                     <div class="user-detail-item" style="grid-column: 1 / -1;">
                         <div class="user-detail-label"><i class="fas fa-home"></i> Address</div>
                         <div class="user-detail-value">${escapeHtml(user.address)}</div>
                     </div>
                     `;
-                }
-                
-                if (user.postalCode) {
-                    metadataHTML += `
+            }
+
+            if (user.postalCode) {
+                metadataHTML += `
                     <div class="user-detail-item">
                         <div class="user-detail-label"><i class="fas fa-mail-bulk"></i> Postal Code</div>
                         <div class="user-detail-value">${escapeHtml(user.postalCode)}</div>
                     </div>
                     `;
-                }
-                
-                metadataHTML += `
+            }
+
+            metadataHTML += `
                 </div>
             </div>
                 `;
-                return metadataHTML;
-            })()}
+            return metadataHTML;
+        })()}
             
             <!-- Authentication Provider Card -->
             ${user.provider ? `
@@ -957,7 +961,7 @@ function showUserDetailsModal(email, accountType) {
             ` : ''}
         </div>
     `;
-    
+
     content.innerHTML = detailsHTML;
     modal.show();
 }
@@ -1077,7 +1081,7 @@ function exportUsers() {
 function getStatusBadge(user) {
     let status = user.verified ? 'verified' : 'pending';
     if (user.status === 'suspended') status = 'suspended';
-    
+
     const badges = {
         'verified': '<span class="badge badge-success">Verified</span>',
         'pending': '<span class="badge badge-warning">Pending</span>',
@@ -1146,16 +1150,16 @@ function showLoading() {
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     setTimeout(() => {
         const alert = document.getElementById(alertId);
         if (alert) {
@@ -1179,7 +1183,7 @@ function debounce(func, wait) {
 
 function convertToCSV(data) {
     if (data.length === 0) return '';
-    
+
     const headers = ['Email', 'Name', 'Account Type', 'Status', 'Created Date', 'Last Login'];
     const rows = data.map(user => [
         user.email || '',
@@ -1189,12 +1193,12 @@ function convertToCSV(data) {
         user.createdAt || '',
         user.lastLogin || ''
     ]);
-    
+
     const csvContent = [
         headers.join(','),
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
-    
+
     return csvContent;
 }
 
@@ -1207,7 +1211,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -1230,7 +1234,7 @@ async function checkLoginState() {
 
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
-            
+
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
         } else {
@@ -1260,16 +1264,16 @@ function initializeAccountTypeDropdown() {
     const accountTypeDropdownMenu = document.getElementById('accountTypeDropdownMenu');
     const accountTypeDropdownItems = document.getElementById('accountTypeDropdownItems');
     const accountTypeSelect = document.getElementById('accountTypeSelect');
-    
+
     if (!accountTypeDropdown || !accountTypeDropdownBtn || !accountTypeDropdownMenu || !accountTypeDropdownItems) return;
-    
+
     const accountTypeOptions = [
         { value: 'all', text: 'All Account Types' },
         { value: 'admin', text: 'Admin' },
         { value: 'regular', text: 'Regular' },
         { value: 'business', text: 'Business' }
     ];
-    
+
     accountTypeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1278,27 +1282,27 @@ function initializeAccountTypeDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             accountTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('accountTypeDropdownText').textContent = option.text;
             accountTypeSelect.value = option.value;
-            
+
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
-            
+
             applyFilters();
         });
         accountTypeDropdownItems.appendChild(itemDiv);
     });
-    
-    accountTypeDropdownBtn.addEventListener('click', function(e) {
+
+    accountTypeDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = accountTypeDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'accountTypeDropdown') {
                 dd.classList.remove('active');
@@ -1306,7 +1310,7 @@ function initializeAccountTypeDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
@@ -1315,8 +1319,8 @@ function initializeAccountTypeDropdown() {
             accountTypeDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
@@ -1331,16 +1335,16 @@ function initializeStatusDropdown() {
     const statusDropdownMenu = document.getElementById('statusDropdownMenu');
     const statusDropdownItems = document.getElementById('statusDropdownItems');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
-    
+
     const statusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'verified', text: 'Verified' },
         { value: 'pending', text: 'Pending Verification' },
         { value: 'suspended', text: 'Suspended' }
     ];
-    
+
     statusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1349,27 +1353,27 @@ function initializeStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('statusDropdownText').textContent = option.text;
             statusSelect.value = option.value;
-            
+
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
-            
+
             applyFilters();
         });
         statusDropdownItems.appendChild(itemDiv);
     });
-    
-    statusDropdownBtn.addEventListener('click', function(e) {
+
+    statusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'statusDropdown') {
                 dd.classList.remove('active');
@@ -1377,7 +1381,7 @@ function initializeStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
@@ -1386,8 +1390,8 @@ function initializeStatusDropdown() {
             statusDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
@@ -1402,16 +1406,16 @@ function initializeAccountTypeSelector() {
     const accountTypeSelectorMenu = document.getElementById('accountTypeSelectorMenu');
     const accountTypeSelectorItems = document.getElementById('accountTypeSelectorItems');
     const accountTypeSelector = document.getElementById('accountTypeSelector');
-    
+
     if (!accountTypeSelectorDropdown || !accountTypeSelectorBtn || !accountTypeSelectorMenu || !accountTypeSelectorItems) return;
-    
+
     const accountTypeOptions = [
         { value: 'users', text: 'All Users', icon: 'fa-users' },
         { value: 'admins', text: 'Admin Accounts', icon: 'fa-user-shield' },
         { value: 'regular', text: 'Regular Accounts', icon: 'fa-user' },
         { value: 'business', text: 'Business Accounts', icon: 'fa-building' }
     ];
-    
+
     accountTypeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1420,28 +1424,28 @@ function initializeAccountTypeSelector() {
         if (option.value === 'users') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             accountTypeSelectorItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('accountTypeSelectorText').innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
             accountTypeSelector.value = option.value;
-            
+
             accountTypeSelectorDropdown.classList.remove('active');
             accountTypeSelectorMenu.style.display = 'none';
-            
+
             // Switch tabs
             switchTab(option.value);
         });
         accountTypeSelectorItems.appendChild(itemDiv);
     });
-    
-    accountTypeSelectorBtn.addEventListener('click', function(e) {
+
+    accountTypeSelectorBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = accountTypeSelectorDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'accountTypeSelectorDropdown') {
                 dd.classList.remove('active');
@@ -1449,7 +1453,7 @@ function initializeAccountTypeSelector() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             accountTypeSelectorDropdown.classList.remove('active');
             accountTypeSelectorMenu.style.display = 'none';
@@ -1458,8 +1462,8 @@ function initializeAccountTypeSelector() {
             accountTypeSelectorMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             accountTypeSelectorDropdown.classList.remove('active');
             accountTypeSelectorMenu.style.display = 'none';
@@ -1474,15 +1478,15 @@ function initializeAdminStatusDropdown() {
     const adminStatusDropdownMenu = document.getElementById('adminStatusDropdownMenu');
     const adminStatusDropdownItems = document.getElementById('adminStatusDropdownItems');
     const adminStatusSelect = document.getElementById('adminStatusSelect');
-    
+
     if (!adminStatusDropdown || !adminStatusDropdownBtn || !adminStatusDropdownMenu || !adminStatusDropdownItems) return;
-    
+
     const adminStatusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'verified', text: 'Verified' },
         { value: 'pending', text: 'Pending' }
     ];
-    
+
     adminStatusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1491,27 +1495,27 @@ function initializeAdminStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             adminStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('adminStatusDropdownText').textContent = option.text;
             adminStatusSelect.value = option.value;
-            
+
             adminStatusDropdown.classList.remove('active');
             adminStatusDropdownMenu.style.display = 'none';
-            
+
             applyFilters();
         });
         adminStatusDropdownItems.appendChild(itemDiv);
     });
-    
-    adminStatusDropdownBtn.addEventListener('click', function(e) {
+
+    adminStatusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = adminStatusDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'adminStatusDropdown') {
                 dd.classList.remove('active');
@@ -1519,7 +1523,7 @@ function initializeAdminStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             adminStatusDropdown.classList.remove('active');
             adminStatusDropdownMenu.style.display = 'none';
@@ -1528,8 +1532,8 @@ function initializeAdminStatusDropdown() {
             adminStatusDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             adminStatusDropdown.classList.remove('active');
             adminStatusDropdownMenu.style.display = 'none';
@@ -1544,15 +1548,15 @@ function initializeBusinessStatusDropdown() {
     const businessStatusDropdownMenu = document.getElementById('businessStatusDropdownMenu');
     const businessStatusDropdownItems = document.getElementById('businessStatusDropdownItems');
     const businessStatusSelect = document.getElementById('businessStatusSelect');
-    
+
     if (!businessStatusDropdown || !businessStatusDropdownBtn || !businessStatusDropdownMenu || !businessStatusDropdownItems) return;
-    
+
     const businessStatusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'verified', text: 'Verified' },
         { value: 'pending', text: 'Pending' }
     ];
-    
+
     businessStatusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1561,27 +1565,27 @@ function initializeBusinessStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             businessStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('businessStatusDropdownText').textContent = option.text;
             businessStatusSelect.value = option.value;
-            
+
             businessStatusDropdown.classList.remove('active');
             businessStatusDropdownMenu.style.display = 'none';
-            
+
             applyFilters();
         });
         businessStatusDropdownItems.appendChild(itemDiv);
     });
-    
-    businessStatusDropdownBtn.addEventListener('click', function(e) {
+
+    businessStatusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = businessStatusDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'businessStatusDropdown') {
                 dd.classList.remove('active');
@@ -1589,7 +1593,7 @@ function initializeBusinessStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             businessStatusDropdown.classList.remove('active');
             businessStatusDropdownMenu.style.display = 'none';
@@ -1598,8 +1602,8 @@ function initializeBusinessStatusDropdown() {
             businessStatusDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             businessStatusDropdown.classList.remove('active');
             businessStatusDropdownMenu.style.display = 'none';
@@ -1614,16 +1618,16 @@ function initializeRegularStatusDropdown() {
     const regularStatusDropdownMenu = document.getElementById('regularStatusDropdownMenu');
     const regularStatusDropdownItems = document.getElementById('regularStatusDropdownItems');
     const regularStatusSelect = document.getElementById('regularStatusSelect');
-    
+
     if (!regularStatusDropdown || !regularStatusDropdownBtn || !regularStatusDropdownMenu || !regularStatusDropdownItems) return;
-    
+
     const regularStatusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'verified', text: 'Verified' },
         { value: 'pending', text: 'Pending' },
         { value: 'suspended', text: 'Suspended' }
     ];
-    
+
     regularStatusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1632,27 +1636,27 @@ function initializeRegularStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             regularStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('regularStatusDropdownText').textContent = option.text;
             regularStatusSelect.value = option.value;
-            
+
             regularStatusDropdown.classList.remove('active');
             regularStatusDropdownMenu.style.display = 'none';
-            
+
             applyFilters();
         });
         regularStatusDropdownItems.appendChild(itemDiv);
     });
-    
-    regularStatusDropdownBtn.addEventListener('click', function(e) {
+
+    regularStatusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = regularStatusDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'regularStatusDropdown') {
                 dd.classList.remove('active');
@@ -1660,7 +1664,7 @@ function initializeRegularStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             regularStatusDropdown.classList.remove('active');
             regularStatusDropdownMenu.style.display = 'none';
@@ -1669,8 +1673,8 @@ function initializeRegularStatusDropdown() {
             regularStatusDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             regularStatusDropdown.classList.remove('active');
             regularStatusDropdownMenu.style.display = 'none';
@@ -1681,20 +1685,20 @@ function initializeRegularStatusDropdown() {
 // Switch between tabs
 function switchTab(tabValue) {
     currentTab = tabValue;
-    
+
     // Hide all tab panes
     document.querySelectorAll('.tab-pane').forEach(pane => {
         pane.style.display = 'none';
         pane.classList.remove('show', 'active');
     });
-    
+
     // Show selected tab pane
     const targetPane = document.getElementById(tabValue);
     if (targetPane) {
         targetPane.style.display = 'block';
         targetPane.classList.add('show', 'active');
     }
-    
+
     // Apply filters for the new tab
     applyFilters();
 }

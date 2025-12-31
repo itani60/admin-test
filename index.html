@@ -871,6 +871,31 @@
             gap: 6px;
             font-weight: 600;
         }
+
+        /* Color variants */
+        .design-g-ring.success {
+            border-top-color: #10b981;
+        }
+
+        .design-g-ring.warning {
+            border-top-color: #f59e0b;
+        }
+
+        .design-g-ring.danger {
+            border-top-color: #ef4444;
+        }
+
+        .design-g-change.positive {
+            color: #10b981;
+        }
+
+        .design-g-change.negative {
+            color: #ef4444;
+        }
+
+        .design-g-change.neutral {
+            color: #94a3b8;
+        }
     </style>
 </head>
 
@@ -1026,44 +1051,44 @@
                     </div>
                 </div>
 
-                <div class="stat-card success">
-                    <div class="stat-header">
-                        <div class="stat-title">Active Businesses</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/business.png" alt="Businesses">
-                        </div>
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success">
+                        <i class="fas fa-store" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div class="stat-value" id="activeBusinessesCount">0</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span id="activeBusinessesChange">Loading...</span>
+                    <div class="design-g-content">
+                        <h4>Active Businesses</h4>
+                        <div class="design-g-value" id="activeBusinessesCount">0</div>
+                        <div class="design-g-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="activeBusinessesChange">Loading...</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="stat-card warning">
-                    <div class="stat-header">
-                        <div class="stat-title">Pending Reviews</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/rating.png" alt="Reviews">
-                        </div>
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning">
+                        <i class="fas fa-star" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div class="stat-value" id="pendingReviewsCount">0</div>
-                    <div class="stat-change negative">
-                        <i class="fas fa-arrow-down"></i>
-                        <span id="pendingReviewsChange">Loading...</span>
+                    <div class="design-g-content">
+                        <h4>Pending Reviews</h4>
+                        <div class="design-g-value" id="pendingReviewsCount">0</div>
+                        <div class="design-g-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            <span id="pendingReviewsChange">Loading...</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="stat-card danger">
-                    <div class="stat-header">
-                        <div class="stat-title">Revenue</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/salary.png" alt="Revenue">
-                        </div>
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger">
+                        <i class="fas fa-dollar-sign" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div class="stat-value" style="font-size: 1.5rem;">Coming Soon</div>
-                    <div class="stat-change" style="color: var(--text);">
-                        <span>Data will be available shortly</span>
+                    <div class="design-g-content">
+                        <h4>Revenue</h4>
+                        <div class="design-g-value" style="font-size: 1.5rem;">Coming Soon</div>
+                        <div class="design-g-change neutral">
+                            <span>Data will be available shortly</span>
+                        </div>
                     </div>
                 </div>
             </div>

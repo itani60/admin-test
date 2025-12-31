@@ -25,13 +25,13 @@ function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
     document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
     document.getElementById('dateToFilter').addEventListener('change', applyFilters);
-    
+
     // Initialize custom dropdowns
     initializeAccountTypeDropdown();
     initializeStatusDropdown();
-    
+
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             applyFilters();
@@ -62,7 +62,7 @@ function setupEventListeners() {
 async function loadLoginEvents() {
     try {
         showLoading();
-        
+
         const response = await fetch(`${ADMIN_LOGIN_TRACKING_API}`, {
             method: 'GET',
             credentials: 'include',
@@ -83,7 +83,7 @@ async function loadLoginEvents() {
             }
         } else {
             const errorData = await response.json().catch(() => ({}));
-            
+
             if (response.status === 401) {
                 showAlert('Please log in to view login tracking', 'warning');
                 setTimeout(() => {
@@ -91,7 +91,7 @@ async function loadLoginEvents() {
                 }, 2000);
                 return;
             }
-            
+
             throw new Error(errorData.message || `Failed to load login events: ${response.statusText}`);
         }
     } catch (error) {
@@ -114,18 +114,18 @@ function applyFilters() {
 
     filteredLoginEvents = allLoginEvents.filter(event => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             (event.email && event.email.toLowerCase().includes(searchTerm)) ||
             (event.ipAddress && event.ipAddress.toLowerCase().includes(searchTerm)) ||
             (event.userAgent && event.userAgent.toLowerCase().includes(searchTerm)) ||
             (event.device && event.device.toLowerCase().includes(searchTerm));
 
         // Account type filter
-        const matchesAccountType = accountTypeFilter === 'all' || 
+        const matchesAccountType = accountTypeFilter === 'all' ||
             event.accountType === accountTypeFilter;
 
         // Status filter
-        const matchesStatus = statusFilter === 'all' || 
+        const matchesStatus = statusFilter === 'all' ||
             (statusFilter === 'success' && event.status === 'success') ||
             (statusFilter === 'failed' && event.status === 'failed');
 
@@ -148,7 +148,7 @@ function applyFilters() {
         let matchesTime = true;
         const eventDate = timestampToDate(event.timestamp || event.createdAt);
         const now = new Date();
-        
+
         if (timeFilter === 'today') {
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             matchesTime = eventDate >= todayStart;
@@ -177,7 +177,7 @@ function applyFilters() {
 // Render login events
 function renderLoginEvents() {
     const container = document.getElementById('loginEventsContainer');
-    
+
     if (filteredLoginEvents.length === 0) {
         container.innerHTML = `
             <tr>
@@ -196,19 +196,19 @@ function renderLoginEvents() {
     let html = '';
 
     filteredLoginEvents.forEach(event => {
-        const statusBadge = event.status === 'success' 
+        const statusBadge = event.status === 'success'
             ? '<span class="badge badge-success">Success</span>'
             : '<span class="badge badge-danger">Failed</span>';
-        
+
         const accountTypeBadge = event.accountType === 'business'
             ? '<span class="badge badge-info">Business</span>'
             : event.accountType === 'admin'
-            ? '<span class="badge badge-danger">Admin</span>'
-            : '<span class="badge badge-primary">Regular</span>';
-        
+                ? '<span class="badge badge-danger">Admin</span>'
+                : '<span class="badge badge-primary">Regular</span>';
+
         const formattedTime = formatTimeAgo(event.timestamp || event.createdAt);
         const eventDate = timestampToDate(event.timestamp || event.createdAt);
-        const formattedDate = eventDate 
+        const formattedDate = eventDate
             ? eventDate.toLocaleString('en-ZA', {
                 year: 'numeric',
                 month: 'short',
@@ -217,9 +217,9 @@ function renderLoginEvents() {
                 minute: '2-digit'
             })
             : 'N/A';
-        
+
         const deviceInfo = event.device || event.userAgent || 'Unknown';
-        
+
         // Get failure reason for failed logins
         let failureReasonHtml = '<span class="text-muted">-</span>';
         if (event.status === 'failed') {
@@ -254,7 +254,7 @@ function renderLoginEvents() {
 function updateStats() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     document.getElementById('totalLoginsCount').textContent = allLoginEvents.length;
     document.getElementById('todayLoginsCount').textContent = allLoginEvents.filter(e => {
         const eventDate = timestampToDate(e.timestamp || e.createdAt);
@@ -282,15 +282,15 @@ async function exportLogins() {
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('landscape', 'mm', 'a4');
-        
+
         // Set font
         doc.setFont('helvetica');
-        
+
         // Title
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
         doc.text('Login Events Report', 14, 15);
-        
+
         // Date and filters info
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
@@ -303,78 +303,78 @@ async function exportLogins() {
         });
         doc.text(`Generated: ${exportDate}`, 14, 22);
         doc.text(`Total Records: ${filteredLoginEvents.length}`, 14, 27);
-        
+
         // Table headers
         const headers = ['User', 'Account Type', 'Status', 'Failure Reason', 'IP Address', 'Device/Browser', 'Timestamp'];
         const colWidths = [35, 25, 20, 30, 30, 50, 40];
         const startY = 35;
         let currentY = startY;
-        
+
         // Header styling
         doc.setFillColor(37, 99, 235); // Primary blue
         doc.rect(14, currentY - 5, 260, 8, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
-        
+
         let xPos = 14;
         headers.forEach((header, index) => {
             doc.text(header, xPos, currentY);
             xPos += colWidths[index];
         });
-        
+
         // Reset text color
         doc.setTextColor(0, 0, 0);
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
-        
+
         currentY += 5;
-        
+
         // Table rows
         filteredLoginEvents.forEach((event, index) => {
             // Check if we need a new page
             if (currentY > 180) {
                 doc.addPage();
                 currentY = 15;
-                
+
                 // Redraw header on new page
                 doc.setFillColor(37, 99, 235);
                 doc.rect(14, currentY - 5, 260, 8, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(9);
-                
+
                 xPos = 14;
                 headers.forEach((header, idx) => {
                     doc.text(header, xPos, currentY);
                     xPos += colWidths[idx];
                 });
-                
+
                 doc.setTextColor(0, 0, 0);
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8);
                 currentY += 5;
             }
-            
+
             // Row background (alternating)
             if (index % 2 === 0) {
                 doc.setFillColor(245, 247, 250);
                 doc.rect(14, currentY - 4, 260, 6, 'F');
             }
-            
+
             // Format data
             const email = event.email || 'N/A';
-            const accountType = event.accountType === 'business' ? 'Business' : 
-                              event.accountType === 'admin' ? 'Admin' : 'Regular';
+            const accountType = event.accountType === 'business' ? 'Business' :
+                event.accountType === 'admin' ? 'Admin' : 'Regular';
             const status = event.status === 'success' ? 'Success' : 'Failed';
-            const failureReason = event.status === 'failed' 
-                ? (event.failureReason || event.errorCode || event.errorMessage || 'Unknown') 
+            const failureReason = event.status === 'failed'
+                ? (event.failureReason || event.errorCode || event.errorMessage || 'Unknown')
                 : '-';
             const ipAddress = event.ipAddress || 'N/A';
             const deviceInfo = (event.device || event.userAgent || 'Unknown').substring(0, 40);
-            
+
             const eventDate = timestampToDate(event.timestamp || event.createdAt);
-            const timestamp = eventDate 
+            const timestamp = eventDate
                 ? eventDate.toLocaleString('en-ZA', {
                     year: 'numeric',
                     month: 'short',
@@ -383,25 +383,25 @@ async function exportLogins() {
                     minute: '2-digit'
                 })
                 : 'N/A';
-            
+
             // Draw row data
             const rowData = [email, accountType, status, failureReason, ipAddress, deviceInfo, timestamp];
             xPos = 14;
-            
+
             rowData.forEach((data, colIndex) => {
                 // Truncate long text
                 let text = String(data);
                 if (text.length > 30 && colIndex !== 0) {
                     text = text.substring(0, 27) + '...';
                 }
-                
+
                 doc.text(text, xPos, currentY);
                 xPos += colWidths[colIndex];
             });
-            
+
             currentY += 6;
         });
-        
+
         // Footer
         const pageCount = doc.internal.pages.length - 1;
         for (let i = 1; i <= pageCount; i++) {
@@ -415,13 +415,13 @@ async function exportLogins() {
                 { align: 'center' }
             );
         }
-        
+
         // Generate filename
         const filename = `login-events-${new Date().toISOString().split('T')[0]}.pdf`;
-        
+
         // Save PDF
         doc.save(filename);
-        
+
         showAlert(`PDF exported successfully: ${filename}`, 'success');
     } catch (error) {
         console.error('Error exporting to PDF:', error);
@@ -440,10 +440,10 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         loginsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
         loginsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         const timeData = calculateLoginsOverTime();
         loginsOverTimeChart = new Chart(loginsOverTimeCtx, {
             type: 'line',
@@ -503,37 +503,34 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         accountTypeCtx.addEventListener('wheel', preventScroll, { passive: false });
         accountTypeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         const typeData = calculateAccountTypeDistribution();
         accountTypeChart = new Chart(accountTypeCtx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: typeData.labels,
                 datasets: [{
                     data: typeData.data,
                     backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(23, 162, 184, 0.8)',
-                        'rgba(220, 53, 69, 0.8)'
+                        '#3b82f6', // Blue (Regular)
+                        '#06b6d4', // Cyan (Business)
+                        '#ec4899'  // Pink (Admin)
                     ],
-                    borderColor: [
-                        'rgb(40, 167, 69)',
-                        'rgb(23, 162, 184)',
-                        'rgb(220, 53, 69)'
-                    ],
-                    borderWidth: 2
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Thinner ring
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right',
+                        labels: { usePointStyle: true, boxWidth: 6, padding: 20 }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
@@ -550,10 +547,10 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         loginActivityByHourCtx.addEventListener('wheel', preventScroll, { passive: false });
         loginActivityByHourCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         const hourData = calculateLoginActivityByHour();
         loginActivityByHourChart = new Chart(loginActivityByHourCtx, {
             type: 'bar',
@@ -610,10 +607,10 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         loginStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
         loginStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         const statusData = calculateLoginStatus();
         loginStatusChart = new Chart(loginStatusCtx, {
             type: 'doughnut',
@@ -652,26 +649,26 @@ function calculateLoginsOverTime() {
     const now = new Date();
     const days = [];
     const counts = [];
-    
+
     for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         date.setHours(0, 0, 0, 0);
-        
+
         const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
         days.push(dayName);
-        
+
         const nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);
-        
+
         const count = allLoginEvents.filter(event => {
             const eventDate = timestampToDate(event.timestamp || event.createdAt);
             return eventDate && eventDate >= date && eventDate < nextDay;
         }).length;
-        
+
         counts.push(count);
     }
-    
+
     return { labels: days, data: counts };
 }
 
@@ -682,7 +679,7 @@ function calculateAccountTypeDistribution() {
         'business': 0,
         'admin': 0
     };
-    
+
     allLoginEvents.forEach(event => {
         const type = event.accountType || 'regular';
         if (typeCounts.hasOwnProperty(type)) {
@@ -691,7 +688,7 @@ function calculateAccountTypeDistribution() {
             typeCounts['regular']++;
         }
     });
-    
+
     return {
         labels: ['Regular Users', 'Business Users', 'Admin Users'],
         data: [
@@ -705,7 +702,7 @@ function calculateAccountTypeDistribution() {
 // Calculate login activity by hour
 function calculateLoginActivityByHour() {
     const hourCounts = Array(24).fill(0);
-    
+
     allLoginEvents.forEach(event => {
         const eventDate = timestampToDate(event.timestamp || event.createdAt);
         if (eventDate) {
@@ -713,12 +710,12 @@ function calculateLoginActivityByHour() {
             hourCounts[hour]++;
         }
     });
-    
+
     const labels = Array.from({ length: 24 }, (_, i) => {
         const hour = i.toString().padStart(2, '0');
         return `${hour}:00`;
     });
-    
+
     return { labels, data: hourCounts };
 }
 
@@ -726,7 +723,7 @@ function calculateLoginActivityByHour() {
 function calculateLoginStatus() {
     const successCount = allLoginEvents.filter(e => e.status === 'success').length;
     const failedCount = allLoginEvents.length - successCount;
-    
+
     return {
         labels: ['Successful', 'Failed'],
         data: [successCount, failedCount]
@@ -798,7 +795,7 @@ function formatTimeAgo(dateString) {
     if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
     if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    
+
     return date.toLocaleDateString('en-ZA', {
         year: 'numeric',
         month: 'short',
@@ -832,16 +829,16 @@ function showLoading() {
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     setTimeout(() => {
         const alert = document.getElementById(alertId);
         if (alert) {
@@ -872,7 +869,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -911,9 +908,9 @@ function initializeAccountTypeDropdown() {
     const accountTypeDropdownMenu = document.getElementById('accountTypeDropdownMenu');
     const accountTypeDropdownItems = document.getElementById('accountTypeDropdownItems');
     const accountTypeSelect = document.getElementById('accountTypeSelect');
-    
+
     if (!accountTypeDropdown || !accountTypeDropdownBtn || !accountTypeDropdownMenu || !accountTypeDropdownItems) return;
-    
+
     // Account type options
     const accountTypeOptions = [
         { value: 'all', text: 'All Account Types' },
@@ -921,7 +918,7 @@ function initializeAccountTypeDropdown() {
         { value: 'business', text: 'Business Users' },
         { value: 'admin', text: 'Admin Users' }
     ];
-    
+
     // Render dropdown items
     accountTypeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
@@ -931,32 +928,32 @@ function initializeAccountTypeDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             // Update selected state
             accountTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             // Update button text and hidden input
             document.getElementById('accountTypeDropdownText').textContent = option.text;
             accountTypeSelect.value = option.value;
-            
+
             // Close dropdown
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
-            
+
             // Apply filters
             applyFilters();
         });
         accountTypeDropdownItems.appendChild(itemDiv);
     });
-    
+
     // Toggle dropdown
-    accountTypeDropdownBtn.addEventListener('click', function(e) {
+    accountTypeDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = accountTypeDropdown.classList.contains('active');
-        
+
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'accountTypeDropdown') {
@@ -965,7 +962,7 @@ function initializeAccountTypeDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
@@ -974,9 +971,9 @@ function initializeAccountTypeDropdown() {
             accountTypeDropdownMenu.style.display = 'block';
         }
     });
-    
+
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             accountTypeDropdown.classList.remove('active');
             accountTypeDropdownMenu.style.display = 'none';
@@ -991,16 +988,16 @@ function initializeStatusDropdown() {
     const statusDropdownMenu = document.getElementById('statusDropdownMenu');
     const statusDropdownItems = document.getElementById('statusDropdownItems');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
-    
+
     // Status options
     const statusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'success', text: 'Successful' },
         { value: 'failed', text: 'Failed' }
     ];
-    
+
     // Render dropdown items
     statusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
@@ -1010,32 +1007,32 @@ function initializeStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             // Update selected state
             statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             // Update button text and hidden input
             document.getElementById('statusDropdownText').textContent = option.text;
             statusSelect.value = option.value;
-            
+
             // Close dropdown
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
-            
+
             // Apply filters
             applyFilters();
         });
         statusDropdownItems.appendChild(itemDiv);
     });
-    
+
     // Toggle dropdown
-    statusDropdownBtn.addEventListener('click', function(e) {
+    statusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains('active');
-        
+
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'statusDropdown') {
@@ -1044,7 +1041,7 @@ function initializeStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
@@ -1053,9 +1050,9 @@ function initializeStatusDropdown() {
             statusDropdownMenu.style.display = 'block';
         }
     });
-    
+
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';

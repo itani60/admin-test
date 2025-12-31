@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -463,14 +464,16 @@
             gap: 1.5rem;
         }
 
-        .form-select, .form-control {
+        .form-select,
+        .form-control {
             border-radius: 6px;
             border: 1px solid var(--border);
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
         }
 
-        .form-select:focus, .form-control:focus {
+        .form-select:focus,
+        .form-control:focus {
             border-color: var(--danger);
             box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
         }
@@ -660,29 +663,84 @@
             color: white;
         }
 
-        .stats-bar {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            border: 2px solid var(--border);
+        /* Stats Grid - Replaces stats-bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2.25rem;
         }
 
-        .stat-item {
-            text-align: center;
+        /* Design 62: Circle Progress Card (Design G) - White Theme */
+        .stat-card-design-g {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
         }
 
-        .stat-number {
-            font-size: 1.75rem;
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .design-g-ring {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 4px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+            flex-shrink: 0;
+            position: relative;
         }
 
-        .stat-label {
+        /* Border color variants */
+        .design-g-ring.primary {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+        }
+
+        .design-g-ring.success {
+            border-top-color: #10b981;
+            border-right-color: #10b981;
+        }
+
+        .design-g-ring.warning {
+            border-top-color: #f59e0b;
+            border-right-color: #f59e0b;
+        }
+
+        .design-g-ring.danger {
+            border-top-color: #ef4444;
+            border-right-color: #ef4444;
+        }
+
+        .design-g-content h4 {
+            margin: 0;
+            font-size: 0.85rem;
             color: var(--text);
-            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .design-g-content .design-g-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.25rem;
+            line-height: 1.2;
         }
 
         /* Edit Modal Styles */
@@ -844,13 +902,15 @@
         }
 
         /* Category and Brand Grid Styling (matching smartphones.html) */
-        .category-grid, .brand-grid {
+        .category-grid,
+        .brand-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 0.5rem;
         }
 
-        .category-option, .brand-option {
+        .category-option,
+        .brand-option {
             padding: 0.5rem 0.75rem;
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -864,12 +924,14 @@
             white-space: nowrap;
         }
 
-        .category-option:hover, .brand-option:hover {
+        .category-option:hover,
+        .brand-option:hover {
             background: #e9ecef;
             border-color: #dee2e6;
         }
 
-        .category-option.active, .brand-option.active {
+        .category-option.active,
+        .brand-option.active {
             background: #dc2626;
             color: white;
             border-color: #dc2626;
@@ -1058,14 +1120,14 @@
             display: flex;
             background: white;
             border-radius: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: all 0.3s ease;
             border: 2px solid #e9ecef;
         }
 
         .search-input-group:focus-within {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             border-color: #dc3545;
             transform: translateY(-1px);
         }
@@ -1284,31 +1346,31 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 0.75rem;
             }
-            
+
             .card-image-container {
                 height: 140px;
                 padding: 0.75rem;
             }
-            
+
             .card-content {
                 padding: 0.75rem;
             }
-            
+
             .product-name {
                 font-size: 0.95rem;
                 margin-bottom: 0.5rem;
             }
-            
+
             .current-price {
                 font-size: 1rem;
             }
-            
+
             .card-actions {
                 padding: 0.75rem;
                 gap: 0.5rem;
                 flex-direction: column;
             }
-            
+
             .btn-view,
             .btn-edit,
             .btn-delete {
@@ -1335,7 +1397,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -1404,11 +1466,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-          
+
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
@@ -1502,7 +1565,7 @@
                 </div>
             </div>
             <div class="header-right">
-              
+
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -1510,7 +1573,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -1540,31 +1603,49 @@
             </div>
 
             <!-- Stats Bar -->
-            <div class="stats-bar">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="stat-item">
-                            <div class="stat-number" id="totalProductsCount">0</div>
-                            <div class="stat-label">Total Products</div>
-                        </div>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Total Products -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring primary">
+                        <i class="fas fa-box"></i>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-item">
-                            <div class="stat-number" id="currentCategoryCount">0</div>
-                            <div class="stat-label">In Current Category</div>
-                        </div>
+                    <div class="design-g-content">
+                        <h4>Total Products</h4>
+                        <div class="design-g-value" id="totalProductsCount">0</div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-item">
-                            <div class="stat-number" id="filteredCount">0</div>
-                            <div class="stat-label">Filtered Results</div>
-                        </div>
+                </div>
+
+                <!-- In Current Category -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success">
+                        <i class="fas fa-folder"></i>
                     </div>
-                    <div class="col-md-3">
-                        <div class="stat-item">
-                            <div class="stat-number" id="totalPages">0</div>
-                            <div class="stat-label">Total Pages</div>
-                        </div>
+                    <div class="design-g-content">
+                        <h4>In Category</h4>
+                        <div class="design-g-value" id="currentCategoryCount">0</div>
+                    </div>
+                </div>
+
+                <!-- Filtered Results -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Filtered</h4>
+                        <div class="design-g-value" id="filteredCount">0</div>
+                    </div>
+                </div>
+
+                <!-- Total Pages -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger">
+                        <i class="fas fa-copy"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Total Pages</h4>
+                        <div class="design-g-value" id="totalPages">0</div>
                     </div>
                 </div>
             </div>
@@ -1583,7 +1664,7 @@
                                 Brand
                             </button>
                         </div>
-                        
+
                         <!-- Category Filter Options -->
                         <div class="filter-options" id="categoryOptions" style="display: none;">
                             <div class="filter-options-content">
@@ -1598,7 +1679,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Brand Filter Options -->
                         <div class="filter-options" id="brandOptions" style="display: none;">
                             <div class="filter-options-content">
@@ -1607,7 +1688,8 @@
                                     <!-- Brand buttons will be dynamically added here for smartphones -->
                                 </div>
                                 <div id="brandTextInputContainer" style="display: none;">
-                                    <input type="text" class="form-control" id="brandFilterText" placeholder="Enter brand name...">
+                                    <input type="text" class="form-control" id="brandFilterText"
+                                        placeholder="Enter brand name...">
                                 </div>
                                 <div class="filter-actions">
                                     <button class="btn-clear" data-filter="brand">Clear All</button>
@@ -1616,7 +1698,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <select class="form-select" id="categoryFilter" style="display: none;">
                             <option value="">All Categories</option>
                             <option value="smartphones">Smartphones</option>
@@ -1638,7 +1720,8 @@
                         <label class="form-label"><strong>Search</strong></label>
                         <div class="search-wrapper">
                             <div class="input-group search-input-group">
-                                <input type="text" class="form-control search-input" id="searchInput" placeholder="Search products...">
+                                <input type="text" class="form-control search-input" id="searchInput"
+                                    placeholder="Search products...">
                                 <button type="button" class="btn btn-danger search-btn" onclick="loadProducts()">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -1687,7 +1770,8 @@
     </div>
 
     <!-- Edit Product Modal -->
-    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1708,11 +1792,13 @@
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="editBrand" class="form-label">Brand <span class="text-danger">*</span></label>
+                                    <label for="editBrand" class="form-label">Brand <span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="editBrand" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="editModel" class="form-label">Model <span class="text-danger">*</span></label>
+                                    <label for="editModel" class="form-label">Model <span
+                                            class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="editModel" required>
                                 </div>
                                 <div class="col-md-6">
@@ -1721,11 +1807,15 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="editImageFile" class="form-label">Product Image</label>
-                                    <input type="file" class="form-control" id="editImageFile" accept="image/*" onchange="handleImageUpload(event)">
-                                    <small class="text-muted">Upload a new image or leave empty to keep current image</small>
+                                    <input type="file" class="form-control" id="editImageFile" accept="image/*"
+                                        onchange="handleImageUpload(event)">
+                                    <small class="text-muted">Upload a new image or leave empty to keep current
+                                        image</small>
                                     <div id="imagePreviewContainer" style="margin-top: 1rem; display: none;">
-                                        <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
-                                        <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearImagePreview()" style="display: block;">
+                                        <img id="imagePreview" src="" alt="Preview"
+                                            style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <button type="button" class="btn btn-sm btn-danger mt-2"
+                                            onclick="clearImagePreview()" style="display: block;">
                                             <i class="fas fa-times"></i> Remove
                                         </button>
                                     </div>
@@ -1758,9 +1848,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="editSpecs" class="form-label">Specifications JSON</label>
-                                <textarea class="form-control font-monospace" id="editSpecs" rows="10" 
+                                <textarea class="form-control font-monospace" id="editSpecs" rows="10"
                                     placeholder='{"Performance": {"Processor": "...", "Ram": "...", "Storage": "..."}, ...}'></textarea>
-                                <small class="text-muted">Edit specifications as JSON. Leave empty to keep current specs.</small>
+                                <small class="text-muted">Edit specifications as JSON. Leave empty to keep current
+                                    specs.</small>
                             </div>
                         </div>
                     </form>
@@ -1778,9 +1869,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-product-management.js"></script>
-    
     <script>
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
@@ -1824,10 +1915,10 @@
         function toggleNavSection(element) {
             const navSection = element.closest('.nav-section');
             const navItems = navSection.querySelector('.nav-section-items');
-            
+
             // Toggle collapsed class on title
             element.classList.toggle('collapsed');
-            
+
             // Toggle collapsed class on items container
             navItems.classList.toggle('collapsed');
         }
@@ -1871,4 +1962,5 @@
         }
     </script>
 </body>
+
 </html>

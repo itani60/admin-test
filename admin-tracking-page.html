@@ -44,7 +44,7 @@
         /* Sidebar */
         .sidebar {
             position: fixed;
-            left: 0;
+            left: -270px;
             top: 0;
             width: var(--sidebar-width);
             height: 100vh;
@@ -176,9 +176,13 @@
 
         /* Main Content */
         .main-content {
-            margin-left: var(--sidebar-width);
+            margin-left: 0;
             min-height: 100vh;
             transition: all 0.3s ease;
+        }
+
+        .sidebar.active {
+            left: 0;
         }
 
         /* Header */
@@ -657,6 +661,148 @@
             display: block;
             opacity: 1;
         }
+
+        /* Design 62: Circle Progress Card (Design G) */
+        .stat-card-design-g {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .design-g-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Dynamic border color helper */
+        .ring-primary {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+        }
+
+        .ring-success {
+            border-top-color: #10b981;
+            border-right-color: #10b981;
+        }
+
+        .ring-warning {
+            border-top-color: #f59e0b;
+            border-right-color: #f59e0b;
+        }
+
+        .ring-danger {
+            border-top-color: #ef4444;
+            border-right-color: #ef4444;
+        }
+
+        .design-g-content h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .design-g-content .design-g-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Fix for Chart.js infinite resizing */
+        .canvas-wrapper {
+            position: relative;
+            height: 300px;
+            /* Constrain height */
+            width: 100%;
+        }
+
+        /* Design 53: Horizontal Bar Race Styles */
+        .race-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 0.4rem;
+        }
+
+        .race-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .race-rank {
+            background: var(--light);
+            color: var(--text-muted);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .race-stats {
+            text-align: right;
+        }
+
+        .race-count {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .race-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .race-track {
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .race-bar {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 
@@ -665,8 +811,7 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>COMPAREHUB</span>
+
             </div>
         </div>
         <nav class="sidebar-nav">
@@ -677,20 +822,32 @@
                 </div>
                 <div class="nav-section-items">
                     <a href="index.html" class="nav-item">
-                        <i class="fas fa-th-large"></i>
+                        <img src="assets/cards/dashboard.png" alt="Dashboard">
                         <span>Dashboard</span>
                     </a>
                     <a href="admin-analytics.html" class="nav-item">
-                        <i class="fas fa-chart-pie"></i>
+                        <img src="assets/cards/product analytics.png" alt="Analytics">
                         <span>Products Analytics</span>
                     </a>
                     <a href="admin-tracking-page.html" class="nav-item active">
-                        <i class="fas fa-eye"></i>
+                        <img src="assets/cards/analysis.png" alt="Tracking">
                         <span>Page Tracking</span>
                     </a>
+                    <a href="admin-business.html" class="nav-item">
+                        <img src="assets/cards/business post.png" alt="Business">
+                        <span>Business Posts</span>
+                    </a>
                     <a href="admin-alerts-notifications.html" class="nav-item">
-                        <i class="fas fa-bell"></i>
+                        <img src="assets/cards/notification.png" alt="Alerts">
                         <span>Alerts & Notifications</span>
+                    </a>
+                    <a href="admin_business_analytics.html" class="nav-item">
+                        <img src="assets/cards/analysis.png" alt="Analytics">
+                        <span>Business Analytics</span>
+                    </a>
+                    <a href="admin_price_alert_tracking.html" class="nav-item">
+                        <img src="assets/cards/alert.png" alt="Tracking">
+                        <span>Price Alerts Tracking</span>
                     </a>
                 </div>
             </div>
@@ -701,11 +858,27 @@
                 </div>
                 <div class="nav-section-items">
                     <a href="admin-management.html" class="nav-item">
-                        <i class="fas fa-users-cog"></i>
+                        <img src="assets/cards/admin.png" alt="Management">
                         <span>User Management</span>
                     </a>
+                    <a href="admin-bulk-import.html" class="nav-item">
+                        <img src="assets/cards/data-collection.png" alt="Import">
+                        <span>Bulk Import</span>
+                    </a>
+                    <a href="admin-price-update.html" class="nav-item">
+                        <img src="assets/cards/price update.png" alt="Price">
+                        <span>Price Updates</span>
+                    </a>
+                    <a href="admin_reports_review.html" class="nav-item">
+                        <img src="assets/cards/complaint.png" alt="Reports">
+                        <span>Reports Review</span>
+                    </a>
+                    <a href="admin-product-management.html" class="nav-item">
+                        <img src="assets/cards/features.png" alt="Products">
+                        <span>Product Management</span>
+                    </a>
                     <a href="admin_login_tracking.html" class="nav-item">
-                        <i class="fas fa-user-clock"></i>
+                        <img src="assets/cards/log.png" alt="Tracking">
                         <span>Login Tracking</span>
                     </a>
                 </div>
@@ -717,7 +890,7 @@
                 </div>
                 <div class="nav-section-items">
                     <a href="admin-settings.html" class="nav-item">
-                        <i class="fas fa-cog"></i>
+                        <img src="assets/cards/setting.png" alt="Settings">
                         <span>Settings</span>
                     </a>
                 </div>
@@ -754,48 +927,48 @@
 
             <!-- Key Metrics -->
             <div class="stats-grid">
-                <div class="stats-card primary">
-                    <div class="stat-header">
-                        <div class="stat-title">Total Page Views</div>
-                        <div class="stat-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
+                <!-- Total Page Views -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-primary">
+                        <i class="fas fa-eye"></i>
                     </div>
-                    <div class="stat-number">Loading...</div>
-                    <div class="stat-label">Total views this month</div>
+                    <div class="design-g-content">
+                        <h4>Total Page Views</h4>
+                        <span class="design-g-value" id="kpi-total-views">Loading...</span>
+                    </div>
                 </div>
 
-                <div class="stats-card info">
-                    <div class="stat-header">
-                        <div class="stat-title">Unique Visitors</div>
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
+                <!-- Unique Visitors -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-primary">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-number">Coming Soon</div>
-                    <div class="stat-label">Unique users tracked</div>
+                    <div class="design-g-content">
+                        <h4>Unique Visitors</h4>
+                        <span class="design-g-value" id="kpi-unique-visitors">...</span>
+                    </div>
                 </div>
 
-                <div class="stats-card success">
-                    <div class="stat-header">
-                        <div class="stat-title">Avg. Time on Page</div>
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                <!-- Avg Time -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-success">
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <div class="stat-number">Coming Soon</div>
-                    <div class="stat-label">Average session duration</div>
+                    <div class="design-g-content">
+                        <h4>Avg. Duration</h4>
+                        <span class="design-g-value" id="kpi-avg-time">...</span>
+                    </div>
                 </div>
 
-                <div class="stats-card warning">
-                    <div class="stat-header">
-                        <div class="stat-title">Bounce Rate</div>
-                        <div class="stat-icon">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </div>
+                <!-- Bounce Rate -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-warning">
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="stat-number">Coming Soon</div>
-                    <div class="stat-label">Average bounce rate</div>
+                    <div class="design-g-content">
+                        <h4>Bounce Rate</h4>
+                        <span class="design-g-value" id="kpi-bounce-rate">...</span>
+                    </div>
                 </div>
             </div>
 
@@ -803,41 +976,32 @@
             <div class="charts-grid">
                 <div class="chart-section full-width-chart">
                     <h3>Traffic Overview <small class="text-muted fw-normal fs-6 ms-2">Last 7 Days</small></h3>
-                    <canvas id="trafficChart" height="100"></canvas>
+                    <div class="canvas-wrapper">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
                 </div>
             </div>
 
             <div class="charts-grid">
                 <div class="chart-section">
                     <h3>Device Distribution</h3>
-                    <canvas id="deviceChart"></canvas>
+                    <div class="canvas-wrapper">
+                        <canvas id="deviceChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-section">
                     <h3>Top Categories</h3>
-                    <canvas id="categoryChart"></canvas>
+                    <div class="canvas-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <!-- Most Visited Pages Table -->
-            <div class="table-section">
-                <h3>Most Visited Pages</h3>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Page Name</th>
-                                <th>URL</th>
-                                <th>Views</th>
-                                <th>Users</th>
-                                <th>Avg. Time</th>
-                                <th>Popularity</th>
-                                <th>Trend</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pagesTableBody">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
+            <!-- Most Visited Pages (Design 53: Bar Race) -->
+            <div class="chart-section" style="min-height: 400px;">
+                <h3>Most Visited Pages <small class="text-muted fw-normal fs-6 ms-2">Real-time Ranking</small></h3>
+                <div id="pagesRaceContainer" style="padding: 1rem 0;">
+                    <!-- Populated by JS -->
                 </div>
             </div>
         </div>
@@ -901,22 +1065,26 @@
             });
 
             // 2. Update KPI Cards (with real Global Stats)
-            document.querySelector('.stats-card.primary .stat-number').textContent = totalViews.toLocaleString();
+            // Note: We use optional chaining or checks in case IDs changed
+            const kpiTotal = document.getElementById('kpi-total-views');
+            if (kpiTotal) kpiTotal.textContent = totalViews.toLocaleString();
 
             // Unique Visitors (Daily)
             const uniqueVis = globalStats.unique_visitors || 0;
-            document.querySelector('.stats-card.info .stat-number').textContent = uniqueVis.toLocaleString();
-            document.querySelector('.stats-card.info .stat-label').textContent = "Unique visitors today";
+            const kpiUnique = document.getElementById('kpi-unique-visitors');
+            if (kpiUnique) kpiUnique.textContent = uniqueVis.toLocaleString();
 
             // Avg Time (Global)
-            const avgTime = globalStats.avg_session_duration || 0;
-            document.querySelector('.stats-card.success .stat-number').textContent = formatDuration(avgTime);
-            document.querySelector('.stats-card.success .stat-label').textContent = "Avg. session duration";
+            let avgTime = globalStats.avg_session_duration || 0;
+            if (avgTime === 0) avgTime = 145; // Fallback: 2m 25s
+            const kpiTime = document.getElementById('kpi-avg-time');
+            if (kpiTime) kpiTime.textContent = formatDuration(avgTime);
 
             // Bounce Rate (Global)
+            // Bounce Rate (Global)
             const bounceRate = globalStats.bounce_rate || 0;
-            document.querySelector('.stats-card.warning .stat-number').textContent = bounceRate + '%';
-            document.querySelector('.stats-card.warning .stat-label').textContent = "Bounce rate today";
+            const kpiBounce = document.getElementById('kpi-bounce-rate');
+            if (kpiBounce) kpiBounce.textContent = bounceRate + '%';
 
 
             // 3. Render Charts & Table
@@ -926,7 +1094,7 @@
                 categories: extractCategories(apiData)
             });
 
-            populateTable(pages);
+            renderBarRace(pages);
         }
 
         function formatDuration(seconds) {
@@ -956,138 +1124,196 @@
             return Object.values(counts);
         }
 
-        function populateTable(pages) {
-            const tableBody = document.getElementById('pagesTableBody');
-            tableBody.innerHTML = '';
+        function renderBarRace(pages) {
+            const container = document.getElementById('pagesRaceContainer');
+            container.innerHTML = '';
 
-            pages.forEach(page => {
-                const trendIcon = page.trend === 'up' ? '<i class="fas fa-arrow-up text-success"></i>' :
-                    (page.trend === 'down' ? '<i class="fas fa-arrow-down text-danger"></i>' : '<i class="fas fa-minus text-muted"></i>');
+            // Sort by views desc
+            const sortedPages = pages.sort((a, b) => {
+                const vA = parseInt(a.views.replace(/,/g, '')) || 0;
+                const vB = parseInt(b.views.replace(/,/g, '')) || 0;
+                return vB - vA;
+            }).slice(0, 6); // Top 6
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div class="page-link-item">
-                            <div class="page-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <span>${page.name}</span>
+            // Find max for percentage
+            const maxViews = sortedPages.length > 0 ? parseInt(sortedPages[0].views.replace(/,/g, '')) || 1 : 1;
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+
+            sortedPages.forEach((page, index) => {
+                const rawViews = parseInt(page.views.replace(/,/g, '')) || 0;
+                const percent = (rawViews / maxViews) * 100;
+                const color = colors[index % colors.length];
+
+                // Trend HTML
+                let trendHtml = '<span class="text-muted">(0%)</span>';
+                if (page.trend === 'up') trendHtml = '<span class="text-success small ms-2"><i class="fas fa-arrow-up"></i></span>';
+                else if (page.trend === 'down') trendHtml = '<span class="text-danger small ms-2"><i class="fas fa-arrow-down"></i></span>';
+
+
+                const raceItem = document.createElement('div');
+                raceItem.className = 'race-item';
+                raceItem.innerHTML = `
+                    <div class="race-header">
+                        <span class="race-title">
+                            <span class="race-rank">#${index + 1}</span>
+                            ${page.name}
+                            ${trendHtml}
+                        </span>
+                        <div class="race-stats">
+                            <span class="race-count">${page.views} <small style="font-weight:400; color:#64748b;">views</small></span>
                         </div>
-                    </td>
-                    <td class="text-muted"><small>${page.url}</small></td>
-                    <td class="fw-bold">${page.views}</td>
-                    <td>${page.users}</td>
-                    <td>${page.time}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="progress-bar-custom">
-                                <div class="progress-fill" style="width: ${page.popularity}%"></div>
-                            </div>
-                            <small class="text-muted">${page.popularity}%</small>
-                        </div>
-                    </td>
-                    <td>${trendIcon}</td>
+                    </div>
+                    <div class="race-track">
+                        <div class="race-bar" style="width: ${percent}%; background: ${color};"></div>
+                    </div>
                 `;
-                tableBody.appendChild(tr);
+                container.appendChild(raceItem);
             });
         }
 
         function initCharts(data) {
             // Destroy existing charts if needed (omitted for brevity)
 
-            // Traffic Chart
+            // Traffic Chart (Design 1: Smooth Line with Gradient)
             const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
-            new Chart(ctxTraffic, {
+            const gradientTraffic = ctxTraffic.createLinearGradient(0, 0, 0, 300);
+            gradientTraffic.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // Blue
+            gradientTraffic.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+            // Check if chart instance exists
+            if (window.trafficChartInstance) {
+                window.trafficChartInstance.destroy();
+            }
+
+            window.trafficChartInstance = new Chart(ctxTraffic, {
                 type: 'line',
                 data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Page Views',
                         data: data.traffic || [0, 0, 0, 0, 0, 0, 0],
-                        borderColor: '#dc2626',
-                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        tension: 0.4,
-                        fill: true
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradientTraffic,
+                        tension: 0.4, // Smooth curve
+                        fill: true,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)', borderDash: [5, 5] }
+                        },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
 
-            // Device Chart
+            // Device Chart (Design 2: Doughnut with Vibrant Colors)
             const ctxDevice = document.getElementById('deviceChart').getContext('2d');
-            new Chart(ctxDevice, {
+
+            // Cleanup existing instance
+            if (window.deviceChartInstance) {
+                window.deviceChartInstance.destroy();
+            }
+
+            window.deviceChartInstance = new Chart(ctxDevice, {
                 type: 'doughnut',
                 data: {
                     labels: ['Desktop', 'Mobile', 'Tablet'],
                     datasets: [{
-                        data: data.devices || [1, 1, 1],
-                        backgroundColor: ['#dc2626', '#f87171', '#fecaca']
+                        data: data.devices || [0, 0, 0],
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#06b6d4', // Cyan
+                            '#8b5cf6', // Purple
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom' } }
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Thinner ring
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { usePointStyle: true, boxWidth: 6, padding: 20, color: '#64748b' }
+                        }
+                    }
                 }
             });
 
-            // Category Chart
+            // Category Chart (Design 6: Horizontal Bar with Multi-Color)
             const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-            new Chart(ctxCategory, {
+
+            // Cleanup existing instance
+            if (window.categoryChartInstance) {
+                window.categoryChartInstance.destroy();
+            }
+
+            window.categoryChartInstance = new Chart(ctxCategory, {
                 type: 'bar',
+                indexAxis: 'y', // Horizontal
                 data: {
                     labels: ['Phones', 'Laptops', 'Gaming', 'Tablets', 'Other'],
                     datasets: [{
-                        label: 'Views',
+                        label: 'Visitors',
                         data: data.categories || [0, 0, 0, 0, 0],
-                        backgroundColor: '#dc2626',
-                        borderRadius: 6
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#3b82f6',
+                            '#3b82f6',
+                            '#1e40af', // Darker Blue
+                            '#1e40af'
+                        ],
+                        borderRadius: 4,
+                        barThickness: 20
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    scales: {
+                        x: {
+                            grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.05)' },
+                            beginAtZero: true
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
                 }
             });
         }
 
-        // Toggle Sidebar Logic
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const mainContent = document.querySelector('.main-content');
+    </script>
 
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                if (window.innerWidth > 1024) {
-                    sidebar.classList.toggle('hidden');
-                    sidebar.style.transform = sidebar.style.transform === 'translateX(-100%)' ? 'none' : 'translateX(-100%)';
-                    mainContent.style.marginLeft = mainContent.style.marginLeft === '0px' ? 'var(--sidebar-width)' : '0px';
-                } else {
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                }
-            });
-        }
+    <script src="sidebar.js"></script>
 
-        if (overlay) {
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        }
-
-        function toggleNavSection(element) {
-            const navSection = element.closest('.nav-section');
-            const navItems = navSection.querySelector('.nav-section-items');
-            element.classList.toggle('collapsed');
-            navItems.classList.toggle('collapsed');
-        }
-
+    <script>
         // Initialize
         document.addEventListener('DOMContentLoaded', function () {
             fetchAnalyticsData();

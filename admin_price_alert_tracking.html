@@ -437,160 +437,102 @@
             font-weight: 400;
         }
 
-        /* Stats Cards - Design 62: Circle Progress Card (White Theme) */
+        /* Design 62: Circle Progress Card (White Theme - Standardized) */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-            gap: 1.75rem;
-            margin-bottom: 2.25rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card-design-g {
             background: white;
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            min-height: 160px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            gap: 1.5rem;
+            transition: all 0.3s ease;
         }
 
         .stat-card-design-g:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .design-g-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            position: relative;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .design-g-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .design-g-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid currentColor;
+            border-left-color: transparent;
+            transform: rotate(-45deg);
         }
 
         .design-g-content {
-            position: relative;
-            z-index: 2;
+            flex-grow: 1;
         }
 
         .design-g-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
             margin-bottom: 0.25rem;
-            color: #0f172a;
+            color: var(--text-dark);
             line-height: 1.2;
         }
 
         .design-g-label {
-            color: #64748b;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.875rem;
+            color: var(--text);
+            font-weight: 500;
         }
 
-        .design-g-bg-icon {
-            position: absolute;
-            right: -20px;
-            bottom: -20px;
-            font-size: 8rem;
-            opacity: 0.05;
-            transform: rotate(-15deg);
-            z-index: 1;
-            transition: all 0.3s ease;
+        /* Color Variants for Design G */
+        .stat-card-design-g .design-g-ring.primary {
+            color: var(--primary);
+            background: rgba(220, 38, 38, 0.05);
         }
 
-        .stat-card-design-g:hover .design-g-bg-icon {
-            transform: rotate(0) scale(1.1);
-            opacity: 0.1;
-        }
-
-        .design-g-ring {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-left: 1rem;
-        }
-
-        .design-g-ring svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .design-g-ring circle {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
-        }
-
-        .design-g-ring .bg {
-            stroke: #f1f5f9;
-        }
-
-        .design-g-ring .progress {
-            stroke-dasharray: 251;
-            stroke-dashoffset: 60;
-            transition: stroke-dashoffset 1s ease-in-out;
-        }
-
-        .design-g-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5rem;
-            z-index: 3;
-        }
-
-        /* Color Variants - White Theme */
-        .stat-card-design-g.primary .progress {
-            stroke: #3b82f6;
-        }
-
-        .stat-card-design-g.primary .design-g-icon {
-            color: #3b82f6;
-        }
-
-        .stat-card-design-g.primary .design-g-label {
-            color: #3b82f6;
-        }
-
-        .stat-card-design-g.success .progress {
-            stroke: #10b981;
-        }
-
-        .stat-card-design-g.success .design-g-icon {
+        .stat-card-design-g .design-g-ring.success {
             color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
         }
 
-        .stat-card-design-g.success .design-g-label {
-            color: #10b981;
-        }
-
-        .stat-card-design-g.warning .progress {
-            stroke: #f59e0b;
-        }
-
-        .stat-card-design-g.warning .design-g-icon {
+        .stat-card-design-g .design-g-ring.warning {
             color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
         }
 
-        .stat-card-design-g.warning .design-g-label {
-            color: #f59e0b;
-        }
-
-        .stat-card-design-g.danger .progress {
-            stroke: #ef4444;
-        }
-
-        .stat-card-design-g.danger .design-g-icon {
+        .stat-card-design-g .design-g-ring.danger {
             color: #ef4444;
-        }
-
-        .stat-card-design-g.danger .design-g-label {
-            color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
         }
 
         /* Charts Section */
@@ -1167,66 +1109,46 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <!-- Users with Alerts -->
-                <div class="stat-card-design-g primary">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring primary">
+                        <i class="fas fa-user-tag"></i>
+                    </div>
                     <div class="design-g-content">
                         <div class="design-g-value" id="totalUsersCount">0</div>
                         <div class="design-g-label">Users with Alerts</div>
                     </div>
-                    <i class="fas fa-user-tag design-g-bg-icon"></i>
-                    <div class="design-g-ring">
-                        <svg>
-                            <circle class="bg" cx="40" cy="40" r="35" />
-                            <circle class="progress" cx="40" cy="40" r="35" />
-                        </svg>
-                        <i class="fas fa-user-tag design-g-icon"></i>
-                    </div>
                 </div>
 
                 <!-- Total Alerts -->
-                <div class="stat-card-design-g success">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success">
+                        <i class="fas fa-bell"></i>
+                    </div>
                     <div class="design-g-content">
                         <div class="design-g-value" id="totalAlertsCount">0</div>
                         <div class="design-g-label">Total Alerts</div>
                     </div>
-                    <i class="fas fa-bell design-g-bg-icon"></i>
-                    <div class="design-g-ring">
-                        <svg>
-                            <circle class="bg" cx="40" cy="40" r="35" />
-                            <circle class="progress" cx="40" cy="40" r="35" />
-                        </svg>
-                        <i class="fas fa-bell design-g-icon"></i>
-                    </div>
                 </div>
 
                 <!-- Active Alerts -->
-                <div class="stat-card-design-g warning">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
                     <div class="design-g-content">
                         <div class="design-g-value" id="activeAlertsCount">0</div>
                         <div class="design-g-label">Active Alerts</div>
                     </div>
-                    <i class="fas fa-check-circle design-g-bg-icon"></i>
-                    <div class="design-g-ring">
-                        <svg>
-                            <circle class="bg" cx="40" cy="40" r="35" />
-                            <circle class="progress" cx="40" cy="40" r="35" />
-                        </svg>
-                        <i class="fas fa-check-circle design-g-icon"></i>
-                    </div>
                 </div>
 
                 <!-- Inactive Alerts -->
-                <div class="stat-card-design-g danger">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
                     <div class="design-g-content">
                         <div class="design-g-value" id="inactiveAlertsCount">0</div>
                         <div class="design-g-label">Inactive Alerts</div>
-                    </div>
-                    <i class="fas fa-times-circle design-g-bg-icon"></i>
-                    <div class="design-g-ring">
-                        <svg>
-                            <circle class="bg" cx="40" cy="40" r="35" />
-                            <circle class="progress" cx="40" cy="40" r="35" />
-                        </svg>
-                        <i class="fas fa-times-circle design-g-icon"></i>
                     </div>
                 </div>
             </div>

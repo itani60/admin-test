@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Alerts & Notifications | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -436,92 +437,102 @@
         }
 
         /* Stats Cards */
+        /* Stats Cards - Design 62: Circle Progress Card (White Theme - Standardized) */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-            gap: 1.75rem;
-            margin-bottom: 2.25rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .stat-card {
+        .stat-card-design-g {
             background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
-            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.15);
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
             border-color: var(--primary);
         }
 
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-title {
-            font-size: 0.875rem;
-            color: var(--text);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
+        .design-g-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            background: transparent;
+            font-size: 1.8rem;
+            position: relative;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        .stat-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 8px;
+        .design-g-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 0, 0, 0.05);
         }
 
-        .stat-card.primary .stat-icon { background: transparent; }
-        .stat-card.success .stat-icon { background: transparent; }
-        .stat-card.warning .stat-icon { background: transparent; }
-        .stat-card.danger .stat-icon { background: transparent; }
+        .design-g-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid currentColor;
+            border-left-color: transparent;
+            transform: rotate(-45deg);
+        }
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 900;
+        .design-g-content {
+            flex-grow: 1;
+        }
+
+        .design-g-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
             color: var(--text-dark);
-            margin-bottom: 0.625rem;
-            letter-spacing: -1.5px;
+            line-height: 1.2;
         }
 
-        .stat-label {
+        .design-g-label {
+            font-size: 0.875rem;
             color: var(--text);
-            font-size: 0.9rem;
             font-weight: 500;
+        }
+
+        /* Color Variants for Design G */
+        .stat-card-design-g .design-g-ring.primary {
+            color: var(--primary);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .stat-card-design-g .design-g-ring.success {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .stat-card-design-g .design-g-ring.warning {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .stat-card-design-g .design-g-ring.danger {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
         }
 
         /* Charts Section */
@@ -1110,7 +1121,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -1185,12 +1196,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            
-                </div>
+
+        </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title" onclick="toggleNavSection(this)">
@@ -1289,7 +1301,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -1315,178 +1327,173 @@
         <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Alerts & Notifications</h1>
-                <p class="page-subtitle">Monitor user registrations, password resets, email updates, and price alert activities</p>
-        </div>
+                <p class="page-subtitle">Monitor user registrations, password resets, email updates, and price alert
+                    activities</p>
+            </div>
 
-        <div id="alertContainer"></div>
+            <div id="alertContainer"></div>
 
-        <!-- Analytics Charts Section -->
+            <!-- Analytics Charts Section -->
             <div class="charts-grid mb-4">
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Notifications Over Time</h3>
-                </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="notificationsOverTimeChart"></canvas>
                     </div>
-            </div>
+                </div>
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Notification Types Distribution</h3>
-                </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="notificationTypesChart"></canvas>
                     </div>
+                </div>
             </div>
-        </div>
 
             <div class="charts-grid mb-4">
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Activity by Category</h3>
-                </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="activityByCategoryChart"></canvas>
                     </div>
-            </div>
+                </div>
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Read vs Unread Status</h3>
-                </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="readStatusChart"></canvas>
                     </div>
+                </div>
             </div>
-        </div>
 
             <!-- Stats Cards -->
+            <!-- Stats Cards -->
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-header">
-                        <div class="stat-title">Total Notifications</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/notification-bell.png" alt="Total Notifications">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring primary">
+                        <i class="fas fa-bell"></i>
                     </div>
-                </div>
-                    <div class="stat-value" id="totalNotificationsCount">0</div>
-                    <div class="stat-label">All system notifications</div>
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="totalNotificationsCount">0</div>
+                        <div class="design-g-label">Total Notifications</div>
                     </div>
-
-                <div class="stat-card warning">
-                    <div class="stat-header">
-                        <div class="stat-title">Unread</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/unread.png" alt="Unread">
-                </div>
-                    </div>
-                    <div class="stat-value" id="unreadNotificationsCount">0</div>
-                    <div class="stat-label">Require attention</div>
                 </div>
 
-                <div class="stat-card success">
-                    <div class="stat-header">
-                        <div class="stat-title">Today</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/schedule.png" alt="Today">
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning">
+                        <i class="fas fa-envelope-open-text"></i>
                     </div>
-                </div>
-                    <div class="stat-value" id="todayNotificationsCount">0</div>
-                    <div class="stat-label">Notifications today</div>
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="unreadNotificationsCount">0</div>
+                        <div class="design-g-label">Unread Notifications</div>
+                    </div>
                 </div>
 
-                <div class="stat-card danger">
-                    <div class="stat-header">
-                        <div class="stat-title">Price Alerts</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/price alets.png" alt="Price Alerts">
-                        </div>
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success">
+                        <i class="fas fa-calendar-day"></i>
                     </div>
-                    <div class="stat-value" id="priceAlertsCount">0</div>
-                    <div class="stat-label">Price alerts added</div>
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="todayNotificationsCount">0</div>
+                        <div class="design-g-label">Today's Notifications</div>
+                    </div>
+                </div>
+
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <div class="design-g-value" id="priceAlertsCount">0</div>
+                        <div class="design-g-label">Price Alerts</div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Filters Section -->
-        <div class="filters-section">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="filter-box">
-                        <div class="custom-search-input">
-                            <i class="fas fa-search"></i>
-                            <input 
-                                type="text" 
-                                id="searchInput" 
-                                placeholder="Search by user email, name, or notification type..."
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="filter-box">
-                        <div class="custom-dropdown" id="typeDropdown">
-                            <button class="custom-dropdown-btn" id="typeDropdownBtn">
-                                <span id="typeDropdownText">All Types</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="custom-dropdown-menu" id="typeDropdownMenu" style="display: none;">
-                                <div class="custom-dropdown-items" id="typeDropdownItems"></div>
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="filter-box">
+                            <div class="custom-search-input">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput"
+                                    placeholder="Search by user email, name, or notification type...">
                             </div>
-                            <input type="hidden" id="typeSelect" value="all">
                         </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="filter-box">
-                        <div class="custom-dropdown" id="statusDropdown">
-                            <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                <span id="statusDropdownText">All Status</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                    <div class="col-md-3">
+                        <div class="filter-box">
+                            <div class="custom-dropdown" id="typeDropdown">
+                                <button class="custom-dropdown-btn" id="typeDropdownBtn">
+                                    <span id="typeDropdownText">All Types</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="typeDropdownMenu" style="display: none;">
+                                    <div class="custom-dropdown-items" id="typeDropdownItems"></div>
+                                </div>
+                                <input type="hidden" id="typeSelect" value="all">
                             </div>
-                            <input type="hidden" id="statusSelect" value="all">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="filter-box">
+                            <div class="custom-dropdown" id="statusDropdown">
+                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
+                                    <span id="statusDropdownText">All Status</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
+                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
+                                </div>
+                                <input type="hidden" id="statusSelect" value="all">
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all" id="filterAll">
+                        All
+                    </button>
+                    <button class="filter-btn" data-filter="today" id="filterToday">
+                        Today
+                    </button>
+                    <button class="filter-btn" data-filter="week" id="filterWeek">
+                        This Week
+                    </button>
+                    <button class="filter-btn" data-filter="month" id="filterMonth">
+                        This Month
+                    </button>
+                </div>
             </div>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all" id="filterAll">
-                    All
-                </button>
-                <button class="filter-btn" data-filter="today" id="filterToday">
-                    Today
-                </button>
-                <button class="filter-btn" data-filter="week" id="filterWeek">
-                    This Week
-                </button>
-                <button class="filter-btn" data-filter="month" id="filterMonth">
-                    This Month
-                </button>
-            </div>
-        </div>
 
-        <!-- Notifications Section -->
-        <div class="notifications-section">
+            <!-- Notifications Section -->
+            <div class="notifications-section">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3><i class="fas fa-bell"></i> System Notifications</h3>
+                    <h3><i class="fas fa-bell"></i> System Notifications</h3>
                     <div style="display: flex; gap: 0.75rem;">
-                    <button class="btn btn-primary btn-sm" onclick="refreshNotifications()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                    <button class="btn btn-success btn-sm" onclick="markAllAsRead()">
-                        <i class="fas fa-check-double"></i> Mark All as Read
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="clearAllNotifications()">
-                        <i class="fas fa-trash"></i> Clear All
-                    </button>
+                        <button class="btn btn-primary btn-sm" onclick="refreshNotifications()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i> Mark All as Read
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllNotifications()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div id="notificationsContainer">
-                <div class="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div id="notificationsContainer">
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
@@ -1495,7 +1502,8 @@
     </div>
 
     <!-- Styled Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" id="confirmationModalHeader">
@@ -1520,16 +1528,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-alerts-notifications.js"></script>
-    
+
     <script>
         // Configuration
         const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za/admin';
         const ADMIN_NOTIFICATIONS_API = `${API_BASE_URL}/admin/notifications`;
-        
+
         // State
         let allNotifications = [];
         let filteredNotifications = [];
-        
+
         // Chart instances
         let notificationsOverTimeChart = null;
         let notificationTypesChart = null;
@@ -1551,18 +1559,18 @@
             if (searchInput) {
                 searchInput.addEventListener('input', debounce(applyFilters, 300));
             }
-            
+
             // Listen for changes in custom dropdowns
             const typeSelect = document.getElementById('typeSelect');
             const statusSelect = document.getElementById('statusSelect');
-            
+
             if (typeSelect) {
                 // Watch for changes in the hidden input
                 const observer = new MutationObserver(() => {
                     applyFilters();
                 });
                 observer.observe(typeSelect, { attributes: true, attributeFilter: ['value'] });
-                
+
                 // Also check periodically (fallback)
                 setInterval(() => {
                     const currentValue = typeSelect.value;
@@ -1572,13 +1580,13 @@
                     }
                 }, 100);
             }
-            
+
             if (statusSelect) {
                 const observer = new MutationObserver(() => {
                     applyFilters();
                 });
                 observer.observe(statusSelect, { attributes: true, attributeFilter: ['value'] });
-                
+
                 setInterval(() => {
                     const currentValue = statusSelect.value;
                     if (statusSelect.dataset.lastValue !== currentValue) {
@@ -1587,9 +1595,9 @@
                     }
                 }, 100);
             }
-            
+
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     applyFilters();
@@ -1601,7 +1609,7 @@
         async function loadNotifications() {
             try {
                 showLoading();
-                
+
                 const response = await fetch(`${ADMIN_NOTIFICATIONS_API}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -1622,7 +1630,7 @@
                     }
                 } else {
                     const errorData = await response.json().catch(() => ({}));
-                    
+
                     if (response.status === 401) {
                         showAlert('Please log in to view notifications', 'warning');
                         setTimeout(() => {
@@ -1630,7 +1638,7 @@
                         }, 2000);
                         return;
                     }
-                    
+
                     throw new Error(errorData.message || `Failed to load notifications: ${response.statusText}`);
                 }
             } catch (error) {
@@ -1647,7 +1655,7 @@
             const searchInput = document.getElementById('searchInput');
             const typeSelect = document.getElementById('typeSelect');
             const statusSelect = document.getElementById('statusSelect');
-            
+
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
             const typeFilterValue = typeSelect ? typeSelect.value : 'all';
             const statusFilterValue = statusSelect ? statusSelect.value : 'all';
@@ -1655,7 +1663,7 @@
 
             filteredNotifications = allNotifications.filter(notification => {
                 // Search filter
-                const matchesSearch = !searchTerm || 
+                const matchesSearch = !searchTerm ||
                     (notification.userEmail && notification.userEmail.toLowerCase().includes(searchTerm)) ||
                     (notification.userName && notification.userName.toLowerCase().includes(searchTerm)) ||
                     notification.title.toLowerCase().includes(searchTerm) ||
@@ -1663,12 +1671,12 @@
                     notification.type.toLowerCase().includes(searchTerm);
 
                 // Type filter
-                const matchesType = typeFilterValue === 'all' || 
+                const matchesType = typeFilterValue === 'all' ||
                     notification.type === typeFilterValue ||
                     (typeFilterValue === 'price_alert' && (notification.type === 'price_alert' || notification.type === 'price_alert_created'));
 
                 // Status filter
-                const matchesStatus = statusFilterValue === 'all' || 
+                const matchesStatus = statusFilterValue === 'all' ||
                     (statusFilterValue === 'unread' && !notification.isRead) ||
                     (statusFilterValue === 'read' && notification.isRead);
 
@@ -1676,7 +1684,7 @@
                 let matchesTime = true;
                 const notificationDate = new Date(notification.timestamp || notification.createdAt);
                 const now = new Date();
-                
+
                 if (timeFilter === 'today') {
                     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                     matchesTime = notificationDate >= todayStart;
@@ -1704,9 +1712,9 @@
         // Render notifications
         function renderNotifications() {
             const container = document.getElementById('notificationsContainer');
-            
+
             if (!container) return;
-            
+
             if (filteredNotifications.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -1855,12 +1863,12 @@
         function updateStats() {
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            
+
             const totalEl = document.getElementById('totalNotificationsCount');
             const unreadEl = document.getElementById('unreadNotificationsCount');
             const todayEl = document.getElementById('todayNotificationsCount');
             const priceAlertsEl = document.getElementById('priceAlertsCount');
-            
+
             if (totalEl) totalEl.textContent = allNotifications.length;
             if (unreadEl) unreadEl.textContent = allNotifications.filter(n => !n.isRead).length;
             if (todayEl) todayEl.textContent = allNotifications.filter(n => new Date(n.timestamp || n.createdAt) >= todayStart).length;
@@ -2037,7 +2045,7 @@
             if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
             if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
             if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-            
+
             return date.toLocaleDateString('en-ZA', {
                 year: 'numeric',
                 month: 'short',
@@ -2077,18 +2085,18 @@
         function showAlert(message, type = 'info') {
             const alertContainer = document.getElementById('alertContainer');
             if (!alertContainer) return;
-            
+
             const alertId = 'alert-' + Date.now();
-            
+
             const alertHTML = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
-            
+
             alertContainer.innerHTML = alertHTML;
-            
+
             setTimeout(() => {
                 const alert = document.getElementById(alertId);
                 if (alert) {
@@ -2114,14 +2122,14 @@
         async function checkLoginState() {
             try {
                 const result = await window.adminAWSAuthService.getUserInfo();
-                
+
                 if (result.success && result.user) {
                     const user = result.user;
                     const userAvatar = document.getElementById('userAvatar');
                     const userName = document.getElementById('userName');
                     const dropdownUserName = document.getElementById('dropdownUserName');
                     const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-                    
+
                     let displayName = '';
                     let initials = '';
 
@@ -2193,10 +2201,10 @@
         function toggleNavSection(element) {
             const navSection = element.closest('.nav-section');
             const navItems = navSection.querySelector('.nav-section-items');
-            
+
             // Toggle collapsed class on title
             element.classList.toggle('collapsed');
-            
+
             // Toggle collapsed class on items container
             navItems.classList.toggle('collapsed');
         }
@@ -2241,16 +2249,16 @@
                 const modalMessage = document.getElementById('confirmationModalMessage');
                 const modalHeader = document.getElementById('confirmationModalHeader');
                 const confirmBtn = document.getElementById('confirmationModalConfirmBtn');
-                
+
                 if (!modal || !modalLabel || !modalMessage || !modalHeader || !confirmBtn) {
                     resolve(false);
                     return;
                 }
-                
+
                 // Set content
                 modalLabel.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${title}`;
                 modalMessage.textContent = message;
-                
+
                 // Set styling based on type
                 if (type === 'danger') {
                     modalHeader.className = 'modal-header bg-danger text-white';
@@ -2262,26 +2270,26 @@
                     modalHeader.className = 'modal-header bg-warning text-dark';
                     confirmBtn.className = 'btn btn-warning';
                 }
-                
+
                 // Remove previous event listeners by cloning the button
                 const newConfirmBtn = confirmBtn.cloneNode(true);
                 confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
                 const updatedConfirmBtn = document.getElementById('confirmationModalConfirmBtn');
-                
+
                 // Add event listeners
-                updatedConfirmBtn.addEventListener('click', function() {
+                updatedConfirmBtn.addEventListener('click', function () {
                     const bsModal = bootstrap.Modal.getInstance(modal);
                     bsModal.hide();
                     resolve(true);
                 });
-                
+
                 // Handle backdrop click and escape key
                 const handleHide = () => {
                     resolve(false);
                     modal.removeEventListener('hidden.bs.modal', handleHide);
                 };
                 modal.addEventListener('hidden.bs.modal', handleHide);
-                
+
                 // Show modal
                 const bsModal = new bootstrap.Modal(modal);
                 bsModal.show();
@@ -2293,26 +2301,26 @@
             const now = new Date();
             const days = [];
             const counts = [];
-            
+
             for (let i = 6; i >= 0; i--) {
                 const date = new Date(now);
                 date.setDate(date.getDate() - i);
                 date.setHours(0, 0, 0, 0);
-                
+
                 const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
                 days.push(dayName);
-                
+
                 const nextDay = new Date(date);
                 nextDay.setDate(nextDay.getDate() + 1);
-                
+
                 const count = allNotifications.filter(notif => {
                     const notifDate = new Date(notif.timestamp || notif.createdAt);
                     return notifDate >= date && notifDate < nextDay;
                 }).length;
-                
+
                 counts.push(count);
             }
-            
+
             return { labels: days, data: counts };
         }
 
@@ -2346,7 +2354,7 @@
                 'price_alert_created': 0,
                 'other': 0
             };
-            
+
             allNotifications.forEach(notif => {
                 const type = notif.type || 'other';
                 if (typeCounts.hasOwnProperty(type)) {
@@ -2357,38 +2365,38 @@
                     typeCounts['other']++;
                 }
             });
-            
+
             // Group related types
-            const passwordChangeTotal = typeCounts['password_change_attempted'] + 
-                                      typeCounts['password_change_failed'] + 
-                                      typeCounts['password_change_success'];
-            
-            const accountDeletionTotal = typeCounts['account_deletion_attempted'] + 
-                                        typeCounts['account_deletion_failed'] + 
-                                        typeCounts['account_deletion_success'];
-            
-            const profileUpdateTotal = typeCounts['profile_update'] + 
-                                      typeCounts['profile_image_updated'] + 
-                                      typeCounts['business_info_update_success'] + 
-                                      typeCounts['business_info_update_failed'] +
-                                      typeCounts['co_owner_removed'] +
-                                      typeCounts['business_address_updated'] +
-                                      typeCounts['business_logo_updated'] +
-                                      typeCounts['social_media_updated'];
-            
-            const emailChangeTotal = typeCounts['email_update'] + 
-                                    typeCounts['email_change'] + 
-                                    typeCounts['email_change_failed'];
-            
-            const mfaTotal = typeCounts['mfa_setup'] + 
-                           typeCounts['mfa_removed'] + 
-                           typeCounts['email_mfa_enabled'];
-            
+            const passwordChangeTotal = typeCounts['password_change_attempted'] +
+                typeCounts['password_change_failed'] +
+                typeCounts['password_change_success'];
+
+            const accountDeletionTotal = typeCounts['account_deletion_attempted'] +
+                typeCounts['account_deletion_failed'] +
+                typeCounts['account_deletion_success'];
+
+            const profileUpdateTotal = typeCounts['profile_update'] +
+                typeCounts['profile_image_updated'] +
+                typeCounts['business_info_update_success'] +
+                typeCounts['business_info_update_failed'] +
+                typeCounts['co_owner_removed'] +
+                typeCounts['business_address_updated'] +
+                typeCounts['business_logo_updated'] +
+                typeCounts['social_media_updated'];
+
+            const emailChangeTotal = typeCounts['email_update'] +
+                typeCounts['email_change'] +
+                typeCounts['email_change_failed'];
+
+            const mfaTotal = typeCounts['mfa_setup'] +
+                typeCounts['mfa_removed'] +
+                typeCounts['email_mfa_enabled'];
+
             return {
                 labels: [
-                    'User Registration', 
-                    'Business Registration', 
-                    'Password Reset', 
+                    'User Registration',
+                    'Business Registration',
+                    'Password Reset',
                     'Password Change',
                     'Profile Updated',
                     'Email Update',
@@ -2421,46 +2429,46 @@
                 'Alerts': 0,
                 'Other': 0
             };
-            
+
             allNotifications.forEach(notif => {
                 const type = notif.type || '';
-                
+
                 // Security category: password changes, account deletion, MFA, security-related
-                if (type.includes('password') || 
-                    type.includes('delete') || 
-                    type.includes('security') || 
+                if (type.includes('password') ||
+                    type.includes('delete') ||
+                    type.includes('security') ||
                     type.includes('mfa') ||
                     type.includes('account_deletion') ||
                     type.includes('password_change')) {
                     categoryCounts['Security']++;
-                } 
+                }
                 // Registration category
                 else if (type.includes('registration')) {
                     categoryCounts['Registration']++;
-                } 
+                }
                 // Updates category: profile updates, email changes, business info updates
-                else if (type.includes('update') || 
-                         type.includes('change') || 
-                         type.includes('modify') ||
-                         type.includes('profile') ||
-                         type.includes('email_change') ||
-                         type.includes('business_info') ||
-                         type.includes('co_owner') ||
-                         type.includes('address') ||
-                         type.includes('logo') ||
-                         type.includes('social_media')) {
+                else if (type.includes('update') ||
+                    type.includes('change') ||
+                    type.includes('modify') ||
+                    type.includes('profile') ||
+                    type.includes('email_change') ||
+                    type.includes('business_info') ||
+                    type.includes('co_owner') ||
+                    type.includes('address') ||
+                    type.includes('logo') ||
+                    type.includes('social_media')) {
                     categoryCounts['Updates']++;
-                } 
+                }
                 // Alerts category
                 else if (type.includes('alert') || type.includes('price')) {
                     categoryCounts['Alerts']++;
-                } 
+                }
                 // Other
                 else {
                     categoryCounts['Other']++;
                 }
             });
-            
+
             return {
                 labels: ['Security', 'Registration', 'Updates', 'Alerts', 'Other'],
                 data: [
@@ -2477,7 +2485,7 @@
         function calculateReadStatus() {
             const readCount = allNotifications.filter(notif => notif.isRead === true).length;
             const unreadCount = allNotifications.length - readCount;
-            
+
             return {
                 labels: ['Read', 'Unread'],
                 data: [readCount, unreadCount]
@@ -2697,4 +2705,5 @@
         }
     </script>
 </body>
+
 </html>

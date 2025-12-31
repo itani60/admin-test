@@ -47,13 +47,13 @@ function setupEventListeners() {
     if (searchInput) {
         searchInput.addEventListener('input', debounce(applyFilters, 300));
     }
-    
+
     // Initialize custom dropdowns
     initializeTypeDropdown();
     initializeStatusDropdown();
-    
+
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             applyFilters();
@@ -65,7 +65,7 @@ function setupEventListeners() {
 async function loadNotifications() {
     try {
         showLoading();
-        
+
         const response = await fetch(`${ADMIN_NOTIFICATIONS_API}`, {
             method: 'GET',
             credentials: 'include',
@@ -86,7 +86,7 @@ async function loadNotifications() {
             }
         } else {
             const errorData = await response.json().catch(() => ({}));
-            
+
             if (response.status === 401) {
                 showAlert('Please log in to view notifications', 'warning');
                 setTimeout(() => {
@@ -94,7 +94,7 @@ async function loadNotifications() {
                 }, 2000);
                 return;
             }
-            
+
             throw new Error(errorData.message || `Failed to load notifications: ${response.statusText}`);
         }
     } catch (error) {
@@ -111,7 +111,7 @@ function applyFilters() {
     const searchInput = document.getElementById('searchInput');
     const typeSelect = document.getElementById('typeSelect');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
     const typeFilterValue = typeSelect ? typeSelect.value : 'all';
     const statusFilterValue = statusSelect ? statusSelect.value : 'all';
@@ -119,7 +119,7 @@ function applyFilters() {
 
     filteredNotifications = allNotifications.filter(notification => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             (notification.userEmail && notification.userEmail.toLowerCase().includes(searchTerm)) ||
             (notification.userName && notification.userName.toLowerCase().includes(searchTerm)) ||
             notification.title.toLowerCase().includes(searchTerm) ||
@@ -127,12 +127,12 @@ function applyFilters() {
             notification.type.toLowerCase().includes(searchTerm);
 
         // Type filter
-        const matchesType = typeFilterValue === 'all' || 
+        const matchesType = typeFilterValue === 'all' ||
             notification.type === typeFilterValue ||
             (typeFilterValue === 'price_alert' && (notification.type === 'price_alert' || notification.type === 'price_alert_created'));
 
         // Status filter
-        const matchesStatus = statusFilterValue === 'all' || 
+        const matchesStatus = statusFilterValue === 'all' ||
             (statusFilterValue === 'unread' && !notification.isRead) ||
             (statusFilterValue === 'read' && notification.isRead);
 
@@ -140,7 +140,7 @@ function applyFilters() {
         let matchesTime = true;
         const notificationDate = new Date(notification.timestamp || notification.createdAt);
         const now = new Date();
-        
+
         if (timeFilter === 'today') {
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             matchesTime = notificationDate >= todayStart;
@@ -169,7 +169,7 @@ function applyFilters() {
 function renderNotifications() {
     const container = document.getElementById('notificationsContainer');
     if (!container) return;
-    
+
     if (filteredNotifications.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
@@ -318,7 +318,7 @@ function getBadgeText(type) {
 function updateStats() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     const totalCount = allNotifications.length;
     const unreadCount = allNotifications.filter(n => !n.isRead).length;
     const todayCount = allNotifications.filter(n => new Date(n.timestamp || n.createdAt) >= todayStart).length;
@@ -335,7 +335,7 @@ function updateStats() {
     if (unreadEl) unreadEl.textContent = unreadCount;
     if (todayEl) todayEl.textContent = todayCount;
     if (priceAlertsEl) priceAlertsEl.textContent = priceAlertsCount;
-    
+
     // Update badges
     if (navBadge) {
         navBadge.textContent = unreadCount;
@@ -517,7 +517,7 @@ function formatTimeAgo(dateString) {
     if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
     if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
     if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    
+
     return date.toLocaleDateString('en-ZA', {
         year: 'numeric',
         month: 'short',
@@ -557,18 +557,18 @@ function showLoading() {
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
     if (!alertContainer) return;
-    
+
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     setTimeout(() => {
         const alert = document.getElementById(alertId);
         if (alert) {
@@ -603,7 +603,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -643,16 +643,16 @@ function showConfirmationModal(title, message, type = 'warning') {
         const modalMessage = document.getElementById('confirmationModalMessage');
         const modalHeader = document.getElementById('confirmationModalHeader');
         const confirmBtn = document.getElementById('confirmationModalConfirmBtn');
-        
+
         if (!modal || !modalLabel || !modalMessage || !modalHeader || !confirmBtn) {
             resolve(false);
             return;
         }
-        
+
         // Set content
         modalLabel.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${title}`;
         modalMessage.textContent = message;
-        
+
         // Set styling based on type
         if (type === 'danger') {
             modalHeader.className = 'modal-header bg-danger text-white';
@@ -664,26 +664,26 @@ function showConfirmationModal(title, message, type = 'warning') {
             modalHeader.className = 'modal-header bg-warning text-dark';
             confirmBtn.className = 'btn btn-warning';
         }
-        
+
         // Remove previous event listeners by cloning the button
         const newConfirmBtn = confirmBtn.cloneNode(true);
         confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
         const updatedConfirmBtn = document.getElementById('confirmationModalConfirmBtn');
-        
+
         // Add event listeners
-        updatedConfirmBtn.addEventListener('click', function() {
+        updatedConfirmBtn.addEventListener('click', function () {
             const bsModal = bootstrap.Modal.getInstance(modal);
             bsModal.hide();
             resolve(true);
         });
-        
+
         // Handle backdrop click and escape key
         const handleHide = () => {
             resolve(false);
             modal.removeEventListener('hidden.bs.modal', handleHide);
         };
         modal.addEventListener('hidden.bs.modal', handleHide);
-        
+
         // Show modal
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
@@ -695,26 +695,26 @@ function calculateNotificationsOverTime() {
     const now = new Date();
     const days = [];
     const counts = [];
-    
+
     for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         date.setHours(0, 0, 0, 0);
-        
+
         const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
         days.push(dayName);
-        
+
         const nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);
-        
+
         const count = allNotifications.filter(notif => {
             const notifDate = new Date(notif.timestamp || notif.createdAt);
             return notifDate >= date && notifDate < nextDay;
         }).length;
-        
+
         counts.push(count);
     }
-    
+
     return { labels: days, data: counts };
 }
 
@@ -748,7 +748,7 @@ function calculateNotificationTypes() {
         'price_alert_created': 0,
         'other': 0
     };
-    
+
     allNotifications.forEach(notif => {
         const type = notif.type || 'other';
         if (typeCounts.hasOwnProperty(type)) {
@@ -759,38 +759,38 @@ function calculateNotificationTypes() {
             typeCounts['other']++;
         }
     });
-    
+
     // Group related types
-    const passwordChangeTotal = typeCounts['password_change_attempted'] + 
-                              typeCounts['password_change_failed'] + 
-                              typeCounts['password_change_success'];
-    
-    const accountDeletionTotal = typeCounts['account_deletion_attempted'] + 
-                                typeCounts['account_deletion_failed'] + 
-                                typeCounts['account_deletion_success'];
-    
-    const profileUpdateTotal = typeCounts['profile_update'] + 
-                              typeCounts['profile_image_updated'] + 
-                              typeCounts['business_info_update_success'] + 
-                              typeCounts['business_info_update_failed'] +
-                              typeCounts['co_owner_removed'] +
-                              typeCounts['business_address_updated'] +
-                              typeCounts['business_logo_updated'] +
-                              typeCounts['social_media_updated'];
-    
-    const emailChangeTotal = typeCounts['email_update'] + 
-                            typeCounts['email_change'] + 
-                            typeCounts['email_change_failed'];
-    
-    const mfaTotal = typeCounts['mfa_setup'] + 
-                   typeCounts['mfa_removed'] + 
-                   typeCounts['email_mfa_enabled'];
-    
+    const passwordChangeTotal = typeCounts['password_change_attempted'] +
+        typeCounts['password_change_failed'] +
+        typeCounts['password_change_success'];
+
+    const accountDeletionTotal = typeCounts['account_deletion_attempted'] +
+        typeCounts['account_deletion_failed'] +
+        typeCounts['account_deletion_success'];
+
+    const profileUpdateTotal = typeCounts['profile_update'] +
+        typeCounts['profile_image_updated'] +
+        typeCounts['business_info_update_success'] +
+        typeCounts['business_info_update_failed'] +
+        typeCounts['co_owner_removed'] +
+        typeCounts['business_address_updated'] +
+        typeCounts['business_logo_updated'] +
+        typeCounts['social_media_updated'];
+
+    const emailChangeTotal = typeCounts['email_update'] +
+        typeCounts['email_change'] +
+        typeCounts['email_change_failed'];
+
+    const mfaTotal = typeCounts['mfa_setup'] +
+        typeCounts['mfa_removed'] +
+        typeCounts['email_mfa_enabled'];
+
     return {
         labels: [
-            'User Registration', 
-            'Business Registration', 
-            'Password Reset', 
+            'User Registration',
+            'Business Registration',
+            'Password Reset',
             'Password Change',
             'Profile Updated',
             'Email Update',
@@ -823,46 +823,46 @@ function calculateActivityByCategory() {
         'Alerts': 0,
         'Other': 0
     };
-    
+
     allNotifications.forEach(notif => {
         const type = notif.type || '';
-        
+
         // Security category: password changes, account deletion, MFA, security-related
-        if (type.includes('password') || 
-            type.includes('delete') || 
-            type.includes('security') || 
+        if (type.includes('password') ||
+            type.includes('delete') ||
+            type.includes('security') ||
             type.includes('mfa') ||
             type.includes('account_deletion') ||
             type.includes('password_change')) {
             categoryCounts['Security']++;
-        } 
+        }
         // Registration category
         else if (type.includes('registration')) {
             categoryCounts['Registration']++;
-        } 
+        }
         // Updates category: profile updates, email changes, business info updates
-        else if (type.includes('update') || 
-                 type.includes('change') || 
-                 type.includes('modify') ||
-                 type.includes('profile') ||
-                 type.includes('email_change') ||
-                 type.includes('business_info') ||
-                 type.includes('co_owner') ||
-                 type.includes('address') ||
-                 type.includes('logo') ||
-                 type.includes('social_media')) {
+        else if (type.includes('update') ||
+            type.includes('change') ||
+            type.includes('modify') ||
+            type.includes('profile') ||
+            type.includes('email_change') ||
+            type.includes('business_info') ||
+            type.includes('co_owner') ||
+            type.includes('address') ||
+            type.includes('logo') ||
+            type.includes('social_media')) {
             categoryCounts['Updates']++;
-        } 
+        }
         // Alerts category
         else if (type.includes('alert') || type.includes('price')) {
             categoryCounts['Alerts']++;
-        } 
+        }
         // Other
         else {
             categoryCounts['Other']++;
         }
     });
-    
+
     return {
         labels: ['Security', 'Registration', 'Updates', 'Alerts', 'Other'],
         data: [
@@ -879,7 +879,7 @@ function calculateActivityByCategory() {
 function calculateReadStatus() {
     const readCount = allNotifications.filter(notif => notif.isRead === true).length;
     const unreadCount = allNotifications.length - readCount;
-    
+
     return {
         labels: ['Read', 'Unread'],
         data: [readCount, unreadCount]
@@ -897,10 +897,10 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         notificationsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
         notificationsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-        
+
         const timeData = calculateNotificationsOverTime();
         notificationsOverTimeChart = new Chart(notificationsOverTimeCtx, {
             type: 'line',
@@ -962,50 +962,51 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         notificationTypesCtx.addEventListener('wheel', preventScroll, { passive: false });
         notificationTypesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const typesData = calculateNotificationTypes();
         notificationTypesChart = new Chart(notificationTypesCtx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: typesData.labels,
                 datasets: [{
                     data: typesData.data,
                     backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(6, 182, 212, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(255, 152, 0, 0.8)',
-                        'rgba(156, 39, 176, 0.8)',
-                        'rgba(37, 99, 235, 0.8)',
-                        'rgba(244, 63, 94, 0.8)',
-                        'rgba(0, 188, 212, 0.8)',
-                        'rgba(233, 30, 99, 0.8)',
-                        'rgba(108, 117, 125, 0.8)'
+                        '#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#f43f5e',
+                        '#f59e0b', '#10b981', '#6366f1', '#64748b', '#94a3b8'
                     ],
-                    borderColor: [
-                        'rgb(40, 167, 69)',
-                        'rgb(6, 182, 212)',
-                        'rgb(245, 158, 11)',
-                        'rgb(255, 152, 0)',
-                        'rgb(156, 39, 176)',
-                        'rgb(37, 99, 235)',
-                        'rgb(244, 63, 94)',
-                        'rgb(0, 188, 212)',
-                        'rgb(233, 30, 99)',
-                        'rgb(108, 117, 125)'
-                    ],
-                    borderWidth: 2
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%',
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 20,
+                            font: { size: 12 },
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
@@ -1022,63 +1023,51 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         activityByCategoryCtx.addEventListener('wheel', preventScroll, { passive: false });
         activityByCategoryCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const categoryData = calculateActivityByCategory();
-        activityByCategoryChart = new Chart(activityByCategoryCtx, {
+        const ctxActivity = activityByCategoryCtx.getContext('2d');
+        const gradientActivity = ctxActivity.createLinearGradient(0, 0, 0, 300);
+        gradientActivity.addColorStop(0, '#8b5cf6');
+        gradientActivity.addColorStop(1, '#6366f1');
+
+        activityByCategoryChart = new Chart(ctxActivity, {
             type: 'bar',
             data: {
                 labels: categoryData.labels,
                 datasets: [{
                     label: 'Activity Count',
                     data: categoryData.data,
-                    backgroundColor: [
-                        'rgba(244, 63, 94, 0.8)',
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(37, 99, 235, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(108, 117, 125, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(244, 63, 94)',
-                        'rgb(40, 167, 69)',
-                        'rgb(37, 99, 235)',
-                        'rgb(245, 158, 11)',
-                        'rgb(108, 117, 125)'
-                    ],
-                    borderWidth: 1,
-                    borderRadius: 8
+                    backgroundColor: gradientActivity,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barPercentage: 0.6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        displayColors: false
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        },
-                        grid: {
-                            color: '#eff6ff'
-                        }
+                        grid: { color: '#eff6ff', drawBorder: false },
+                        ticks: { color: '#64748b', stepSize: 1 }
                     },
                     x: {
-                        grid: {
-                            display: false
-                        }
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
                     }
                 },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
+                interaction: { intersect: false, mode: 'index' },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
@@ -1093,7 +1082,7 @@ function initializeCharts() {
             e.preventDefault();
             return false;
         };
-        
+
         readStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
         readStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const statusData = calculateReadStatus();
@@ -1103,24 +1092,38 @@ function initializeCharts() {
                 labels: statusData.labels,
                 datasets: [{
                     data: statusData.data,
-                    backgroundColor: [
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(37, 99, 235, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgb(40, 167, 69)',
-                        'rgb(37, 99, 235)'
-                    ],
-                    borderWidth: 2
+                    backgroundColor: ['#10b981', '#f59e0b'],
+                    borderWidth: 0,
+                    hoverOffset: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%',
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'bottom'
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 6,
+                            padding: 20,
+                            font: { size: 12 },
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
                     }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
@@ -1175,9 +1178,9 @@ function initializeTypeDropdown() {
     const typeDropdownMenu = document.getElementById('typeDropdownMenu');
     const typeDropdownItems = document.getElementById('typeDropdownItems');
     const typeSelect = document.getElementById('typeSelect');
-    
+
     if (!typeDropdown || !typeDropdownBtn || !typeDropdownMenu || !typeDropdownItems) return;
-    
+
     // Type options
     const typeOptions = [
         { value: 'all', text: 'All Types' },
@@ -1187,7 +1190,7 @@ function initializeTypeDropdown() {
         { value: 'email_update', text: 'Email Update' },
         { value: 'price_alert', text: 'Price Alert Added' }
     ];
-    
+
     // Render dropdown items
     typeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
@@ -1197,32 +1200,32 @@ function initializeTypeDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             // Update selected state
             typeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             // Update button text and hidden input
             document.getElementById('typeDropdownText').textContent = option.text;
             typeSelect.value = option.value;
-            
+
             // Close dropdown
             typeDropdown.classList.remove('active');
             typeDropdownMenu.style.display = 'none';
-            
+
             // Apply filters
             applyFilters();
         });
         typeDropdownItems.appendChild(itemDiv);
     });
-    
+
     // Toggle dropdown
-    typeDropdownBtn.addEventListener('click', function(e) {
+    typeDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = typeDropdown.classList.contains('active');
-        
+
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'typeDropdown') {
@@ -1231,7 +1234,7 @@ function initializeTypeDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             typeDropdown.classList.remove('active');
             typeDropdownMenu.style.display = 'none';
@@ -1240,9 +1243,9 @@ function initializeTypeDropdown() {
             typeDropdownMenu.style.display = 'block';
         }
     });
-    
+
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             typeDropdown.classList.remove('active');
             typeDropdownMenu.style.display = 'none';
@@ -1257,16 +1260,16 @@ function initializeStatusDropdown() {
     const statusDropdownMenu = document.getElementById('statusDropdownMenu');
     const statusDropdownItems = document.getElementById('statusDropdownItems');
     const statusSelect = document.getElementById('statusSelect');
-    
+
     if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
-    
+
     // Status options
     const statusOptions = [
         { value: 'all', text: 'All Status' },
         { value: 'unread', text: 'Unread' },
         { value: 'read', text: 'Read' }
     ];
-    
+
     // Render dropdown items
     statusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
@@ -1276,32 +1279,32 @@ function initializeStatusDropdown() {
         if (option.value === 'all') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             // Update selected state
             statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             // Update button text and hidden input
             document.getElementById('statusDropdownText').textContent = option.text;
             statusSelect.value = option.value;
-            
+
             // Close dropdown
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
-            
+
             // Apply filters
             applyFilters();
         });
         statusDropdownItems.appendChild(itemDiv);
     });
-    
+
     // Toggle dropdown
-    statusDropdownBtn.addEventListener('click', function(e) {
+    statusDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains('active');
-        
+
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'statusDropdown') {
@@ -1310,7 +1313,7 @@ function initializeStatusDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';
@@ -1319,9 +1322,9 @@ function initializeStatusDropdown() {
             statusDropdownMenu.style.display = 'block';
         }
     });
-    
+
     // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             statusDropdown.classList.remove('active');
             statusDropdownMenu.style.display = 'none';

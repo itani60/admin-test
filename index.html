@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | CompareHubPrices</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -509,16 +510,19 @@
             display: block;
         }
 
-        .stat-card.primary .stat-icon { 
+        .stat-card.primary .stat-icon {
             background: #ffffff;
         }
-        .stat-card.success .stat-icon { 
+
+        .stat-card.success .stat-icon {
             background: #ffffff;
         }
-        .stat-card.warning .stat-icon { 
+
+        .stat-card.warning .stat-icon {
             background: #ffffff;
         }
-        .stat-card.danger .stat-icon { 
+
+        .stat-card.danger .stat-icon {
             background: #ffffff;
         }
 
@@ -682,10 +686,21 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .activity-icon.success { background: linear-gradient(135deg, var(--success) 0%, #f87171 100%); }
-        .activity-icon.warning { background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%); }
-        .activity-icon.danger { background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%); }
-        .activity-icon.info { background: linear-gradient(135deg, var(--info) 0%, #f87171 100%); }
+        .activity-icon.success {
+            background: linear-gradient(135deg, var(--success) 0%, #f87171 100%);
+        }
+
+        .activity-icon.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%);
+        }
+
+        .activity-icon.danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #fb7185 100%);
+        }
+
+        .activity-icon.info {
+            background: linear-gradient(135deg, var(--info) 0%, #f87171 100%);
+        }
 
         .activity-content {
             flex: 1;
@@ -719,7 +734,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -797,14 +812,74 @@
             display: block;
             opacity: 1;
         }
+
+        /* Design 62: Circle Progress Card (Design G) */
+        .stat-card-design-g {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 160px;
+        }
+
+        .design-g-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #334155;
+            border-top-color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .design-g-content {
+            flex: 1;
+        }
+
+        .design-g-content h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .design-g-content .design-g-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .design-g-change {
+            font-size: 0.8rem;
+            color: #10b981;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
-        
+
             </div>
         </div>
         <nav class="sidebar-nav">
@@ -899,7 +974,7 @@
                 </div>
             </div>
             <div class="header-right">
-           
+
                 <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
@@ -907,7 +982,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -937,17 +1012,17 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-header">
-                        <div class="stat-title">Total Users</div>
-                        <div class="stat-icon">
-                            <img src="assets/cards/users.png" alt="Users">
-                        </div>
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring">
+                        <i class="fas fa-users" style="font-size: 1.2rem;"></i>
                     </div>
-                    <div class="stat-value" id="totalUsersCount">0</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span id="totalUsersChange">Loading...</span>
+                    <div class="design-g-content">
+                        <h4>Total Users</h4>
+                        <div class="design-g-value" id="totalUsersCount">0</div>
+                        <div class="design-g-change">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="totalUsersChange">Loading...</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1035,19 +1110,6 @@
                 </div>
             </div>
 
-            <div class="activity-card">
-                <div class="chart-header">
-                    <h3 class="chart-title">Recent Activity</h3>
-                    <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 700;">View All</a>
-                </div>
-                <div id="activitiesContainer">
-                    <div class="loading-spinner" style="text-align: center; padding: 2rem;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1094,10 +1156,10 @@
         function toggleNavSection(element) {
             const navSection = element.closest('.nav-section');
             const navItems = navSection.querySelector('.nav-section-items');
-            
+
             // Toggle collapsed class on title
             element.classList.toggle('collapsed');
-            
+
             // Toggle collapsed class on items container
             navItems.classList.toggle('collapsed');
         }
@@ -1110,7 +1172,7 @@
                 }
 
                 const result = await window.adminAWSAuthService.getUserInfo();
-                
+
                 if (result.success && result.user) {
                     const user = result.user;
                     let displayName = '';
@@ -1166,11 +1228,11 @@
                         const totalUsers = data.users.length;
                         const totalUsersElement = document.getElementById('totalUsersCount');
                         const changeElement = document.getElementById('totalUsersChange');
-                        
+
                         if (totalUsersElement) {
                             totalUsersElement.textContent = totalUsers.toLocaleString();
                         }
-                        
+
                         if (changeElement) {
                             // Calculate change (mock calculation for now)
                             const changePercent = 12.5; // This could be calculated from historical data
@@ -1204,11 +1266,11 @@
                         const pendingCount = data.reports.filter(r => (r.status || 'pending') === 'pending').length;
                         const pendingElement = document.getElementById('pendingReviewsCount');
                         const changeElement = document.getElementById('pendingReviewsChange');
-                        
+
                         if (pendingElement) {
                             pendingElement.textContent = pendingCount.toLocaleString();
                         }
-                        
+
                         if (changeElement) {
                             // Calculate change (mock calculation for now)
                             const changePercent = 5.3; // This could be calculated from historical data
@@ -1245,11 +1307,11 @@
                     if (data.success && typeof data.count === 'number') {
                         const activeElement = document.getElementById('activeBusinessesCount');
                         const changeElement = document.getElementById('activeBusinessesChange');
-                        
+
                         if (activeElement) {
                             activeElement.textContent = data.count.toLocaleString();
                         }
-                        
+
                         if (changeElement) {
                             // Calculate change (mock calculation for now)
                             const changePercent = 8.2; // This could be calculated from historical data
@@ -1312,10 +1374,10 @@
                 e.preventDefault();
                 return false;
             };
-            
+
             userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
             userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
-            
+
             // Prevent touch events from interfering with page scroll
             userGrowthCtx.addEventListener('touchstart', (e) => {
                 // Only prevent if it's a multi-touch gesture (pinch/zoom)
@@ -1328,7 +1390,7 @@
             const monthlyData = {};
             const currentDate = new Date();
             const months = [];
-            
+
             // Get last 12 months
             for (let i = 11; i >= 0; i--) {
                 const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
@@ -1336,7 +1398,7 @@
                 months.push(monthKey);
                 monthlyData[monthKey] = 0;
             }
-            
+
             // Count users by month
             users.forEach(user => {
                 if (user.createdAt) {
@@ -1347,7 +1409,7 @@
                     }
                 }
             });
-            
+
             // Calculate cumulative totals
             const cumulativeData = [];
             let runningTotal = 0;
@@ -1355,9 +1417,9 @@
                 runningTotal += monthlyData[month];
                 cumulativeData.push(runningTotal);
             });
-            
+
             const monthlyCounts = months.map(month => monthlyData[month]);
-            
+
             // Create chart with real data
             userGrowthChart = new Chart(userGrowthCtx, {
                 type: 'line',
@@ -1416,10 +1478,10 @@
                             borderWidth: 1,
                             padding: 12,
                             callbacks: {
-                                title: function(context) {
+                                title: function (context) {
                                     return 'Month: ' + context[0].label;
                                 },
-                                label: function(context) {
+                                label: function (context) {
                                     return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
                                 }
                             }
@@ -1428,7 +1490,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { 
+                            grid: {
                                 color: '#fef2f2',
                                 drawBorder: false
                             },
@@ -1441,7 +1503,7 @@
                             }
                         },
                         x: {
-                            grid: { 
+                            grid: {
                                 display: false,
                                 drawBorder: false
                             },
@@ -1468,128 +1530,6 @@
             loadUserGrowthData();
         }
 
-        // Load recent activities
-        async function loadRecentActivities() {
-            try {
-                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za';
-                // Remove /data suffix if present
-                if (API_BASE_URL.endsWith('/data')) {
-                    API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
-                }
-                const ACTIVITIES_API = `${API_BASE_URL}/admin/admin/recent-activities?limit=10`;
-
-                console.log('Loading recent activities from:', ACTIVITIES_API);
-
-                const response = await fetch(`${ACTIVITIES_API}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                console.log('Recent activities response status:', response.status);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Recent activities response data:', data);
-                    
-                    if (data.success && Array.isArray(data.activities)) {
-                        console.log(`Found ${data.activities.length} activities`);
-                        renderActivities(data.activities);
-                    } else {
-                        console.warn('Activities response format unexpected:', data);
-                        showEmptyActivities();
-                    }
-                } else {
-                    const errorText = await response.text();
-                    console.error('Failed to load recent activities:', response.status, errorText);
-                    
-                    // Show error message to user
-                    const container = document.getElementById('activitiesContainer');
-                    if (container) {
-                        container.innerHTML = `
-                            <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
-                                <div>Failed to load activities (${response.status})</div>
-                                <div style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text);">Check console for details</div>
-                            </div>
-                        `;
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading recent activities:', error);
-                const container = document.getElementById('activitiesContainer');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
-                            <div>Error loading activities</div>
-                            <div style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text);">${error.message}</div>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Render activities
-        function renderActivities(activities) {
-            const container = document.getElementById('activitiesContainer');
-            if (!container) return;
-
-            if (!activities || activities.length === 0) {
-                showEmptyActivities();
-                return;
-            }
-
-            container.innerHTML = activities.map(activity => {
-                // Map icon names to Font Awesome classes
-                const iconMap = {
-                    'user': 'fa-user',
-                    'check': 'fa-check',
-                    'sign-in-alt': 'fa-sign-in-alt',
-                    'upload': 'fa-upload',
-                    'exclamation': 'fa-exclamation'
-                };
-
-                // Map icon colors to CSS classes
-                const colorMap = {
-                    'info': 'info',
-                    'success': 'success',
-                    'warning': 'warning',
-                    'danger': 'danger'
-                };
-
-                const iconClass = iconMap[activity.icon] || 'fa-info-circle';
-                const colorClass = colorMap[activity.iconColor] || 'info';
-
-                return `
-                    <div class="activity-item">
-                        <div class="activity-icon ${colorClass}">
-                            <i class="fas ${iconClass}"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">${escapeHtml(activity.title)}</div>
-                            <div class="activity-time">${activity.timeAgo || 'Just now'}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Show empty state
-        function showEmptyActivities() {
-            const container = document.getElementById('activitiesContainer');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text);">
-                    <i class="fas fa-inbox" style="font-size: 3rem; color: var(--border); margin-bottom: 1rem;"></i>
-                    <div>No recent activities</div>
-                </div>
-            `;
-        }
-
         // Escape HTML to prevent XSS
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -1603,7 +1543,6 @@
             loadTotalUsers();
             loadPendingReviews();
             loadActiveBusinesses();
-            loadRecentActivities();
         });
 
         function initUserDropdown() {
@@ -1645,4 +1584,5 @@
         }
     </script>
 </body>
+
 </html>

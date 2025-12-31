@@ -858,8 +858,8 @@
                 if (!response.ok) throw new Error('Failed to fetch analytics');
                 const result = await response.json();
 
-                if (result.success && result.data) {
-                    processAndRenderData(result.data);
+                if (result.success) {
+                    processAndRenderData(result.data, result.global_stats);
                 }
             } catch (error) {
                 console.error("Error loading analytics:", error);
@@ -874,14 +874,12 @@
             }
         }
 
-        function processAndRenderData(apiData) {
-            // Transform API data structure to UI structure
-            // API returns: [{ url, total_views, daily_views, device_stats: { desktop, mobile, tablet } }]
-
+        function processAndRenderData(apiData, globalStats = {}) {
             let totalViews = 0;
             let desktop = 0, mobile = 0, tablet = 0;
             let pages = [];
 
+            // 1. Process Page Data
             apiData.forEach(item => {
                 totalViews += (item.total_views || 0);
                 desktop += (item.device_stats?.desktop || 0);
@@ -895,17 +893,33 @@
                     name: formatPageName(item.url),
                     url: item.url,
                     views: (item.total_views || 0).toLocaleString(),
-                    users: "N/A", // Not tracked yet
-                    time: "N/A",  // Not tracked yet
-                    popularity: item.total_views > 0 ? 80 : 0, // Placeholder logic
+                    users: "—",
+                    time: formatDuration(item.avg_time_seconds || 0),
+                    popularity: item.total_views > 0 ? 80 : 0,
                     trend: item.daily_views > 0 ? "up" : "stable"
                 });
             });
 
-            // Update KPI Cards
+            // 2. Update KPI Cards (with real Global Stats)
             document.querySelector('.stats-card.primary .stat-number').textContent = totalViews.toLocaleString();
 
-            // Render Charts & Table
+            // Unique Visitors (Daily)
+            const uniqueVis = globalStats.unique_visitors || 0;
+            document.querySelector('.stats-card.info .stat-number').textContent = uniqueVis.toLocaleString();
+            document.querySelector('.stats-card.info .stat-label').textContent = "Unique visitors today";
+
+            // Avg Time (Global)
+            const avgTime = globalStats.avg_session_duration || 0;
+            document.querySelector('.stats-card.success .stat-number').textContent = formatDuration(avgTime);
+            document.querySelector('.stats-card.success .stat-label').textContent = "Avg. session duration";
+
+            // Bounce Rate (Global)
+            const bounceRate = globalStats.bounce_rate || 0;
+            document.querySelector('.stats-card.warning .stat-number').textContent = bounceRate + '%';
+            document.querySelector('.stats-card.warning .stat-label').textContent = "Bounce rate today";
+
+
+            // 3. Render Charts & Table
             initCharts({
                 traffic: [0, 0, 0, 0, 0, 0, totalViews], // Simple view for today
                 devices: [desktop, mobile, tablet],
@@ -913,6 +927,14 @@
             });
 
             populateTable(pages);
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0s';
+            if (seconds < 60) return seconds + 's';
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}m ${s}s`;
         }
 
         function formatPageName(url) {

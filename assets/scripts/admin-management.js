@@ -470,31 +470,42 @@ function updateCharts() {
         const suspendedPercent = ((suspendedCount / total) * 100).toFixed(1);
 
         statusChartContainer.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                    <span style="font-weight: 500; color: var(--dark);">Verified</span>
-                    <span style="color: var(--text);">${verifiedCount} (${verifiedPercent}%)</span>
+            <div class="race-item">
+                <div class="race-header">
+                    <span class="race-title">
+                        Verified
+                        <i class="fas fa-check-circle text-success" style="font-size: 0.8rem;"></i>
+                    </span>
+                    <span class="race-count" style="color: #10b981;">${verifiedCount} (${verifiedPercent}%)</span>
                 </div>
-                <div class="progress" style="height: 25px; border-radius: 10px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: ${verifiedPercent}%; border-radius: 10px;" aria-valuenow="${verifiedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                    <span style="font-weight: 500; color: var(--dark);">Pending</span>
-                    <span style="color: var(--text);">${pendingCount} (${pendingPercent}%)</span>
-                </div>
-                <div class="progress" style="height: 25px; border-radius: 10px;">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: ${pendingPercent}%; border-radius: 10px;" aria-valuenow="${pendingPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="race-track">
+                    <div class="race-bar" style="width: ${verifiedPercent}%; background: #10b981;"></div>
                 </div>
             </div>
-            <div style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
-                    <span style="font-weight: 500; color: var(--dark);">Suspended</span>
-                    <span style="color: var(--text);">${suspendedCount} (${suspendedPercent}%)</span>
+
+            <div class="race-item">
+                <div class="race-header">
+                    <span class="race-title">
+                        Pending
+                        <i class="fas fa-clock text-warning" style="font-size: 0.8rem;"></i>
+                    </span>
+                    <span class="race-count" style="color: #f59e0b;">${pendingCount} (${pendingPercent}%)</span>
                 </div>
-                <div class="progress" style="height: 25px; border-radius: 10px;">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: ${suspendedPercent}%; border-radius: 10px;" aria-valuenow="${suspendedPercent}" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="race-track">
+                    <div class="race-bar" style="width: ${pendingPercent}%; background: #f59e0b;"></div>
+                </div>
+            </div>
+
+            <div class="race-item">
+                <div class="race-header">
+                    <span class="race-title">
+                        Suspended
+                        <i class="fas fa-ban text-danger" style="font-size: 0.8rem;"></i>
+                    </span>
+                    <span class="race-count" style="color: #ef4444;">${suspendedCount} (${suspendedPercent}%)</span>
+                </div>
+                <div class="race-track">
+                    <div class="race-bar" style="width: ${suspendedPercent}%; background: #ef4444;"></div>
                 </div>
             </div>
         `;

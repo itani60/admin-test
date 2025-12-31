@@ -596,6 +596,67 @@
             border: 2px solid var(--border);
         }
 
+        /* Design 53: Horizontal Bar Race (Adapted for White Theme) */
+        .race-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .race-title {
+            color: var(--text-dark);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .race-count {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .race-track {
+            height: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .race-bar {
+            height: 100%;
+            border-radius: 6px;
+            position: relative;
+            transition: width 1s ease-out;
+        }
+
+        .race-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
         /* Custom Dropdown Styles */
         .filter-box {
             display: flex;

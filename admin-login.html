@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | CompareHubPrices</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
-    
+
     <style>
         :root {
             --primary: #007bff;
@@ -268,6 +269,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-card">
@@ -289,14 +291,8 @@
                         </label>
                         <div class="input-group">
                             <i class="fas fa-envelope input-group-icon"></i>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                class="form-control" 
-                                placeholder="admin@comparehubprices.site"
-                                required
-                                autocomplete="email"
-                            >
+                            <input type="email" id="email" class="form-control"
+                                placeholder="admin@comparehubprices.site" required autocomplete="email">
                         </div>
                     </div>
 
@@ -306,20 +302,10 @@
                         </label>
                         <div class="input-group">
                             <i class="fas fa-lock input-group-icon"></i>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                class="form-control" 
-                                placeholder="Enter your password"
-                                required
-                                autocomplete="current-password"
-                            >
-                            <button 
-                                type="button" 
-                                class="password-toggle" 
-                                id="passwordToggle"
-                                aria-label="Toggle password visibility"
-                            >
+                            <input type="password" id="password" class="form-control" placeholder="Enter your password"
+                                required autocomplete="current-password">
+                            <button type="button" class="password-toggle" id="passwordToggle"
+                                aria-label="Toggle password visibility">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
@@ -338,14 +324,7 @@
                     </button>
                 </form>
 
-                <div class="divider">or</div>
-
-                <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-                    <span style="color: var(--text);">Don't have an account? </span>
-                    <a href="admin-register.html" style="color: var(--danger); text-decoration: none; font-weight: 600;">
-                        Register here
-                    </a>
-                </div>
+                <!-- Registration Disabled for Security: Invite Only System -->
 
                 <div class="back-to-home">
                     <a href="index.html">
@@ -365,7 +344,7 @@
         passwordToggle.addEventListener('click', () => {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
+
             const icon = passwordToggle.querySelector('i');
             icon.classList.toggle('fa-eye');
             icon.classList.toggle('fa-eye-slash');
@@ -390,7 +369,7 @@
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
@@ -406,7 +385,7 @@
 
             try {
                 const result = await window.adminAWSAuthService.login(email, password);
-                
+
                 if (result.success) {
                     // HttpOnly cookie is set by server - no client storage needed
                     // Redirect to index.html
@@ -416,7 +395,7 @@
                     loginBtn.disabled = false;
                     loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
                 }
-                
+
             } catch (error) {
                 console.error('Login error:', error);
                 showAlert('An error occurred during login. Please try again.', 'danger');
@@ -434,5 +413,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>

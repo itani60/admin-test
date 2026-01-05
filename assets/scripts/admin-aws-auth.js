@@ -159,6 +159,10 @@
 
         if (data.user) {
           this._profile = data.user;
+          // Save session token if returned (for localStorage auth fallback)
+          if (data.sessionId) {
+            localStorage.setItem('admin_session_id', data.sessionId);
+          }
           this._notifyListeners('login', data.user);
         }
 
@@ -185,7 +189,10 @@
       try {
         const res = await fetch(ENDPOINTS.USER_INFO, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('admin_session_id') || ''}`
+          },
           credentials: 'include'
         });
 
@@ -264,11 +271,11 @@
         };
       } catch (error) {
         console.error('Admin logout error:', error);
-        
+
         // Always clear profile and notify listeners, even on network error
         this.clear();
         this._notifyListeners('logout', null);
-        
+
         // Return success since we cleared local state
         return {
           success: true,
@@ -420,6 +427,7 @@
      */
     clear() {
       this._profile = null;
+      localStorage.removeItem('admin_session_id');
     }
 
     /**

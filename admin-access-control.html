@@ -751,7 +751,7 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${token}` // TODO: Add if using Bearer Auth
+                        'Authorization': `Bearer ${localStorage.getItem('admin_session_id') || ''}`
                     },
                     credentials: 'include'
                 });

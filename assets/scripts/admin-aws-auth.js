@@ -159,10 +159,6 @@
 
         if (data.user) {
           this._profile = data.user;
-          // Save session token if returned (for localStorage auth fallback)
-          if (data.sessionId) {
-            localStorage.setItem('admin_session_id', data.sessionId);
-          }
           this._notifyListeners('login', data.user);
         }
 
@@ -189,10 +185,7 @@
       try {
         const res = await fetch(ENDPOINTS.USER_INFO, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('admin_session_id') || ''}`
-          },
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'include'
         });
 
@@ -427,7 +420,6 @@
      */
     clear() {
       this._profile = null;
-      localStorage.removeItem('admin_session_id');
     }
 
     /**

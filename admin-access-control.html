@@ -750,8 +750,7 @@
                 const response = await fetch(`${API_BASE_URL}/users`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('admin_session_id') || ''}`
+                        'Content-Type': 'application/json'
                     },
                     credentials: 'include'
                 });

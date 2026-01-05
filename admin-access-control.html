@@ -568,7 +568,7 @@
                     <div class="user-avatar" id="userAvatar">AD</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Admin User</div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-role" id="userRoleHeader">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
 
@@ -728,6 +728,11 @@
             document.getElementById('userName').textContent = user.name || 'Admin';
             document.getElementById('dropdownUserName').textContent = user.name || 'Admin';
             document.getElementById('dropdownUserEmail').textContent = user.email;
+
+            // Set Dynamic Role
+            const roleText = formatRole(user.role || 'viewer');
+            const roleEl = document.getElementById('userRoleHeader');
+            if (roleEl) roleEl.textContent = roleText;
 
             // Initials
             const initials = getInitials(user.name || 'Admin');

@@ -157,6 +157,28 @@
             alertContainer.innerHTML = alertHTML;
         }
 
+        // Password toggle functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passwordInput = document.getElementById('password');
+
+            if (passwordToggle && passwordInput) {
+                passwordToggle.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent focus loss or form submit
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+
+                    const icon = passwordToggle.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('fa-eye');
+                        icon.classList.toggle('fa-eye-slash');
+                    }
+                });
+            } else {
+                console.error('Password toggle elements not found');
+            }
+        });
+
         // Login Handler
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');

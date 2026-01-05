@@ -57,6 +57,87 @@
             border-right: 2px solid var(--border);
         }
 
+        /* Custom Dropdown CSS */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-dropdown.active {
+            z-index: 100;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            background: #eff6ff;
+            /* light blue */
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         .sidebar.active {
             left: 0;
         }
@@ -622,11 +703,24 @@
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Role</label>
-                                <select class="form-select" required>
-                                    <option value="editor">Editor (Can edit content)</option>
-                                    <option value="viewer">Viewer (Read Only)</option>
-                                    <option value="manager">Manager (Can manage users)</option>
-                                </select>
+                                <div class="custom-dropdown" id="roleDropdown">
+                                    <input type="hidden" id="roleInput" value="editor">
+                                    <button type="button" class="custom-dropdown-btn" onclick="toggleRoleDropdown()">
+                                        <span id="roleText">Editor (Can edit content)</span>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div class="custom-dropdown-menu">
+                                        <div class="custom-dropdown-item selected"
+                                            onclick="selectRole('editor', 'Editor (Can edit content)')">Editor (Can edit
+                                            content)</div>
+                                        <div class="custom-dropdown-item"
+                                            onclick="selectRole('viewer', 'Viewer (Read Only)')">Viewer (Read Only)
+                                        </div>
+                                        <div class="custom-dropdown-item"
+                                            onclick="selectRole('manager', 'Manager (Can manage users)')">Manager (Can
+                                            manage users)</div>
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fas fa-paper-plane me-2"></i> Send Invitation
@@ -833,7 +927,7 @@
 
             const email = form.querySelector('input[type="email"]').value;
             const name = form.querySelector('input[type="text"]').value;
-            const role = form.querySelector('select').value;
+            const role = document.getElementById('roleInput').value;
 
             try {
                 submitBtn.disabled = true;
@@ -945,6 +1039,34 @@
             await window.adminAWSAuthService.logout();
             window.location.href = 'admin-login.html';
         }
+
+        // Custom Dropdown Logic
+        function toggleRoleDropdown() {
+            const dropdown = document.getElementById('roleDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectRole(value, text) {
+            document.getElementById('roleInput').value = value;
+            document.getElementById('roleText').textContent = text;
+
+            // Update UI selection state
+            const items = document.querySelectorAll('.custom-dropdown-item');
+            items.forEach(item => {
+                if (item.textContent === text) item.classList.add('selected');
+                else item.classList.remove('selected');
+            });
+
+            document.getElementById('roleDropdown').classList.remove('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('roleDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
     </script>
 </body>
 

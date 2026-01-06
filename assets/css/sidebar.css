@@ -234,6 +234,14 @@
 
 /* Desktop toggle support */
 @media (min-width: 1025px) {
+    .sidebar {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-width);
+    }
+
     .sidebar.hidden {
         transform: translateX(-100%);
         left: -100%;

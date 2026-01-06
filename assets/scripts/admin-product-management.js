@@ -11,12 +11,27 @@ let currentPage = 1;
 let pageSize = 25;
 let lastKey = null;
 let currentCategory = '';
+let currentUserRole = 'viewer';
 
 // Load saved API URL
 const savedUrl = localStorage.getItem('comparehubprices_api_url');
 if (savedUrl) {
     API_CONFIG.BASE_URL = savedUrl;
 }
+
+// Toggle User Dropdown
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) dropdown.classList.toggle('show');
+}
+
+document.addEventListener('click', (e) => {
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userProfile && userDropdown && !userProfile.contains(e.target)) {
+        userDropdown.classList.remove('show');
+    }
+});
 
 // Categories
 const CATEGORIES = [
@@ -51,9 +66,9 @@ const SMARTPHONE_BRANDS = [
 function initializeCategoryGrid() {
     const categoryGrid = document.getElementById('categoryGrid');
     if (!categoryGrid) return;
-    
+
     categoryGrid.innerHTML = '';
-    
+
     // Add category buttons
     CATEGORIES.forEach(cat => {
         const catBtn = document.createElement('button');
@@ -78,13 +93,13 @@ function toggleCategoryOption(category) {
 function applyCategoryFilter() {
     const activeCategory = document.querySelector('.category-option.active');
     const category = activeCategory ? activeCategory.dataset.category : '';
-    
+
     // Update the hidden select for compatibility
     const categorySelect = document.getElementById('categoryFilter');
     if (categorySelect) {
         categorySelect.value = category;
     }
-    
+
     // Update category filter button active state
     const categoryFilterBtn = document.getElementById('categoryFilterBtn');
     if (categoryFilterBtn) {
@@ -94,13 +109,13 @@ function applyCategoryFilter() {
             categoryFilterBtn.classList.remove('filter-active');
         }
     }
-    
+
     // Update brand filter based on category
     updateBrandFilter();
-    
+
     // Close the filter panel
     closeFilterPanel('category');
-    
+
     // Load products if category is selected
     if (category) {
         loadProducts();
@@ -120,19 +135,19 @@ function selectCategory(category) {
     document.querySelectorAll('.category-option').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Add active class to selected category
     const selectedBtn = document.querySelector(`.category-option[data-category="${category}"]`);
     if (selectedBtn) {
         selectedBtn.classList.add('active');
     }
-    
+
     // Update the hidden select for compatibility
     const categorySelect = document.getElementById('categoryFilter');
     if (categorySelect) {
         categorySelect.value = category;
     }
-    
+
     // Update category filter button active state
     const categoryFilterBtn = document.getElementById('categoryFilterBtn');
     if (categoryFilterBtn) {
@@ -142,7 +157,7 @@ function selectCategory(category) {
             categoryFilterBtn.classList.remove('filter-active');
         }
     }
-    
+
     // Update brand filter based on category
     updateBrandFilter();
 }
@@ -151,14 +166,14 @@ function selectCategory(category) {
 function updateBrandFilter() {
     const categorySelect = document.getElementById('categoryFilter');
     if (!categorySelect) return;
-    
+
     const category = categorySelect.value;
     const brandSelect = document.getElementById('brandFilter');
     const brandText = document.getElementById('brandFilterText');
     const brandGrid = document.getElementById('brandGrid');
     const brandOptions = document.getElementById('brandOptions');
     const brandFilterBtn = document.getElementById('brandFilterBtn');
-    
+
     // Clear existing options
     if (brandSelect) {
         brandSelect.innerHTML = '<option value="">All Brands</option>';
@@ -166,13 +181,13 @@ function updateBrandFilter() {
     if (brandGrid) {
         brandGrid.innerHTML = '';
     }
-    
+
     if (category === 'smartphones') {
         // Show brand filter button and grid
         if (brandFilterBtn) brandFilterBtn.style.display = 'inline-flex';
         if (brandSelect) brandSelect.style.display = 'none';
         if (brandText) brandText.style.display = 'none';
-        
+
         // Populate brand grid
         if (brandGrid) {
             SMARTPHONE_BRANDS.forEach(brand => {
@@ -214,10 +229,10 @@ function toggleBrandOption(brand) {
 function applyBrandFilter() {
     const categorySelect = document.getElementById('categoryFilter');
     if (!categorySelect) return;
-    
+
     const category = categorySelect.value;
     let brand = '';
-    
+
     if (category === 'smartphones') {
         // Get brand from active button
         const activeBrand = document.querySelector('.brand-option.active');
@@ -231,13 +246,13 @@ function applyBrandFilter() {
         const brandText = document.getElementById('brandFilterText');
         brand = brandText ? brandText.value.trim() : '';
     }
-    
+
     // Update the hidden select for compatibility
     const brandSelect = document.getElementById('brandFilter');
     if (brandSelect) {
         brandSelect.value = brand;
     }
-    
+
     // Update brand filter button active state
     const brandFilterBtn = document.getElementById('brandFilterBtn');
     if (brandFilterBtn) {
@@ -247,10 +262,10 @@ function applyBrandFilter() {
             brandFilterBtn.classList.remove('filter-active');
         }
     }
-    
+
     // Close the filter panel
     closeFilterPanel('brand');
-    
+
     // Load products if category is selected
     if (category) {
         loadProducts();
@@ -274,19 +289,19 @@ function selectBrand(brand) {
     document.querySelectorAll('.brand-option').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Add active class to selected brand
     const selectedBtn = document.querySelector(`.brand-option[data-brand="${brand}"]`);
     if (selectedBtn) {
         selectedBtn.classList.add('active');
     }
-    
+
     // Update the hidden select for compatibility
     const brandSelect = document.getElementById('brandFilter');
     if (brandSelect) {
         brandSelect.value = brand;
     }
-    
+
     // Auto-load products if category is selected
     const categorySelect = document.getElementById('categoryFilter');
     if (categorySelect && categorySelect.value) {
@@ -298,35 +313,35 @@ function selectBrand(brand) {
 function toggleFilterPanel(filterType) {
     const panel = document.getElementById(`${filterType}Options`);
     const btn = document.getElementById(`${filterType}FilterBtn`);
-    
+
     if (!panel || !btn) return;
-    
+
     // Close other panels
     document.querySelectorAll('.filter-options').forEach(p => {
         if (p.id !== `${filterType}Options`) {
             p.style.display = 'none';
         }
     });
-    
+
     // Remove active from other buttons
     document.querySelectorAll('.filter-btn').forEach(b => {
         if (b.id !== `${filterType}FilterBtn`) {
             b.classList.remove('filter-active');
         }
     });
-    
+
     // Toggle current panel
     if (panel.style.display === 'none' || !panel.style.display) {
         panel.style.display = 'block';
         btn.classList.add('filter-active');
-        
+
         // If brand panel and not smartphones, show text input
         if (filterType === 'brand') {
             const categorySelect = document.getElementById('categoryFilter');
             const category = categorySelect ? categorySelect.value : '';
             const brandGrid = document.getElementById('brandGrid');
             const brandTextContainer = document.getElementById('brandTextInputContainer');
-            
+
             if (category === 'smartphones') {
                 if (brandGrid) brandGrid.style.display = 'grid';
                 if (brandTextContainer) brandTextContainer.style.display = 'none';
@@ -360,11 +375,11 @@ async function loadProducts() {
         const categorySelect = document.getElementById('categoryFilter');
         category = categorySelect ? categorySelect.value : '';
     }
-    
+
     const brandSelect = document.getElementById('brandFilter');
     const brandText = document.getElementById('brandFilterText');
     const brandGrid = document.getElementById('brandGrid');
-    
+
     // Get brand value - check grid first (for smartphones), then select, then text input
     let brand = '';
     if (category === 'smartphones') {
@@ -377,7 +392,7 @@ async function loadProducts() {
     } else {
         brand = brandText ? brandText.value.trim() : '';
     }
-    
+
     const searchInput = document.getElementById('searchInput');
     const search = searchInput ? searchInput.value.trim() : '';
     const pageSizeSelect = document.getElementById('pageSize');
@@ -402,7 +417,7 @@ async function loadProducts() {
         if (lastKey) url += `&lastKey=${encodeURIComponent(lastKey)}`;
 
         const response = await fetch(url);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -419,11 +434,11 @@ async function loadProducts() {
                 const brand = (product.brand || '').toLowerCase();
                 const productId = (product.product_id || '').toLowerCase();
                 const description = (product.description || '').toLowerCase();
-                
-                return model.includes(searchLower) || 
-                       brand.includes(searchLower) || 
-                       productId.includes(searchLower) ||
-                       description.includes(searchLower);
+
+                return model.includes(searchLower) ||
+                    brand.includes(searchLower) ||
+                    productId.includes(searchLower) ||
+                    description.includes(searchLower);
             });
         }
 
@@ -441,7 +456,7 @@ async function loadProducts() {
 function displayProducts(products) {
     const container = document.getElementById('productsContainer');
     if (!container) return;
-    
+
     if (products.length === 0) {
         container.innerHTML = `
             <div class="empty-state" style="grid-column: 1 / -1;">
@@ -490,8 +505,8 @@ function displayProducts(products) {
                 </div>
                 <div class="card-actions">
                     <button class="btn-view" onclick="viewProduct('${product.product_id}', '${product.category}')">View</button>
-                    <button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>
-                    <button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>
+                    ${currentUserRole !== 'viewer' ? `<button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>` : ''}
+                    ${currentUserRole !== 'viewer' ? `<button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>` : ''}
                 </div>
             </div>
         `;
@@ -517,9 +532,9 @@ function updateStats(count) {
 function updatePagination(nextKey) {
     const paginationContainer = document.getElementById('paginationContainer');
     const pagination = document.getElementById('pagination');
-    
+
     if (!paginationContainer || !pagination) return;
-    
+
     if (!nextKey && currentPage === 1) {
         paginationContainer.style.display = 'none';
         return;
@@ -567,9 +582,9 @@ function viewProduct(productId, category) {
         const categorySelect = document.getElementById('categoryFilter');
         categoryValue = categorySelect ? categorySelect.value : '';
     }
-    
+
     let brandValue = '';
-    
+
     // Get brand value based on category type
     if (categoryValue === 'smartphones') {
         const brandGrid = document.getElementById('brandGrid');
@@ -584,10 +599,10 @@ function viewProduct(productId, category) {
         const brandText = document.getElementById('brandFilterText');
         brandValue = brandText ? brandText.value : '';
     }
-    
+
     const searchInput = document.getElementById('searchInput');
     const pageSizeSelect = document.getElementById('pageSize');
-    
+
     const state = {
         category: categoryValue,
         brand: brandValue,
@@ -597,7 +612,7 @@ function viewProduct(productId, category) {
         lastKey: lastKey
     };
     sessionStorage.setItem('productManagementState', JSON.stringify(state));
-    
+
     window.location.href = `admin-view-info.html?product_id=${encodeURIComponent(productId)}&category=${encodeURIComponent(category)}`;
 }
 
@@ -607,21 +622,21 @@ function handleImageUpload(event) {
     if (!file) {
         return;
     }
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
         showAlert('Image file size must be less than 5MB', 'danger');
         event.target.value = '';
         return;
     }
-    
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
         showAlert('Please select a valid image file', 'danger');
         event.target.value = '';
         return;
     }
-    
+
     // Show preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -638,7 +653,7 @@ function clearImagePreview() {
     const editImageFile = document.getElementById('editImageFile');
     const imagePreview = document.getElementById('imagePreview');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-    
+
     if (editImageFile) editImageFile.value = '';
     if (imagePreview) imagePreview.src = '';
     if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
@@ -650,14 +665,14 @@ async function editProduct(productId, category) {
         // Show loading state
         const modalElement = document.getElementById('editProductModal');
         if (!modalElement) return;
-        
+
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
-        
+
         const modalLabel = document.getElementById('editProductModalLabel');
         const editForm = document.getElementById('editProductForm');
         const modalFooter = document.querySelector('.modal-footer');
-        
+
         if (modalLabel) modalLabel.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
         if (editForm) editForm.style.opacity = '0.5';
         if (modalFooter) modalFooter.style.display = 'none';
@@ -687,7 +702,7 @@ async function editProduct(productId, category) {
         const imagePreview = document.getElementById('imagePreview');
         const editDescription = document.getElementById('editDescription');
         const editSpecs = document.getElementById('editSpecs');
-        
+
         if (editProductId) editProductId.value = productId;
         if (editProductCategory) editProductCategory.value = category;
         if (editBrand) editBrand.value = productData.brand || '';
@@ -698,7 +713,7 @@ async function editProduct(productId, category) {
         if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
         if (imagePreview) imagePreview.src = '';
         if (editDescription) editDescription.value = productData.description || '';
-        
+
         // Show current image if exists
         if (productData.imageUrl) {
             if (imagePreview) imagePreview.src = productData.imageUrl;
@@ -729,7 +744,7 @@ async function editProduct(productId, category) {
 function populateOffers(offers) {
     const container = document.getElementById('offersContainer');
     if (!container) return;
-    
+
     container.innerHTML = '';
 
     if (offers.length === 0) {
@@ -746,9 +761,9 @@ function populateOffers(offers) {
 function addOfferToForm(offer = {}, index = null) {
     const container = document.getElementById('offersContainer');
     if (!container) return;
-    
+
     const offerIndex = index !== null ? index : container.children.length;
-    
+
     const offerHTML = `
         <div class="offer-item" data-offer-index="${offerIndex}">
             <div class="offer-item-header">
@@ -785,7 +800,7 @@ function addOfferToForm(offer = {}, index = null) {
             </div>
         </div>
     `;
-    
+
     container.insertAdjacentHTML('beforeend', offerHTML);
 }
 
@@ -814,15 +829,15 @@ function removeOffer(index) {
 async function saveProductChanges() {
     const editProductId = document.getElementById('editProductId');
     const editProductCategory = document.getElementById('editProductCategory');
-    
+
     if (!editProductId || !editProductCategory) {
         showAlert('Missing product ID or category', 'danger');
         return;
     }
-    
+
     const productId = editProductId.value;
     const category = editProductCategory.value;
-    
+
     if (!productId || !category) {
         showAlert('Missing product ID or category', 'danger');
         return;
@@ -832,27 +847,27 @@ async function saveProductChanges() {
         // Handle image upload if file is selected
         const editImageFile = document.getElementById('editImageFile');
         const imageFile = editImageFile ? editImageFile.files[0] : null;
-        
+
         if (imageFile) {
             // Validate file size (max 5MB)
             if (imageFile.size > 5 * 1024 * 1024) {
                 showAlert('Image file size must be less than 5MB', 'danger');
                 return;
             }
-            
+
             // Validate file type
             if (!imageFile.type.startsWith('image/')) {
                 showAlert('Please select a valid image file', 'danger');
                 return;
             }
         }
-        
+
         // Collect form data
         const editBrand = document.getElementById('editBrand');
         const editModel = document.getElementById('editModel');
         const editColor = document.getElementById('editColor');
         const editDescription = document.getElementById('editDescription');
-        
+
         const updateData = {
             category: category,
             brand: editBrand ? editBrand.value.trim() : '',
@@ -860,7 +875,7 @@ async function saveProductChanges() {
             color: editColor ? editColor.value.trim() : '',
             description: editDescription ? editDescription.value.trim() : '',
         };
-        
+
         // Add image URL if no new file is uploaded (keep existing)
         const editImageUrl = document.getElementById('editImageUrl');
         const existingImageUrl = editImageUrl ? editImageUrl.value.trim() : '';
@@ -877,7 +892,7 @@ async function saveProductChanges() {
             const originalPriceInput = item.querySelector('.offer-original-price');
             const saleEndsInput = item.querySelector('.offer-sale-ends');
             const logoUrlInput = item.querySelector('.offer-logo-url');
-            
+
             const offer = {
                 retailer: retailerInput ? retailerInput.value.trim() : '',
                 url: urlInput ? urlInput.value.trim() : '',
@@ -886,7 +901,7 @@ async function saveProductChanges() {
                 saleEnds: saleEndsInput ? saleEndsInput.value.trim() || null : null,
                 logoUrl: logoUrlInput ? logoUrlInput.value.trim() || null : null,
             };
-            
+
             if (offer.retailer && offer.price > 0) {
                 offers.push(offer);
             }
@@ -916,7 +931,7 @@ async function saveProductChanges() {
                 reader.onerror = reject;
                 reader.readAsDataURL(imageFile);
             });
-            
+
             updateData.imageBase64 = base64;
             updateData.imageContentType = imageFile.type;
         }
@@ -1011,18 +1026,18 @@ function showAlert(message, type = 'info') {
     if (!alertContainer) {
         alertContainer = createAlertContainer();
     }
-    
+
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     setTimeout(() => {
         const alert = document.getElementById(alertId);
         if (alert) {
@@ -1038,12 +1053,12 @@ function createAlertContainer() {
     if (alertContainer) {
         return alertContainer;
     }
-    
+
     // Create new alert container
     alertContainer = document.createElement('div');
     alertContainer.id = 'alertContainer';
     alertContainer.className = 'mb-3';
-    
+
     // Find the content wrapper
     const contentWrapper = document.querySelector('.content-wrapper');
     if (contentWrapper) {
@@ -1053,7 +1068,7 @@ function createAlertContainer() {
         // Fallback: append to body
         document.body.insertBefore(alertContainer, document.body.firstChild);
     }
-    
+
     return alertContainer;
 }
 
@@ -1085,7 +1100,7 @@ async function checkLoginState() {
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -1108,9 +1123,24 @@ async function checkLoginState() {
 
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
-            
+
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
+
+            // Start of Updates
+            currentUserRole = user.role || 'viewer';
+            const roleDisplay = (user.role || 'viewer').replace('_', ' ').toUpperCase();
+
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+            // End of Updates
+
         } else {
             window.location.href = 'admin-login.html';
         }
@@ -1138,16 +1168,16 @@ function initializePageSizeDropdown() {
     const pageSizeDropdownMenu = document.getElementById('pageSizeDropdownMenu');
     const pageSizeDropdownItems = document.getElementById('pageSizeDropdownItems');
     const pageSizeSelect = document.getElementById('pageSize');
-    
+
     if (!pageSizeDropdown || !pageSizeDropdownBtn || !pageSizeDropdownMenu || !pageSizeDropdownItems) return;
-    
+
     const pageSizeOptions = [
         { value: '10', text: '10 per page' },
         { value: '25', text: '25 per page' },
         { value: '50', text: '50 per page' },
         { value: '100', text: '100 per page' }
     ];
-    
+
     pageSizeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -1156,27 +1186,27 @@ function initializePageSizeDropdown() {
         if (option.value === '25') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             pageSizeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('pageSizeDropdownText').textContent = option.text;
             pageSizeSelect.value = option.value;
-            
+
             pageSizeDropdown.classList.remove('active');
             pageSizeDropdownMenu.style.display = 'none';
-            
+
             loadProducts();
         });
         pageSizeDropdownItems.appendChild(itemDiv);
     });
-    
-    pageSizeDropdownBtn.addEventListener('click', function(e) {
+
+    pageSizeDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = pageSizeDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'pageSizeDropdown') {
                 dd.classList.remove('active');
@@ -1184,7 +1214,7 @@ function initializePageSizeDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             pageSizeDropdown.classList.remove('active');
             pageSizeDropdownMenu.style.display = 'none';
@@ -1193,8 +1223,8 @@ function initializePageSizeDropdown() {
             pageSizeDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             pageSizeDropdown.classList.remove('active');
             pageSizeDropdownMenu.style.display = 'none';
@@ -1206,11 +1236,11 @@ function initializePageSizeDropdown() {
 document.addEventListener('DOMContentLoaded', () => {
     setupSidebar();
     checkLoginState();
-    
+
     // Initialize category and brand filters on page load
     initializeCategoryGrid();
     updateBrandFilter();
-    
+
     // Enter key to search
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -1218,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') loadProducts();
         });
     }
-    
+
     const brandFilterText = document.getElementById('brandFilterText');
     if (brandFilterText) {
         brandFilterText.addEventListener('keypress', (e) => {
@@ -1274,11 +1304,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    
+
     // Attach logout handler
     const userProfile = document.getElementById('userProfile');
     if (userProfile) {
-        userProfile.addEventListener('click', handleLogout);
+        if (userProfile) {
+            // userProfile.addEventListener('click', handleLogout); // Removed old listener
+        }
     }
 });
 
@@ -1288,12 +1320,12 @@ function restoreState() {
     if (savedState) {
         try {
             const state = JSON.parse(savedState);
-            
+
             // Restore filters
             if (state.category) {
                 // Restore category selection in grid (this will also update brand filter)
                 selectCategory(state.category);
-                
+
                 // Restore brand after a small delay to ensure grid/inputs are updated
                 setTimeout(() => {
                     if (state.category === 'smartphones') {
@@ -1315,13 +1347,13 @@ function restoreState() {
                         const brandFilterText = document.getElementById('brandFilterText');
                         if (brandFilterText) brandFilterText.value = state.brand || '';
                     }
-                    
+
                     // Restore search
                     if (state.search) {
                         const searchInput = document.getElementById('searchInput');
                         if (searchInput) searchInput.value = state.search;
                     }
-                    
+
                     // Restore page size
                     if (state.pageSize) {
                         const pageSizeSelect = document.getElementById('pageSize');
@@ -1329,7 +1361,7 @@ function restoreState() {
                         if (pageSizeSelect) {
                             pageSizeSelect.value = state.pageSize;
                             pageSize = parseInt(state.pageSize);
-                            
+
                             // Update dropdown text
                             if (pageSizeDropdownText) {
                                 const pageSizeOptions = {
@@ -1340,7 +1372,7 @@ function restoreState() {
                                 };
                                 pageSizeDropdownText.textContent = pageSizeOptions[state.pageSize] || '25 per page';
                             }
-                            
+
                             // Update selected item in dropdown
                             const pageSizeDropdownItems = document.getElementById('pageSizeDropdownItems');
                             if (pageSizeDropdownItems) {
@@ -1353,7 +1385,7 @@ function restoreState() {
                             }
                         }
                     }
-                    
+
                     // Auto-load products if category is set
                     // Note: We reset to page 1 since DynamoDB doesn't support backward pagination easily
                     if (state.category) {
@@ -1363,7 +1395,7 @@ function restoreState() {
                     }
                 }, 150);
             }
-            
+
             // Clear saved state after restoring
             sessionStorage.removeItem('productManagementState');
         } catch (error) {

@@ -11,6 +11,7 @@ let originalOffers = [];
 let searchSuggestionsTimeout = null;
 let currentSuggestions = [];
 let selectedSuggestionIndex = -1;
+let currentUserRole = 'viewer';
 
 /**
  * Show alert message
@@ -18,16 +19,16 @@ let selectedSuggestionIndex = -1;
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show alert-custom" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
         const alert = document.getElementById(alertId);
@@ -82,7 +83,7 @@ function showLoading(show = true) {
  */
 async function searchProduct() {
     const searchQuery = document.getElementById('productSearch').value.trim();
-    
+
     if (!searchQuery) {
         showAlert('Please enter a model name or product ID', 'warning');
         return;
@@ -94,7 +95,7 @@ async function searchProduct() {
     try {
         // Determine if search query looks like a product_id (contains hyphens and lowercase) or model name
         const looksLikeProductId = searchQuery.includes('-') && searchQuery === searchQuery.toLowerCase();
-        
+
         // Use the dedicated search function
         await searchProductByModelOrId(
             looksLikeProductId ? null : searchQuery, // model
@@ -114,7 +115,7 @@ async function searchProduct() {
 function displayProduct(product) {
     // Set product image
     document.getElementById('productImage').src = product.imageUrl || 'assets/images/placeholder.jpg';
-    
+
     // Set product info
     document.getElementById('productModel').textContent = product.model || 'N/A';
     document.getElementById('productBrand').textContent = product.brand || 'N/A';
@@ -178,12 +179,12 @@ function displayOffers(offers) {
         const offerCard = document.createElement('div');
         offerCard.className = 'offer-card';
         offerCard.id = `offer-${index}`;
-        
+
         const originalOffer = originalOffers.find(o => o.retailer === offer.retailer);
         const priceChanged = originalOffer && originalOffer.price !== offer.price;
         const priceChange = originalOffer ? offer.price - originalOffer.price : 0;
-        const priceChangePercent = originalOffer && originalOffer.price > 0 
-            ? ((priceChange / originalOffer.price) * 100).toFixed(2) 
+        const priceChangePercent = originalOffer && originalOffer.price > 0
+            ? ((priceChange / originalOffer.price) * 100).toFixed(2)
             : 0;
 
         offerCard.innerHTML = `
@@ -192,9 +193,10 @@ function displayOffers(offers) {
                     ${offer.logoUrl ? `<img src="${offer.logoUrl}" alt="${offer.retailer}" class="retailer-logo">` : ''}
                     <h5 class="retailer-name">${offer.retailer}</h5>
                 </div>
+                ${currentUserRole !== 'viewer' ? `
                 <button class="btn-edit-modern" onclick="editOffer(${index})">
                     <i class="fas fa-edit"></i> Edit
-                </button>
+                </button>` : ''}
             </div>
             
             <div class="offer-card-body">
@@ -259,7 +261,7 @@ function displayOffers(offers) {
                 </div>
             </div>
         `;
-        
+
         container.appendChild(offerCard);
     });
 }
@@ -288,7 +290,7 @@ function cancelEdit(index) {
     const offerCard = document.getElementById(`offer-${index}`);
     offerCard.classList.remove('editing');
     document.getElementById(`edit-form-${index}`).style.display = 'none';
-    
+
     // Reset form values
     const offer = currentProduct.offers[index];
     document.getElementById(`price-${index}`).value = offer.price;
@@ -354,7 +356,7 @@ async function saveOffer(index, retailer) {
         }
 
         const data = await response.json();
-        
+
         // Handle different response formats
         let result = data;
         if (data.body) {
@@ -362,13 +364,13 @@ async function saveOffer(index, retailer) {
         }
 
         // Check for success in various formats
-        const isSuccess = result.success === true || 
-                         (result.updated && result.updated.length > 0) ||
-                         (result.statusCode === 200);
+        const isSuccess = result.success === true ||
+            (result.updated && result.updated.length > 0) ||
+            (result.statusCode === 200);
 
         if (isSuccess) {
             showAlert('Price updated successfully!', 'success');
-            
+
             // Update local product data
             const offer = currentProduct.offers.find(o => o.retailer === retailer);
             if (offer) {
@@ -377,10 +379,10 @@ async function saveOffer(index, retailer) {
                 offer.saleEnds = saleEnds || null;
                 offer.url = url;
             }
-            
+
             // Refresh display
             displayOffers(currentProduct.offers);
-            
+
             // Reload price history
             await loadPriceHistory(currentProduct.product_id);
         } else {
@@ -401,13 +403,13 @@ async function saveOffer(index, retailer) {
 async function loadPriceHistory(productId) {
     try {
         const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.PRICE_HISTORY_ENDPOINT}?product_id=${productId}&limit=50`);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Handle different response formats
         let result = data;
         if (data.body) {
@@ -415,11 +417,11 @@ async function loadPriceHistory(productId) {
         }
 
         const container = document.getElementById('priceHistoryContainer');
-        
+
         // Check if we have history data
         const history = result.history || result.items || [];
         const historyByRetailer = result.historyByRetailer || {};
-        
+
         if (history.length === 0 && Object.keys(historyByRetailer).length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -448,15 +450,15 @@ async function loadPriceHistory(productId) {
         Object.keys(groupedHistory).forEach(retailer => {
             const retailerHistory = groupedHistory[retailer];
             historyHTML += `<h6 class="mt-3 mb-2"><strong>${retailer}</strong></h6>`;
-            
+
             retailerHistory.forEach(item => {
                 const priceChange = item.priceChange || (item.newPrice - item.oldPrice);
-                const priceChangePercent = item.priceChangePercent || 
+                const priceChangePercent = item.priceChangePercent ||
                     (item.oldPrice > 0 ? ((priceChange / item.oldPrice) * 100).toFixed(2) : 0);
                 const changeClass = priceChange < 0 ? 'decrease' : 'increase';
                 const changeIcon = priceChange < 0 ? 'fa-arrow-down' : 'fa-arrow-up';
                 const createdAt = item.createdAt || item.timestamp || item.date;
-                
+
                 historyHTML += `
                     <div class="history-item">
                         <div>
@@ -501,7 +503,7 @@ async function loadPriceHistory(productId) {
 function transformPriceHistoryForChart(historyData, retailer = null) {
     const history = historyData.history || historyData.items || [];
     const historyByRetailer = historyData.historyByRetailer || {};
-    
+
     // Get data for specific retailer or all retailers
     let dataToProcess = [];
     if (retailer && historyByRetailer[retailer]) {
@@ -513,22 +515,22 @@ function transformPriceHistoryForChart(historyData, retailer = null) {
         // Use all history
         dataToProcess = history;
     }
-    
+
     // Sort by timestamp (oldest first for chronological chart)
     dataToProcess.sort((a, b) => {
         const timeA = a.timestamp || new Date(a.createdAt || a.date).getTime();
         const timeB = b.timestamp || new Date(b.createdAt || b.date).getTime();
         return timeA - timeB;
     });
-    
+
     // Transform to chart format
     const chartData = [];
     let currentPrice = null;
-    
+
     dataToProcess.forEach((item, index) => {
         const timestamp = item.timestamp || new Date(item.createdAt || item.date).getTime();
         const date = new Date(item.createdAt || item.date || timestamp);
-        
+
         // For first point, use oldPrice as starting point
         if (index === 0 && item.oldPrice) {
             chartData.push({
@@ -543,7 +545,7 @@ function transformPriceHistoryForChart(historyData, retailer = null) {
                 type: 'initial'
             });
         }
-        
+
         // Add the new price point
         chartData.push({
             x: date,
@@ -553,16 +555,16 @@ function transformPriceHistoryForChart(historyData, retailer = null) {
             formattedDate: formatDate(item.createdAt || item.date),
             retailer: item.retailer,
             priceChange: item.priceChange || (item.newPrice - item.oldPrice),
-            priceChangePercent: item.priceChangePercent || 
+            priceChangePercent: item.priceChangePercent ||
                 (item.oldPrice > 0 ? ((item.newPrice - item.oldPrice) / item.oldPrice * 100).toFixed(2) : 0),
             oldPrice: item.oldPrice,
             newPrice: item.newPrice,
             type: 'update'
         });
-        
+
         currentPrice = item.newPrice;
     });
-    
+
     return chartData;
 }
 
@@ -575,11 +577,11 @@ function transformPriceHistoryForChart(historyData, retailer = null) {
 function getPriceHistoryByRetailer(historyData) {
     const historyByRetailer = historyData.historyByRetailer || {};
     const datasets = {};
-    
+
     Object.keys(historyByRetailer).forEach(retailer => {
         datasets[retailer] = transformPriceHistoryForChart(historyData, retailer);
     });
-    
+
     return datasets;
 }
 
@@ -612,7 +614,7 @@ async function fetchSearchSuggestions(query) {
                 const response = await fetch(
                     `${API_CONFIG.BASE_URL}${API_CONFIG.PRODUCTS_ENDPOINT}?category=${category}&limit=100`
                 );
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     let productsData = data;
@@ -620,17 +622,17 @@ async function fetchSearchSuggestions(query) {
                         productsData = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
                     }
                     const products = productsData.products || productsData.items || productsData;
-                    
+
                     if (Array.isArray(products)) {
                         const queryLower = query.toLowerCase();
                         return products.filter(product => {
                             const model = (product.model || '').toLowerCase();
                             const productId = (product.product_id || '').toLowerCase();
                             const brand = (product.brand || '').toLowerCase();
-                            
-                            return model.includes(queryLower) || 
-                                   productId.includes(queryLower) ||
-                                   brand.includes(queryLower);
+
+                            return model.includes(queryLower) ||
+                                productId.includes(queryLower) ||
+                                brand.includes(queryLower);
                         }).map(product => ({
                             ...product,
                             category: category
@@ -645,7 +647,7 @@ async function fetchSearchSuggestions(query) {
 
         const results = await Promise.all(searchPromises);
         const suggestions = results.flat().slice(0, 10); // Limit to 10 suggestions
-        
+
         displaySuggestions(suggestions);
     } catch (error) {
         console.error('Error fetching suggestions:', error);
@@ -658,7 +660,7 @@ async function fetchSearchSuggestions(query) {
  */
 function displaySuggestions(suggestions) {
     const container = document.getElementById('searchSuggestions');
-    
+
     if (!suggestions || suggestions.length === 0) {
         hideSuggestions();
         return;
@@ -737,7 +739,7 @@ async function searchProductByModelOrId(model, productId, category) {
                 const response = await fetch(
                     `${API_CONFIG.BASE_URL}${API_CONFIG.PRODUCTS_ENDPOINT}/${productId}?category=${category}`
                 );
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     let productData = data;
@@ -763,7 +765,7 @@ async function searchProductByModelOrId(model, productId, category) {
                     const response = await fetch(
                         `${API_CONFIG.BASE_URL}${API_CONFIG.PRODUCTS_ENDPOINT}?category=${cat}&limit=1000`
                     );
-                    
+
                     if (response.ok) {
                         const data = await response.json();
                         let productsData = data;
@@ -771,7 +773,7 @@ async function searchProductByModelOrId(model, productId, category) {
                             productsData = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
                         }
                         const products = productsData.products || productsData.items || productsData;
-                        
+
                         if (Array.isArray(products)) {
                             // Try to find by product_id first (exact match), then by model (exact or partial match)
                             product = products.find(p => {
@@ -786,7 +788,7 @@ async function searchProductByModelOrId(model, productId, category) {
                                 }
                                 return false;
                             });
-                            
+
                             if (product) {
                                 product.category = cat;
                                 break;
@@ -812,10 +814,10 @@ async function searchProductByModelOrId(model, productId, category) {
 
         currentProduct = product;
         originalOffers = JSON.parse(JSON.stringify(product.offers || []));
-        
+
         displayProduct(product);
         await loadPriceHistory(product.product_id);
-        
+
         showLoading(false);
         showAlert('Product loaded successfully!', 'success');
     } catch (error) {
@@ -826,18 +828,18 @@ async function searchProductByModelOrId(model, productId, category) {
 }
 
 // Initialize search input event listeners
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('productSearch');
-    
+
     // Handle input for suggestions
-    searchInput.addEventListener('input', function(e) {
+    searchInput.addEventListener('input', function (e) {
         const query = e.target.value.trim();
-        
+
         // Clear previous timeout
         if (searchSuggestionsTimeout) {
             clearTimeout(searchSuggestionsTimeout);
         }
-        
+
         // Debounce suggestions (wait 300ms after user stops typing)
         searchSuggestionsTimeout = setTimeout(() => {
             fetchSearchSuggestions(query);
@@ -845,9 +847,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Handle keyboard navigation
-    searchInput.addEventListener('keydown', function(e) {
+    searchInput.addEventListener('keydown', function (e) {
         const suggestionsContainer = document.getElementById('searchSuggestions');
-        
+
         if (suggestionsContainer.style.display === 'none' || currentSuggestions.length === 0) {
             if (e.key === 'Enter') {
                 searchProduct();
@@ -856,7 +858,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const items = suggestionsContainer.querySelectorAll('.suggestion-item');
-        
+
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, currentSuggestions.length - 1);
@@ -878,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Hide suggestions when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.search-input-wrapper')) {
             hideSuggestions();
         }
@@ -900,9 +902,107 @@ function updateSuggestionHighlight(items) {
 }
 
 // Allow Enter key to search (fallback)
-document.getElementById('productSearch').addEventListener('keypress', function(e) {
+document.getElementById('productSearch').addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && currentSuggestions.length === 0) {
         searchProduct();
+    }
+});
+
+// ==========================================
+// Authentication & Header Logic
+// ==========================================
+
+// Toggle User Dropdown
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) dropdown.classList.toggle('show');
+}
+
+// Close Dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userProfile && userDropdown && !userProfile.contains(e.target)) {
+        userDropdown.classList.remove('show');
+    }
+});
+
+// Logout Helper
+async function performLogout() {
+    try {
+        if (window.adminAWSAuthService) {
+            await window.adminAWSAuthService.logout();
+        }
+    } catch (e) { console.error('Logout error:', e); }
+    window.location.href = 'admin-login.html';
+}
+
+// Check Login State
+async function checkLoginState() {
+    try {
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.warn('Admin auth service not available');
+            return;
+        }
+
+        const result = await window.adminAWSAuthService.getUserInfo();
+
+        if (result.success && result.user) {
+            const user = result.user;
+            let displayName = '';
+            let initials = '';
+
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
+            } else {
+                displayName = 'Admin User';
+                initials = 'AU';
+            }
+
+            // Update Header Information
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.textContent = initials;
+
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = displayName;
+
+            // Update Role State & UI
+            currentUserRole = user.role || 'viewer';
+
+            const roleDisplay = (user.role || 'viewer').replace('_', ' ').toUpperCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
+        } else {
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error checking login state:', error);
+        window.location.href = 'admin-login.html';
+    }
+}
+
+// Initialize Auth
+document.addEventListener('DOMContentLoaded', () => {
+    checkLoginState();
+
+    // Attach logout listener
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', performLogout);
     }
 });
 

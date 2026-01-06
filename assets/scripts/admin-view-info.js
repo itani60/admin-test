@@ -69,7 +69,7 @@ function renderSpecs(specs) {
         const categoryData = specs[category];
         html += `<div class="spec-category">`;
         html += `<div class="spec-category-title">${category}</div>`;
-        
+
         if (typeof categoryData === 'object' && !Array.isArray(categoryData)) {
             Object.keys(categoryData).forEach(key => {
                 const value = categoryData[key];
@@ -99,7 +99,7 @@ function renderSpecs(specs) {
         } else {
             html += `<div class="spec-value">${categoryData}</div>`;
         }
-        
+
         html += `</div>`;
     });
 
@@ -159,9 +159,9 @@ function renderPriceHistory(history) {
 
     history.forEach(entry => {
         const date = new Date(entry.createdAt || entry.timestamp);
-        const dateStr = date.toLocaleDateString('en-ZA', { 
-            year: 'numeric', 
-            month: 'short', 
+        const dateStr = date.toLocaleDateString('en-ZA', {
+            year: 'numeric',
+            month: 'short',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -209,7 +209,7 @@ async function loadProduct() {
         // Display product information
         const productTitle = `${productInfo.brand || ''} ${productInfo.model || productId}`.trim();
         document.getElementById('productTitle').textContent = productTitle;
-        
+
         const metaContainer = document.getElementById('productMeta');
         metaContainer.innerHTML = `
             <span class="badge badge-primary">${productInfo.brand || 'N/A'}</span>
@@ -217,7 +217,7 @@ async function loadProduct() {
             ${productInfo.color ? `<span class="badge badge-danger">${productInfo.color}</span>` : ''}
         `;
 
-        document.getElementById('productDescription').textContent = 
+        document.getElementById('productDescription').textContent =
             productInfo.description || 'No description available.';
 
         if (productInfo.imageUrl) {
@@ -298,7 +298,7 @@ async function checkLoginState() {
 
     try {
         const result = await window.adminAWSAuthService.getUserInfo();
-        
+
         if (result.success && result.user) {
             const user = result.user;
             let displayName = '';
@@ -321,6 +321,17 @@ async function checkLoginState() {
 
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
+
+            // Update Role and Dropdown
+            const roleDisplay = (user.role || 'viewer').replace('_', ' ').toUpperCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
         } else {
             window.location.href = 'admin-login.html';
         }

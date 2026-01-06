@@ -1,32 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
     const menuToggle = document.getElementById('menuToggle');
-    const body = document.body;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const mainContent = document.querySelector('.main-content');
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
 
-    // Toggle Sidebar
+    function toggleSidebar() {
+        if (window.innerWidth >= 1025) {
+            // Desktop: toggle hidden class
+            if (sidebar) sidebar.classList.toggle('hidden');
+            if (mainContent) mainContent.classList.toggle('sidebar-hidden');
+        } else {
+            // Mobile: toggle active class with overlay
+            if (sidebar) sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar && sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+    }
+
     if (menuToggle) {
         menuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            sidebar.classList.toggle('active');
-            if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+            toggleSidebar();
         });
     }
 
-    // Close on overlay click
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            if (sidebar) sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
         });
     }
 
-    // Toggle Nav Sections
-    window.toggleNavSection = function (element) {
-        element.classList.toggle('collapsed');
-        const items = element.nextElementSibling;
-        if (items) {
-            items.classList.toggle('collapsed');
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1025) {
+            // Desktop reset
+            if (sidebar) sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            // Mobile reset
+            if (sidebar) sidebar.classList.remove('hidden');
+            if (mainContent) mainContent.classList.remove('sidebar-hidden');
         }
-    };
+    });
+
+    // Close on tile click (mobile UX)
+    const tiles = document.querySelectorAll('.sb9-tile');
+    tiles.forEach(tile => {
+        tile.addEventListener('click', () => {
+            if (window.innerWidth < 1025) {
+                if (sidebar) sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // User Dropdown functionality matching index.html logic
+    if (userProfile && userDropdown) {
+        userProfile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!userProfile.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                if (typeof window.adminAWSAuthService !== 'undefined') {
+                    await window.adminAWSAuthService.logout();
+                }
+                window.location.href = 'admin-login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = 'admin-login.html';
+            }
+        });
+    }
 });

@@ -12,7 +12,9 @@ let allUsers = [];
 let filteredUsers = [];
 let currentPage = 1;
 const itemsPerPage = 25;
+
 let currentTab = 'users';
+let currentUserRole = 'viewer'; // Default to viewer permissions
 
 // Chart instances
 let accountTypeChart = null;
@@ -282,7 +284,7 @@ function renderUsers() {
                         <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        ${user.accountType !== 'admin' ? (
+                        ${user.accountType !== 'admin' && currentUserRole !== 'viewer' ? (
                 user.status !== 'suspended' ?
                     `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
                                     <i class="fas fa-ban"></i>
@@ -291,11 +293,11 @@ function renderUsers() {
                                     <i class="fas fa-check"></i>
                                 </button>`
             ) : ''}
-                        ${user.accountType !== 'admin' ?
+                        ${user.accountType !== 'admin' && currentUserRole === 'super_admin' ?
                 `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>` :
-                '<span class="text-muted small">Protected</span>'
+                (user.accountType !== 'admin' ? '' : '<span class="text-muted small">Protected</span>')
             }
                     </div>
                 </td>
@@ -1248,6 +1250,15 @@ async function checkLoginState() {
 
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
+
+            // Set current user role for RBAC
+            currentUserRole = user.role || 'viewer';
+            console.log('Current Admin Role:', currentUserRole);
+
+            // Re-render users if they were loaded before role was set
+            if (allUsers.length > 0) {
+                renderUsers();
+            }
         } else {
             window.location.href = 'admin-login.html';
         }

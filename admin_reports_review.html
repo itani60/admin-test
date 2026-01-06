@@ -1403,7 +1403,7 @@
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
                         <div class="user-name" id="userName"></div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-role" id="userRoleHeader">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
 
@@ -2142,6 +2142,8 @@
         });
 
         // Check Login State
+        let currentUserRole = 'viewer';
+
         async function checkLoginState() {
             try {
                 if (typeof window.adminAWSAuthService === 'undefined') {
@@ -2180,6 +2182,20 @@
                     if (userName) userName.textContent = displayName;
                     if (dropdownUserName) dropdownUserName.textContent = displayName;
                     if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
+
+                    // Update Role
+                    currentUserRole = user.role || 'viewer';
+                    const rawRole = (user.role || 'viewer').replace('_', ' ');
+                    const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+                    const roleHeader = document.getElementById('userRoleHeader');
+                    if (roleHeader) roleHeader.textContent = roleDisplay;
+
+                    // RBAC
+                    if (currentUserRole === 'viewer') {
+                        const actionButtons = document.querySelectorAll('.btn-dismiss, .btn-resolve, .btn-remove');
+                        actionButtons.forEach(btn => btn.style.display = 'none');
+                    }
+
                 } else {
                     window.location.href = 'admin-login.html';
                 }

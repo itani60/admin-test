@@ -859,6 +859,9 @@ function debounce(func, wait) {
 }
 
 // Check login state and update header
+// Check Login State
+let currentUserRole = 'viewer';
+
 async function checkLoginState() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
@@ -888,8 +891,29 @@ async function checkLoginState() {
                 initials = 'AU';
             }
 
-            document.getElementById('userAvatar').textContent = initials;
-            document.getElementById('userName').textContent = displayName;
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const dropdownUserName = document.getElementById('dropdownUserName');
+            const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+
+            if (userAvatar) userAvatar.textContent = initials;
+            if (userName) userName.textContent = displayName;
+            if (dropdownUserName) dropdownUserName.textContent = displayName;
+            if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            // RBAC for Export Button
+            if (currentUserRole === 'viewer') {
+                const exportBtn = document.querySelector('button[onclick="exportLogins()"]');
+                if (exportBtn) exportBtn.style.display = 'none';
+            }
+
         } else {
             window.location.href = 'admin-login.html';
         }

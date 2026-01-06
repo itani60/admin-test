@@ -248,14 +248,16 @@ function renderNotifications() {
                             </div>
                         ` : ''}
                         <div class="notification-actions">
-                            ${!notification.isRead ? `
+                            ${!notification.isRead && currentUserRole !== 'viewer' ? `
                                 <button class="btn btn-success btn-sm" onclick="markAsRead('${notifId}')">
                                     Mark as Read
                                 </button>
                             ` : ''}
+                            ${currentUserRole !== 'viewer' ? `
                             <button class="btn btn-danger btn-sm" onclick="deleteNotification('${notifId}')">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -591,11 +593,10 @@ function debounce(func, wait) {
 }
 
 // Check login state and update header
-async function checkLoginState() {
-    const userProfile = document.getElementById('userProfile');
-    const userAvatar = document.getElementById('userAvatar');
-    const userName = document.getElementById('userName');
+// Check Login State
+let currentUserRole = 'viewer';
 
+async function checkLoginState() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
             console.warn('Admin auth service not available');
@@ -624,8 +625,33 @@ async function checkLoginState() {
                 initials = 'AU';
             }
 
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const dropdownUserName = document.getElementById('dropdownUserName');
+            const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
+            if (dropdownUserName) dropdownUserName.textContent = displayName;
+            if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            // RBAC for Gloabl Actions (Clear All, Mark All)
+            if (currentUserRole === 'viewer') {
+                const globalActions = document.querySelectorAll('.header-actions .btn-link');
+                globalActions.forEach(btn => btn.style.display = 'none');
+            }
+
+            if (allNotifications.length > 0) {
+                renderNotifications();
+            }
+
         } else {
             window.location.href = 'admin-login.html';
         }
@@ -633,6 +659,39 @@ async function checkLoginState() {
         console.error('Error checking login state:', error);
         window.location.href = 'admin-login.html';
     }
+}
+
+// Initialize User Dropdown
+function initUserDropdown() {
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!userProfile || !userDropdown || !logoutBtn) return;
+
+    userProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!userProfile.contains(e.target)) {
+            userDropdown.classList.remove('show');
+        }
+    });
+
+    logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                await window.adminAWSAuthService.logout();
+            }
+            window.location.href = 'admin-login.html';
+        } catch (error) {
+            console.error('Logout error:', error);
+            window.location.href = 'admin-login.html';
+        }
+    });
 }
 
 // Show styled confirmation modal

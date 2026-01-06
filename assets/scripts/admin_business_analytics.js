@@ -30,11 +30,10 @@ function setupSidebar() {
 }
 
 // Check login state and update header
-async function checkLoginState() {
-    const userProfile = document.getElementById('userProfile');
-    const userAvatar = document.getElementById('userAvatar');
-    const userName = document.getElementById('userName');
+// Check Login State
+let currentUserRole = 'viewer';
 
+async function checkLoginState() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
             console.warn('Admin auth service not available');
@@ -63,8 +62,23 @@ async function checkLoginState() {
                 initials = 'AU';
             }
 
+            const userAvatar = document.getElementById('userAvatar');
             if (userAvatar) userAvatar.textContent = initials;
+            const userName = document.getElementById('userName');
             if (userName) userName.textContent = displayName;
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
         } else {
             window.location.href = 'admin-login.html';
         }

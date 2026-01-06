@@ -1253,6 +1253,18 @@ async function checkLoginState() {
 
             // Set current user role for RBAC
             currentUserRole = user.role || 'viewer';
+
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
             console.log('Current Admin Role:', currentUserRole);
 
             // Re-render users if they were loaded before role was set

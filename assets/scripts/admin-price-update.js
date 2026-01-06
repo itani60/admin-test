@@ -977,7 +977,8 @@ async function checkLoginState() {
             // Update Role State & UI
             currentUserRole = user.role || 'viewer';
 
-            const roleDisplay = (user.role || 'viewer').replace('_', ' ').toUpperCase();
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
             const roleHeader = document.getElementById('userRoleHeader');
             if (roleHeader) roleHeader.textContent = roleDisplay;
 

@@ -1056,7 +1056,7 @@
                     <img src="assets/logo .png" alt="CompareHubPrices">
                 </div>
             </div>
-        <div class="header-right">
+            <div class="header-right">
                 <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
                     <div class="user-avatar" id="userAvatar">AD</div>
                     <div class="user-info">
@@ -1197,7 +1197,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
- <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-index.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
     <script>
@@ -1234,6 +1234,44 @@
 
                     document.getElementById('userAvatar').textContent = initials;
                     document.getElementById('userName').textContent = displayName;
+
+                    // Update Role and Dropdown Details
+                    const roleDisplay = (user.role || 'viewer').replace('_', ' ').toUpperCase();
+                    const roleHeader = document.getElementById('userRoleHeader');
+                    if (roleHeader) roleHeader.textContent = roleDisplay;
+
+                    const ddName = document.getElementById('dropdownUserName');
+                    if (ddName) ddName.textContent = displayName;
+
+                    const ddEmail = document.getElementById('dropdownUserEmail');
+                    if (ddEmail) ddEmail.textContent = user.email || '';
+
+                    // RBAC: Hide Quick Actions based on Role
+                    const userRole = user.role || 'viewer';
+
+                    if (userRole === 'viewer') {
+                        const viewerHiddenSelectors = [
+                            'a[href="admin-bulk-import.html"]',
+                            'a[href="admin-business.html"]',
+                            'a[href="admin-management.html"]',
+                            'a[href="admin-price-update.html"]',
+                            'a[href="admin_alerts_notification.html"]',
+                            'a[href="admin-settings.html"]'
+                        ];
+                        viewerHiddenSelectors.forEach(sel => {
+                            const el = document.querySelector(sel);
+                            if (el) el.style.display = 'none';
+                        });
+                    } else if (userRole === 'editor') {
+                        // Editors cannot access Settings
+                        const editorHiddenSelectors = [
+                            'a[href="admin-settings.html"]'
+                        ];
+                        editorHiddenSelectors.forEach(sel => {
+                            const el = document.querySelector(sel);
+                            if (el) el.style.display = 'none';
+                        });
+                    }
                 } else {
                     window.location.href = 'admin-login.html';
                 }

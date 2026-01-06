@@ -9,6 +9,7 @@ let articles = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    checkLoginState();
     loadArticles();
 
     // Set default date to today
@@ -17,6 +18,74 @@ document.addEventListener('DOMContentLoaded', () => {
         dateInput.valueAsDate = new Date();
     }
 });
+
+// Auth & RBAC
+let currentUserRole = 'viewer';
+
+async function checkLoginState() {
+    try {
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.warn('Admin auth service not available');
+            return;
+        }
+
+        const result = await window.adminAWSAuthService.getUserInfo();
+
+        if (result.success && result.user) {
+            const user = result.user;
+            let displayName = '';
+            let initials = '';
+
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
+            } else {
+                displayName = 'Admin User';
+                initials = 'AU';
+            }
+
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.textContent = initials;
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = displayName;
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
+            // RBAC Logic - Init
+            if (currentUserRole === 'viewer') {
+                const form = document.getElementById('addArticleForm');
+                if (form) {
+                    const section = form.closest('.form-section');
+                    if (section) section.style.display = 'none';
+                    else form.style.display = 'none';
+                }
+            }
+
+        } else {
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error checking login state:', error);
+        window.location.href = 'admin-login.html';
+    }
+}
 
 // Load Articles
 async function loadArticles() {
@@ -80,9 +149,10 @@ function renderArticles(articlesData) {
                 <p class="article-excerpt">${article.content}</p>
             </div>
             <div class="article-actions">
+                ${currentUserRole !== 'viewer' ? `
                 <button class="btn-delete" onclick="confirmDelete('${article.id}')">
                     <i class="fas fa-trash me-1"></i> Delete
-                </button>
+                </button>` : ''}
             </div>
         </article>
     `).join('');

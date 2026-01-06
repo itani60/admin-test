@@ -15,16 +15,16 @@ let selectedCategory = '';
 function showAlert(message, type = 'info') {
     const alertContainer = document.getElementById('alertContainer');
     const alertId = 'alert-' + Date.now();
-    
+
     const alertHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
         const alert = document.getElementById(alertId);
@@ -61,7 +61,7 @@ function initFileUpload() {
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
-        
+
         const files = e.dataTransfer.files;
         if (files.length > 0) {
             fileInput.files = files;
@@ -75,7 +75,7 @@ function initFileUpload() {
  */
 function handleFileSelect(event) {
     const file = event.target.files[0];
-    
+
     if (!file) return;
 
     if (!file.name.endsWith('.json')) {
@@ -92,7 +92,7 @@ function handleFileSelect(event) {
     reader.onload = (e) => {
         try {
             fileContent = JSON.parse(e.target.result);
-            
+
             // Validate structure
             if (!fileContent.products || !Array.isArray(fileContent.products)) {
                 showAlert('Invalid JSON format. File must contain a "products" array.', 'danger');
@@ -118,10 +118,10 @@ function handleFileSelect(event) {
             }
 
             productsData = fileContent.products;
-            
+
             // Validate that all products have the correct category
             validateCategoryInProducts();
-            
+
             showPreview();
             showAlert(`Loaded ${productsData.length} products successfully!`, 'success');
         } catch (error) {
@@ -145,7 +145,7 @@ function validateCategoryInProducts() {
             `They will be updated to "${selectedCategory}" during import.`,
             'warning'
         );
-        
+
         // Update categories to match selection
         productsData.forEach(product => {
             product.category = selectedCategory;
@@ -163,7 +163,7 @@ function showPreview() {
 
     // Show the preview section
     previewSection.classList.add('active');
-    
+
     previewContainer.innerHTML = '';
     productCount.textContent = productsData.length;
 
@@ -359,7 +359,7 @@ async function importProducts() {
 function updateProgress(percentage, text) {
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
-    
+
     progressBar.style.width = percentage + '%';
     progressBar.textContent = percentage + '%';
     progressText.textContent = text;
@@ -431,7 +431,7 @@ function showResults(data) {
 function resetImport() {
     productsData = [];
     fileContent = null;
-    
+
     document.getElementById('fileInput').value = '';
     document.getElementById('fileName').style.display = 'none';
     document.getElementById('previewSection').classList.remove('active');
@@ -448,9 +448,9 @@ function initializeCategoryDropdown() {
     const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
     const categoryDropdownItems = document.getElementById('categoryDropdownItems');
     const categorySelect = document.getElementById('categorySelect');
-    
+
     if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
-    
+
     const categoryOptions = [
         { value: '', text: '-- Select Category --' },
         { value: 'smartphones', text: 'Smartphones' },
@@ -466,7 +466,7 @@ function initializeCategoryDropdown() {
         { value: 'gaming-monitors', text: 'Gaming Monitors' },
         { value: 'appliances', text: 'Appliances' }
     ];
-    
+
     categoryOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -475,19 +475,19 @@ function initializeCategoryDropdown() {
         if (option.value === '') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('categoryDropdownText').textContent = option.text;
             categorySelect.value = option.value;
             selectedCategory = option.value;
-            
+
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
-            
+
             // Re-validate products with new category if products are loaded
             if (productsData.length > 0) {
                 validateCategoryInProducts();
@@ -495,11 +495,11 @@ function initializeCategoryDropdown() {
         });
         categoryDropdownItems.appendChild(itemDiv);
     });
-    
-    categoryDropdownBtn.addEventListener('click', function(e) {
+
+    categoryDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = categoryDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'categoryDropdown') {
                 dd.classList.remove('active');
@@ -507,7 +507,7 @@ function initializeCategoryDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
@@ -516,8 +516,8 @@ function initializeCategoryDropdown() {
             categoryDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
@@ -528,5 +528,74 @@ function initializeCategoryDropdown() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initFileUpload();
+    checkLoginState();
 });
+
+// Auth Check
+let currentUserRole = 'viewer';
+
+async function checkLoginState() {
+    try {
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.warn('Admin auth service not available');
+            return;
+        }
+
+        const result = await window.adminAWSAuthService.getUserInfo();
+
+        if (result.success && result.user) {
+            const user = result.user;
+            let displayName = '';
+            let initials = '';
+
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
+            } else {
+                displayName = 'Admin User';
+                initials = 'AU';
+            }
+
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.textContent = initials;
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = displayName;
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
+            // RBAC Logic
+            if (currentUserRole === 'viewer') {
+                const uploadSection = document.querySelector('.upload-section');
+                if (uploadSection) {
+                    uploadSection.innerHTML = '<div class="alert alert-warning">You do not have permission to import products.</div>';
+                }
+                const exampleSection = document.querySelector('.example-section');
+                if (exampleSection) exampleSection.style.display = 'none';
+            }
+
+        } else {
+            window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error checking login state:', error);
+        window.location.href = 'admin-login.html';
+    }
+}
 

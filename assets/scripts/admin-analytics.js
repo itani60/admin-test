@@ -15,7 +15,7 @@ async function loadAnalytics() {
     const categorySelect = document.getElementById('categorySelect');
     const timeRangeSelect = document.getElementById('timeRangeSelect');
     const brandSelect = document.getElementById('brandSelect');
-    
+
     const category = categorySelect ? categorySelect.value : '';
     const timeRange = timeRangeSelect ? timeRangeSelect.value : 'month';
     const brand = brandSelect ? brandSelect.value : '';
@@ -31,7 +31,7 @@ async function loadAnalytics() {
         }
 
         const response = await fetch(url);
-        
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -80,7 +80,7 @@ function calculateStats(products) {
         const changeValue = Math.floor(totalProducts * 0.1);
         productsChangeEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>+${changeValue} this month</span>`;
     }
-    
+
     const updatesChangeEl = document.getElementById('updatesChange');
     if (updatesChangeEl) {
         const changeValue = Math.floor(totalPriceUpdates * 0.05);
@@ -91,7 +91,7 @@ function calculateStats(products) {
 // Display top products
 function displayTopProducts(products) {
     const tbody = document.getElementById('topProductsTable');
-    
+
     if (products.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -132,7 +132,7 @@ function displayTopProducts(products) {
 // Display category statistics
 function displayCategoryStats(products) {
     const tbody = document.getElementById('categoryStatsTable');
-    
+
     // Group by category
     const categoryMap = {};
     products.forEach(product => {
@@ -146,7 +146,7 @@ function displayCategoryStats(products) {
         }
         categoryMap[cat].products.push(product);
         categoryMap[cat].totalUpdates += product.offers?.length || 0;
-        
+
         if (product.offers) {
             product.offers.forEach(offer => {
                 const price = offer.price || offer.originalPrice || 0;
@@ -177,7 +177,7 @@ function displayCategoryStats(products) {
                 <td><strong>${category}</strong></td>
                 <td>${data.products.length}</td>
                 <td>${data.totalUpdates}</td>
-                <td>R${avgPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}</td>
+                <td>R${avgPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                 <td>R${minPrice.toLocaleString()}</td>
                 <td>R${maxPrice.toLocaleString()}</td>
             </tr>
@@ -207,9 +207,9 @@ function showAlert(message, type = 'info') {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     `;
-    
+
     alertContainer.innerHTML = alertHTML;
-    
+
     setTimeout(() => {
         const alert = document.getElementById(alertId);
         if (alert) {
@@ -220,47 +220,61 @@ function showAlert(message, type = 'info') {
 }
 
 // Check Login State
+// Check Login State
+let currentUserRole = 'viewer';
+
 async function checkLoginState() {
     try {
-        if (window.adminAWSAuthService) {
-            const result = await window.adminAWSAuthService.getUserInfo();
-            
-            if (result.success && result.user) {
-                const user = result.user;
-                const userAvatar = document.getElementById('userAvatar');
-                const userName = document.getElementById('userName');
-                
-                let displayName = '';
-                let initials = '';
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.warn('Admin auth service not available');
+            return;
+        }
 
-                if (user.givenName && user.familyName) {
-                    displayName = `${user.givenName} ${user.familyName}`;
-                    initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                } else if (user.givenName) {
-                    displayName = user.givenName;
-                    initials = user.givenName.substring(0, 2).toUpperCase();
-                } else if (user.email) {
-                    const name = user.email.split('@')[0];
-                    displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                    initials = name.substring(0, 2).toUpperCase();
-                } else {
-                    displayName = 'Admin User';
-                    initials = 'AU';
-                }
+        const result = await window.adminAWSAuthService.getUserInfo();
 
-                if (userAvatar) {
-                    userAvatar.textContent = initials;
-                }
-                
-                if (userName) {
-                    userName.textContent = displayName;
-                }
+        if (result.success && result.user) {
+            const user = result.user;
+            let displayName = '';
+            let initials = '';
+
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
             } else {
-                window.location.href = 'index.html';
+                displayName = 'Admin User';
+                initials = 'AU';
             }
+
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.textContent = initials;
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = displayName;
+
+            // Update Role
+            currentUserRole = user.role || 'viewer';
+            const rawRole = (user.role || 'viewer').replace('_', ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
+
+        } else {
+            window.location.href = 'admin-login.html';
         }
     } catch (error) {
         console.error('Error checking login state:', error);
+        window.location.href = 'admin-login.html';
     }
 }
 
@@ -291,9 +305,9 @@ function initializeCategoryDropdown() {
     const categoryDropdownMenu = document.getElementById('categoryDropdownMenu');
     const categoryDropdownItems = document.getElementById('categoryDropdownItems');
     const categorySelect = document.getElementById('categorySelect');
-    
+
     if (!categoryDropdown || !categoryDropdownBtn || !categoryDropdownMenu || !categoryDropdownItems) return;
-    
+
     const categoryOptions = [
         { value: '', text: 'All Categories' },
         { value: 'smartphones', text: 'Smartphones' },
@@ -307,7 +321,7 @@ function initializeCategoryDropdown() {
         { value: 'gaming', text: 'Gaming' },
         { value: 'appliances', text: 'Appliances' }
     ];
-    
+
     categoryOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -316,25 +330,25 @@ function initializeCategoryDropdown() {
         if (option.value === '') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             categoryDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('categoryDropdownText').textContent = option.text;
             categorySelect.value = option.value;
-            
+
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
         });
         categoryDropdownItems.appendChild(itemDiv);
     });
-    
-    categoryDropdownBtn.addEventListener('click', function(e) {
+
+    categoryDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = categoryDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'categoryDropdown') {
                 dd.classList.remove('active');
@@ -342,7 +356,7 @@ function initializeCategoryDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
@@ -351,8 +365,8 @@ function initializeCategoryDropdown() {
             categoryDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             categoryDropdown.classList.remove('active');
             categoryDropdownMenu.style.display = 'none';
@@ -367,9 +381,9 @@ function initializeTimeRangeDropdown() {
     const timeRangeDropdownMenu = document.getElementById('timeRangeDropdownMenu');
     const timeRangeDropdownItems = document.getElementById('timeRangeDropdownItems');
     const timeRangeSelect = document.getElementById('timeRangeSelect');
-    
+
     if (!timeRangeDropdown || !timeRangeDropdownBtn || !timeRangeDropdownMenu || !timeRangeDropdownItems) return;
-    
+
     const timeRangeOptions = [
         { value: 'today', text: 'Today' },
         { value: 'week', text: 'Last 7 Days' },
@@ -377,7 +391,7 @@ function initializeTimeRangeDropdown() {
         { value: 'year', text: 'Last Year' },
         { value: 'all', text: 'All Time' }
     ];
-    
+
     timeRangeOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -386,25 +400,25 @@ function initializeTimeRangeDropdown() {
         if (option.value === 'month') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             timeRangeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('timeRangeDropdownText').textContent = option.text;
             timeRangeSelect.value = option.value;
-            
+
             timeRangeDropdown.classList.remove('active');
             timeRangeDropdownMenu.style.display = 'none';
         });
         timeRangeDropdownItems.appendChild(itemDiv);
     });
-    
-    timeRangeDropdownBtn.addEventListener('click', function(e) {
+
+    timeRangeDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = timeRangeDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'timeRangeDropdown') {
                 dd.classList.remove('active');
@@ -412,7 +426,7 @@ function initializeTimeRangeDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             timeRangeDropdown.classList.remove('active');
             timeRangeDropdownMenu.style.display = 'none';
@@ -421,8 +435,8 @@ function initializeTimeRangeDropdown() {
             timeRangeDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             timeRangeDropdown.classList.remove('active');
             timeRangeDropdownMenu.style.display = 'none';
@@ -437,9 +451,9 @@ function initializeBrandDropdown() {
     const brandDropdownMenu = document.getElementById('brandDropdownMenu');
     const brandDropdownItems = document.getElementById('brandDropdownItems');
     const brandSelect = document.getElementById('brandSelect');
-    
+
     if (!brandDropdown || !brandDropdownBtn || !brandDropdownMenu || !brandDropdownItems) return;
-    
+
     const brandOptions = [
         { value: '', text: 'All Brands' },
         { value: 'Samsung', text: 'Samsung' },
@@ -448,7 +462,7 @@ function initializeBrandDropdown() {
         { value: 'OnePlus', text: 'OnePlus' },
         { value: 'Xiaomi', text: 'Xiaomi' }
     ];
-    
+
     brandOptions.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'custom-dropdown-item';
@@ -457,25 +471,25 @@ function initializeBrandDropdown() {
         if (option.value === '') {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function() {
+        itemDiv.addEventListener('click', function () {
             brandDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
-            
+
             document.getElementById('brandDropdownText').textContent = option.text;
             brandSelect.value = option.value;
-            
+
             brandDropdown.classList.remove('active');
             brandDropdownMenu.style.display = 'none';
         });
         brandDropdownItems.appendChild(itemDiv);
     });
-    
-    brandDropdownBtn.addEventListener('click', function(e) {
+
+    brandDropdownBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = brandDropdown.classList.contains('active');
-        
+
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
             if (dd.id !== 'brandDropdown') {
                 dd.classList.remove('active');
@@ -483,7 +497,7 @@ function initializeBrandDropdown() {
                 if (menu) menu.style.display = 'none';
             }
         });
-        
+
         if (isActive) {
             brandDropdown.classList.remove('active');
             brandDropdownMenu.style.display = 'none';
@@ -492,8 +506,8 @@ function initializeBrandDropdown() {
             brandDropdownMenu.style.display = 'block';
         }
     });
-    
-    document.addEventListener('click', function(e) {
+
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             brandDropdown.classList.remove('active');
             brandDropdownMenu.style.display = 'none';

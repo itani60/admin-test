@@ -731,7 +731,7 @@
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
                         <div class="user-name" id="userName"></div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-role" id="userRoleHeader">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
 
@@ -958,23 +958,45 @@
     <script>
         // Sidebar toggle logic is handled by assets/scripts/sidebar.js
 
-        const userProfile = document.getElementById('userProfile');
-        const userDropdown = document.getElementById('userDropdown');
+        // User Dropdown Logic
+        function initUserDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
 
-        // User Dropdown Toggle
-        if (userProfile && userDropdown) {
-            userProfile.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
+            if (userProfile && userDropdown) {
+                userProfile.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('show');
+                });
 
-            document.addEventListener('click', () => {
-                userDropdown.classList.remove('show');
-            });
+                document.addEventListener('click', (e) => {
+                    if (!userProfile.contains(e.target)) {
+                        userDropdown.classList.remove('show');
+                    }
+                });
+            }
 
-            userDropdown.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        if (typeof window.adminAWSAuthService !== 'undefined') {
+                            await window.adminAWSAuthService.logout();
+                        }
+                        window.location.href = 'admin-login.html';
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                        window.location.href = 'admin-login.html';
+                    }
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUserDropdown);
+        } else {
+            initUserDropdown();
         }
     </script>
 </body>

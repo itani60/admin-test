@@ -7,13 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const userDropdown = document.getElementById('userDropdown');
 
     function toggleSidebar() {
-        if (window.innerWidth >= 1025) {
-            // Desktop: toggle hidden class
-            if (sidebar) sidebar.classList.toggle('hidden');
-            if (mainContent) mainContent.classList.toggle('sidebar-hidden');
-        } else {
-            // Mobile: toggle active class with overlay
-            if (sidebar) sidebar.classList.toggle('active');
+        const isMobile = window.innerWidth < 1025;
+
+        // Unified toggle: 'active' class controls visibility based on CSS
+        if (sidebar) sidebar.classList.toggle('active');
+
+        // Unified content toggle: 'sidebar-open' controls margin on desktop
+        if (mainContent) mainContent.classList.toggle('sidebar-open');
+
+        if (isMobile) {
+            // Mobile specific: toggle overlay and body scroll
             if (overlay) overlay.classList.toggle('active');
             document.body.style.overflow = sidebar && sidebar.classList.contains('active') ? 'hidden' : '';
         }
@@ -29,23 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (overlay) {
         overlay.addEventListener('click', () => {
             if (sidebar) sidebar.classList.remove('active');
+            if (mainContent) mainContent.classList.remove('sidebar-open');
             if (overlay) overlay.classList.remove('active');
             document.body.style.overflow = '';
         });
     }
 
-    // Handle window resize
+    // Handle window resize: reset to closed state to ensure consistent UI
     window.addEventListener('resize', () => {
-        if (window.innerWidth >= 1025) {
-            // Desktop reset
-            if (sidebar) sidebar.classList.remove('active');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        } else {
-            // Mobile reset
-            if (sidebar) sidebar.classList.remove('hidden');
-            if (mainContent) mainContent.classList.remove('sidebar-hidden');
-        }
+        // Close sidebar on resize to prevent layout issues
+        if (sidebar) sidebar.classList.remove('active');
+        if (mainContent) mainContent.classList.remove('sidebar-open');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
     });
 
     // Close on tile click (mobile UX)

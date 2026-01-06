@@ -234,21 +234,14 @@
 
 /* Desktop toggle support */
 @media (min-width: 1025px) {
-    .sidebar {
+    /* Sidebar is hidden by default (left: -270px) from root styles */
+
+    .sidebar.active {
         left: 0;
     }
 
-    .main-content {
+    .main-content.sidebar-open {
         margin-left: var(--sidebar-width);
-    }
-
-    .sidebar.hidden {
-        transform: translateX(-100%);
-        left: -100%;
-    }
-
-    .main-content.sidebar-hidden {
-        margin-left: 0;
     }
 }
 

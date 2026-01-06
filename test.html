@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | CompareHubPrices</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/sidebar.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #dc2626;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #b91c1c;
+            --dark: #1e293b;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles moved to assets/css/sidebar.css */
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .header-logo img {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+ 
+
+        /* Modern Spinner */
+        .modern-spinner {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #dc3545;
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .spinner-ring:nth-child(1) {
+            animation-delay: -0.45s;
+            border-top-color: #dc3545;
+        }
+
+        .spinner-ring:nth-child(2) {
+            animation-delay: -0.3s;
+            border-top-color: #28a745;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+        }
+
+        .spinner-ring:nth-child(3) {
+            animation-delay: -0.15s;
+            border-top-color: #007bff;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-content h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<div class="page-loading-overlay" id="pageLoadingOverlay">
+    <div class="loading-content">
+        <div class="logo-container">
+            <img src="assets/logo.png" alt="CompareHubPrices" class="logo-img">
+        </div>
+        <div class="modern-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <h4>Loading...</h4>
+        <p>Please wait while we load </p>
+    </div>
+</div>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">loading...</div>
+                        <div class="user-role" id="userRoleHeader">loading...</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">loading...</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">loading...</div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+   
+    <script src="assets/scripts/sidebar.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
+   
+</body>
+
+</html>

@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Creator Studio | Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --bg: #f8f9fa;
+            --border: #e9ecef;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .logo-area {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-area h4 {
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .tools-panel {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .asset-tray {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .asset-thumb {
+            width: 100%;
+            height: 80px;
+            border-radius: 6px;
+            cursor: pointer;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background: #eee;
+        }
+
+        .asset-thumb:hover,
+        .asset-thumb.selected {
+            border-color: var(--accent);
+            opacity: 0.8;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: #f0f7ff;
+        }
+
+        /* --- MAIN CANVAS AREA --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            background: #e9ecef;
+            /* Neutral bg for canvas */
+            padding: 40px;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            /* Center canvas vertically */
+            justify-content: center;
+            /* Center canvas horizontally */
+        }
+
+        #designCanvas {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            transform-origin: center top;
+            width: 1200px;
+            /* Fixed Base Width for scaling */
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+            /* We will scale this element via CSS transform for zoom */
+        }
+
+        /* --- EDITABLE SLOTS --- */
+        .img-slot {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .img-slot::after {
+            content: 'Click to Add Image';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #666;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .img-slot:hover::after {
+            opacity: 1;
+        }
+
+        .img-slot.has-image::after {
+            display: none;
+        }
+
+        .img-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* --- TEMPLATE SELECTOR --- */
+        .template-selector {
+            width: 300px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .template-list {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .template-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .template-preview {
+            height: 100px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+
+        /* =========================================
+           DESIGN STYLES (Imported & Scoped)
+           ========================================= */
+
+        /* General Helpers for Designs */
+        .ls-2 {
+            letter-spacing: 2px;
+        }
+
+        .bento-grid,
+        .d2-section,
+        .d3-container,
+        .d4-banner,
+        .d6-gallery {
+            pointer-events: none;
+        }
+
+        /* Disable pointer events on layout wrappers, enable on slots */
+        .img-slot {
+            pointer-events: auto;
+        }
+
+        /* Re-enable for slots */
+
+        /* Design 1: Bento */
+        .d1-section {
+            padding: 40px;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 200px);
+            gap: 15px;
+        }
+
+        .bi-1 {
+            grid-column: 1 / 3;
+            grid-row: 1 / 3;
+        }
+
+        .bi-2 {
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
+        }
+
+        .bi-3 {
+            grid-column: 4 / 5;
+            grid-row: 1 / 2;
+        }
+
+        .bi-4 {
+            grid-column: 3 / 5;
+            grid-row: 2 / 3;
+        }
+
+        /* Design 2: Dark Mode */
+        .d2-section {
+            display: flex;
+            background: #111;
+            color: white;
+            height: 600px;
+        }
+
+        .d2-content {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d2-visuals {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .d2-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .d2-float-card {
+            position: absolute;
+            bottom: 60px;
+            left: -50px;
+            width: 240px;
+            height: 320px;
+            border: 8px solid #111;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        /* Design 3: Editorial */
+        .d3-container {
+            display: flex;
+            height: 600px;
+            background: #f4f1ea;
+        }
+
+        .d3-col-1 {
+            width: 30%;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #ddd;
+        }
+
+        .d3-col-2 {
+            width: 40%;
+            border-right: 1px solid #ddd;
+        }
+
+        .d3-col-3 {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d3-img-box {
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Design 4: Centered Arch */
+        .d4-section {
+            padding: 40px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .d4-banner {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            height: 500px;
+        }
+
+        .d4-center-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 250px 250px 0 0;
+        }
+
+        .d4-overlay {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 30px 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Design 6: Minimalist Gallery */
+        .d6-section {
+            display: flex;
+            padding: 60px;
+            align-items: center;
+            background: white;
+        }
+
+        .d6-text {
+            flex: 1;
+            padding-right: 40px;
+        }
+
+        .d6-gallery {
+            flex: 1.5;
+            display: flex;
+            gap: 20px;
+            height: 500px;
+        }
+
+        .d6-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .d6-big {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .d6-img {
+            margin: 100px auto;
+            border-radius: 20px;
+        }
+
+        .d5-mini-grid {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .d5-mini-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Design 7: Split Diagonal */
+        .d7-section {
+            display: flex;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            background: white;
+        }
+
+        .d7-text {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
+            background: white;
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+        }
+
+        .d7-img {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Design 8: Typography Grid */
+        .d8-section {
+            display: flex;
+            padding: 40px;
+            height: 600px;
+            background: #fff;
+            gap: 20px;
+        }
+
+        .d8-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d8-big-title {
+            font-size: 5rem;
+            line-height: 0.9;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: #222;
+        }
+
+        .d8-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .d8-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        /* Design 9: Circle Showcase */
+        .d9-section {
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .d9-circle {
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 10px solid white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .d9-text-left {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            z-index: 1;
+            text-align: right;
+        }
+
+        .d9-text-right {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            z-index: 1;
+        }
+
+        /* Design 9: Circle Showcase */
+        .d9-section {
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .d9-circle {
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 10px solid white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .d9-text-left {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            z-index: 1;
+            text-align: right;
+        }
+
+        .d9-text-right {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            z-index: 1;
+        }
+
+        /* --- DESIGNS 10-20: LAYOUT VARIATIONS --- */
+        .d10-section {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            padding: 20px;
+        }
+
+        .d10-img-strip {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .d11-section {
+            display: flex;
+            height: 600px;
+        }
+
+        .d11-text {
+            width: 30%;
+            background: #222;
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d11-img {
+            width: 70%;
+            height: 100%;
+        }
+
+        .d12-section {
+            display: flex;
+            height: 600px;
+        }
+
+        .d12-img {
+            width: 70%;
+            height: 100%;
+        }
+
+        .d12-text {
+            width: 30%;
+            background: #f0f0f0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d13-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            height: 600px;
+            position: relative;
+        }
+
+        .d13-img {
+            height: 100%;
+            width: 100%;
+            border-right: 1px solid white;
+        }
+
+        .d13-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .d14-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            height: 600px;
+        }
+
+        .d14-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .d14-dark {
+            background: #222;
+            color: white;
+        }
+
+        .d14-light {
+            background: #eee;
+        }
+
+        .d14-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .d15-section {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d15-img {
+            height: 75%;
+            width: 100%;
+        }
+
+        .d15-text {
+            height: 25%;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .d16-section {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d16-text {
+            height: 30%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .d16-grid {
+            height: 70%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .d16-img {
+            height: 100%;
+            width: 100%;
+        }
+
+        .d17-section {
+            padding: 40px;
+            height: 600px;
+            background: #eee;
+        }
+
+        .d17-frame {
+            border: 20px solid white;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .d17-img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .d17-text {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            background: white;
+            padding: 20px;
+            max-width: 400px;
+        }
+
+        .d18-section {
+            height: 600px;
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            padding: 20px;
+            gap: 20px;
+            background: white;
+            align-items: center;
+        }
+
+        .d18-center {
+            text-align: center;
+        }
+
+        .d18-img {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+        }
+
+        .d19-section {
+            height: 600px;
+            display: flex;
+            padding: 40px;
+            gap: 20px;
+            background: #fff;
+            align-items: center;
+        }
+
+        .d19-col {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .d19-img {
+            width: 100%;
+            flex: 1;
+            border-radius: 4px;
+        }
+
+        .d19-text {
+            width: 300px;
+            padding: 20px;
+        }
+
+        .d20-section {
+            height: 600px;
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 0 100px;
+            position: relative;
+        }
+
+        .d20-text-card {
+            width: 400px;
+            background: white;
+            padding: 50px;
+            z-index: 2;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .d20-img {
+            position: absolute;
+            right: 100px;
+            top: 50px;
+            bottom: 50px;
+            width: 600px;
+            z-index: 1;
+        }
+
+        /* --- DESIGNS 21-30: SHAPES & OVERLAPS --- */
+        .d21-section {
+            height: 600px;
+            display: flex;
+            align-items: center;
+            background: #222;
+            padding: 0 100px;
+            position: relative;
+            justify-content: flex-end;
+        }
+
+        .d21-text-card {
+            width: 400px;
+            background: #333;
+            color: white;
+            padding: 50px;
+            z-index: 2;
+            border: 1px solid #444;
+        }
+
+        .d21-img {
+            position: absolute;
+            left: 100px;
+            top: 50px;
+            bottom: 50px;
+            width: 600px;
+            z-index: 1;
+        }
+
+        .d22-section {
+            height: 600px;
+            display: flex;
+            background: white;
+        }
+
+        .d22-text {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d22-img {
+            flex: 1;
+            clip-path: polygon(20% 0%, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        #designCanvas {
+            width: 1200px;
+            height: 600px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            transform-origin: top center;
+            transition: transform 0.2s;
+            position: relative;
+            overflow: hidden;
+            /* Ensure bg doesn't spill */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Ensure template sections don't block the canvas background */
+        #designCanvas section {
+            background: transparent !important;
+        }
+
+        .d23-section {
+            height: 600px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .d23-diamond {
+            width: 400px;
+            height: 400px;
+            transform: rotate(45deg);
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .d23-img {
+            width: 142%;
+            height: 142%;
+            transform: rotate(-45deg) translateY(-20%);
+            transform-origin: top left;
+        }
+
+        .d23-text {
+            position: absolute;
+            z-index: 2;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .d24-section {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            gap: 30px;
+        }
+
+        .d24-circles {
+            display: flex;
+            gap: 30px;
+        }
+
+        .d24-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .d25-section {
+            height: 600px;
+            display: flex;
+            padding: 40px;
+            background: #fff;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .d25-img {
+            width: 50%;
+            height: 500px;
+            border-radius: 250px 250px 0 0;
+        }
+
+        .d25-text {
+            width: 50%;
+        }
+
+        .d26-section {
+            height: 600px;
+            display: flex;
+            padding: 40px;
+            background: #fff;
+            gap: 40px;
+            align-items: center;
+            flex-direction: row-reverse;
+        }
+
+        .d26-img {
+            width: 50%;
+            height: 500px;
+            border-radius: 0 0 250px 250px;
+        }
+
+        .d26-text {
+            width: 50%;
+            text-align: right;
+        }
+
+        .d27-section {
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fdfdfd;
+            padding: 40px;
+        }
+
+        .d27-pill {
+            width: 800px;
+            height: 300px;
+            border-radius: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .d27-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .d28-section {
+            height: 600px;
+            display: flex;
+            gap: 20px;
+            padding: 40px;
+            background: white;
+        }
+
+        .d28-pill {
+            flex: 1;
+            border-radius: 100px;
+            overflow: hidden;
+            height: 100%;
+            transition: all 0.3s;
+        }
+
+        .d28-pill:hover {
+            flex: 1.5;
+        }
+
+        .d29-section {
+            height: 600px;
+            background: #2c3e50;
+            display: flex;
+            padding: 60px;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .d29-cards {
+            display: flex;
+            gap: 20px;
+            transform: rotate(-5deg);
+        }
+
+        .d29-card {
+            width: 180px;
+            height: 250px;
+            border-radius: 10px;
+            border: 4px solid white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .d30-section {
+            height: 600px;
+            display: flex;
+            overflow: hidden;
+            background: white;
+        }
+
+        .d30-left {
+            width: 50%;
+            transform: skewX(-10deg) translateX(-50px);
+            overflow: hidden;
+            height: 100%;
+            border-right: 10px solid white;
+        }
+
+        .d30-right {
+            width: 60%;
+            transform: skewX(-10deg);
+            overflow: hidden;
+            height: 100%;
+            margin-left: -20px;
+        }
+
+        .d30-img-fix {
+            transform: skewX(10deg) scale(1.2);
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- DESIGNS 31-40: MODERN & VIBRANT --- */
+        .d31-section {
+            height: 600px;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .d31-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 20px;
+            width: 80%;
+            height: 70%;
+            display: flex;
+            gap: 20px;
+        }
+
+        .d31-img {
+            flex: 1;
+            border-radius: 15px;
+        }
+
+        .d31-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .d32-section {
+            height: 600px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .d32-border {
+            padding: 5px;
+            background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+            border-radius: 4px;
+        }
+
+        .d32-content {
+            background: #111;
+            display: flex;
+            width: 900px;
+            height: 400px;
+        }
+
+        .d32-img {
+            width: 50%;
+        }
+
+        .d32-text {
+            width: 50%;
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .d33-section {
+            height: 600px;
+            padding: 40px;
+            border: 20px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #f4f4f4;
+        }
+
+        .d33-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 5px solid black;
+            padding-bottom: 20px;
+        }
+
+        .d33-bot {
+            display: flex;
+            gap: 20px;
+            height: 60%;
+            padding-top: 20px;
+        }
+
+        .d33-img {
+            border: 5px solid black;
+            flex: 1;
+        }
+
+        .d34-section {
+            height: 600px;
+            background-image: linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .d34-box {
+            background: white;
+            border: 3px solid black;
+            padding: 40px;
+            box-shadow: 15px 15px 0 black;
+            display: flex;
+            gap: 30px;
+            width: 800px;
+        }
+
+        .d34-img {
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+        }
+
+        .d35-section {
+            height: 600px;
+            position: relative;
+        }
+
+        .d35-img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .d35-title {
+            position: absolute;
+            font-size: 10rem;
+            color: white;
+            font-weight: 900;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            letter-spacing: -5px;
+            line-height: 0.8;
+            mix-blend-mode: overlay;
+        }
+
+        .d36-section {
+            height: 600px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .d36-img {
+            width: 600px;
+            height: 300px;
+            margin: 30px 0;
+            object-fit: contain;
+        }
+
+        .d36-bg-text {
+            font-size: 8rem;
+            font-weight: 900;
+            color: #f0f0f0;
+            margin-bottom: -60px;
+            z-index: 0;
+        }
+
+        .d37-section {
+            height: 600px;
+            background: #2b2b2b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .d37-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            border: 4px solid #c9a45e;
+        }
+
+        .d37-quote {
+            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .d38-section {
+            height: 600px;
+            background: #e0e5ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .d38-phone {
+            width: 280px;
+            height: 500px;
+            border-radius: 40px;
+            border: 10px solid #fff;
+            box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+            overflow: hidden;
+        }
+
+        .d38-text {
+            width: 400px;
+        }
+
+        .d39-section {
+            height: 600px;
+            display: flex;
+        }
+
+        .d39-left {
+            width: 50%;
+            height: 100%;
+            background: #ff6b6b;
+            position: relative;
+        }
+
+        .d39-right {
+            width: 50%;
+            height: 100%;
+            filter: grayscale(100%);
+        }
+
+        .d39-text {
+            position: absolute;
+            right: -100px;
+            top: 30%;
+            background: white;
+            padding: 40px;
+            width: 400px;
+            z-index: 10;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .d40-section {
+            height: 600px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+        }
+
+        .d40-letterbox {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .d40-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        .d40-caption {
+            position: absolute;
+            bottom: 40px;
+            text-align: center;
+            width: 100%;
+            color: white;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Typography Override for Canvas */
+        #designCanvas h1 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #designCanvas h1.d1-title {
+            font-weight: 700;
+            font-size: 3rem;
+        }
+
+        [contenteditable]:hover {
+            outline: 1px dashed var(--accent);
+            cursor: text;
+        }
+
+        [contenteditable]:focus {
+            outline: 2px solid var(--accent);
+            background: rgba(52, 152, 219, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR: ASSETS -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <h4><i class="fas fa-palette me-2"></i>Content Creator</h4>
+        </div>
+
+        <div class="tools-panel">
+            <h6 class="text-uppercase small text-muted fw-bold mb-3">1. Assets</h6>
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                <p class="small mb-0 text-muted">Click to Upload Images</p>
+                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+            </div>
+
+            <div id="assetTray" class="asset-tray">
+                <!-- Thumbnails go here -->
+            </div>
+
+            <hr class="my-4">
+
+            <h6 class="text-uppercase small text-muted fw-bold mb-3">Instructions</h6>
+            <p class="small text-muted">
+                1. Upload images.<br>
+                2. Select a template on the right.<br>
+                3. Click an uploaded image to "pick" it.<br>
+                4. Click a gray slot in the canvas to place it.<br>
+                5. Click text to edit copy.
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-bar">
+            <div>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="setZoom(0.5)"><i
+                        class="fas fa-minus"></i></button>
+                <span class="small text-muted fw-bold">CANVAS VIEW</span>
+                <button class="btn btn-outline-secondary btn-sm ms-2" onclick="setZoom(1.0)"><i
+                        class="fas fa-plus"></i></button>
+            </div>
+            <div>
+                <button class="btn btn-link text-decoration-none text-muted me-3"
+                    onclick="window.location.href='admin-hero_carousel-settings.html'">Back to Settings</button>
+                <button class="btn btn-primary rounded-pill px-4" onclick="downloadDesign()">
+                    <i class="fas fa-download me-2"></i> Download Image
+                </button>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <div id="designCanvas">
+                <!-- TEMPLATES RENDER HERE -->
+                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                    <div class="text-center">
+                        <i class="fas fa-layer-group fa-3x mb-3"></i>
+                        <h5>Select a Template</h5>
+                        <p class="small">Choose a layout from the right sidebar to begin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR: TEMPLATES ONLY -->
+            <div class="right-sidebar" id="creatorSidebar">
+                <h5 class="mb-3 fw-bold">Templates</h5>
+                <input type="text" id="templateSearch" class="form-control form-control-sm mb-3"
+                    placeholder="Search templates..." onkeyup="filterTemplates()">
+                <div class="template-list" id="templateListContainer"
+                    style="overflow-y:auto; height: calc(100vh - 150px);">
+                    <!-- Templates 1-40 will be loaded here -->
+                    <!-- Existing Templates Structure (Simplified for this edit, logic remains for loading) -->
+                    <div class="template-card" onclick="loadTemplate(1)">
+                        <div class="template-preview"
+                            style="background:#f8f9fa; display:flex; align-items:center; justify-content:center; color:#adb5bd; font-size:0.8rem;">
+                            Bento Grid</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 1: Standard</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(2)">
+                        <div class="template-preview" style="background:#fff; border:1px solid #eee;">Elegant
+                        </div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 2: Luxury</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(3)">
+                        <div class="template-preview">Bold</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 3: Bold</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(4)">
+                        <div class="template-preview">Center</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 4: Centered</h6>
+                    </div>
+
+                    <!-- Designs 5-9 -->
+                    <div class="template-card" onclick="loadTemplate(5)">
+                        <div class="template-preview">Modern</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 5: Modern</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(6)">
+                        <div class="template-preview">Gallery</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 6: Gallery</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(7)">
+                        <div class="template-preview">Split</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 7: Split</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(8)">
+                        <div class="template-preview">Typo</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 8: Typography</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(9)">
+                        <div class="template-preview">Circle</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 9: Circle</h6>
+                    </div>
+
+                    <!-- Designs 10-40 (Condensed for brevity, user has mapped these) -->
+                    <div class="template-card" onclick="loadTemplate(10)">
+                        <div class="template-preview">Strip</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 10: Strip</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(11)">
+                        <div class="template-preview bg-dark text-white">Dark</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 11: Dark Side</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(12)">
+                        <div class="template-preview bg-light">Light</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 12: Light Side</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(13)">
+                        <div class="template-preview">4 Grid</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 13: Seasons</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(14)">
+                        <div class="template-preview">Checker</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 14: Checker</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(15)">
+                        <div class="template-preview">Bottom</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 15: Bottom Bar</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(16)">
+                        <div class="template-preview">Tri</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 16: Triple</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(17)">
+                        <div class="template-preview">Frame</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 17: Inset</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(18)">
+                        <div class="template-preview">Focus</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 18: Focus</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(19)">
+                        <div class="template-preview">Mason</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 19: Masonry</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(20)">
+                        <div class="template-preview">Lap</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 20: Overlap</h6>
+                    </div>
+
+                    <div class="template-card" onclick="loadTemplate(21)">
+                        <div class="template-preview">Inv</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 21: Inverse</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(22)">
+                        <div class="template-preview">Ang</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 22: Angle</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(23)">
+                        <div class="template-preview">Gem</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 23: Diamond</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(24)">
+                        <div class="template-preview">Bub</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 24: Bubbles</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(25)">
+                        <div class="template-preview">ArcL</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 25: Arch Left</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(26)">
+                        <div class="template-preview">ArcR</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 26: Arch Right</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(27)">
+                        <div class="template-preview">Pill</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 27: Pill Center</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(28)">
+                        <div class="template-preview">2Pill</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 28: Dual Pill</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(29)">
+                        <div class="template-preview">Cards</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 29: Hand Picked</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(30)">
+                        <div class="template-preview">Half</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 30: split View</h6>
+                    </div>
+
+                    <div class="template-card" onclick="loadTemplate(31)">
+                        <div class="template-preview">Grad</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 31: Gradient</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(32)">
+                        <div class="template-preview">Cyber</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 32: Cyber</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(33)">
+                        <div class="template-preview">Raw</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 33: Raw</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(34)">
+                        <div class="template-preview">Retro</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 34: Retro Box</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(35)">
+                        <div class="template-preview">Imp</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 35: Impact</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(36)">
+                        <div class="template-preview">Hero</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 36: Big Hero</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(37)">
+                        <div class="template-preview">Quote</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 37: Testimonial</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(38)">
+                        <div class="template-preview">App</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 38: Mobile</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(39)">
+                        <div class="template-preview" style="background:linear-gradient(90deg, red 50%, grey 50%);">Dual
+                        </div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 39: Split Color</h6>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate(40)">
+                        <div class="template-preview" style="background:black;color:white;">Cinema</div>
+                        <h6 class="text-uppercase small fw-bold mb-0">Design 40: Cinema</h6>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FLOATING TOOLBOX (Bottom Center) -->
+            <div id="mainToolbox" class="position-fixed shadow-lg rounded bg-white p-2 d-flex gap-2 align-items-center"
+                style="bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1050; border: 1px solid #ccc;">
+
+                <!-- DRAG / MOVE MODE TOGGLE -->
+                <button class="btn btn-outline-dark" id="btnMoveMode" onclick="toggleFreeMove()"
+                    title="Toggle Free Move Mode">
+                    <i class="fas fa-arrows-alt me-2"></i> Free Move
+                </button>
+
+                <div class="vr mx-2"></div>
+
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="textDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-font me-2"></i> Add Text
+                    </button>
+                    <div class="dropdown-menu p-3 shadow" aria-labelledby="textDropdown" style="width: 250px;">
+                        <button class="btn btn-light w-100 text-start mb-2 fw-bold display-6"
+                            onclick="addText('h1')">Heading 1</button>
+                        <button class="btn btn-light w-100 text-start mb-2 fw-bold h3" onclick="addText('h3')">Heading
+                            3</button>
+                        <button class="btn btn-light w-100 text-start mb-2" onclick="addText('p')">Paragraph</button>
+                        <button class="btn btn-light w-100 text-start mb-2 small text-uppercase"
+                            onclick="addText('small')">Small Label</button>
+                    </div>
+                </div>
+
+                <div class="vr mx-2"></div>
+
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="visualsDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-shapes me-2"></i> Add Visuals
+                    </button>
+                    <!-- Visuals Dropdown Content -->
+                    <div class="dropdown-menu p-3 shadow" aria-labelledby="visualsDropdown" style="width: 300px;">
+                        <h6 class="small fw-bold text-muted mb-2">BADGES</h6>
+                        <div class="d-flex gap-2 mb-3">
+                            <button class="btn btn-sm btn-outline-secondary"
+                                onclick="addVisual('badge-new')">New</button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                onclick="addVisual('badge-sale')">Sale</button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                onclick="addVisual('text-label')">Label</button>
+                        </div>
+                        <h6 class="small fw-bold text-muted mb-2">SHAPES & ICONS</h6>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-light text-dark border"
+                                onclick="addVisual('shape-circle')">⬤</button>
+                            <button class="btn btn-sm btn-outline-light text-dark border"
+                                onclick="addVisual('shape-blob')">☁</button>
+                            <button class="btn btn-sm btn-outline-light text-dark border"
+                                onclick="addVisual('sticker-star')">★</button>
+                            <button class="btn btn-sm btn-outline-light text-dark border"
+                                onclick="addVisual('sticker-heart')">♥</button>
+                            <button class="btn btn-sm btn-outline-light text-dark border"
+                                onclick="addVisual('arrow-scribble')">↗</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vr mx-2"></div>
+
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="bgDropdown" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="fas fa-image me-2"></i> Background
+                    </button>
+                    <!-- Background Dropdown Content (Previous Implementation) -->
+                    <div class="dropdown-menu p-3 shadow" aria-labelledby="bgDropdown" style="width: 320px;">
+                        <div class="mb-3">
+                            <label class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-upload me-2"></i> Upload Image
+                                <input type="file" hidden id="bgInputTool" accept="image/*"
+                                    onchange="handleBgUpload(this)">
+                            </label>
+                        </div>
+                        <div class="bg-light p-2 rounded mb-3 border">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold">Position</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-white border" onclick="setBgPos('top')">⬆</button>
+                                    <button class="btn btn-white border" onclick="setBgPos('center')">⏺</button>
+                                    <button class="btn btn-white border" onclick="setBgPos('bottom')">⬇</button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="small fw-bold">Size</span>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-white border" onclick="setBgSize('cover')">Cover</button>
+                                    <button class="btn btn-white border" onclick="setBgSize('contain')">Contain</button>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 class="small fw-bold text-muted mb-2">PRESETS</h6>
+                        <ul class="nav nav-tabs nav-fill mb-2 small" id="bgTabs" role="tablist">
+                            <li class="nav-item"><a class="nav-link active p-1" data-bs-toggle="tab"
+                                    href="#tab-color">Colors</a></li>
+                            <li class="nav-item"><a class="nav-link p-1" data-bs-toggle="tab"
+                                    href="#tab-pat">Patterns</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab-color">
+                                <div id="tool-bg-solids" class="d-flex flex-wrap gap-1"></div>
+                            </div>
+                            <div class="tab-pane fade" id="tab-pat">
+                                <div id="tool-bg-patterns" class="d-flex flex-wrap gap-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                /* ... (Visual Styles kept same) ... */
+                /* Visual Styles */
+                .visual-item {
+                    background: #f8f9fa;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid transparent;
+                    transition: all 0.2s;
+                }
+
+                .visual-item:hover {
+                    border-color: var(--accent);
+                    background: white;
+                }
+
+                .added-visual {
+                    position: absolute;
+                    z-index: 100;
+                    cursor: move;
+                    display: inline-block;
+                }
+
+                .added-visual:hover {
+                    outline: 1px dashed var(--accent);
+                }
+
+                .v-badge-new {
+                    background: #ff0055;
+                    color: white;
+                    padding: 5px 10px;
+                    font-weight: bold;
+                    border-radius: 4px;
+                    font-size: 0.8rem;
+                }
+
+                .v-badge-sale {
+                    background: #ffc107;
+                    color: black;
+                    padding: 5px 10px;
+                    font-weight: bold;
+                    border-radius: 50px;
+                    font-size: 0.8rem;
+                }
+
+                .v-shape-circle {
+                    width: 40px;
+                    height: 40px;
+                    background: rgba(52, 152, 219, 0.5);
+                    border-radius: 50%;
+                }
+
+                .v-shape-blob {
+                    width: 40px;
+                    height: 40px;
+                    background: #2ecc71;
+                    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                }
+
+                /* Text Added Styles */
+                .added-text {
+                    position: absolute;
+                    z-index: 105;
+                    cursor: text;
+                    outline: 1px dashed transparent;
+                    min-width: 50px;
+                    min-height: 20px;
+                }
+
+                .added-text:hover {
+                    outline-color: var(--accent);
+                }
+
+                .free-move-enabled .added-text {
+                    cursor: move !important;
+                }
+
+                /* FREE MOVE MODE STYLES */
+                .free-move-enabled .img-slot,
+                .free-move-enabled h1,
+                .free-move-enabled h2,
+                .free-move-enabled h3,
+                .free-move-enabled p,
+                .free-move-enabled button,
+                .free-move-enabled a,
+                .free-move-enabled span.badge {
+                    cursor: move !important;
+                    outline: 1px dashed rgba(0, 0, 0, 0.1);
+                    position: relative;
+                    /* Ensure relative pos for transform to feel right if not abs */
+                    z-index: 50;
+                }
+
+                .free-move-enabled .img-slot:hover,
+                .free-move-enabled h1:hover,
+                .free-move-enabled p:hover {
+                    outline: 1px dashed var(--accent);
+                }
+
+                .btn-move-active {
+                    background-color: var(--primary) !important;
+                    color: white !important;
+                    border-color: var(--primary) !important;
+                }
+            </style>
+
+            <!-- FLOATING TOOLBAR (Hidden by default) -->
+            <div id="propPanel" class="position-fixed shadow-lg rounded bg-white p-3"
+                style="bottom: 100px; left: 50%; transform: translateX(-50%); display: none; z-index: 1100; width: 300px; border: 1px solid #ddd;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="m-0 small fw-bold text-uppercase" id="propTitle">Properties</h6>
+                    <button class="btn-close btn-sm" onclick="closePropPanel()"></button>
+                </div>
+
+                <!-- IMAGE PROPERTIES (Hidden unless image selected) -->
+                <div id="propImageOpts" style="display:none;">
+                    <div class="mb-2">
+                        <label class="small text-muted form-label">Size / Zoom</label>
+                        <input type="range" class="form-range" min="0.5" max="3" step="0.1" value="1" id="imgScaleInfo"
+                            oninput="updateActiveImage()">
+                    </div>
+                    <!-- Position Controls -->
+                    <div class="mb-2">
+                        <label class="small text-muted form-label d-block">Position (X / Y)</label>
+                        <div class="btn-group btn-group-sm w-100">
+                            <button class="btn btn-outline-secondary" onclick="nudgeImg(0, -5)"><i
+                                    class="fas fa-arrow-up"></i></button>
+                            <button class="btn btn-outline-secondary" onclick="nudgeImg(0, 5)"><i
+                                    class="fas fa-arrow-down"></i></button>
+                            <button class="btn btn-outline-secondary" onclick="nudgeImg(-5, 0)"><i
+                                    class="fas fa-arrow-left"></i></button>
+                            <button class="btn btn-outline-secondary" onclick="nudgeImg(5, 0)"><i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                    <!-- Fit Mode -->
+                    <div class="btn-group btn-group-sm w-100">
+                        <input type="radio" class="btn-check" name="fitmode" id="fitCover" autocomplete="off"
+                            onchange="updateActiveFit('cover')">
+                        <label class="btn btn-outline-secondary" for="fitCover">Cover</label>
+                        <input type="radio" class="btn-check" name="fitmode" id="fitContain" autocomplete="off"
+                            onchange="updateActiveFit('contain')">
+                        <label class="btn btn-outline-secondary" for="fitContain">Contain</label>
+                    </div>
+                </div>
+
+                <!-- TEXT PROPERTIES (Hidden unless text selected) -->
+                <div id="propTextOpts" style="display:none;">
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <label class="small text-muted form-label">Font Color</label>
+                            <input type="color" class="form-control form-control-color w-100" id="textColor"
+                                value="#000000" oninput="updateActiveText('color', this.value)">
+                        </div>
+                        <div class="col-6">
+                            <label class="small text-muted form-label">Size</label>
+                            <input type="number" class="form-control" id="textSize" value="16"
+                                onchange="updateActiveText('size', this.value)">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted form-label">Font Family</label>
+                        <select class="form-select form-select-sm" id="textFont"
+                            onchange="updateActiveText('font', this.value)">
+                            <option value="Inter, sans-serif">Inter (Default)</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Cormorant Garamond', serif">Cormorant Garamond</option>
+                            <option value="'Courier New', monospace">Courier</option>
+                            <option value="cursive">Cursive</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-danger btn-sm w-100" onclick="deleteActiveElement()"><i
+                            class="fas fa-trash me-2"></i> Remove Element</button>
+                </div>
+            </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
+
+            <script>
+
+                let isFreeMoveMode = false;
+                let activeElement = null; // Can be image slot OR straight text element
+
+                function toggleFreeMove() {
+                    const btn = document.getElementById('btnMoveMode');
+                    const canvas = document.getElementById('designCanvas');
+                    isFreeMoveMode = !isFreeMoveMode;
+
+                    if (isFreeMoveMode) {
+                        btn.classList.add('btn-move-active');
+                        btn.innerHTML = '<i class="fas fa-check me-2"></i> Done Moving';
+                        canvas.classList.add('free-move-enabled');
+                        initFreeMoveInteract();
+                        // Disable contenteditable
+                        document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
+                    } else {
+                        btn.classList.remove('btn-move-active');
+                        btn.innerHTML = '<i class="fas fa-arrows-alt me-2"></i> Free Move';
+                        canvas.classList.remove('free-move-enabled');
+                        // Re-enable contenteditable
+                        canvas.querySelectorAll('h1, h2, h3, p, span, div, .added-text').forEach(el => {
+                            if (el.innerText.trim().length > 0 && !el.classList.contains('img-slot')) {
+                                el.setAttribute('contenteditable', 'true');
+                            }
+                        });
+                    }
+                }
+
+                function initFreeMoveInteract() {
+                    interact('.free-move-enabled .img-slot, .free-move-enabled h1, .free-move-enabled h2, .free-move-enabled h3, .free-move-enabled p, .free-move-enabled button, .free-move-enabled a, .free-move-enabled .added-text')
+                        .draggable({
+                            listeners: {
+                                move(event) {
+                                    if (!isFreeMoveMode) return;
+                                    var target = event.target;
+                                    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                                    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                                    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+                                    target.setAttribute('data-x', x);
+                                    target.setAttribute('data-y', y);
+                                }
+                            }
+                        });
+                }
+
+                // --- TEXT ADDDITION LOGIC ---
+                function addText(type) {
+                    const canvas = document.getElementById('designCanvas');
+                    const el = document.createElement(type === 'small' ? 'span' : type);
+                    el.className = 'added-text';
+
+                    // Default to editable, but give it move cursor
+                    el.setAttribute('contenteditable', 'true');
+                    el.style.left = '50%';
+                    el.style.top = '50%';
+                    el.style.transform = 'translate(-50%, -50%)'; // default center
+                    el.innerText = 'Edit Text';
+                    el.style.zIndex = '105';
+                    el.style.position = 'absolute'; // Critical for free movement
+                    el.style.cursor = 'move'; // Always show move cursor
+
+                    if (type === 'h1') { el.style.fontSize = '3rem'; el.style.fontWeight = 'bold'; }
+                    if (type === 'h3') { el.style.fontSize = '1.75rem'; el.style.fontWeight = 'bold'; }
+                    if (type === 'small') { el.style.fontSize = '0.8rem'; el.className += ' text-uppercase ls-2'; }
+
+                    // Double click to edit text content, Single click to select/move properties
+                    el.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        activeElement = el;
+                        openPropPanel('text');
+                    });
+
+                    canvas.appendChild(el);
+
+                    // Always enable drag for added text, using the visual interact init
+                    initInteract(el);
+
+                    // Auto-select
+                    activeElement = el;
+                    openPropPanel('text');
+                }
+
+                function rgbToHex(rgb) {
+                    if (!rgb || rgb.indexOf('rgb') === -1) return '#000000';
+                    const rgbValues = rgb.match(/\d+/g);
+                    if (!rgbValues) return '#000000';
+                    return '#' + rgbValues.slice(0, 3).map(x => {
+                        const hex = parseInt(x).toString(16);
+                        return hex.length === 1 ? '0' + hex : hex;
+                    }).join('');
+                }
+
+                function openPropPanel(mode) {
+                    const panel = document.getElementById('propPanel');
+                    const imgOpts = document.getElementById('propImageOpts');
+                    const textOpts = document.getElementById('propTextOpts');
+                    const title = document.getElementById('propTitle');
+
+                    panel.style.display = 'block';
+
+                    // Ensure explicit hiding/showing with property resetting
+                    if (mode === 'image') {
+                        title.innerText = 'Image Properties';
+                        imgOpts.style.display = 'block';
+                        textOpts.style.display = 'none';
+
+                        const img = activeImgSlot ? activeImgSlot.querySelector('img') : null;
+                        if (img) {
+                            document.getElementById('imgScaleInfo').value = img.getAttribute('data-scale') || 1;
+                            if (img.style.objectFit === 'contain') document.getElementById('fitContain').checked = true;
+                            else document.getElementById('fitCover').checked = true;
+                        }
+
+                    } else if (mode === 'text') {
+                        title.innerText = 'Text Properties';
+                        imgOpts.style.display = 'none';
+                        textOpts.style.display = 'block';
+
+                        if (activeElement) {
+                            const style = window.getComputedStyle(activeElement);
+
+                            // Sync Color
+                            const hex = rgbToHex(style.color);
+                            document.getElementById('textColor').value = hex;
+
+                            // Sync Size
+                            const size = parseFloat(style.fontSize);
+                            document.getElementById('textSize').value = size || 16;
+
+                            // Sync Font (Best effort match)
+                            const currentFont = style.fontFamily.replace(/['"]/g, '');
+                            const fontSelect = document.getElementById('textFont');
+                            // Reset to default then try to match
+                            fontSelect.value = 'Inter, sans-serif';
+                            for (let i = 0; i < fontSelect.options.length; i++) {
+                                const optVal = fontSelect.options[i].value.replace(/['"]/g, '');
+                                if (currentFont.includes(optVal.split(',')[0])) {
+                                    fontSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        // Default empty or generic?
+                        imgOpts.style.display = 'none';
+                        textOpts.style.display = 'none';
+                    }
+                }
+
+                function closePropPanel() {
+                    document.getElementById('propPanel').style.display = 'none';
+                }
+
+                function updateActiveText(prop, val) {
+                    if (!activeElement) return;
+                    if (prop === 'color') activeElement.style.color = val;
+                    if (prop === 'size') activeElement.style.fontSize = val + 'px';
+                    if (prop === 'font') activeElement.style.fontFamily = val;
+                }
+
+                function deleteActiveElement() {
+                    if (activeElement) {
+                        activeElement.remove();
+                        activeElement = null;
+                        closePropPanel();
+                    }
+                }
+
+                // Keep original variables 
+                let selectedImageSrc = null;
+                let scale = 1;
+                let activeImgSlot = null;
+
+                // Include original functions 
+                // ... [VISUALS LOGIC] ...
+                function addVisual(type) {
+                    // ... (Keep existing implementation)
+                    const canvas = document.getElementById('designCanvas');
+                    const el = document.createElement('div');
+                    el.className = 'added-visual';
+                    el.style.left = '40%';
+                    el.style.top = '40%';
+
+                    let content = '';
+                    switch (type) {
+                        case 'badge-new': content = '<div class="v-badge-new" contenteditable="true">NEW ARRIVAL</div>'; break;
+                        case 'badge-sale': content = '<div class="v-badge-sale" contenteditable="true">50% OFF</div>'; break;
+                        case 'shape-circle': content = '<div class="v-shape-circle" style="width:100px; height:100px;"></div>'; break;
+                        case 'shape-blob': content = '<div class="v-shape-blob" style="width:150px; height:150px;"></div>'; break;
+                        case 'sticker-star': content = '<i class="fas fa-star text-warning" style="font-size: 4rem;"></i>'; break;
+                        case 'sticker-heart': content = '<i class="fas fa-heart text-danger" style="font-size: 4rem;"></i>'; break;
+                        case 'arrow-scribble': content = '<i class="fas fa-location-arrow text-primary" style="font-size: 3rem; transform: rotate(-45deg);"></i>'; break;
+                        case 'text-label': content = '<span class="badge bg-dark" style="font-size:1.5rem;" contenteditable="true">Add Label</span>'; break;
+                    }
+                    el.innerHTML = content;
+
+                    // Delete button 
+                    const del = document.createElement('div');
+                    del.innerHTML = '&times;';
+                    del.style.cssText = 'position:absolute; top:-10px; right:-10px; background:red; color:white; width:20px; height:20px; border-radius:50%; text-align:center; line-height:18px; cursor:pointer; font-size:14px; display:none;';
+                    del.onclick = function (e) { e.stopPropagation(); el.remove(); }
+                    el.onmouseenter = () => del.style.display = 'block';
+                    el.onmouseleave = () => del.style.display = 'none';
+                    el.appendChild(del);
+
+                    canvas.appendChild(el);
+                    initInteract(el);
+                }
+
+                function initInteract(el) {
+                    interact(el).draggable({
+                        listeners: {
+                            move(event) {
+                                // If it's a template element (like h1, p in template), check mode
+                                // But if it's an added visual or text, allow always?
+                                // Actually initInteract is mainly used for added visuals.
+                                // The template elements use 'initFreeMoveInteract'.
+                                // So we can remove the check or make it specific.
+
+                                var target = event.target;
+                                var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                                var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                                target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+                                target.setAttribute('data-x', x);
+                                target.setAttribute('data-y', y);
+                            }
+                        }
+                    })
+                        .resizable({
+                            edges: { left: true, right: true, bottom: true, top: true },
+                            listeners: {
+                                move: function (event) {
+                                    let { x, y } = event.target.dataset;
+                                    x = (parseFloat(x) || 0) + event.deltaRect.left;
+                                    y = (parseFloat(y) || 0) + event.deltaRect.top;
+                                    Object.assign(event.target.style, {
+                                        width: `${event.rect.width}px`,
+                                        height: `${event.rect.height}px`,
+                                        transform: `translate(${x}px, ${y}px)`
+                                    })
+                                    Object.assign(event.target.dataset, { x, y });
+                                }
+                            }
+                        });
+                }
+
+
+                // --- 1. UPLOAD HANDLING ---
+                document.getElementById('fileInput').addEventListener('change', function (e) {
+                    const files = e.target.files;
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function (evt) {
+                            createAssetIcon(evt.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                function createAssetIcon(src) {
+                    const div = document.createElement('img');
+                    div.src = src;
+                    div.className = 'asset-thumb';
+                    div.onclick = function () {
+                        // Select tool
+                        document.querySelectorAll('.asset-thumb').forEach(el => el.classList.remove('selected'));
+                        div.classList.add('selected');
+                        selectedImageSrc = src;
+                    };
+                    document.getElementById('assetTray').appendChild(div);
+
+                    // Auto select first one if none selected
+                    if (!selectedImageSrc) {
+                        div.click();
+                    }
+                }
+
+                // --- 2. TEMPLATE LOADING ---
+                function loadTemplate(id) {
+                    const canvas = document.getElementById('designCanvas');
+                    let html = '';
+                    // Close panel on change
+                    document.getElementById('propPanel').style.display = 'none';
+
+                    switch (id) {
+                        case 1:
+                            html = `
+                    <section class="d1-section h-100 d-flex align-items-center">
+                        <div class="container-fluid">
+                            <div class="row align-items-center">
+                                <div class="col-lg-5">
+                                    <div class="text-uppercase fw-bold text-muted small mb-3" contenteditable="true">FEATURED COLLECTION</div>
+                                    <h1 class="d1-title mb-4" contenteditable="true">Capture Your<br>Vision on Paper</h1>
+                                    <p class="lead text-muted mb-4" contenteditable="true">Elegant designs for weddings, birthdays, and special events.</p>
+                                    <button class="btn btn-dark rounded-pill px-4" contenteditable="true">SHOP NOW</button>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="bento-grid">
+                                        <div class="img-slot bi-1" onclick="placeImage(this)"></div>
+                                        <div class="img-slot bi-2" onclick="placeImage(this)"></div>
+                                        <div class="img-slot bi-3" onclick="placeImage(this)"></div>
+                                        <div class="img-slot bi-4" onclick="placeImage(this)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 2:
+                            html = `
+                    <section class="d2-section">
+                        <div class="d2-content">
+                            <div style="width:50px; height:2px; background:#c9a45e; margin-bottom: 20px;"></div>
+                            <span class="text-uppercase ls-2 mb-2 text-muted" contenteditable="true">THE COLLECTION</span>
+                            <h1 style="font-family: 'Playfair Display'; font-size: 3.5rem; margin-bottom: 20px;" contenteditable="true">Artistry in<br>Every Detail</h1>
+                            <p class="opacity-75 mb-4" contenteditable="true">Discover our new range of luxury stationery.</p>
+                             <button class="btn btn-outline-light rounded-0" contenteditable="true">EXPLORE NOW</button>
+                        </div>
+                        <div class="d2-visuals">
+                            <div class="d2-main-img img-slot" onclick="placeImage(this)"></div>
+                            <div class="d2-float-card img-slot" onclick="placeImage(this)"></div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 3:
+                            html = `
+                    <section class="d3-container">
+                        <div class="d3-col-1">
+                            <div class="img-slot" style="width: 100px; height: 100px; border-radius: 50%;" onclick="placeImage(this)"></div>
+                            <div>
+                                <div style="font-size: 2.5rem; font-weight: 800; line-height: 1;" contenteditable="true">Bold.<br>Simple.<br>Unique.</div>
+                                <p class="mt-3 text-muted" contenteditable="true">Redefining print standards.</p>
+                            </div>
+                            <a href="#" class="text-dark fw-bold text-decoration-none" contenteditable="true">Our Story &rarr;</a>
+                        </div>
+                        <div class="d3-col-2 img-slot" onclick="placeImage(this)"></div>
+                        <div class="d3-col-3">
+                            <div class="d3-img-box img-slot" onclick="placeImage(this)"></div>
+                            <div class="d3-img-box img-slot" onclick="placeImage(this)"></div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 4:
+                            html = `
+                    <section class="d4-section h-100 d-flex align-items-center justify-content-center">
+                        <div class="d4-banner">
+                            <div class="d4-center-img img-slot" onclick="placeImage(this)"></div>
+                            <div class="d4-overlay">
+                                <span class="text-uppercase text-muted small ls-2" contenteditable="true">Established 2024</span>
+                                <h1 style="font-family: 'Playfair Display'; font-size: 2.5rem;" class="mt-2" contenteditable="true">Blossom Prints</h1>
+                                <p class="text-secondary mt-2" contenteditable="true">Where memories meet paper.</p>
+                            </div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 5:
+                            html = `
+                    <section class="d5-section">
+                        <div class="d5-bg-slot img-slot" onclick="placeImage(this)"></div>
+                        <div class="d5-card">
+                            <div class="img-slot" style="width:60px; height:60px; border-radius:50%; margin-bottom: 20px;" onclick="placeImage(this)"></div>
+                            <h2 class="display-6 fw-bold mb-3" contenteditable="true">Premium Quality</h2>
+                            <p class="mb-4" contenteditable="true">We ensure every pixel matches the print. Experience the difference.</p>
+                            <button class="btn btn-primary rounded-pill px-4 shadow" contenteditable="true">Start Project</button>
+                            <div class="d5-mini-grid">
+                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
+                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
+                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
+                            </div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 6:
+                            html = `
+                    <section class="d6-section">
+                        <div class="d6-text">
+                            <h1 style="font-size: 3.5rem; font-family: 'Cormorant Garamond';" contenteditable="true">Timeless<br>Stationery.</h1>
+                            <div style="width: 50px; height: 2px; background: #000; margin: 20px 0;"></div>
+                            <p class="text-muted" style="max-width: 300px;" contenteditable="true">
+                                Explore our curated selection of bespoke designs, tailored for the moments that matter most.
+                            </p>
+                        </div>
+                        <div class="d6-gallery">
+                            <div class="d6-col">
+                                <div class="d6-big img-slot" onclick="placeImage(this)"></div>
+                            </div>
+                            <div class="d6-col">
+                                <div class="d6-img img-slot" onclick="placeImage(this)"></div>
+                                <div class="d6-img img-slot" onclick="placeImage(this)"></div>
+                            </div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 7:
+                            html = `
+                    <section class="d7-section">
+                        <div class="d7-text">
+                            <span class="text-uppercase fw-bold text-primary mb-2" contenteditable="true">New Arrival</span>
+                            <h1 class="display-4 fw-bold mb-4" style="font-family:'Inter'" contenteditable="true">The Future<br>of Design</h1>
+                            <p class="lead text-muted mb-4" contenteditable="true">Sharp angles, bold colors, and a layout that demands attention.</p>
+                            <a href="#" class="btn btn-dark btn-lg rounded-0 w-50" contenteditable="true">READ MORE</a>
+                        </div>
+                        <div class="d7-img img-slot" onclick="placeImage(this)"></div>
+                    </section>`;
+                            break;
+                        case 8:
+                            html = `
+                    <section class="d8-section">
+                        <div class="d8-text">
+                            <h1 class="d8-big-title" contenteditable="true">BIG.<br>BOLD.<br>TYPE.</h1>
+                            <p class="mt-3 text-muted" style="max-width: 300px;" contenteditable="true">Sometimes the message is the medium. Make it loud.</p>
+                        </div>
+                        <div class="d8-grid">
+                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
+                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
+                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
+                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
+                        </div>
+                    </section>`;
+                            break;
+                        case 9:
+                            html = `
+                    <section class="d9-section">
+                        <div class="d9-text-left">
+                            <h2 class="fw-bold" contenteditable="true">Focus Center</h2>
+                            <p class="text-muted" contenteditable="true">Everything revolves around the product.</p>
+                        </div>
+                        <div class="d9-circle img-slot" onclick="placeImage(this)"></div>
+                        <div class="d9-text-right">
+                             <h4 class="fw-bold" contenteditable="true">$299.00</h4>
+                             <button class="btn btn-primary rounded-pill btn-sm" contenteditable="true">Add to Cart</button>
+                        </div>
+                    </section>`;
+                            break;
+
+                        /* --- DESIGNS 10-20 --- */
+                        case 10:
+                            html = `<section class="d10-section"><h1 contenteditable="true">Simple Strip</h1><div class="d10-img-strip img-slot" onclick="placeImage(this)"></div><p contenteditable="true">Minimalist approach to highlighting a key visual.</p></section>`;
+                            break;
+                        case 11:
+                            html = `<section class="d11-section"><div class="d11-text"><h2 contenteditable="true">Dark Side</h2><p contenteditable="true">Elegance in the shadows.</p></div><div class="d11-img img-slot" onclick="placeImage(this)"></div></section>`;
+                            break;
+                        case 12:
+                            html = `<section class="d12-section"><div class="d12-img img-slot" onclick="placeImage(this)"></div><div class="d12-text"><h2 contenteditable="true">Light Side</h2><p contenteditable="true">Bright and airy composition.</p></div></section>`;
+                            break;
+                        case 13:
+                            html = `<section class="d13-section"><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-overlay"><h2 contenteditable="true">FOUR SEASONS</h2></div></section>`;
+                            break;
+                        case 14:
+                            html = `<section class="d14-section"><div class="d14-box d14-dark"><h2 contenteditable="true">Q1</h2></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-box d14-light"><h2 contenteditable="true">Q2</h2></div></section>`;
+                            break;
+                        case 15:
+                            html = `<section class="d15-section"><div class="d15-img img-slot" onclick="placeImage(this)"></div><div class="d15-text"><h3 contenteditable="true">Bottom Bar Info</h3><button class="btn btn-outline-light" contenteditable="true">Action</button></div></section>`;
+                            break;
+                        case 16:
+                            html = `<section class="d16-section"><div class="d16-text"><h1 contenteditable="true">Triple Header</h1></div><div class="d16-grid"><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+                        case 17:
+                            html = `<section class="d17-section"><div class="d17-frame"><div class="d17-img img-slot" onclick="placeImage(this)"></div><div class="d17-text"><h2 contenteditable="true">Inset Frame</h2><p contenteditable="true">A picture within a picture.</p></div></div></section>`;
+                            break;
+                        case 18:
+                            html = `<section class="d18-section"><div class="d18-img img-slot" onclick="placeImage(this)"></div><div class="d18-center"><h1 contenteditable="true">FOCUS</h1><p contenteditable="true">Center stage.</p></div><div class="d18-img img-slot" onclick="placeImage(this)"></div></section>`;
+                            break;
+                        case 19:
+                            html = `<section class="d19-section"><div class="d19-col"><div class="d19-img img-slot" onclick="placeImage(this)"></div></div><div class="d19-text"><h2 contenteditable="true">Masonry</h2><p contenteditable="true">Asymmetric balance.</p></div><div class="d19-col"><div class="d19-img img-slot" style="flex:0.6" onclick="placeImage(this)"></div><div class="d19-img img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+                        case 20:
+                            html = `<section class="d20-section"><div class="d20-text-card"><h2 contenteditable="true">Overlap</h2><p contenteditable="true">Breaking the grid.</p></div><div class="d20-img img-slot" onclick="placeImage(this)"></div></section>`;
+                            break;
+
+                        /* --- DESIGNS 21-30 --- */
+                        case 21:
+                            html = `<section class="d21-section"><div class="d21-img img-slot" onclick="placeImage(this)"></div><div class="d21-text-card"><h2 contenteditable="true">Inverse</h2><p contenteditable="true">Dark mode overlap.</p></div></section>`;
+                            break;
+                        case 22:
+                            html = `<section class="d22-section"><div class="d22-text"><h1 contenteditable="true">Angle</h1></div><div class="d22-img img-slot" onclick="placeImage(this)"></div></section>`;
+                            break;
+                        case 23:
+                            html = `<section class="d23-section"><div class="d23-diamond"><div class="d23-img img-slot" onclick="placeImage(this)"></div></div><div class="d23-text"><h1 contenteditable="true" style="color:white; text-shadow:0 2px 10px black;">GEM</h1></div></section>`;
+                            break;
+                        case 24:
+                            html = `<section class="d24-section"><h2 contenteditable="true">Bubbles</h2><div class="d24-circles"><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+                        case 25:
+                            html = `<section class="d25-section"><div class="d25-img img-slot" onclick="placeImage(this)"></div><div class="d25-text"><h1 contenteditable="true">Arch Left</h1><p contenteditable="true">Smooth curves.</p></div></section>`;
+                            break;
+                        case 26:
+                            html = `<section class="d26-section"><div class="d26-img img-slot" onclick="placeImage(this)"></div><div class="d26-text"><h1 contenteditable="true">Arch Right</h1><p contenteditable="true">Balanced composition.</p></div></section>`;
+                            break;
+                        case 27:
+                            html = `<section class="d27-section"><div class="d27-pill"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><h1 contenteditable="true" style="background:white; padding:10px 30px; border-radius:30px;">PILL</h1></div></div></section>`;
+                            break;
+                        case 28:
+                            html = `<section class="d28-section"><div class="d28-pill img-slot" onclick="placeImage(this)"></div><div class="d28-pill img-slot" onclick="placeImage(this)"></div></section>`;
+                            break;
+                        case 29:
+                            html = `<section class="d29-section"><div><h1 contenteditable="true">Hand Picked</h1></div><div class="d29-cards"><div class="d29-card img-slot" onclick="placeImage(this)"></div><div class="d29-card img-slot" style="transform:translateY(-20px)" onclick="placeImage(this)"></div><div class="d29-card img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+                        case 30:
+                            html = `<section class="d30-section"><div class="d30-left"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div><div class="d30-right"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+
+                        /* --- DESIGNS 31-40 --- */
+                        case 31:
+                            html = `<section class="d31-section"><div class="d31-card"><div class="d31-img img-slot" onclick="placeImage(this)"></div><div class="d31-text"><h2 contenteditable="true">Soft Gradient</h2><p contenteditable="true">Pastel vibes.</p></div></div></section>`;
+                            break;
+                        case 32:
+                            html = `<section class="d32-section"><div class="d32-border"><div class="d32-content"><div class="d32-img img-slot" onclick="placeImage(this)"></div><div class="d32-text"><h2 contenteditable="true">CYBER</h2><p contenteditable="true">Neon future.</p></div></div></div></section>`;
+                            break;
+                        case 33:
+                            html = `<section class="d33-section"><div class="d33-top"><h1 contenteditable="true" style="font-size:4rem; line-height:1;">RAW<br>DESIGN</h1><p contenteditable="true">No filler.</p></div><div class="d33-bot"><div class="d33-img img-slot" onclick="placeImage(this)"></div><div class="d33-img img-slot" onclick="placeImage(this)"></div></div></section>`;
+                            break;
+                        case 34:
+                            html = `<section class="d34-section"><div class="d34-box"><div class="d34-img img-slot" onclick="placeImage(this)"></div><div><h1 contenteditable="true" style="font-family:'Courier New'">RETRO</h1><p contenteditable="true">Grid systems.</p></div></div></section>`;
+                            break;
+                        case 35:
+                            html = `<section class="d35-section"><div class="img-slot d35-img" onclick="placeImage(this)"></div><h1 class="d35-title" contenteditable="true">IMPACT</h1></section>`;
+                            break;
+                        case 36:
+                            html = `<section class="d36-section"><h1 class="d36-bg-text" contenteditable="true">HERO</h1><div class="d36-img img-slot" onclick="placeImage(this)"></div><p contenteditable="true" style="z-index:1; position:relative;">The product speaks for itself.</p></section>`;
+                            break;
+                        case 37:
+                            html = `<section class="d37-section"><div class="d37-avatar img-slot" onclick="placeImage(this)"></div><div class="d37-quote" contenteditable="true">"This is the most flexible design tool I've ever used."</div><p contenteditable="true">- Sarah Creator</p></section>`;
+                            break;
+                        case 38:
+                            html = `<section class="d38-section"><div class="d38-phone"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d38-text"><h1 contenteditable="true">Mobile First</h1><p contenteditable="true">Showcase your app.</p></div></section>`;
+                            break;
+                        case 39:
+                            html = `<section class="d39-section"><div class="d39-left"><div class="img-slot" style="width:100%; height:100%; opacity:0.5; mix-blend-mode:multiply;" onclick="placeImage(this)"></div></div><div class="d39-right"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d39-text"><h2 contenteditable="true">Dual Tone</h2></div></section>`;
+                            break;
+                        case 40:
+                            html = `<section class="d40-section"><div class="d40-letterbox"><div class="d40-img img-slot" onclick="placeImage(this)"></div><h2 class="d40-caption" contenteditable="true">CINEMATIC EXPERIENCE</h2></div></section>`;
+                            break;
+
+                    }
+
+                    canvas.innerHTML = html;
+
+                    // Attach listeners for text editing
+                    setTimeout(attachTextListeners, 100);
+                }
+
+                // --- 3. EDITOR ACTION ---
+                function placeImage(el) {
+                    // Check if user is clicking an already full slot
+                    if (el.classList.contains('has-image')) {
+                        // Open Property Panel
+                        activeImgSlot = el;
+                        openPropPanel();
+                        return;
+                    }
+
+                    if (!selectedImageSrc) {
+                        alert('Please upload/select an image from the 1. Assets list first!');
+                        return;
+                    }
+
+                    // Clear existing
+                    el.innerHTML = '';
+                    el.classList.add('has-image');
+
+                    // Default Style
+                    const img = document.createElement('img');
+                    img.src = selectedImageSrc;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.transition = 'all 0.1s ease';
+                    el.appendChild(img);
+                }
+
+                // Image Props Logic
+                function openPropPanel() {
+                    const panel = document.getElementById('propPanel');
+                    panel.style.display = 'block';
+
+                    // Get current props if any
+                    const img = activeImgSlot.querySelector('img');
+                    if (img) {
+                        // Try to read current scale from transform?
+                        // For simplicity reset to 1 or read data-attribute
+                        document.getElementById('imgScaleInfo').value = img.getAttribute('data-scale') || 1;
+
+                        // Set radio
+                        if (img.style.objectFit === 'contain') document.getElementById('fitContain').checked = true;
+                        else document.getElementById('fitCover').checked = true;
+                    }
+                }
+
+                function updateActiveImage() {
+                    if (!activeImgSlot) return;
+                    const img = activeImgSlot.querySelector('img');
+                    if (!img) return;
+
+                    const scaleVal = document.getElementById('imgScaleInfo').value;
+                    img.style.transform = `scale(${scaleVal})`;
+                    img.setAttribute('data-scale', scaleVal); // Save state
+                }
+
+                function updateActiveFit(mode) {
+                    if (!activeImgSlot) return;
+                    const img = activeImgSlot.querySelector('img');
+                    if (!img) return;
+                    img.style.objectFit = mode;
+                }
+
+                function nudgeImg(x, y) {
+                    if (!activeImgSlot) return;
+                    const img = activeImgSlot.querySelector('img');
+                    if (!img) return;
+
+                    // Get current X/Y form data-attr
+                    let curX = parseFloat(img.getAttribute('data-x') || 0);
+                    let curY = parseFloat(img.getAttribute('data-y') || 0);
+
+                    curX += x;
+                    curY += y;
+
+                    img.style.objectPosition = `${50 + curX}% ${50 + curY}%`;
+                    img.setAttribute('data-x', curX);
+                    img.setAttribute('data-y', curY);
+                }
+
+                function setZoom(val) {
+                    scale = val;
+                    const canvas = document.getElementById('designCanvas');
+                    canvas.style.transform = `scale(${scale})`;
+                }
+
+
+                // --- 4. EXPORT ---
+                function downloadDesign() {
+                    const canvas = document.getElementById('designCanvas');
+
+                    // Hide selection outlines / cursors
+                    document.querySelectorAll('[contenteditable]').forEach(e => e.blur());
+
+                    // Reset scale for clear capture
+                    canvas.style.transform = 'scale(1)';
+
+                    const btn = document.querySelector('.btn-primary');
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                    // Temp hide visual delete buttons
+                    document.querySelectorAll('.added-visual > div').forEach(d => d.style.display = 'none');
+
+                    html2canvas(canvas, { scale: 2, useCORS: true }).then(c => {
+                        const link = document.createElement('a');
+                        link.download = 'comparehub_creation_' + Date.now() + '.png';
+                        link.href = c.toDataURL();
+                        link.click();
+
+                        // Restore scale
+                        canvas.style.transform = `scale(${scale})`;
+                        btn.innerHTML = '<i class="fas fa-download me-2"></i> Download Image';
+                    });
+                }
+                // --- 5. BACKGROUNDS LOGIC (UPDATED FOR TOOLBOX) ---
+                function initBackgrounds() {
+                    // 1. Solids & Paper
+                    const solids = [
+                        '#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da',
+                        '#fefae0', '#faedcd', '#eae2b7', '#d4a373', '#e6ccb2',
+                        '#000000', '#212529', '#343a40', '#495057'
+                    ];
+                    const solidContainer = document.getElementById('tool-bg-solids');
+                    if (solidContainer) {
+                        solidContainer.innerHTML = '';
+                        solids.forEach(c => createBgThumb(solidContainer, c));
+                    }
+
+                    // 2. Patterns & Textures
+                    const patterns = [
+                        // --- AESTHETIC / VIBES ---
+                        'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)', // Pastel Dream
+                        'linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)', // Soft Lavender
+                        'radial-gradient(circle at 50% 50%, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', // Blush
+                        'background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898; background-blend-mode: multiply,multiply', // Metallic Zen
+                        'linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%)', // Silver
+                        'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)', // Blue Pop
+                        'conic-gradient(at 50% 50%, #ffafbd 0%, #ffc3a0 25%, #ffafbd 50%, #ffc3a0 75%, #ffafbd 100%)', // Peachy
+                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Deep Purple (Vaporwave)
+                        'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)', // Sky Candy
+
+                        // --- GEOMETRIC CLEAN ---
+                        'repeating-linear-gradient(45deg, #f8f9fa, #f8f9fa 10px, #ffffff 10px, #ffffff 20px)', // Subtle Stripes
+                        'radial-gradient(#ccc 2px, transparent 2px) 0 0 / 20px 20px', // Minimal Dots
+                        'linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent)', // Soft Grid
+
+                        // --- NATURE / ORGANIC ---
+                        'linear-gradient(to top, #fff1eb 0%, #ace0f9 100%)', // Cloud
+                        'linear-gradient(to top, #d299c2 0%, #fef9d7 100%)', // Sunset
+                        'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', // Mint Water
+
+                        // --- DARK MODE --- 
+                        'linear-gradient(to right, #434343 0%, black 100%)', // Deep Dark
+                        'repeating-linear-gradient(90deg, transparent 0, transparent 4px, #222 4px, #222 5px)', // Dark Scanlines
+                        'radial-gradient(circle at 50% 50%, #2b2b2b 0%, #000 100%)', // Vignette
+
+                        // --- TEXTURE ---
+                        'repeating-radial-gradient(circle, #dbd4b4, #dbd4b4 10px, #ffffff 10px, #ffffff 20px)', // Mandala
+                        'linear-gradient(135deg, #ECEDDC 25%, transparent 25%) -50px 0, linear-gradient(225deg, #ECEDDC 25%, transparent 25%) -50px 0, linear-gradient(315deg, #ECEDDC 25%, transparent 25%), linear-gradient(45deg, #ECEDDC 25%, transparent 25%)', // Houndstooth
+                    ];
+                    const patContainer = document.getElementById('tool-bg-patterns');
+                    if (patContainer) {
+                        patContainer.innerHTML = '';
+                        patterns.forEach(p => createBgThumb(patContainer, p));
+                    }
+                }
+
+                function createBgThumb(container, bg) {
+                    const div = document.createElement('div');
+                    div.className = 'bg-thumb';
+                    div.style.cssText = 'width:25px; height:25px; border-radius:4px; cursor:pointer; border:1px solid #ddd; display:inline-block;';
+                    div.style.background = bg;
+                    div.onclick = () => {
+                        applyBackground(bg);
+                    };
+                    container.appendChild(div);
+                }
+
+                function handleBgUpload(input) {
+                    const file = input.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (evt) {
+                            const url = evt.target.result;
+                            // Ensure we set a clean background property
+                            const canvas = document.getElementById('designCanvas');
+                            canvas.style.backgroundImage = `url('${url}')`;
+                            canvas.style.backgroundSize = 'cover';
+                            canvas.style.backgroundPosition = 'center';
+                            canvas.style.backgroundRepeat = 'no-repeat';
+
+                            // Also clear any solid color that might be set
+                            canvas.style.backgroundColor = 'transparent';
+
+                            // Transparentize internal section
+                            const section = canvas.querySelector('section');
+                            if (section) section.style.background = 'transparent';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+
+                function applyBackground(bgStyle) {
+                    const canvas = document.getElementById('designCanvas');
+
+                    // Check if it's a gradient or simple color or url
+                    if (bgStyle.includes('url') || bgStyle.includes('gradient')) {
+                        canvas.style.background = bgStyle;
+                    } else {
+                        canvas.style.background = bgStyle;
+                    }
+
+                    // Make inner section transparent
+                    const section = canvas.querySelector('section');
+                    if (section) {
+                        section.style.background = 'transparent';
+                    }
+                }
+
+                function setBgPos(pos) {
+                    const canvas = document.getElementById('designCanvas');
+                    if (pos === 'top') canvas.style.backgroundPosition = 'center top';
+                    else if (pos === 'bottom') canvas.style.backgroundPosition = 'center bottom';
+                    else canvas.style.backgroundPosition = 'center center';
+                }
+
+                function setBgSize(size) {
+                    document.getElementById('designCanvas').style.backgroundSize = size;
+                }
+
+                // Initialize on load
+                window.onload = function () {
+                    initBackgrounds();
+                };
+                // Also call it immediately
+                initBackgrounds();
+            </script>
+</body>
+
+</html>

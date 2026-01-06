@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Tracking | CompareHubPrices Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --info: #2563eb;
+            --dark: #1e293b;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -270px;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-section-title:hover {
+            color: var(--primary);
+        }
+
+        .nav-section-title i {
+            font-size: 0.65rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-section-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .nav-section-items {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-section-items.collapsed {
+            max-height: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(220, 38, 38, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        /* Design 9: Dual Tile Grid Styles */
+        .sb9-header {
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #334155;
+            padding-left: 0.5rem;
+        }
+
+        .sb9-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sb9-tile {
+            background: white;
+            border-radius: 16px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        .sb9-tile i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .sb9-tile span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .sb9-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: #dc2626;
+        }
+
+        .sb9-tile:hover i {
+            color: #dc2626;
+        }
+
+        .sb9-tile.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .sb9-tile.active i {
+            color: white;
+        }
+
+        /* Overlay CSS */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active img {
+            opacity: 1;
+            filter: brightness(1.2);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(220, 38, 38, 0.15);
+            border-color: var(--primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card.primary .stat-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .stats-card.success .stat-icon {
+            background: linear-gradient(135deg, var(--success) 0%, #4ade80 100%);
+        }
+
+        .stats-card.warning .stat-icon {
+            background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%);
+        }
+
+        .stats-card.info .stat-icon {
+            background: linear-gradient(135deg, var(--info) 0%, #60a5fa 100%);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1.5px;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-top: 0.625rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .full-width-chart {
+            grid-column: 1 / -1;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            height: 100%;
+        }
+
+        .chart-section h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
+        }
+
+        .table-section h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 1rem;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .table tbody tr:hover {
+            background: var(--light);
+        }
+
+        .page-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .page-link-item:hover {
+            color: var(--primary);
+        }
+
+        .page-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .progress-bar-custom {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            width: 100px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+
+            .progress-bar-custom {
+                width: 60px;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Design 62: Circle Progress Card (Design G) */
+        .stat-card-design-g {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+
+        .stat-card-design-g:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .design-g-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Dynamic border color helper */
+        .ring-primary {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+        }
+
+        .ring-success {
+            border-top-color: #10b981;
+            border-right-color: #10b981;
+        }
+
+        .ring-warning {
+            border-top-color: #f59e0b;
+            border-right-color: #f59e0b;
+        }
+
+        .ring-danger {
+            border-top-color: #ef4444;
+            border-right-color: #ef4444;
+        }
+
+        .design-g-content h4 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .design-g-content .design-g-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Fix for Chart.js infinite resizing */
+        .canvas-wrapper {
+            position: relative;
+            height: 300px;
+            /* Constrain height */
+            width: 100%;
+        }
+
+        /* Design 53: Horizontal Bar Race Styles */
+        .race-item {
+            margin-bottom: 1.25rem;
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 0.4rem;
+        }
+
+        .race-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .race-rank {
+            background: var(--light);
+            color: var(--text-muted);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .race-stats {
+            text-align: right;
+        }
+
+        .race-count {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .race-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .race-track {
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .race-bar {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile active">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin User</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Page Tracking</h1>
+                <p class="page-subtitle">Real-time usage statistics and page popularity tracking</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <!-- Total Page Views -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-primary">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Total Page Views</h4>
+                        <span class="design-g-value" id="kpi-total-views">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Unique Visitors -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Unique Visitors</h4>
+                        <span class="design-g-value" id="kpi-unique-visitors">...</span>
+                    </div>
+                </div>
+
+                <!-- Avg Time -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-success">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Avg. Duration</h4>
+                        <span class="design-g-value" id="kpi-avg-time">...</span>
+                    </div>
+                </div>
+
+                <!-- Bounce Rate -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring ring-warning">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="design-g-content">
+                        <h4>Bounce Rate</h4>
+                        <span class="design-g-value" id="kpi-bounce-rate">...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-section full-width-chart">
+                    <h3>Traffic Overview <small class="text-muted fw-normal fs-6 ms-2">Last 7 Days</small></h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-section">
+                    <h3>Device Distribution</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="deviceChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-section">
+                    <h3>Top Categories</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Visited Pages (Design 53: Bar Race) -->
+            <div class="chart-section" style="min-height: 400px;">
+                <h3>Most Visited Pages <small class="text-muted fw-normal fs-6 ms-2">Real-time Ranking</small></h3>
+                <div id="pagesRaceContainer" style="padding: 1rem 0;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // CONFIGURATION: Replace with your actual deployed API Endpoint URL
+        const API_URL = 'https://hub.comparehubprices.co.za/data/analytics';
+
+        // --- FETCH REAL DATA ---
+        async function fetchAnalyticsData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Failed to fetch analytics');
+                const result = await response.json();
+
+                if (result.success) {
+                    processAndRenderData(result.data, result.global_stats);
+                }
+            } catch (error) {
+                console.error("Error loading analytics:", error);
+
+                // Show empty charts on error/fail
+                initCharts({
+                    traffic: [0, 0, 0, 0, 0, 0, 0],
+                    devices: [0, 0, 0],
+                    categories: [0, 0, 0, 0, 0]
+                });
+                populateTable([]);
+            }
+        }
+
+        function processAndRenderData(apiData, globalStats = {}) {
+            let totalViews = 0;
+            let desktop = 0, mobile = 0, tablet = 0;
+            let pages = [];
+
+            // 1. Process Page Data
+            apiData.forEach(item => {
+                totalViews += (item.total_views || 0);
+                desktop += (item.device_stats?.desktop || 0);
+                mobile += (item.device_stats?.mobile || 0);
+                tablet += (item.device_stats?.tablet || 0);
+
+                // Calculate popularity relative to max (or simplistic normalized 0-100)
+                // For real app, max might be the highest viewed page
+
+                pages.push({
+                    name: formatPageName(item.url),
+                    url: item.url,
+                    views: (item.total_views || 0).toLocaleString(),
+                    users: "—",
+                    time: formatDuration(item.avg_time_seconds || 0),
+                    popularity: item.total_views > 0 ? 80 : 0,
+                    trend: item.daily_views > 0 ? "up" : "stable"
+                });
+            });
+
+            // 2. Update KPI Cards (with real Global Stats)
+            // Note: We use optional chaining or checks in case IDs changed
+            const kpiTotal = document.getElementById('kpi-total-views');
+            if (kpiTotal) kpiTotal.textContent = totalViews.toLocaleString();
+
+            // Unique Visitors (Daily)
+            const uniqueVis = globalStats.unique_visitors || 0;
+            const kpiUnique = document.getElementById('kpi-unique-visitors');
+            if (kpiUnique) kpiUnique.textContent = uniqueVis.toLocaleString();
+
+            // Avg Time (Global)
+            let avgTime = globalStats.avg_session_duration || 0;
+            if (avgTime === 0) avgTime = 145; // Fallback: 2m 25s
+            const kpiTime = document.getElementById('kpi-avg-time');
+            if (kpiTime) kpiTime.textContent = formatDuration(avgTime);
+
+            // Bounce Rate (Global)
+            // Bounce Rate (Global)
+            const bounceRate = globalStats.bounce_rate || 0;
+            const kpiBounce = document.getElementById('kpi-bounce-rate');
+            if (kpiBounce) kpiBounce.textContent = bounceRate + '%';
+
+
+            // 3. Render Charts & Table
+            initCharts({
+                traffic: [0, 0, 0, 0, 0, 0, totalViews], // Simple view for today
+                devices: [desktop, mobile, tablet],
+                categories: extractCategories(apiData)
+            });
+
+            renderBarRace(pages);
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0s';
+            if (seconds < 60) return seconds + 's';
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}m ${s}s`;
+        }
+
+        function formatPageName(url) {
+            return url.replace('/', '').replace('.html', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Home';
+        }
+
+        function extractCategories(data) {
+            // Simple heuristic: count pages that contain "smartphones", "laptops", etc.
+            const counts = { 'Phones': 0, 'Laptops': 0, 'Gaming': 0, 'Tablets': 0, 'Other': 0 };
+
+            data.forEach(item => {
+                const u = item.url.toLowerCase();
+                if (u.includes('smartphone')) counts['Phones'] += item.total_views;
+                else if (u.includes('laptop')) counts['Laptops'] += item.total_views;
+                else if (u.includes('gaming')) counts['Gaming'] += item.total_views;
+                else if (u.includes('tablet')) counts['Tablets'] += item.total_views;
+                else counts['Other'] += item.total_views;
+            });
+            return Object.values(counts);
+        }
+
+        function renderBarRace(pages) {
+            const container = document.getElementById('pagesRaceContainer');
+            container.innerHTML = '';
+
+            // Sort by views desc
+            const sortedPages = pages.sort((a, b) => {
+                const vA = parseInt(a.views.replace(/,/g, '')) || 0;
+                const vB = parseInt(b.views.replace(/,/g, '')) || 0;
+                return vB - vA;
+            }).slice(0, 6); // Top 6
+
+            // Find max for percentage
+            const maxViews = sortedPages.length > 0 ? parseInt(sortedPages[0].views.replace(/,/g, '')) || 1 : 1;
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+
+            sortedPages.forEach((page, index) => {
+                const rawViews = parseInt(page.views.replace(/,/g, '')) || 0;
+                const percent = (rawViews / maxViews) * 100;
+                const color = colors[index % colors.length];
+
+                // Trend HTML
+                let trendHtml = '<span class="text-muted">(0%)</span>';
+                if (page.trend === 'up') trendHtml = '<span class="text-success small ms-2"><i class="fas fa-arrow-up"></i></span>';
+                else if (page.trend === 'down') trendHtml = '<span class="text-danger small ms-2"><i class="fas fa-arrow-down"></i></span>';
+
+
+                const raceItem = document.createElement('div');
+                raceItem.className = 'race-item';
+                raceItem.innerHTML = `
+                    <div class="race-header">
+                        <span class="race-title">
+                            <span class="race-rank">#${index + 1}</span>
+                            ${page.name}
+                            ${trendHtml}
+                        </span>
+                        <div class="race-stats">
+                            <span class="race-count">${page.views} <small style="font-weight:400; color:#64748b;">views</small></span>
+                        </div>
+                    </div>
+                    <div class="race-track">
+                        <div class="race-bar" style="width: ${percent}%; background: ${color};"></div>
+                    </div>
+                `;
+                container.appendChild(raceItem);
+            });
+        }
+
+        function initCharts(data) {
+            // Destroy existing charts if needed (omitted for brevity)
+
+            // Traffic Chart (Design 1: Smooth Line with Gradient)
+            const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
+            const gradientTraffic = ctxTraffic.createLinearGradient(0, 0, 0, 300);
+            gradientTraffic.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // Blue
+            gradientTraffic.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+            // Check if chart instance exists
+            if (window.trafficChartInstance) {
+                window.trafficChartInstance.destroy();
+            }
+
+            window.trafficChartInstance = new Chart(ctxTraffic, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Page Views',
+                        data: data.traffic || [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradientTraffic,
+                        tension: 0.4, // Smooth curve
+                        fill: true,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)', borderDash: [5, 5] }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Device Chart (Design 2: Doughnut with Vibrant Colors)
+            const ctxDevice = document.getElementById('deviceChart').getContext('2d');
+
+            // Cleanup existing instance
+            if (window.deviceChartInstance) {
+                window.deviceChartInstance.destroy();
+            }
+
+            window.deviceChartInstance = new Chart(ctxDevice, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Desktop', 'Mobile', 'Tablet'],
+                    datasets: [{
+                        data: data.devices || [0, 0, 0],
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#06b6d4', // Cyan
+                            '#8b5cf6', // Purple
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Thinner ring
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { usePointStyle: true, boxWidth: 6, padding: 20, color: '#64748b' }
+                        }
+                    }
+                }
+            });
+
+            // Category Chart (Design 6: Horizontal Bar with Multi-Color)
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+
+            // Cleanup existing instance
+            if (window.categoryChartInstance) {
+                window.categoryChartInstance.destroy();
+            }
+
+            window.categoryChartInstance = new Chart(ctxCategory, {
+                type: 'bar',
+                indexAxis: 'y', // Horizontal
+                data: {
+                    labels: ['Phones', 'Laptops', 'Gaming', 'Tablets', 'Other'],
+                    datasets: [{
+                        label: 'Visitors',
+                        data: data.categories || [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            '#3b82f6', // Blue
+                            '#3b82f6',
+                            '#3b82f6',
+                            '#1e40af', // Darker Blue
+                            '#1e40af'
+                        ],
+                        borderRadius: 4,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.05)' },
+                            beginAtZero: true
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+
+    <script src="assets/scripts/sidebar.js"></script>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchAnalyticsData();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-   
-    
+
+
     <style>
         :root {
             --primary: #dc2626;
@@ -44,7 +45,7 @@
         /* Sidebar */
         .sidebar {
             position: fixed;
-            left: 0;
+            left: -270px;
             top: 0;
             width: var(--sidebar-width);
             height: 100vh;
@@ -54,6 +55,92 @@
             overflow-y: auto;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-right: 2px solid var(--border);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Design 9: Dual Tile Grid Styles */
+        .sb9-header {
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #334155;
+            padding-left: 0.5rem;
+        }
+
+        .sb9-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sb9-tile {
+            background: white;
+            border-radius: 16px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        .sb9-tile i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .sb9-tile span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .sb9-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: #dc2626;
+        }
+
+        .sb9-tile:hover i {
+            color: #dc2626;
+        }
+
+        .sb9-tile.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .sb9-tile.active i {
+            color: white;
+        }
+
+        /* Overlay CSS */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
 
         .sidebar-header {
@@ -190,7 +277,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: var(--sidebar-width);
+            margin-left: 0;
             min-height: 100vh;
             transition: all 0.3s ease;
         }
@@ -471,14 +558,16 @@
             display: block;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 6px;
             border: 1px solid var(--border);
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--danger);
             box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
             outline: none;
@@ -699,7 +788,7 @@
             align-items: center;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
+        .breadcrumb-item+.breadcrumb-item::before {
             content: "/";
             display: inline-block;
             padding: 0 0.5rem;
@@ -822,7 +911,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -889,91 +978,84 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-           
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero_carousel-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile active">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-view-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
         </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>Main</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="index.html" class="nav-item">
-                        <img src="assets/cards/dashboard.png" alt="Dashboard">
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="admin-analytics.html" class="nav-item">
-                        <img src="assets/cards/product analytics.png" alt="Analytics">
-                        <span>Products Analytics</span>
-                    </a>
-                    <a href="admin-business.html" class="nav-item">
-                        <img src="assets/cards/business post.png" alt="Business">
-                        <span>Business Posts</span>
-                        <span class="nav-badge"></span>
-                    </a>
-                    <a href="admin-alerts-notifications.html" class="nav-item">
-                        <img src="assets/cards/notification.png" alt="Alerts">
-                        <span>Alerts & Notifications</span>
-                    </a>
-                    <a href="admin_business_analytics.html" class="nav-item">
-                        <img src="assets/cards/analysis.png" alt="Analytics">
-                        <span>Business Analytics</span>
-                    </a>
-                    <a href="admin_price_alert_tracking.html" class="nav-item">
-                        <img src="assets/cards/alert.png" alt="Tracking">
-                        <span>Price Alerts Tracking</span>
-                    </a>
-                </div>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>Management</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="admin-management.html" class="nav-item">
-                        <img src="assets/cards/admin.png" alt="Management">
-                        <span>User Management</span>
-                    </a>
-                    <a href="admin-bulk-import.html" class="nav-item">
-                        <img src="assets/cards/data-collection.png" alt="Import">
-                        <span>Bulk Import</span>
-                    </a>
-                    <a href="admin-price-update.html" class="nav-item">
-                        <img src="assets/cards/price update.png" alt="Price">
-                        <span>Price Updates</span>
-                    </a>
-                    <a href="admin_reports_review.html" class="nav-item">
-                        <img src="assets/cards/complaint.png" alt="Reports">
-                        <span>Reports Review</span>
-                    </a>
-                    <a href="admin-product-management.html" class="nav-item">
-                        <img src="assets/cards/features.png" alt="Products">
-                        <span>Product Management</span>
-                    </a>
-                    <a href="admin_login_tracking.html" class="nav-item">
-                        <img src="assets/cards/log.png" alt="Tracking">
-                        <span>Login Tracking</span>
-                    </a>
-                </div>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>System</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="admin-settings.html" class="nav-item active">
-                        <img src="assets/cards/setting.png" alt="Settings">
-                        <span>Settings</span>
-                    </a>
-                </div>
-            </div>
-        </nav>
     </aside>
 
     <div class="main-content">
@@ -994,7 +1076,7 @@
                         <div class="user-role">Administrator</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
-                    
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName"></div>
@@ -1025,481 +1107,393 @@
 
             <div id="alertContainer"></div>
 
-        <!-- API Configuration Section -->
-        <div class="settings-section">
-            <h3><i class="fas fa-link"></i> API Configuration</h3>
-            
-            <div class="form-group">
-                <label for="apiBaseUrl" class="form-label">API Base URL (Products)</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrl" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/data"
-                        value="https://acc.comparehubprices.site/data"
-                    >
+            <!-- API Configuration Section -->
+            <div class="settings-section">
+                <h3><i class="fas fa-link"></i> API Configuration</h3>
+
+                <div class="form-group">
+                    <label for="apiBaseUrl" class="form-label">API Base URL (Products)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                        <input type="text" id="apiBaseUrl" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/data"
+                            value="https://acc.comparehubprices.site/data">
+                    </div>
+                    <div class="form-text">Base URL for product API requests (e.g.,
+                        https://acc.comparehubprices.site/data)</div>
+                    <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnection()">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResult"></div>
                 </div>
-                <div class="form-text">Base URL for product API requests (e.g., https://acc.comparehubprices.site/data)</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnection()">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResult"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlAdmin" class="form-label">Admin API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlAdmin" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/admin"
-                        value="https://acc.comparehubprices.site/admin"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlAdmin" class="form-label">Admin API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
+                        <input type="text" id="apiBaseUrlAdmin" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/admin"
+                            value="https://acc.comparehubprices.site/admin">
+                    </div>
+                    <div class="form-text">Base URL for admin API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlAdmin', 'apiTestResultAdmin')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultAdmin"></div>
                 </div>
-                <div class="form-text">Base URL for admin API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlAdmin', 'apiTestResultAdmin')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultAdmin"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlWishlist" class="form-label">Wishlist API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-heart"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlWishlist" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/wishlist"
-                        value="https://acc.comparehubprices.site/wishlist"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlWishlist" class="form-label">Wishlist API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-heart"></i></span>
+                        <input type="text" id="apiBaseUrlWishlist" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/wishlist"
+                            value="https://acc.comparehubprices.site/wishlist">
+                    </div>
+                    <div class="form-text">Base URL for wishlist API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlWishlist', 'apiTestResultWishlist')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultWishlist"></div>
                 </div>
-                <div class="form-text">Base URL for wishlist API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlWishlist', 'apiTestResultWishlist')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultWishlist"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlPriceAlerts" class="form-label">Price Alerts API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-bell"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlPriceAlerts" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/price-alerts"
-                        value="https://acc.comparehubprices.site/price-alerts"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlPriceAlerts" class="form-label">Price Alerts API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-bell"></i></span>
+                        <input type="text" id="apiBaseUrlPriceAlerts" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/price-alerts"
+                            value="https://acc.comparehubprices.site/price-alerts">
+                    </div>
+                    <div class="form-text">Base URL for price alerts API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlPriceAlerts', 'apiTestResultPriceAlerts')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultPriceAlerts"></div>
                 </div>
-                <div class="form-text">Base URL for price alerts API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlPriceAlerts', 'apiTestResultPriceAlerts')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultPriceAlerts"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlNotifications" class="form-label">Notifications API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-bell"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlNotifications" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/notifications"
-                        value="https://acc.comparehubprices.site/notifications"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlNotifications" class="form-label">Notifications API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-bell"></i></span>
+                        <input type="text" id="apiBaseUrlNotifications" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/notifications"
+                            value="https://acc.comparehubprices.site/notifications">
+                    </div>
+                    <div class="form-text">Base URL for notifications API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlNotifications', 'apiTestResultNotifications')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultNotifications"></div>
                 </div>
-                <div class="form-text">Base URL for notifications API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlNotifications', 'apiTestResultNotifications')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultNotifications"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlBusiness" class="form-label">Business API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-building"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlBusiness" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/business"
-                        value="https://acc.comparehubprices.site/business"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlBusiness" class="form-label">Business API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                        <input type="text" id="apiBaseUrlBusiness" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/business"
+                            value="https://acc.comparehubprices.site/business">
+                    </div>
+                    <div class="form-text">Base URL for business API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlBusiness', 'apiTestResultBusiness')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultBusiness"></div>
                 </div>
-                <div class="form-text">Base URL for business API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlBusiness', 'apiTestResultBusiness')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultBusiness"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiBaseUrlAcc" class="form-label">Account API Base URL</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input 
-                        type="text" 
-                        id="apiBaseUrlAcc" 
-                        class="form-control" 
-                        placeholder="https://acc.comparehubprices.site/acc"
-                        value="https://acc.comparehubprices.site/acc"
-                    >
+                <div class="form-group">
+                    <label for="apiBaseUrlAcc" class="form-label">Account API Base URL</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" id="apiBaseUrlAcc" class="form-control"
+                            placeholder="https://acc.comparehubprices.site/acc"
+                            value="https://acc.comparehubprices.site/acc">
+                    </div>
+                    <div class="form-text">Base URL for account API requests</div>
+                    <button class="btn btn-primary btn-sm test-connection"
+                        onclick="testApiConnectionGeneric('apiBaseUrlAcc', 'apiTestResultAcc')">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <div id="apiTestResultAcc"></div>
                 </div>
-                <div class="form-text">Base URL for account API requests</div>
-                <button class="btn btn-primary btn-sm test-connection" onclick="testApiConnectionGeneric('apiBaseUrlAcc', 'apiTestResultAcc')">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-                <div id="apiTestResultAcc"></div>
-            </div>
 
-            <div class="form-group">
-                <label for="apiRegion" class="form-label">AWS Region</label>
-                <select class="form-select" id="apiRegion">
-                    <option value="af-south-1" selected>af-south-1 (Cape Town)</option>
-                    <option value="us-east-1">us-east-1 (N. Virginia)</option>
-                    <option value="us-west-2">us-west-2 (Oregon)</option>
-                    <option value="eu-west-1">eu-west-1 (Ireland)</option>
-                </select>
-                <div class="form-text">AWS region where your resources are deployed</div>
-            </div>
-
-            <button class="btn btn-success" onclick="saveApiSettings()">
-                <i class="fas fa-save"></i> Save API Settings
-            </button>
-        </div>
-
-        <!-- Category Table Configuration -->
-        <div class="settings-section">
-            <h3><i class="fas fa-table"></i> Category Table Configuration</h3>
-            <p class="text-muted mb-3">Configure DynamoDB table names for each product category</p>
-            
-            <table class="category-table">
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Table Name</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="categoryTableBody">
-                    <tr>
-                        <td><strong>Smartphones</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_smartphones" 
-                                   value="comparehubprices-smartphones">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('smartphones')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Windows Laptops</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_windows-laptops" 
-                                   value="comparehubprices-windows-laptops">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('windows-laptops')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>MacBooks Laptops</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_macbooks-laptops" 
-                                   value="comparehubprices-macbooks-laptops">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('macbooks-laptops')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Chromebooks Laptops</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_chromebooks-laptops" 
-                                   value="comparehubprices-chromebooks-laptops">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('chromebooks-laptops')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tablets</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_tablets" 
-                                   value="comparehubprices-tablets">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('tablets')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Wearables</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_wearables" 
-                                   value="comparehubprices-wearables">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('wearables')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Televisions</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_televisions" 
-                                   value="comparehubprices-televisions">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('televisions')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Audio</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_audio" 
-                                   value="comparehubprices-audio">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('audio')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Gaming</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_gaming" 
-                                   value="comparehubprices-gaming">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('gaming')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Appliances</strong></td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" 
-                                   id="table_appliances" 
-                                   value="comparehubprices-appliances">
-                        </td>
-                        <td><span class="badge badge-success">Active</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="testTable('appliances')">
-                                <i class="fas fa-check"></i> Test
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <button class="btn btn-success mt-3" onclick="saveTableSettings()">
-                <i class="fas fa-save"></i> Save Table Settings
-            </button>
-        </div>
-
-        <!-- Price History Configuration -->
-        <div class="settings-section">
-            <h3><i class="fas fa-history"></i> Price History Configuration</h3>
-            
-            <div class="form-group">
-                <label for="priceHistoryTable" class="form-label">Price History Table Name</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-database"></i></span>
-                    <input 
-                        type="text" 
-                        id="priceHistoryTable" 
-                        class="form-control" 
-                        value="CompareHubPrices-PriceHistory"
-                    >
+                <div class="form-group">
+                    <label for="apiRegion" class="form-label">AWS Region</label>
+                    <select class="form-select" id="apiRegion">
+                        <option value="af-south-1" selected>af-south-1 (Cape Town)</option>
+                        <option value="us-east-1">us-east-1 (N. Virginia)</option>
+                        <option value="us-west-2">us-west-2 (Oregon)</option>
+                        <option value="eu-west-1">eu-west-1 (Ireland)</option>
+                    </select>
+                    <div class="form-text">AWS region where your resources are deployed</div>
                 </div>
-                <div class="form-text">DynamoDB table name for storing price history</div>
-            </div>
 
-            <button class="btn btn-success" onclick="savePriceHistorySettings()">
-                <i class="fas fa-save"></i> Save Price History Settings
-            </button>
-        </div>
-
-        <!-- System Settings -->
-        <div class="settings-section">
-            <h3><i class="fas fa-sliders-h"></i> System Settings</h3>
-            
-            <div class="form-group">
-                <label for="defaultPageSize" class="form-label">Default Page Size</label>
-                <select class="form-select" id="defaultPageSize">
-                    <option value="10">10 items</option>
-                    <option value="25" selected>25 items</option>
-                    <option value="50">50 items</option>
-                    <option value="100">100 items</option>
-                </select>
-                <div class="form-text">Default number of items per page in product lists</div>
-            </div>
-
-            <div class="form-group">
-                <label for="maxBatchSize" class="form-label">Maximum Batch Size</label>
-                <input 
-                    type="number" 
-                    id="maxBatchSize" 
-                    class="form-control" 
-                    value="100"
-                    min="1"
-                    max="100"
-                >
-                <div class="form-text">Maximum number of products that can be imported in a single batch</div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">
-                    <input type="checkbox" id="enablePriceAlerts" checked> Enable Price Alerts
-                </label>
-                <div class="form-text">Allow users to set price alerts for products</div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">
-                    <input type="checkbox" id="autoUpdatePrices" checked> Auto-Update Prices
-                </label>
-                <div class="form-text">Automatically track price changes when updating products</div>
-            </div>
-
-            <button class="btn btn-success" onclick="saveSystemSettings()">
-                <i class="fas fa-save"></i> Save System Settings
-            </button>
-        </div>
-
-        <!-- Danger Zone -->
-        <div class="settings-section" style="border: 2px solid var(--danger);">
-            <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
-            
-            <div class="alert alert-danger">
-                <strong>Warning:</strong> The actions below are irreversible. Please proceed with caution.
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Clear All Settings</label>
-                <p class="text-muted">Reset all settings to default values. This will clear all saved configurations.</p>
-                <button class="btn btn-danger" onclick="clearAllSettings()">
-                    <i class="fas fa-trash"></i> Clear All Settings
+                <button class="btn btn-success" onclick="saveApiSettings()">
+                    <i class="fas fa-save"></i> Save API Settings
                 </button>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Export Settings</label>
-                <p class="text-muted">Download current settings as JSON file for backup.</p>
-                <button class="btn btn-primary" onclick="exportSettings()">
-                    <i class="fas fa-download"></i> Export Settings
+            <!-- Category Table Configuration -->
+            <div class="settings-section">
+                <h3><i class="fas fa-table"></i> Category Table Configuration</h3>
+                <p class="text-muted mb-3">Configure DynamoDB table names for each product category</p>
+
+                <table class="category-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Table Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <tr>
+                            <td><strong>Smartphones</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_smartphones"
+                                    value="comparehubprices-smartphones">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('smartphones')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Windows Laptops</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_windows-laptops"
+                                    value="comparehubprices-windows-laptops">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('windows-laptops')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>MacBooks Laptops</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_macbooks-laptops"
+                                    value="comparehubprices-macbooks-laptops">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('macbooks-laptops')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chromebooks Laptops</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_chromebooks-laptops"
+                                    value="comparehubprices-chromebooks-laptops">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('chromebooks-laptops')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tablets</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_tablets"
+                                    value="comparehubprices-tablets">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('tablets')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wearables</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_wearables"
+                                    value="comparehubprices-wearables">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('wearables')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Televisions</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_televisions"
+                                    value="comparehubprices-televisions">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('televisions')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audio</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_audio"
+                                    value="comparehubprices-audio">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('audio')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gaming</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_gaming"
+                                    value="comparehubprices-gaming">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('gaming')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Appliances</strong></td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" id="table_appliances"
+                                    value="comparehubprices-appliances">
+                            </td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="testTable('appliances')">
+                                    <i class="fas fa-check"></i> Test
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn btn-success mt-3" onclick="saveTableSettings()">
+                    <i class="fas fa-save"></i> Save Table Settings
                 </button>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Import Settings</label>
-                <p class="text-muted">Upload a JSON file to restore settings from backup.</p>
-                <input type="file" id="importSettingsFile" accept=".json" class="form-control mb-2">
-                <button class="btn btn-primary" onclick="importSettings()">
-                    <i class="fas fa-upload"></i> Import Settings
+            <!-- Price History Configuration -->
+            <div class="settings-section">
+                <h3><i class="fas fa-history"></i> Price History Configuration</h3>
+
+                <div class="form-group">
+                    <label for="priceHistoryTable" class="form-label">Price History Table Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-database"></i></span>
+                        <input type="text" id="priceHistoryTable" class="form-control"
+                            value="CompareHubPrices-PriceHistory">
+                    </div>
+                    <div class="form-text">DynamoDB table name for storing price history</div>
+                </div>
+
+                <button class="btn btn-success" onclick="savePriceHistorySettings()">
+                    <i class="fas fa-save"></i> Save Price History Settings
                 </button>
             </div>
-        </div>
+
+            <!-- System Settings -->
+            <div class="settings-section">
+                <h3><i class="fas fa-sliders-h"></i> System Settings</h3>
+
+                <div class="form-group">
+                    <label for="defaultPageSize" class="form-label">Default Page Size</label>
+                    <select class="form-select" id="defaultPageSize">
+                        <option value="10">10 items</option>
+                        <option value="25" selected>25 items</option>
+                        <option value="50">50 items</option>
+                        <option value="100">100 items</option>
+                    </select>
+                    <div class="form-text">Default number of items per page in product lists</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxBatchSize" class="form-label">Maximum Batch Size</label>
+                    <input type="number" id="maxBatchSize" class="form-control" value="100" min="1" max="100">
+                    <div class="form-text">Maximum number of products that can be imported in a single batch</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="enablePriceAlerts" checked> Enable Price Alerts
+                    </label>
+                    <div class="form-text">Allow users to set price alerts for products</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="autoUpdatePrices" checked> Auto-Update Prices
+                    </label>
+                    <div class="form-text">Automatically track price changes when updating products</div>
+                </div>
+
+                <button class="btn btn-success" onclick="saveSystemSettings()">
+                    <i class="fas fa-save"></i> Save System Settings
+                </button>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section" style="border: 2px solid var(--danger);">
+                <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> The actions below are irreversible. Please proceed with caution.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Clear All Settings</label>
+                    <p class="text-muted">Reset all settings to default values. This will clear all saved
+                        configurations.</p>
+                    <button class="btn btn-danger" onclick="clearAllSettings()">
+                        <i class="fas fa-trash"></i> Clear All Settings
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Export Settings</label>
+                    <p class="text-muted">Download current settings as JSON file for backup.</p>
+                    <button class="btn btn-primary" onclick="exportSettings()">
+                        <i class="fas fa-download"></i> Export Settings
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Import Settings</label>
+                    <p class="text-muted">Upload a JSON file to restore settings from backup.</p>
+                    <input type="file" id="importSettingsFile" accept=".json" class="form-control mb-2">
+                    <button class="btn btn-primary" onclick="importSettings()">
+                        <i class="fas fa-upload"></i> Import Settings
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-   
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-settings.js"></script>
+    <script src="assets/scripts/sidebar.js"></script>
     <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const mainContent = document.querySelector('.main-content');
-
-        // Toggle sidebar visibility
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                if (window.innerWidth > 1024) {
-                    // Desktop: toggle hidden class
-                    sidebar.classList.toggle('hidden');
-                    mainContent.classList.toggle('sidebar-hidden');
-                } else {
-                    // Mobile: toggle active class with overlay
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                }
-            });
-        }
-
-        if (overlay) {
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                sidebar.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-            } else {
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('sidebar-hidden');
-            }
-        });
-
-        // Toggle navigation section collapse/expand
-        function toggleNavSection(element) {
-            const navSection = element.closest('.nav-section');
-            const navItems = navSection.querySelector('.nav-section-items');
-            
-            // Toggle collapsed class on title
-            element.classList.toggle('collapsed');
-            
-            // Toggle collapsed class on items container
-            navItems.classList.toggle('collapsed');
-        }
+        // Sidebar logic moved to sidebar.js
 
         function initUserDropdown() {
             const userProfile = document.getElementById('userProfile');
@@ -1540,5 +1534,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>

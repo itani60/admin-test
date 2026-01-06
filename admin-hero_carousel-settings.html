@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Carousel Settings | CompareHubPrices Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #dc2626;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #b91c1c;
+            --dark: #1e293b;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: -270px;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 2px solid var(--border);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Design 9: Dual Tile Grid Styles */
+        .sb9-header {
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #334155;
+            padding-left: 0.5rem;
+        }
+
+        .sb9-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sb9-tile {
+            background: white;
+            border-radius: 16px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        .sb9-tile i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .sb9-tile span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .sb9-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: #dc2626;
+        }
+
+        .sb9-tile:hover i {
+            color: #dc2626;
+        }
+
+        .sb9-tile.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .sb9-tile.active i {
+            color: white;
+        }
+
+        /* Overlay CSS */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .sidebar-logo img {
+            height: 38px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.625rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            margin-bottom: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-section-title:hover {
+            color: var(--primary);
+        }
+
+        .nav-section-title i {
+            font-size: 0.65rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-section-title.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .nav-section-items {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-section-items.collapsed {
+            max-height: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(220, 38, 38, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.12) 0%, transparent 100%);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            width: 24px;
+            font-size: 1.05rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active img {
+            opacity: 1;
+            filter: brightness(1.2);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 14px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2.25rem;
+        }
+
+        .page-header {
+            margin-bottom: 2.25rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 0.625rem;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+
+        /* Carousel Settings Section */
+        .settings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 2px solid var(--border);
+            margin-bottom: 2.25rem;
+        }
+
+        .settings-section h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .settings-section h3 i {
+            color: var(--primary);
+        }
+
+        /* Carousel Item Card */
+        .carousel-item-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .carousel-item-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .carousel-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .carousel-item-number {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .carousel-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon.btn-edit {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .btn-icon.btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-icon.btn-delete {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .btn-icon.btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            outline: none;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .custom-dropdown.active {
+            z-index: 10001 !important;
+            position: relative;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            z-index: 10001 !important;
+        }
+
+        .custom-dropdown-btn {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .custom-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+        }
+
+        .custom-dropdown-btn:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            background: white;
+        }
+
+        .custom-dropdown-btn:disabled {
+            background: var(--light);
+            color: var(--text);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .custom-dropdown-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.3s ease;
+            color: var(--text);
+        }
+
+        .custom-dropdown.active .custom-dropdown-btn i {
+            transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: white !important;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2);
+            z-index: 10001 !important;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+        }
+
+        .custom-dropdown.active .custom-dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown-items {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white !important;
+        }
+
+        .custom-dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            font-weight: 500;
+            background: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-dropdown-item:hover {
+            background: var(--light) !important;
+            color: var(--primary);
+        }
+
+        .custom-dropdown-item.selected {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(220, 38, 38, 0.08) !important;
+        }
+
+        .custom-dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .image-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .upload-placeholder {
+            color: var(--text);
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Sidebar Toggle States */
+        .sidebar.hidden {
+            transform: translateX(-100%);
+            left: -100%;
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
+        }
+
+        /* Desktop toggle support */
+        @media (min-width: 1025px) {
+            .sidebar.hidden {
+                transform: translateX(-100%);
+                left: -100%;
+            }
+
+            .main-content.sidebar-hidden {
+                margin-left: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 2px solid;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+
+        /* --- Design 3: Split Preview Layout --- */
+        .d3-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            min-height: 600px;
+        }
+
+        .d3-sidebar {
+            border-right: 1px solid var(--border);
+            padding-right: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .d3-list-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 2rem;
+        }
+
+        .d3-list-item {
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .d3-list-item:hover {
+            background: var(--light);
+        }
+
+        .d3-list-item.active {
+            background: #fef2f2;
+            border-color: var(--border);
+        }
+
+        .d3-editor-form {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .d3-preview {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .d3-preview-mockup {
+            background: #1e293b;
+            border-radius: 12px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .d3-preview-mockup.mobile-mode {
+            width: 320px;
+            aspect-ratio: 9/19;
+            margin: 0 auto;
+            border-radius: 30px;
+            border: 10px solid #334155;
+        }
+
+        .d3-mockup-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .d3-mockup-content {
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        /* --- Design 3: Minimal Strip (Added) --- */
+        .d3-strip {
+            background: white;
+            border-radius: 100px;
+            padding: 1rem 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 991px) {
+            .d3-strip {
+                border-radius: 20px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .d3-strip .vr {
+                display: none;
+            }
+
+            .d3-strip .ms-auto {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+
+            .d3-strip button {
+                width: 100% !important;
+                border-radius: 12px !important;
+                height: 45px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero_carousel-settings.html" class="sb9-tile active">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName"></div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName"></div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail"></div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1 class="page-title">Hero Carousel Settings</h1>
+                <p class="page-subtitle">Manage homepage hero carousel slides by page</p>
+            </div>
+
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Carousel Settings -->
+            <!-- Carousel Settings (Design 3 Minimal Strip) -->
+            <div class="d3-strip mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center"
+                        style="width:40px;height:40px"><i class="fas fa-cog"></i></div>
+                    <div class="fw-bold lh-1">Settings<br><small class="text-muted fw-normal">Global</small></div>
+                </div>
+                <div class="vr mx-3 d-none d-md-block"></div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1">
+                    <div>
+                        <label class="small text-muted d-block mb-1">Interval (s)</label>
+                        <input type="number" class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                            id="autoplayInterval" value="5" min="1" max="10" style="width: 60px;">
+                    </div>
+                    <div>
+                        <label class="small text-muted d-block mb-1">Speed (ms)</label>
+                        <input type="number" class="form-control form-control-sm text-center fw-bold border-0 bg-light"
+                            id="transitionSpeed" value="500" step="100" style="width: 80px;">
+                    </div>
+                    <div>
+                        <label class="small text-muted d-block mb-1">Effect</label>
+                        <div class="custom-dropdown" id="animationDropdown">
+                            <button
+                                class="custom-dropdown-btn btn-sm fw-bold border-0 bg-light d-flex align-items-center justify-content-between px-2"
+                                id="animationDropdownBtn" type="button" style="width: 100px;">
+                                <span id="animationDropdownText">Slide</span>
+                                <i class="fas fa-chevron-down small text-muted"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="animationDropdownMenu">
+                                <div class="custom-dropdown-items" id="animationDropdownItems">
+                                    <div class="custom-dropdown-item selected" data-value="slide">Slide</div>
+                                    <div class="custom-dropdown-item" data-value="fade">Fade</div>
+                                    <div class="custom-dropdown-item" data-value="zoom">Zoom</div>
+                                    <div class="custom-dropdown-item" data-value="flip">Flip</div>
+                                    <div class="custom-dropdown-item" data-value="cube">Cube</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="animationEffect" value="slide">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="small text-muted d-block mb-1">Pagination</label>
+                        <div class="custom-dropdown" id="paginationDropdown">
+                            <button
+                                class="custom-dropdown-btn btn-sm fw-bold border-0 bg-light d-flex align-items-center justify-content-between px-2"
+                                id="paginationDropdownBtn" type="button" style="width: 110px;">
+                                <span id="paginationDropdownText">Dots</span>
+                                <i class="fas fa-chevron-down small text-muted"></i>
+                            </button>
+                            <div class="custom-dropdown-menu" id="paginationDropdownMenu">
+                                <div class="custom-dropdown-items" id="paginationDropdownItems">
+                                    <div class="custom-dropdown-item selected" data-value="dots">Dots</div>
+                                    <div class="custom-dropdown-item" data-value="numbers">Numbers</div>
+                                    <div class="custom-dropdown-item" data-value="thumbnails">Thumbnails</div>
+                                    <div class="custom-dropdown-item" data-value="none">None</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="paginationStyle" value="dots">
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch ms-md-2">
+                        <label class="small text-muted d-block mb-1">Auto-play</label>
+                        <input class="form-check-input mx-0" type="checkbox" id="enableAutoplay" checked>
+                    </div>
+                    <div class="form-check form-switch">
+                        <label class="small text-muted d-block mb-1">Arrows</label>
+                        <input class="form-check-input mx-0" type="checkbox" id="showArrows" checked>
+                    </div>
+                </div>
+
+                <div class="ms-auto text-end">
+                    <button
+                        class="btn btn-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                        style="width:50px;height:50px" onclick="saveCarouselSettings()" title="Save Configuration">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page Selection & Carousel Slides -->
+            <!-- Manage Slides Area -->
+            <div class="d-flex flex-column gap-4">
+
+                <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <h4 class="fw-bold mb-1">Select Page</h4>
+                            <p class="text-muted small mb-0">Choose which page's carousel to edit</p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="custom-dropdown" id="pageSelectionDropdown">
+                                <button class="custom-dropdown-btn" id="pageSelectionDropdownBtn" type="button">
+                                    <span id="pageSelectionDropdownText">Select a page...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="custom-dropdown-menu" id="pageSelectionDropdownMenu">
+                                    <div class="custom-dropdown-items" id="pageSelectionDropdownItems">
+                                        <div class="custom-dropdown-item" data-value="home"><i class="fas fa-home"></i>
+                                            Home Page</div>
+                                        <div class="custom-dropdown-item" data-value="smartphones"><i
+                                                class="fas fa-mobile-alt"></i> Smartphones</div>
+                                        <div class="custom-dropdown-item" data-value="tablets"><i
+                                                class="fas fa-tablet-alt"></i> Tablets</div>
+                                        <div class="custom-dropdown-item" data-value="laptops"><i
+                                                class="fas fa-laptop"></i> Laptops</div>
+                                        <div class="custom-dropdown-item" data-value="gaming"><i
+                                                class="fas fa-gamepad"></i> Gaming</div>
+                                        <div class="custom-dropdown-item" data-value="smartwatches"><i
+                                                class="fas fa-clock"></i> Smartwatches</div>
+                                        <div class="custom-dropdown-item" data-value="tvs"><i class="fas fa-tv"></i> TVs
+                                        </div>
+                                        <div class="custom-dropdown-item" data-value="cameras"><i
+                                                class="fas fa-camera"></i> Cameras</div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedPage" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design 3 Layout -->
+                <div class="d3-container" id="d3Container">
+                    <!-- Sidebar -->
+                    <div class="d3-sidebar">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold m-0 text-uppercase text-secondary small ls-1">Slides List</h6>
+                            <button class="btn btn-sm btn-primary rounded-pill px-3" onclick="addSlideForPage()"
+                                id="d3AddBtn" disabled>
+                                <i class="fas fa-plus me-1"></i> New
+                            </button>
+                        </div>
+                        <div class="d3-list-container flex-grow-1" id="d3SlideList">
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-arrow-up mb-2"></i><br>Select a page to start
+                            </div>
+                        </div>
+
+                        <div class="d3-editor-form mt-auto" id="d3EditorForm">
+                            <div class="text-center text-muted py-5" id="d3EmptyFormState">
+                                Select a slide to edit properties
+                            </div>
+                            <div id="d3RealForm" style="display:none;">
+                                <h6 class="fw-bold mb-3 border-bottom pb-2">Edit Slide</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Title</label>
+                                    <input type="text" class="form-control form-control-sm" id="d3Title"
+                                        oninput="updatePreviewText()">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Subtitle</label>
+                                    <input type="text" class="form-control form-control-sm" id="d3Subtitle"
+                                        oninput="updatePreviewText()">
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Button Text</label>
+                                        <input type="text" class="form-control form-control-sm" id="d3BtnText"
+                                            oninput="updatePreviewText()">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold">Link</label>
+                                        <input type="text" class="form-control form-control-sm" id="d3BtnLink">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Desktop Image</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" id="d3ImgDesktop"
+                                            onchange="updatePreviewBg('desktop')">
+                                        <button class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('slideImageUpload').click()"><i
+                                                class="fas fa-upload"></i></button>
+                                    </div>
+                                    <input type="file" id="slideImageUpload" style="display:none;"
+                                        onchange="handleD3Upload('desktop')">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Mobile Image</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" id="d3ImgMobile"
+                                            onchange="updatePreviewBg('mobile')">
+                                        <button class="btn btn-outline-secondary"
+                                            onclick="document.getElementById('slideMobileImageUpload').click()"><i
+                                                class="fas fa-upload"></i></button>
+                                    </div>
+                                    <input type="file" id="slideMobileImageUpload" style="display:none;"
+                                        onchange="handleD3Upload('mobile')">
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="d3Active">
+                                        <label class="form-check-label small fw-bold">Active</label>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-light btn-sm text-danger"
+                                            onclick="deleteCurrentSlide()"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-dark btn-sm px-3" onclick="savePageSlides()">Save
+                                            Changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Preview -->
+                    <div class="d3-preview">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-dark text-uppercase ls-1">Live Preview</span>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary active" id="btnPreviewDesktop"
+                                    onclick="setPreviewMode('desktop')" title="Desktop View">
+                                    <i class="fas fa-desktop"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary" id="btnPreviewMobile"
+                                    onclick="setPreviewMode('mobile')" title="Mobile View">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d3-preview-mockup" id="d3PreviewMockup">
+                            <div class="d3-mockup-overlay"></div>
+                            <div class="d3-mockup-content">
+                                <h2 class="display-6 fw-bold" id="pTitle">Title</h2>
+                                <p class="lead" id="pSubtitle">Subtitle</p>
+                                <button class="btn btn-light rounded-pill px-4 mt-3 fw-bold"
+                                    id="pButton">Button</button>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-muted fst-italic">This is a representation. Actual rendering may
+                                vary.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+    </div>
+
+
+
+    </div>
+    </div>
+    </div>
+
+
+    </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.querySelector('.main-content');
+
+        // --- API CONFIGURATION ---
+        const API_CONFIG = {
+            BASE_URL: 'https://hub.comparehubprices.co.za/admin', // Change this if needed
+            get ENDPOINTS() {
+                return {
+                    SETTINGS: `${this.BASE_URL}/carousel-settings`,
+                    SLIDES: `${this.BASE_URL}/carousel-slides`,
+                    UPLOAD: `${this.BASE_URL}/upload-url`
+                };
+            }
+        };
+
+    </script>
+    <script src="assets/scripts/sidebar.js"></script>
+    <script>
+        // Sidebar logic moved to sidebar.js
+
+        function initUserDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (!userProfile || !userDropdown || !logoutBtn) return;
+
+            userProfile.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!userProfile.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    if (typeof window.adminAWSAuthService !== 'undefined') {
+                        await window.adminAWSAuthService.logout();
+                    }
+                    window.location.href = 'admin-login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = 'admin-login.html';
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUserDropdown);
+        } else {
+            initUserDropdown();
+        }
+
+        // --- CAROUSEL LOGIC (Design 3 Refactor) ---
+        let currentPage = '';
+        let pageSlides = {};
+        let currentSlideIndex = -1;
+
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            if (!alertContainer) return;
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        function onPageSelect(pageValue, pageHTML) {
+            currentPage = pageValue;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = pageHTML;
+
+            // Update info display if it exists, or just ensure Title is known
+            const infoDisplay = document.getElementById('pageInfoDisplay');
+            if (infoDisplay) {
+                document.getElementById('currentPageName').textContent = tempDiv.textContent.trim();
+                infoDisplay.style.display = 'block';
+            }
+
+            // Hide old Add Button if it exists
+            const oldAddBtn = document.getElementById('addSlideBtn');
+            if (oldAddBtn) oldAddBtn.style.display = 'none';
+
+            // Show D3 Container
+            const d3Container = document.getElementById('d3Container');
+            if (d3Container) d3Container.style.display = 'grid';
+
+            loadSlidesForPage(pageValue);
+        }
+
+        async function loadSlidesForPage(page) {
+            const listContainer = document.getElementById('d3SlideList');
+            listContainer.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+            try {
+                const res = await fetch(`${API_CONFIG.ENDPOINTS.SLIDES}?page=${page}`);
+                if (!res.ok) throw new Error('Failed to load slides');
+                const data = await res.json();
+                const slides = data.slides || [];
+                pageSlides[page] = slides;
+
+                // Enable Add Button
+                const addBtn = document.getElementById('d3AddBtn');
+                if (addBtn) addBtn.disabled = false;
+
+                renderSlideList();
+
+                if (slides.length > 0) {
+                    selectSlide(0);
+                } else {
+                    document.getElementById('d3EmptyFormState').style.display = 'block';
+                    document.getElementById('d3RealForm').style.display = 'none';
+                    resetPreview();
+                }
+
+            } catch (e) {
+                console.error(e);
+                listContainer.innerHTML = '<div class="text-danger text-center">Failed to load slides</div>';
+            }
+        }
+
+        function renderSlideList() {
+            const listContainer = document.getElementById('d3SlideList');
+            listContainer.innerHTML = '';
+            const slides = pageSlides[currentPage] || [];
+
+            if (slides.length === 0) {
+                listContainer.innerHTML = '<div class="text-center text-muted py-3">No slides found.</div>';
+                return;
+            }
+
+            slides.forEach((slide, index) => {
+                const div = document.createElement('div');
+                div.className = `d3-list-item ${index === currentSlideIndex ? 'active' : ''}`;
+                div.onclick = () => selectSlide(index);
+                div.innerHTML = `
+        <div class="fw-bold text-truncate" style="max-width: 200px;">${slide.title || 'Untitled Slide'}</div>
+        <div class="badge bg-light text-dark border">${index + 1}</div>
+        `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function selectSlide(index) {
+            currentSlideIndex = index;
+            renderSlideList(); // Update active class
+
+            const slide = pageSlides[currentPage][index];
+            if (!slide) return;
+
+            // Populate Form
+            document.getElementById('d3EmptyFormState').style.display = 'none';
+            document.getElementById('d3RealForm').style.display = 'block';
+
+            document.getElementById('d3Title').value = slide.title || '';
+            document.getElementById('d3Subtitle').value = slide.subtitle || '';
+            document.getElementById('d3BtnText').value = slide.buttonText || '';
+            document.getElementById('d3BtnLink').value = slide.buttonLink || '';
+            document.getElementById('d3ImgDesktop').value = slide.imageUrl || '';
+            document.getElementById('d3ImgMobile').value = slide.mobileImageUrl || '';
+            document.getElementById('d3Active').checked = slide.active !== false;
+
+            updatePreview();
+        }
+
+        function addSlideForPage() {
+            if (!currentPage) return;
+            const newSlide = {
+                id: Date.now().toString(),
+                title: 'New Slide',
+                subtitle: 'Enter subtitle',
+                buttonText: 'Learn More',
+                imageUrl: '',
+                active: true
+            };
+
+            if (!pageSlides[currentPage]) pageSlides[currentPage] = [];
+            pageSlides[currentPage].push(newSlide);
+            selectSlide(pageSlides[currentPage].length - 1);
+        }
+
+        function deleteCurrentSlide() {
+            if (currentSlideIndex === -1) return;
+            if (confirm('Delete this slide?')) {
+                pageSlides[currentPage].splice(currentSlideIndex, 1);
+
+                // Select previous or next or reset
+                const slides = pageSlides[currentPage];
+                if (slides.length > 0) {
+                    currentSlideIndex = Math.min(currentSlideIndex, slides.length - 1);
+                    if (currentSlideIndex < 0) currentSlideIndex = 0;
+                    selectSlide(currentSlideIndex);
+                } else {
+                    currentSlideIndex = -1;
+                    renderSlideList();
+                    document.getElementById('d3EmptyFormState').style.display = 'block';
+                    document.getElementById('d3RealForm').style.display = 'none';
+                    resetPreview();
+                }
+            }
+        }
+
+        function updatePreviewText() {
+            if (currentSlideIndex === -1) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+            slide.title = document.getElementById('d3Title').value;
+            slide.subtitle = document.getElementById('d3Subtitle').value;
+            slide.buttonText = document.getElementById('d3BtnText').value;
+
+            // Update List Title in UI immediately for better UX
+            const listItems = document.querySelectorAll('.d3-list-item');
+            if (listItems[currentSlideIndex]) {
+                listItems[currentSlideIndex].querySelector('.fw-bold').textContent = slide.title || 'Untitled';
+            }
+
+            updatePreview();
+        }
+
+        let previewMode = 'desktop';
+
+        function setPreviewMode(mode) {
+            previewMode = mode;
+            document.getElementById('btnPreviewDesktop').classList.toggle('active', mode === 'desktop');
+            document.getElementById('btnPreviewMobile').classList.toggle('active', mode === 'mobile');
+
+            const mockup = document.getElementById('d3PreviewMockup');
+            mockup.classList.toggle('mobile-mode', mode === 'mobile');
+
+            updatePreview();
+        }
+
+        function updatePreviewBg(type) {
+            if (currentSlideIndex === -1) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+            if (type === 'desktop') slide.imageUrl = document.getElementById('d3ImgDesktop').value;
+            if (type === 'mobile') slide.mobileImageUrl = document.getElementById('d3ImgMobile').value;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            if (currentSlideIndex === -1 || !pageSlides[currentPage]) return;
+            const slide = pageSlides[currentPage][currentSlideIndex];
+
+            document.getElementById('pTitle').textContent = slide.title;
+            document.getElementById('pSubtitle').textContent = slide.subtitle;
+            document.getElementById('pButton').textContent = slide.buttonText;
+
+            const mockup = document.getElementById('d3PreviewMockup');
+
+            let imgUrl = (previewMode === 'mobile') ? slide.mobileImageUrl : slide.imageUrl;
+
+            if (imgUrl) {
+                mockup.style.backgroundImage = `url('${imgUrl}')`;
+            } else {
+                mockup.style.backgroundImage = 'none';
+                mockup.style.backgroundColor = '#1e293b';
+            }
+        }
+
+        function resetPreview() {
+            document.getElementById('pTitle').textContent = 'Title';
+            document.getElementById('pSubtitle').textContent = 'Subtitle';
+            document.getElementById('pButton').textContent = 'Button';
+            const mockup = document.getElementById('d3PreviewMockup');
+            mockup.style.backgroundImage = 'none';
+            mockup.style.backgroundColor = '#1e293b';
+        }
+
+        async function handleD3Upload(type) {
+            const inputId = type === 'mobile' ? 'slideMobileImageUpload' : 'slideImageUpload';
+            const textId = type === 'mobile' ? 'd3ImgMobile' : 'd3ImgDesktop';
+
+            const fileInput = document.getElementById(inputId);
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById(textId).value = e.target.result;
+                    updatePreviewBg(type); // Update with type
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function savePageSlides() {
+            if (currentSlideIndex !== -1) {
+                const slide = pageSlides[currentPage][currentSlideIndex];
+                slide.title = document.getElementById('d3Title').value;
+                slide.subtitle = document.getElementById('d3Subtitle').value;
+                slide.buttonText = document.getElementById('d3BtnText').value;
+                slide.buttonLink = document.getElementById('d3BtnLink').value;
+                slide.imageUrl = document.getElementById('d3ImgDesktop').value;
+                slide.mobileImageUrl = document.getElementById('d3ImgMobile').value;
+                slide.active = document.getElementById('d3Active').checked;
+            }
+
+            // Save to API
+            const slidesData = pageSlides[currentPage];
+            const btn = document.querySelector('button[onclick="savePageSlides()"]');
+            if (btn) {
+                var originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+            }
+
+            try {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SLIDES, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ page: currentPage, slides: slidesData })
+                });
+
+                if (!res.ok) throw new Error('Failed to save slides');
+                showAlert(`Slides for ${currentPage} saved successfully!`, 'success');
+            } catch (err) {
+                console.error(err);
+                showAlert('Failed to save slides', 'danger');
+            } finally {
+                if (btn) {
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+
+
+        function initCustomDropdown(dropdownId, textId, hiddenInputId, onSelect) {
+            const dropdown = document.getElementById(dropdownId);
+            const dropdownBtn = dropdown.querySelector('.custom-dropdown-btn');
+            const dropdownText = document.getElementById(textId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const dropdownItems = dropdown.querySelectorAll('.custom-dropdown-item');
+
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-dropdown').forEach(dd => {
+                    if (dd !== dropdown) dd.classList.remove('active');
+                });
+                dropdown.classList.toggle('active');
+            });
+
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownItems.forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const value = item.getAttribute('data-value');
+                    const text = item.innerHTML;
+                    dropdownText.innerHTML = text;
+                    hiddenInput.value = value;
+                    dropdown.classList.remove('active');
+                    if (onSelect) onSelect(value, text);
+                });
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown').forEach(dd => dd.classList.remove('active'));
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCustomDropdown('animationDropdown', 'animationDropdownText', 'animationEffect');
+            initCustomDropdown('paginationDropdown', 'paginationDropdownText', 'paginationStyle');
+            initCustomDropdown('pageSelectionDropdown', 'pageSelectionDropdownText', 'selectedPage', onPageSelect);
+
+            // Load Settings
+            loadCarouselSettings();
+        });
+
+        async function loadCarouselSettings() {
+            try {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SETTINGS);
+                if (!res.ok) throw new Error('Failed to load settings');
+                const data = await res.json();
+
+                // Use fetched settings or defaults if empty
+                const mockSettings = data.settings || {
+                    autoplayInterval: 5,
+                    transitionSpeed: 500,
+                    enableAutoplay: true,
+                    showArrows: true,
+                    animationEffect: 'slide',
+                    paginationStyle: 'dots'
+                };
+
+                document.getElementById('autoplayInterval').value = mockSettings.autoplayInterval;
+                document.getElementById('transitionSpeed').value = mockSettings.transitionSpeed;
+                document.getElementById('enableAutoplay').checked = mockSettings.enableAutoplay;
+                document.getElementById('showArrows').checked = mockSettings.showArrows;
+
+                // Update dropdowns
+                updateDropdownSelection('animationDropdown', mockSettings.animationEffect);
+                updateDropdownSelection('paginationDropdown', mockSettings.paginationStyle);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function updateDropdownSelection(id, value) {
+            const dropdown = document.getElementById(id);
+            const item = dropdown.querySelector(`.custom-dropdown-item[data-value="${value}"]`);
+            if (item) item.click();
+        }
+
+        async function saveCarouselSettings() {
+            const settings = {
+                autoplayInterval: document.getElementById('autoplayInterval').value,
+                transitionSpeed: document.getElementById('transitionSpeed').value,
+                enableAutoplay: document.getElementById('enableAutoplay').checked,
+                showArrows: document.getElementById('showArrows').checked,
+                animationEffect: document.getElementById('animationEffect').value,
+                paginationStyle: document.getElementById('paginationStyle').value
+            };
+
+            const btn = document.querySelector('button[onclick="saveCarouselSettings()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(API_CONFIG.ENDPOINTS.SETTINGS, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                if (!res.ok) throw new Error('Failed to save settings');
+
+                showAlert('Carousel settings saved successfully!', 'success');
+            } catch (error) {
+                showAlert('Failed to save settings', 'danger');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

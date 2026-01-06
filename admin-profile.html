@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | CompareHubPrices Admin</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
-    
+
     <style>
         :root {
             --primary: #dc2626;
@@ -90,7 +91,7 @@
             align-items: center;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
+        .breadcrumb-item+.breadcrumb-item::before {
             content: "/";
             display: inline-block;
             padding: 0 0.5rem;
@@ -211,14 +212,16 @@
             display: block;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 6px;
             border: 1px solid var(--border);
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
             outline: none;
@@ -566,7 +569,7 @@
         /* Sidebar */
         .sidebar {
             position: fixed;
-            left: 0;
+            left: -270px;
             top: 0;
             width: var(--sidebar-width);
             height: 100vh;
@@ -576,6 +579,92 @@
             overflow-y: auto;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-right: 2px solid var(--border);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Design 9: Dual Tile Grid Styles */
+        .sb9-header {
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #334155;
+            padding-left: 0.5rem;
+        }
+
+        .sb9-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sb9-tile {
+            background: white;
+            border-radius: 16px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+            text-align: center;
+            padding: 0.75rem;
+        }
+
+        .sb9-tile i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .sb9-tile span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .sb9-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            color: #dc2626;
+        }
+
+        .sb9-tile:hover i {
+            color: #dc2626;
+        }
+
+        .sb9-tile.active {
+            background: #dc2626;
+            color: white;
+        }
+
+        .sb9-tile.active i {
+            color: white;
+        }
+
+        /* Overlay CSS */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
 
         .sidebar-header {
@@ -705,7 +794,7 @@
 
         /* Main Content */
         .main-content {
-            margin-left: var(--sidebar-width);
+            margin-left: 0;
             min-height: 100vh;
             transition: all 0.3s ease;
         }
@@ -827,7 +916,7 @@
                 transform: translateX(-100%);
                 left: -100%;
             }
-            
+
             .main-content.sidebar-hidden {
                 margin-left: 0;
             }
@@ -897,96 +986,92 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-            </div>
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-access-control.html" class="sb9-tile">
+                <i class="fas fa-users-cog"></i>
+                <span>Team</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero_carousel-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-profile.html" class="sb9-tile active">
+                <i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </a>
+            <a href="admin-view-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
         </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>Main</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="index.html" class="nav-item">
-                        <img src="assets/cards/dashboard.png" alt="Dashboard">
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="admin-analytics.html" class="nav-item">
-                        <img src="assets/cards/product analytics.png" alt="Analytics">
-                        <span>Products Analytics</span>
-                    </a>
-                    <a href="admin-business.html" class="nav-item">
-                        <img src="assets/cards/business post.png" alt="Business">
-                        <span>Business Posts</span>
-                        <span class="nav-badge"></span>
-                    </a>
-                    <a href="admin-alerts-notifications.html" class="nav-item">
-                        <img src="assets/cards/notification.png" alt="Alerts">
-                        <span>Alerts & Notifications</span>
-                    </a>
-                    <a href="admin_business_analytics.html" class="nav-item">
-                        <img src="assets/cards/analysis.png" alt="Analytics">
-                        <span>Business Analytics</span>
-                    </a>
-                    <a href="admin_price_alert_tracking.html" class="nav-item">
-                        <img src="assets/cards/alert.png" alt="Tracking">
-                        <span>Price Alerts Tracking</span>
-                    </a>
-                </div>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>Management</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="admin-management.html" class="nav-item">
-                        <img src="assets/cards/admin.png" alt="Management">
-                        <span>User Management</span>
-                    </a>
-                    <a href="admin-bulk-import.html" class="nav-item">
-                        <img src="assets/cards/data-collection.png" alt="Import">
-                        <span>Bulk Import</span>
-                    </a>
-                    <a href="admin-price-update.html" class="nav-item">
-                        <img src="assets/cards/price update.png" alt="Price">
-                        <span>Price Updates</span>
-                    </a>
-                    <a href="admin_reports_review.html" class="nav-item">
-                        <img src="assets/cards/complaint.png" alt="Reports">
-                        <span>Reports Review</span>
-                    </a>
-                    <a href="admin-product-management.html" class="nav-item">
-                        <img src="assets/cards/features.png" alt="Products">
-                        <span>Product Management</span>
-                    </a>
-                    <a href="admin_login_tracking.html" class="nav-item">
-                        <img src="assets/cards/log.png" alt="Tracking">
-                        <span>Login Tracking</span>
-                    </a>
-                </div>
-            </div>
-            <div class="nav-section">
-                <div class="nav-section-title" onclick="toggleNavSection(this)">
-                    <span>System</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="nav-section-items">
-                    <a href="admin-settings.html" class="nav-item">
-                        <img src="assets/cards/setting.png" alt="Settings">
-                        <span>Settings</span>
-                    </a>
-                    <a href="admin-profile.html" class="nav-item active">
-                        <img src="assets/cards/admin.png" alt="Profile">
-                        <span>Profile</span>
-                    </a>
-                </div>
-            </div>
-        </nav>
     </aside>
 
     <div class="main-content">
@@ -1013,868 +1098,230 @@
 
         <div class="content-wrapper">
             <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb-container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="index.html">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        My Profile
-                    </li>
-                </ol>
-            </nav>
-        </div>
-
-        <!-- Page Title -->
-        <div class="page-title-section">
-            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
-            <p>Manage your account information, password, and permissions</p>
-        </div>
-
-        <div id="alertContainer"></div>
-
-        <!-- Profile Header -->
-        <div class="profile-section">
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar">
-                    AU
+                <!-- Breadcrumb Navigation -->
+                <div class="breadcrumb-container">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="index.html">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                My Profile
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
-                <div class="profile-info">
-                    <div class="profile-name" id="profileName">Loading...</div>
-                    <div class="profile-email" id="profileEmail">Loading...</div>
-                    <div>
-                        <span class="profile-role">
-                            <i class="fas fa-user-shield"></i> Administrator
-                        </span>
+
+                <!-- Page Title -->
+                <div class="page-title-section">
+                    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+                    <p>Manage your account information, password, and permissions</p>
+                </div>
+
+                <div id="alertContainer"></div>
+
+                <!-- Profile Header -->
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profileAvatar">
+                            AU
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="profileName">Loading...</div>
+                            <div class="profile-email" id="profileEmail">Loading...</div>
+                            <div>
+                                <span class="profile-role">
+                                    <i class="fas fa-user-shield"></i> Administrator
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="profile-section">
+                    <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
+                                type="button" role="tab">
+                                <i class="fas fa-user"></i> Personal Information
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password"
+                                type="button" role="tab">
+                                <i class="fas fa-lock"></i> Change Password
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="permissions-tab" data-bs-toggle="tab"
+                                data-bs-target="#permissions" type="button" role="tab">
+                                <i class="fas fa-key"></i> Permissions Management
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="sessions-tab" data-bs-toggle="tab" data-bs-target="#sessions"
+                                type="button" role="tab">
+                                <i class="fas fa-desktop"></i> Active Sessions
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="profileTabContent">
+                        <!-- Personal Information Tab -->
+                        <div class="tab-pane fade show active" id="info" role="tabpanel">
+                            <form id="profileForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="firstName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="lastName" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" readonly>
+                                    <div class="form-text">Email cannot be changed. Contact support if needed.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Display Name</label>
+                                    <input type="text" class="form-control" id="displayName">
+                                    <div class="form-text">This name will be displayed throughout the admin panel</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phoneNumber"
+                                        placeholder="+27 12 345 6789">
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" onclick="updateProfile()">
+                                        <i class="fas fa-save"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Change Password Tab -->
+                        <div class="tab-pane fade" id="password" role="tabpanel">
+                            <form id="passwordForm">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Password must be at least 8 characters long and
+                                    include uppercase, lowercase, numbers, and special characters.
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Current Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="currentPassword" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                        <input type="password" class="form-control" id="newPassword" required
+                                            minlength="8">
+                                    </div>
+                                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                    </div>
+                                    <div class="form-text" id="passwordStrengthText"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-check"></i></span>
+                                        <input type="password" class="form-control" id="confirmPassword" required
+                                            minlength="8">
+                                    </div>
+                                    <div class="form-text" id="passwordMatchText"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" onclick="changePassword()">
+                                        <i class="fas fa-save"></i> Change Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Permissions Management Tab -->
+                        <div class="tab-pane fade" id="permissions" role="tabpanel">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> Grant permissions to other admin users. Be
+                                careful when modifying permissions.
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Select User</label>
+                                <select class="form-select" id="permissionUserSelect" onchange="loadUserPermissions()">
+                                    <option value="">-- Select a user --</option>
+                                </select>
+                            </div>
+
+                            <div id="permissionsContainer" style="display: none;">
+                                <h5 class="mb-3">Permissions for <span id="selectedUserName"></span></h5>
+
+                                <table class="permissions-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Permission</th>
+                                            <th>Description</th>
+                                            <th>Grant</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="permissionsTableBody">
+                                    </tbody>
+                                </table>
+
+                                <div class="form-group mt-3">
+                                    <button type="button" class="btn btn-primary" onclick="savePermissions()">
+                                        <i class="fas fa-save"></i> Save Permissions
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" onclick="resetPermissions()">
+                                        <i class="fas fa-undo"></i> Reset to Default
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Sessions Tab -->
+                        <div class="tab-pane fade" id="sessions" role="tabpanel">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Manage your active sessions. You can revoke access
+                                from devices you no longer use.
+                            </div>
+
+                            <div id="sessionsContainer">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="profile-section">
-            <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
-                        <i class="fas fa-user"></i> Personal Information
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab">
-                        <i class="fas fa-lock"></i> Change Password
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions" type="button" role="tab">
-                        <i class="fas fa-key"></i> Permissions Management
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="sessions-tab" data-bs-toggle="tab" data-bs-target="#sessions" type="button" role="tab">
-                        <i class="fas fa-desktop"></i> Active Sessions
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content" id="profileTabContent">
-                <!-- Personal Information Tab -->
-                <div class="tab-pane fade show active" id="info" role="tabpanel">
-                    <form id="profileForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="firstName" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="lastName" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" readonly>
-                            <div class="form-text">Email cannot be changed. Contact support if needed.</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Display Name</label>
-                            <input type="text" class="form-control" id="displayName">
-                            <div class="form-text">This name will be displayed throughout the admin panel</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phoneNumber" placeholder="+27 12 345 6789">
-                        </div>
-
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" onclick="updateProfile()">
-                                <i class="fas fa-save"></i> Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Change Password Tab -->
-                <div class="tab-pane fade" id="password" role="tabpanel">
-                    <form id="passwordForm">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Current Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                <input type="password" class="form-control" id="currentPassword" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">New Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                <input type="password" class="form-control" id="newPassword" required minlength="8">
-                            </div>
-                            <div class="password-strength" id="passwordStrength" style="display: none;">
-                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
-                            </div>
-                            <div class="form-text" id="passwordStrengthText"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Confirm New Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-check"></i></span>
-                                <input type="password" class="form-control" id="confirmPassword" required minlength="8">
-                            </div>
-                            <div class="form-text" id="passwordMatchText"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" onclick="changePassword()">
-                                <i class="fas fa-save"></i> Change Password
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Permissions Management Tab -->
-                <div class="tab-pane fade" id="permissions" role="tabpanel">
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i> Grant permissions to other admin users. Be careful when modifying permissions.
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Select User</label>
-                        <select class="form-select" id="permissionUserSelect" onchange="loadUserPermissions()">
-                            <option value="">-- Select a user --</option>
-                        </select>
-                    </div>
-
-                    <div id="permissionsContainer" style="display: none;">
-                        <h5 class="mb-3">Permissions for <span id="selectedUserName"></span></h5>
-                        
-                        <table class="permissions-table">
-                            <thead>
-                                <tr>
-                                    <th>Permission</th>
-                                    <th>Description</th>
-                                    <th>Grant</th>
-                                </tr>
-                            </thead>
-                            <tbody id="permissionsTableBody">
-                            </tbody>
-                        </table>
-
-                        <div class="form-group mt-3">
-                            <button type="button" class="btn btn-primary" onclick="savePermissions()">
-                                <i class="fas fa-save"></i> Save Permissions
-                            </button>
-                            <button type="button" class="btn btn-outline-primary" onclick="resetPermissions()">
-                                <i class="fas fa-undo"></i> Reset to Default
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Active Sessions Tab -->
-                <div class="tab-pane fade" id="sessions" role="tabpanel">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Manage your active sessions. You can revoke access from devices you no longer use.
-                    </div>
-
-                    <div id="sessionsContainer">
-                        <div class="loading-spinner">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/scripts/admin-aws-auth.js"></script>    
-       
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const mainContent = document.querySelector('.main-content');
-
-        // Toggle sidebar visibility
-        if (menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                if (window.innerWidth > 1024) {
-                    // Desktop: toggle hidden class
-                    sidebar.classList.toggle('hidden');
-                    mainContent.classList.toggle('sidebar-hidden');
-                } else {
-                    // Mobile: toggle active class with overlay
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                }
-            });
-        }
-
-        if (overlay) {
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                sidebar.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-            } else {
-                sidebar.classList.remove('hidden');
-                mainContent.classList.remove('sidebar-hidden');
-            }
-        });
-
-        // Toggle navigation section collapse/expand
-        function toggleNavSection(element) {
-            const navSection = element.closest('.nav-section');
-            const navItems = navSection.querySelector('.nav-section-items');
-            
-            // Toggle collapsed class on title
-            element.classList.toggle('collapsed');
-            
-            // Toggle collapsed class on items container
-            navItems.classList.toggle('collapsed');
-        }
-    </script>
-    <script>
-        // Configuration
-        const API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za/data';
-        const ADMIN_API = `${API_BASE_URL}/admin/account`;
-        
-        // State
-        let currentUser = null;
-        let allUsers = [];
-        let selectedUserPermissions = {};
-
-        // Available permissions
-        const availablePermissions = [
-            { id: 'manage_users', name: 'Manage Users', description: 'Create, edit, and delete users' },
-            { id: 'manage_products', name: 'Manage Products', description: 'Create, edit, and delete products' },
-            { id: 'manage_alerts', name: 'Manage Alerts', description: 'View and manage price alerts' },
-            { id: 'manage_settings', name: 'Manage Settings', description: 'Modify system settings' },
-            { id: 'view_analytics', name: 'View Analytics', description: 'Access analytics and reports' },
-            { id: 'manage_permissions', name: 'Manage Permissions', description: 'Grant and revoke permissions' },
-            { id: 'bulk_import', name: 'Bulk Import', description: 'Import products in bulk' },
-            { id: 'price_updates', name: 'Price Updates', description: 'Update product prices' }
-        ];
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCurrentUser();
-            loadUsersForPermissions();
-            setupPasswordValidation();
-        });
-
-        // Load current user info
-        async function loadCurrentUser() {
-            try {
-                const response = await fetch(`${ADMIN_API}/get-user-info`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    currentUser = data.user || data;
-                    populateProfileForm();
-                } else {
-                    // Use mock data for development
-                    currentUser = getMockUser();
-                    populateProfileForm();
-                    showAlert('Using mock data. API connection failed.', 'warning');
-                }
-            } catch (error) {
-                console.error('Error loading user:', error);
-                currentUser = getMockUser();
-                populateProfileForm();
-                showAlert('Using mock data. API connection failed.', 'warning');
-            }
-        }
-
-        // Mock user data
-        function getMockUser() {
-            return {
-                email: 'admin@comparehubprices.site',
-                userId: 'admin123',
-                givenName: 'Admin',
-                familyName: 'User',
-                displayName: 'Admin User',
-                phoneNumber: '+27 12 345 6789',
-                accountType: 'admin',
-                verified: true,
-                createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-            };
-        }
-
-        // Populate profile form
-        function populateProfileForm() {
-            if (!currentUser) return;
-
-            document.getElementById('profileName').textContent = currentUser.displayName || `${currentUser.givenName} ${currentUser.familyName}`;
-            document.getElementById('profileEmail').textContent = currentUser.email;
-            document.getElementById('profileAvatar').textContent = getInitials(currentUser.displayName || currentUser.email);
-
-            document.getElementById('firstName').value = currentUser.givenName || '';
-            document.getElementById('lastName').value = currentUser.familyName || '';
-            document.getElementById('email').value = currentUser.email || '';
-            document.getElementById('displayName').value = currentUser.displayName || '';
-            document.getElementById('phoneNumber').value = currentUser.phoneNumber || '';
-        }
-
-        // Update profile
-        async function updateProfile() {
-            const form = document.getElementById('profileForm');
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const profileData = {
-                givenName: document.getElementById('firstName').value,
-                familyName: document.getElementById('lastName').value,
-                displayName: document.getElementById('displayName').value,
-                phoneNumber: document.getElementById('phoneNumber').value
-            };
-
-            try {
-                const response = await fetch(`${ADMIN_API}/update-user-info`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(profileData)
-                });
-
-                if (response.ok) {
-                    Object.assign(currentUser, profileData);
-                    populateProfileForm();
-                    showAlert('Profile updated successfully', 'success');
-                } else {
-                    const error = await response.json();
-                    showAlert(error.message || 'Failed to update profile', 'danger');
-                }
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                // For mock data
-                Object.assign(currentUser, profileData);
-                populateProfileForm();
-                showAlert('Profile updated successfully', 'success');
-            }
-        }
-
-        // Setup password validation
-        function setupPasswordValidation() {
-            const newPassword = document.getElementById('newPassword');
-            const confirmPassword = document.getElementById('confirmPassword');
-
-            newPassword.addEventListener('input', function() {
-                validatePasswordStrength(this.value);
-                checkPasswordMatch();
-            });
-
-            confirmPassword.addEventListener('input', checkPasswordMatch);
-        }
-
-        // Validate password strength
-        function validatePasswordStrength(password) {
-            const strengthBar = document.getElementById('passwordStrength');
-            const strengthBarFill = document.getElementById('passwordStrengthBar');
-            const strengthText = document.getElementById('passwordStrengthText');
-
-            if (!password) {
-                strengthBar.style.display = 'none';
-                strengthText.textContent = '';
-                return;
-            }
-
-            strengthBar.style.display = 'block';
-
-            let strength = 0;
-            let feedback = [];
-
-            if (password.length >= 8) strength++;
-            else feedback.push('At least 8 characters');
-
-            if (/[a-z]/.test(password)) strength++;
-            else feedback.push('lowercase letter');
-
-            if (/[A-Z]/.test(password)) strength++;
-            else feedback.push('uppercase letter');
-
-            if (/[0-9]/.test(password)) strength++;
-            else feedback.push('number');
-
-            if (/[^a-zA-Z0-9]/.test(password)) strength++;
-            else feedback.push('special character');
-
-            strengthBarFill.className = 'password-strength-bar';
-            if (strength <= 2) {
-                strengthBarFill.classList.add('password-strength-weak');
-                strengthText.textContent = 'Weak password. Add: ' + feedback.join(', ');
-                strengthText.style.color = 'var(--danger)';
-            } else if (strength <= 4) {
-                strengthBarFill.classList.add('password-strength-medium');
-                strengthText.textContent = 'Medium password. Add: ' + feedback.join(', ');
-                strengthText.style.color = 'var(--warning)';
-            } else {
-                strengthBarFill.classList.add('password-strength-strong');
-                strengthText.textContent = 'Strong password!';
-                strengthText.style.color = 'var(--success)';
-            }
-        }
-
-        // Check password match
-        function checkPasswordMatch() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const matchText = document.getElementById('passwordMatchText');
-
-            if (!confirmPassword) {
-                matchText.textContent = '';
-                return;
-            }
-
-            if (newPassword === confirmPassword) {
-                matchText.textContent = 'Passwords match';
-                matchText.style.color = 'var(--success)';
-            } else {
-                matchText.textContent = 'Passwords do not match';
-                matchText.style.color = 'var(--danger)';
-            }
-        }
-
-        // Change password
-        async function changePassword() {
-            const form = document.getElementById('passwordForm');
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-                showAlert('Passwords do not match', 'danger');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${ADMIN_API}/change-password`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        currentPassword,
-                        newPassword
-                    })
-                });
-
-                if (response.ok) {
-                    form.reset();
-                    document.getElementById('passwordStrength').style.display = 'none';
-                    showAlert('Password changed successfully', 'success');
-                } else {
-                    const error = await response.json();
-                    showAlert(error.message || 'Failed to change password', 'danger');
-                }
-            } catch (error) {
-                console.error('Error changing password:', error);
-                showAlert('Failed to change password. Please try again.', 'danger');
-            }
-        }
-
-        // Load users for permissions
-        async function loadUsersForPermissions() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/admin/users?admin=true`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    allUsers = (data.users || []).filter(u => u.accountType === 'admin' && u.email !== currentUser?.email);
-                } else {
-                    allUsers = getMockUsers();
-                }
-
-                populateUserSelect();
-            } catch (error) {
-                console.error('Error loading users:', error);
-                allUsers = getMockUsers();
-                populateUserSelect();
-            }
-        }
-
-        // Mock users
-        function getMockUsers() {
-            return [
-                {
-                    email: 'admin2@comparehubprices.site',
-                    userId: 'admin2',
-                    displayName: 'Admin 2',
-                    accountType: 'admin',
-                    permissions: ['manage_products', 'view_analytics']
-                }
-            ];
-        }
-
-        // Populate user select
-        function populateUserSelect() {
-            const select = document.getElementById('permissionUserSelect');
-            select.innerHTML = '<option value="">-- Select a user --</option>';
-            
-            allUsers.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.email;
-                option.textContent = user.displayName || user.email;
-                select.appendChild(option);
-            });
-        }
-
-        // Load user permissions
-        function loadUserPermissions() {
-            const email = document.getElementById('permissionUserSelect').value;
-            if (!email) {
-                document.getElementById('permissionsContainer').style.display = 'none';
-                return;
-            }
-
-            const user = allUsers.find(u => u.email === email);
-            if (!user) return;
-
-            document.getElementById('selectedUserName').textContent = user.displayName || user.email;
-            selectedUserPermissions = { ...(user.permissions || {}) };
-
-            // Build permissions table
-            const tbody = document.getElementById('permissionsTableBody');
-            tbody.innerHTML = '';
-
-            availablePermissions.forEach(permission => {
-                const row = document.createElement('tr');
-                const isGranted = Array.isArray(user.permissions) 
-                    ? user.permissions.includes(permission.id)
-                    : selectedUserPermissions[permission.id] === true;
-
-                row.innerHTML = `
-                    <td><strong>${permission.name}</strong></td>
-                    <td>${permission.description}</td>
-                    <td>
-                        <input type="checkbox" class="permission-checkbox" 
-                               data-permission="${permission.id}" 
-                               ${isGranted ? 'checked' : ''}
-                               onchange="updatePermission('${permission.id}', this.checked)">
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            document.getElementById('permissionsContainer').style.display = 'block';
-        }
-
-        // Update permission
-        function updatePermission(permissionId, granted) {
-            selectedUserPermissions[permissionId] = granted;
-        }
-
-        // Save permissions
-        async function savePermissions() {
-            const email = document.getElementById('permissionUserSelect').value;
-            if (!email) return;
-
-            const permissions = Object.keys(selectedUserPermissions)
-                .filter(key => selectedUserPermissions[key] === true);
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/admin/users/${email}/permissions`, {
-                    method: 'PUT',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ permissions })
-                });
-
-                if (response.ok) {
-                    const user = allUsers.find(u => u.email === email);
-                    if (user) user.permissions = permissions;
-                    showAlert('Permissions updated successfully', 'success');
-                } else {
-                    showAlert('Failed to update permissions', 'danger');
-                }
-            } catch (error) {
-                console.error('Error saving permissions:', error);
-                // For mock data
-                const user = allUsers.find(u => u.email === email);
-                if (user) user.permissions = permissions;
-                showAlert('Permissions updated successfully', 'success');
-            }
-        }
-
-        // Reset permissions
-        function resetPermissions() {
-            if (!confirm('Reset permissions to default? This will revoke all custom permissions.')) return;
-            
-            selectedUserPermissions = {};
-            loadUserPermissions();
-        }
-
-        // Load active sessions
-        async function loadSessions() {
-            const container = document.getElementById('sessionsContainer');
-            
-            try {
-                const response = await fetch(`${ADMIN_API}/sessions`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    renderSessions(data.sessions || []);
-                } else {
-                    renderSessions(getMockSessions());
-                }
-            } catch (error) {
-                console.error('Error loading sessions:', error);
-                renderSessions(getMockSessions());
-            }
-        }
-
-        // Mock sessions
-        function getMockSessions() {
-            return [
-                {
-                    sessionId: 'session1',
-                    device: 'Chrome on Windows',
-                    ipAddress: '192.168.1.1',
-                    location: 'Cape Town, South Africa',
-                    lastActive: new Date().toISOString(),
-                    isCurrent: true
-                },
-                {
-                    sessionId: 'session2',
-                    device: 'Safari on iPhone',
-                    ipAddress: '192.168.1.2',
-                    location: 'Cape Town, South Africa',
-                    lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-                    isCurrent: false
-                }
-            ];
-        }
-
-        // Render sessions
-        function renderSessions(sessions) {
-            const container = document.getElementById('sessionsContainer');
-            
-            if (sessions.length === 0) {
-                container.innerHTML = '<p class="text-muted">No active sessions found.</p>';
-                return;
-            }
-
-            let html = '';
-            sessions.forEach(session => {
-                html += `
-                    <div class="session-item ${session.isCurrent ? 'session-active' : ''}">
-                        <div class="session-info">
-                            <div class="session-device">
-                                ${session.isCurrent ? '<i class="fas fa-circle text-success"></i> ' : ''}
-                                ${session.device}
-                            </div>
-                            <div class="session-details">
-                                ${session.ipAddress} • ${session.location || 'Unknown'} • Last active: ${formatDate(session.lastActive)}
-                            </div>
-                        </div>
-                        <div>
-                            ${session.isCurrent ? 
-                                '<span class="badge badge-success">Current Session</span>' :
-                                `<button class="btn btn-danger btn-sm" onclick="revokeSession('${session.sessionId}')">
-                                    <i class="fas fa-times"></i> Revoke
-                                </button>`
-                            }
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        // Revoke session
-        async function revokeSession(sessionId) {
-            if (!confirm('Are you sure you want to revoke this session?')) return;
-
-            try {
-                const response = await fetch(`${ADMIN_API}/sessions/${sessionId}`, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    showAlert('Session revoked successfully', 'success');
-                    loadSessions();
-                } else {
-                    showAlert('Failed to revoke session', 'danger');
-                }
-            } catch (error) {
-                console.error('Error revoking session:', error);
-                showAlert('Session revoked successfully', 'success');
-                loadSessions();
-            }
-        }
-
-        // Load sessions when tab is shown
-        document.getElementById('sessions-tab').addEventListener('shown.bs.tab', function() {
-            loadSessions();
-        });
-
-        // Utility functions
-        function getInitials(name) {
-            if (!name) return '?';
-            const parts = name.trim().split(' ');
-            if (parts.length >= 2) {
-                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-            }
-            return name.substring(0, 2).toUpperCase();
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-ZA', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function showAlert(message, type = 'info') {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertId = 'alert-' + Date.now();
-            
-            const alertHTML = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            
-            alertContainer.innerHTML = alertHTML;
-            
-            setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }
-            }, 5000);
-        }
-
-        // Check login state and update header
-        async function checkLoginState() {
-            const userProfileHeader = document.getElementById('userProfileHeader');
-            const userAvatarHeader = document.getElementById('userAvatarHeader');
-            const userNameHeader = document.getElementById('userNameHeader');
-
-            try {
-                const result = await window.adminAWSAuthService.getUserInfo();
-                
-                if (result.success && result.user) {
-                    const user = result.user;
-                    let displayName = '';
-                    let initials = '';
-
-                    if (user.givenName && user.familyName) {
-                        displayName = `${user.givenName} ${user.familyName}`;
-                        initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-                    } else if (user.givenName) {
-                        displayName = user.givenName;
-                        initials = user.givenName.substring(0, 2).toUpperCase();
-                    } else if (user.email) {
-                        const name = user.email.split('@')[0];
-                        displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                        initials = name.substring(0, 2).toUpperCase();
-                    } else {
-                        displayName = 'Admin User';
-                        initials = 'AU';
-                    }
-
-                    if (userAvatarHeader) userAvatarHeader.textContent = initials;
-                    if (userNameHeader) userNameHeader.textContent = displayName;
-                } else {
-                    window.location.href = 'admin-login.html';
-                }
-            } catch (error) {
-                console.error('Error checking login state:', error);
-                window.location.href = 'admin-login.html';
-            }
-        }
-
-        // Initialize login state check
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLoginState();
-        });
-    </script>
+        <script src="assets/scripts/sidebar.js"></script>
+        <script src="assets/scripts/admin-aws-auth.js"></script>
+        <script src="assets/scripts/admin-profile.js"></script>
 </body>
-</html>
 
+</html>

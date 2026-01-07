@@ -128,77 +128,167 @@ function renderCharts(products) {
         }
     });
 
-    // 1. Category Chart (Pie)
-    renderChart('categoryChart', 'doughnut', {
-        labels: Object.keys(categoryCounts),
-        datasets: [{
-            data: Object.values(categoryCounts),
-            backgroundColor: ['#dc2626', '#ef4444', '#f87171', '#b91c1c', '#f59e0b', '#10b981', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899']
-        }]
-    }, 'Products by Category');
+    // --- Global Chart Defaults (Dark Mode) ---
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = '#334155';
+    Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
+    Chart.defaults.font.family = "'Inter', sans-serif";
 
-    // 2. Brand Chart (Bar)
-    const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
-    renderChart('brandChart', 'bar', {
-        labels: sortedBrands.map(x => x[0]),
-        datasets: [{
-            label: 'Product Count',
-            data: sortedBrands.map(x => x[1]),
-            backgroundColor: '#dc2626'
-        }]
-    }, 'Top Brands');
-
-    // 3. Avg Price Chart (Bar)
-    const avgPriceData = Object.keys(categoryPrices).map(cat => {
-        const prices = categoryPrices[cat];
-        return {
-            cat,
-            avg: prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0
-        };
-    });
-    renderChart('priceChart', 'bar', {
-        labels: avgPriceData.map(x => x.cat),
-        datasets: [{
-            label: 'Avg Price (R)',
-            data: avgPriceData.map(x => x.avg),
-            backgroundColor: '#10b981'
-        }]
-    }, 'Avg Price by Category');
-
-    // 4. Updates Chart (Simulated Timeline)
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    // Mock data based on total updates or random variance
-    const mockData = days.map(() => Math.floor(Math.random() * (products.length / 5)) + 5);
-    renderChart('updatesChart', 'line', {
-        labels: days,
-        datasets: [{
-            label: 'Updates Activity',
-            data: mockData,
-            borderColor: '#3b82f6',
-            tension: 0.4,
-            fill: true,
-            backgroundColor: 'rgba(59, 130, 246, 0.1)'
-        }]
-    }, 'Price Updates (Last 7 Days)');
-}
-
-function renderChart(canvasId, type, data, title) {
-    const ctx = document.getElementById(canvasId);
-    if (!ctx) return;
-    if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
-
-    chartInstances[canvasId] = new Chart(ctx, {
-        type: type,
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: type === 'doughnut' ? 'right' : 'top' },
-                title: { display: false }
+    // --- 1. Products by Category (Design 2: Doughnut) ---
+    const ctxCategory = document.getElementById('categoryChart');
+    if (ctxCategory) {
+        if (chartInstances['categoryChart']) chartInstances['categoryChart'].destroy();
+        chartInstances['categoryChart'] = new Chart(ctxCategory.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(categoryCounts),
+                datasets: [{
+                    data: Object.values(categoryCounts),
+                    backgroundColor: [
+                        '#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899',
+                        '#10b981', '#f59e0b', '#f97316', '#ef4444'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { usePointStyle: true, boxWidth: 6, padding: 20, color: '#94a3b8' }
+                    }
+                }
             }
-        }
-    });
+        });
+    }
+
+    // --- 2. Price Updates Activity (Design 1: Smooth Line) ---
+    const ctxUpdates = document.getElementById('updatesChart');
+    if (ctxUpdates) {
+        if (chartInstances['updatesChart']) chartInstances['updatesChart'].destroy();
+
+        const ctx = ctxUpdates.getContext('2d');
+        const gradient1 = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient1.addColorStop(0, 'rgba(37, 99, 235, 0.5)');
+        gradient1.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+        // Mock Data
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const mockData = days.map(() => Math.floor(Math.random() * (products.length / 5)) + 5);
+
+        chartInstances['updatesChart'] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [{
+                    label: 'Updates',
+                    data: mockData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradient1,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#2563eb',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // --- 3. Products by Brand (Design 6: Horizontal Bar) ---
+    const ctxBrand = document.getElementById('brandChart');
+    if (ctxBrand) {
+        if (chartInstances['brandChart']) chartInstances['brandChart'].destroy();
+
+        const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+        chartInstances['brandChart'] = new Chart(ctxBrand.getContext('2d'), {
+            type: 'bar',
+            indexAxis: 'y', // Horizontal
+            data: {
+                labels: sortedBrands.map(x => x[0]),
+                datasets: [{
+                    label: 'Products',
+                    data: sortedBrands.map(x => x[1]),
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.05)' },
+                        beginAtZero: true
+                    },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // --- 4. Avg Price by Category (Design 3: Vertical Bar) ---
+    const ctxPrice = document.getElementById('priceChart');
+    if (ctxPrice) {
+        if (chartInstances['priceChart']) chartInstances['priceChart'].destroy();
+
+        const ctx = ctxPrice.getContext('2d');
+        const gradient3 = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient3.addColorStop(0, '#8b5cf6');
+        gradient3.addColorStop(1, '#6366f1');
+
+        const avgPriceData = Object.keys(categoryPrices).map(cat => {
+            const prices = categoryPrices[cat];
+            return {
+                cat,
+                avg: prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0
+            };
+        });
+
+        chartInstances['priceChart'] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: avgPriceData.map(x => x.cat),
+                datasets: [{
+                    label: 'Avg Price (R)',
+                    data: avgPriceData.map(x => x.avg),
+                    backgroundColor: gradient3,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
 }
 
 // Display top products

@@ -191,13 +191,17 @@
 
         const data = await res.json().catch(() => ({}));
 
-        if (res.status === 401 || data?.error === 'NO_SESSION') {
-          this._profile = null;
+        // Handle 401 Unauthorized (Session Expired/Invalid) including EXPIRED_ACCESS context
+        if (res.status === 401 || data?.error === 'NO_SESSION' || data?.error === 'INVALID_SESSION' || data?.error === 'EXPIRED_ACCESS') {
+          console.warn('Session expired or invalid, clearing local state');
+          this.clear(); // Clear local profile
+          this._notifyListeners('logout', null); // Notify app
+
           return {
             success: false,
-            status: res.status,
-            error: data?.error || 'NO_SESSION',
-            message: data?.message || 'Not authenticated',
+            status: 401,
+            error: data?.error || 'SESSION_EXPIRED',
+            message: data?.message || 'Session expired',
             user: null
           };
         }

@@ -15,30 +15,13 @@ let readStatusChart = null;
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    setupSidebar();
+
     loadNotifications();
     checkLoginState();
     initializeCharts();
+    initUserDropdown();
 });
 
-// Setup sidebar toggle
-function setupSidebar() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-}
 
 // Setup event listeners
 function setupEventListeners() {

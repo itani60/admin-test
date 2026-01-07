@@ -11,43 +11,65 @@ if (savedUrl) {
 }
 
 // Load analytics data
+const ALL_CATEGORIES = ['smartphones', 'windows-laptops', 'macbooks-laptops', 'chromebooks-laptops', 'tablets', 'wearables', 'televisions', 'audio', 'gaming', 'appliances'];
+let chartInstances = {};
+
 async function loadAnalytics() {
     const categorySelect = document.getElementById('categorySelect');
     const timeRangeSelect = document.getElementById('timeRangeSelect');
     const brandSelect = document.getElementById('brandSelect');
 
     const category = categorySelect ? categorySelect.value : '';
-    const timeRange = timeRangeSelect ? timeRangeSelect.value : 'month';
     const brand = brandSelect ? brandSelect.value : '';
 
     try {
-        // Load products for statistics
-        let url = `${API_CONFIG.BASE_URL}${API_CONFIG.LIST_PRODUCTS_ENDPOINT}`;
+        let allProducts = [];
+
+        // Show loading indicator in tables
+        document.getElementById('topProductsTable').innerHTML = '<tr><td colspan="7" class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading data...</td></tr>';
+
         if (category) {
-            url += `?category=${category}&limit=1000`;
+            allProducts = await fetchCategoryProducts(category);
         } else {
-            // If no category, we'll need to aggregate across all
-            url += `?category=smartphones&limit=1000`;
+            // Fetch ALL known categories in parallel
+            // This enables Global Analytics
+            const promises = ALL_CATEGORIES.map(cat => fetchCategoryProducts(cat));
+            const results = await Promise.all(promises);
+            allProducts = results.flat();
         }
 
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // Apply Brand Filter
+        if (brand) {
+            allProducts = allProducts.filter(p => p.brand && p.brand.toLowerCase() === brand.toLowerCase());
         }
 
-        const data = await response.json();
-        const products = data.body ? JSON.parse(data.body) : data;
-        const productList = products.products || products.items || [];
+        console.log(`Analytics loaded: ${allProducts.length} products total.`);
 
-        // Calculate statistics
-        calculateStats(productList);
-        displayTopProducts(productList);
-        displayCategoryStats(productList);
+        calculateStats(allProducts);
+        displayTopProducts(allProducts);
+        displayCategoryStats(allProducts);
+        renderCharts(allProducts);
 
     } catch (error) {
         console.error('Error loading analytics:', error);
         showAlert('Error loading analytics: ' + error.message, 'danger');
+    }
+}
+
+async function fetchCategoryProducts(category) {
+    try {
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.LIST_PRODUCTS_ENDPOINT}?category=${category}&limit=1000`;
+        const response = await fetch(url);
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (data.body) {
+            const parsed = JSON.parse(data.body);
+            return parsed.products || parsed.items || [];
+        }
+        return data.products || data.items || [];
+    } catch (e) {
+        console.warn(`Failed to fetch ${category}:`, e);
+        return [];
     }
 }
 
@@ -56,50 +78,136 @@ function calculateStats(products) {
     const totalProducts = products.length;
     const uniqueRetailers = new Set();
     let totalPriceUpdates = 0;
-    let totalAlerts = 0;
 
-    products.forEach(product => {
-        if (product.offers) {
-            product.offers.forEach(offer => {
-                if (offer.retailer) uniqueRetailers.add(offer.retailer);
-            });
+    products.forEach(p => {
+        if (p.offers) {
+            p.offers.forEach(o => { if (o.retailer) uniqueRetailers.add(o.retailer); });
+            totalPriceUpdates += p.offers.length;
         }
-        // Estimate price updates (this would come from price history in real implementation)
-        totalPriceUpdates += product.offers?.length || 0;
     });
 
-    // Update stats
-    document.getElementById('totalProducts').textContent = totalProducts.toLocaleString();
-    document.getElementById('totalRetailers').textContent = uniqueRetailers.size;
-    document.getElementById('priceUpdates').textContent = totalPriceUpdates.toLocaleString();
-    document.getElementById('activeAlerts').textContent = totalAlerts.toLocaleString();
+    safeSetText('totalProducts', totalProducts.toLocaleString());
+    safeSetText('totalRetailers', uniqueRetailers.size.toLocaleString());
+    safeSetText('priceUpdates', totalPriceUpdates.toLocaleString());
+    // Mock Active Alerts
+    safeSetText('activeAlerts', Math.floor(totalProducts * 0.05).toLocaleString());
 
-    // Update changes (placeholder - would come from historical data)
+    // Changes
     const productsChangeEl = document.getElementById('productsChange');
-    if (productsChangeEl) {
-        const changeValue = Math.floor(totalProducts * 0.1);
-        productsChangeEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>+${changeValue} this month</span>`;
-    }
+    if (productsChangeEl) productsChangeEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>+${Math.floor(totalProducts * 0.02)} this month</span>`;
+}
 
-    const updatesChangeEl = document.getElementById('updatesChange');
-    if (updatesChangeEl) {
-        const changeValue = Math.floor(totalPriceUpdates * 0.05);
-        updatesChangeEl.innerHTML = `<i class="fas fa-arrow-up"></i> <span>+${changeValue} today</span>`;
-    }
+function safeSetText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+// Render Charts using Chart.js
+function renderCharts(products) {
+    const categoryCounts = {};
+    const brandCounts = {};
+    const categoryPrices = {};
+
+    products.forEach(p => {
+        // Category
+        const cat = p.category || 'Other';
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+
+        // Brand
+        const b = p.brand || 'Unknown';
+        brandCounts[b] = (brandCounts[b] || 0) + 1;
+
+        // Prices for Avg
+        if (p.offers && p.offers.length > 0) {
+            const prices = p.offers.map(o => o.price || o.originalPrice || 0).filter(v => v > 0);
+            if (prices.length > 0) {
+                const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+                if (!categoryPrices[cat]) categoryPrices[cat] = [];
+                categoryPrices[cat].push(avg);
+            }
+        }
+    });
+
+    // 1. Category Chart (Pie)
+    renderChart('categoryChart', 'doughnut', {
+        labels: Object.keys(categoryCounts),
+        datasets: [{
+            data: Object.values(categoryCounts),
+            backgroundColor: ['#dc2626', '#ef4444', '#f87171', '#b91c1c', '#f59e0b', '#10b981', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899']
+        }]
+    }, 'Products by Category');
+
+    // 2. Brand Chart (Bar)
+    const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    renderChart('brandChart', 'bar', {
+        labels: sortedBrands.map(x => x[0]),
+        datasets: [{
+            label: 'Product Count',
+            data: sortedBrands.map(x => x[1]),
+            backgroundColor: '#dc2626'
+        }]
+    }, 'Top Brands');
+
+    // 3. Avg Price Chart (Bar)
+    const avgPriceData = Object.keys(categoryPrices).map(cat => {
+        const prices = categoryPrices[cat];
+        return {
+            cat,
+            avg: prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0
+        };
+    });
+    renderChart('priceChart', 'bar', {
+        labels: avgPriceData.map(x => x.cat),
+        datasets: [{
+            label: 'Avg Price (R)',
+            data: avgPriceData.map(x => x.avg),
+            backgroundColor: '#10b981'
+        }]
+    }, 'Avg Price by Category');
+
+    // 4. Updates Chart (Simulated Timeline)
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Mock data based on total updates or random variance
+    const mockData = days.map(() => Math.floor(Math.random() * (products.length / 5)) + 5);
+    renderChart('updatesChart', 'line', {
+        labels: days,
+        datasets: [{
+            label: 'Updates Activity',
+            data: mockData,
+            borderColor: '#3b82f6',
+            tension: 0.4,
+            fill: true,
+            backgroundColor: 'rgba(59, 130, 246, 0.1)'
+        }]
+    }, 'Price Updates (Last 7 Days)');
+}
+
+function renderChart(canvasId, type, data, title) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+
+    chartInstances[canvasId] = new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: type === 'doughnut' ? 'right' : 'top' },
+                title: { display: false }
+            }
+        }
+    });
 }
 
 // Display top products
 function displayTopProducts(products) {
     const tbody = document.getElementById('topProductsTable');
+    if (!tbody) return;
 
     if (products.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center text-muted py-4">
-                    No products found
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No products found</td></tr>`;
         return;
     }
 
@@ -118,7 +226,7 @@ function displayTopProducts(products) {
         return `
             <tr>
                 <td><strong>#${index + 1}</strong></td>
-                <td>${product.model || product.product_id || 'Unknown'}</td>
+                <td>${product.model || product.title || product.product_id || 'Unknown'}</td>
                 <td><span class="badge badge-primary">${product.brand || 'N/A'}</span></td>
                 <td>${product.category || 'N/A'}</td>
                 <td><strong>${offers.length}</strong></td>
@@ -132,20 +240,15 @@ function displayTopProducts(products) {
 // Display category statistics
 function displayCategoryStats(products) {
     const tbody = document.getElementById('categoryStatsTable');
+    if (!tbody) return;
 
-    // Group by category
     const categoryMap = {};
     products.forEach(product => {
         const cat = product.category || 'unknown';
-        if (!categoryMap[cat]) {
-            categoryMap[cat] = {
-                products: [],
-                totalUpdates: 0,
-                prices: []
-            };
-        }
-        categoryMap[cat].products.push(product);
-        categoryMap[cat].totalUpdates += product.offers?.length || 0;
+        if (!categoryMap[cat]) categoryMap[cat] = { count: 0, updates: 0, prices: [] };
+
+        categoryMap[cat].count++;
+        categoryMap[cat].updates += product.offers?.length || 0;
 
         if (product.offers) {
             product.offers.forEach(offer => {
@@ -156,13 +259,7 @@ function displayCategoryStats(products) {
     });
 
     if (Object.keys(categoryMap).length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                    No category data available
-                </td>
-            </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No category data available</td></tr>`;
         return;
     }
 
@@ -175,8 +272,8 @@ function displayCategoryStats(products) {
         return `
             <tr>
                 <td><strong>${category}</strong></td>
-                <td>${data.products.length}</td>
-                <td>${data.totalUpdates}</td>
+                <td>${data.count}</td>
+                <td>${data.updates}</td>
                 <td>R${avgPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                 <td>R${minPrice.toLocaleString()}</td>
                 <td>R${maxPrice.toLocaleString()}</td>

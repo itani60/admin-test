@@ -13,28 +13,10 @@ let alertStatusChart = null;
 let topUsersChart = null;
 let notificationMethodsChart = null;
 
-// Setup sidebar toggle
-function setupSidebar() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-
-    if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    setupSidebar();
+
     setupEventListeners();
     loadPriceAlertStats();
     checkLoginState();
@@ -52,11 +34,7 @@ function setupEventListeners() {
     // Initialize custom status dropdown
     initializeStatusDropdown();
 
-    // Attach logout handler
-    const userProfile = document.getElementById('userProfile');
-    if (userProfile) {
-        userProfile.addEventListener('click', handleLogout);
-    }
+
 }
 
 // Load price alert statistics from API
@@ -432,9 +410,15 @@ async function checkLoginState() {
 
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
+            const userRoleHeader = document.getElementById('userRoleHeader');
+            const dropdownUserName = document.getElementById('dropdownUserName');
+            const dropdownUserEmail = document.getElementById('dropdownUserEmail');
 
             if (userAvatar) userAvatar.textContent = initials;
             if (userName) userName.textContent = displayName;
+            if (userRoleHeader) userRoleHeader.textContent = (user.role || 'Super Admin').replace('_', ' ');
+            if (dropdownUserName) dropdownUserName.textContent = displayName;
+            if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
         } else {
             window.location.href = 'admin-login.html';
         }

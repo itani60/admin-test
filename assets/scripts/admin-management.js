@@ -31,6 +31,42 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeAccountTypeSelector();
 });
 
+// Check login state
+async function checkLoginState() {
+    if (typeof window.adminAWSAuthService !== 'undefined') {
+        try {
+            const result = await window.adminAWSAuthService.getUserInfo();
+            if (result.success && result.user) {
+                // Populate user info
+                const user = result.user;
+                const userNameEl = document.getElementById('userName');
+                const userRoleEl = document.getElementById('userRoleHeader');
+                const userAvatarEl = document.getElementById('userAvatar');
+                const dropdownNameEl = document.getElementById('dropdownUserName');
+                const dropdownEmailEl = document.getElementById('dropdownUserEmail');
+
+                if (userNameEl) userNameEl.textContent = user.givenName || 'Admin';
+                if (userRoleEl) userRoleEl.textContent = (user.role || 'Super Admin').replace('_', ' ');
+                if (userAvatarEl) userAvatarEl.textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
+
+                if (dropdownNameEl) dropdownNameEl.textContent = user.givenName || 'Admin';
+                if (dropdownEmailEl) dropdownEmailEl.textContent = user.email || '';
+
+                // Store current user role for RBAC
+                currentUserRole = user.role || 'viewer';
+            } else {
+                window.location.href = 'admin-login.html';
+            }
+        } catch (error) {
+            console.error('Error checking login state:', error);
+            window.location.href = 'admin-login.html';
+        }
+    } else {
+        // Retry if auth service is not ready yet
+        setTimeout(checkLoginState, 500);
+    }
+}
+
 
 
 // Setup event listeners

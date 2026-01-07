@@ -993,6 +993,9 @@
                     <td class="text-muted small">${date}</td>
                     <td>
                          ${canDelete ? `
+                            <button class="btn btn-sm btn-light text-primary me-1" onclick="renewUser('${user.email}')" title="Renew Access">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                             <button class="btn btn-sm btn-light text-danger" onclick="deleteUser('${user.email}')" title="Remove User">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -1066,6 +1069,28 @@
             } catch (error) {
                 console.error('Delete Error:', error);
                 showAlert('Failed to remove user. Please try again.', 'danger');
+            }
+        }
+
+        async function renewUser(email) {
+            const confirmed = await showConfirm(`Are you sure you want to renew access for ${email}?`);
+            if (!confirmed) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/${encodeURIComponent(email)}/renew`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Failed to renew user access');
+
+                showAlert(`User access renewed successfully.`, 'success');
+                fetchUsers();
+
+            } catch (error) {
+                console.error('Renew Error:', error);
+                showAlert('Failed to renew user access. Please try again.', 'danger');
             }
         }
 

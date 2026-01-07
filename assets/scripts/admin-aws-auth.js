@@ -14,6 +14,22 @@
     constructor() {
       this._profile = null;
       this._listeners = [];
+      this._startPeriodicCheck();
+    }
+
+    /**
+     * Start periodic session validation
+     * @private
+     */
+    _startPeriodicCheck() {
+      // Check session status every 60 seconds
+      setInterval(async () => {
+        // Only check if we have a local profile (active session)
+        if (this._profile) {
+          // getUserInfo handles 401/Expiry internally by calling clear() and logout handler
+          await this.getUserInfo();
+        }
+      }, 60000);
     }
 
     /**

@@ -203,6 +203,12 @@ function updateDashboard(realData, serverTimestamp) {
                     latEl.className = `metric-value ${ep.avgLatency !== null ? getLatencyClass(ep.avgLatency) : 'latency-ok'}`;
                 }
 
+                // Uptime - FIX: Actually update this element
+                const uptimeEl = document.getElementById(`uptime-${ep.id}`);
+                if (uptimeEl) {
+                    uptimeEl.innerText = ep.uptime;
+                }
+
                 // Last Check - FIX: Actually update this element
                 const timeEl = document.getElementById(`last-check-${ep.id}`);
                 if (timeEl) {
@@ -262,7 +268,7 @@ function renderEndpointCards(data = endpoints) {
                 </div>
                 <div class="metric-item">
                     <span class="metric-label">Uptime (24h)</span>
-                    <span class="metric-value">${ep.uptime}</span>
+                    <span class="metric-value" id="uptime-${ep.id}">${ep.uptime}</span>
                 </div>
                 <div class="metric-item">
                      <span class="metric-label">Last Check</span>

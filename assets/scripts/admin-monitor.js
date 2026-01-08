@@ -213,7 +213,30 @@ function updateDashboard(realData, serverTimestamp) {
                 const timeEl = document.getElementById(`last-check-${ep.id}`);
                 if (timeEl) {
                     // Check if a global timestamp was passed, or if specific endpoint has one (backend doesn't provide per-endpoint TS currently)
+                    // Check if a global timestamp was passed
                     timeEl.innerText = lastCheckTime;
+                }
+
+                // Success Rate - FIX: Calculate and update
+                const successEl = document.getElementById(`success-${ep.id}`);
+                if (successEl) {
+                    let rate = 100;
+                    // Metrics from backend: invocations, totalErrors
+                    const totalInv = metrics.invocations || 0;
+                    const totalErr = metrics.totalErrors || 0;
+
+                    if (totalInv > 0) {
+                        rate = ((totalInv - totalErr) / totalInv) * 100;
+                        // Clamp to 0-100 just in case
+                        rate = Math.max(0, Math.min(100, rate));
+                    }
+                    // If no invocations, we assume 100% or "N/A"? Let's stick to 100% (Green) for idle.
+
+                    successEl.innerText = `${rate.toFixed(1)}%`;
+                    // Optional: color code it
+                    if (rate < 90) successEl.style.color = '#dc2626'; // Red
+                    else if (rate < 99) successEl.style.color = '#f59e0b'; // Orange
+                    else successEl.style.color = ''; // Default (inherit/green)
                 }
             }
         }
@@ -274,9 +297,9 @@ function renderEndpointCards(data = endpoints) {
                      <span class="metric-label">Last Check</span>
                      <span class="metric-value" id="last-check-${ep.id}">Just now</span>
                 </div>
-                 <div class="metric-item">
+                <div class="metric-item">
                      <span class="metric-label">Success Rate</span>
-                     <span class="metric-value">100%</span>
+                     <span class="metric-value" id="success-${ep.id}">100%</span>
                 </div>
             </div>
             <div class="latency-sparkline" id="spark-${ep.id}">

@@ -4,404 +4,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Detail | CompareHubPrices Admin</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 -->
+    <title>Admin Activity Tracking | CompareHubPrices</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="assets/css/sidebar.css" rel="stylesheet">
+    <link href="assets/css/admin-monitor-view.css" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #10b981;
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #dc2626;
+            --danger: #f43f5e;
             --warning: #f59e0b;
-            --danger: #ef4444;
+            --info: #b91c1c;
             --dark: #1e293b;
-            --light: #f8fafc;
-            --border: #e2e8f0;
-            --bg-body: #f1f5f9;
-            --card-bg: #ffffff;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-body);
-            font-family: 'Inter', sans-serif;
-            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
         }
 
-        /* --- Layout --- */
-        .page-header {
-            background: white;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* Sidebar styles moved to assets/css/sidebar.css */
 
-        .breadcrumb-item a {
-            color: #64748b;
-            text-decoration: none;
-        }
-
-        .breadcrumb-item.active {
-            color: var(--dark);
-            font-weight: 600;
-        }
-
+        /* Main Content */
         .main-content {
-            padding: 2rem;
-            max-width: 1600px;
-            margin: 0 auto;
+            margin-left: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
         }
 
-        /* --- Cards --- */
-        .metric-card {
-            background: var(--card-bg);
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .header-logo img {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            height: 100%;
-            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .metric-card:hover {
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
         }
 
-        .metric-label {
-            color: #64748b;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
             margin-bottom: 0.5rem;
         }
 
-        .metric-value {
-            font-size: 2rem;
+        .dropdown-user-name {
             font-weight: 700;
-            color: var(--dark);
-            line-height: 1.1;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
         }
 
-        .metric-trend {
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
-        .trend-up {
-            color: var(--success);
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
         }
 
-        .trend-down {
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
             color: var(--danger);
         }
 
-        /* --- Charts Container --- */
-        .chart-container {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-            position: relative;
-            height: 350px;
-        }
-
-        /* --- Logs Table --- */
-        .logs-panel {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .logs-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8fafc;
-        }
-
-        .table thead th {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #64748b;
-            font-weight: 600;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table td {
-            vertical-align: middle;
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .badge-method {
-            font-size: 0.75rem;
-            padding: 0.25em 0.6em;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .badge-GET {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-POST {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-DELETE {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* --- Status --- */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            gap: 0.5rem;
-        }
-
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-down {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* --- Config List --- */
-        .config-list .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
-        }
-
-        .config-list .item:last-child {
-            border-bottom: none;
-        }
-
-        .config-list .key {
-            color: #64748b;
-        }
-
-        .config-list .val {
-            font-weight: 500;
-            font-family: monospace;
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
         }
     </style>
+
 </head>
+</head>
+<div class="page-loading-overlay" id="pageLoadingOverlay">
+    <div class="loading-content">
+        <div class="logo-container">
+            <img src="assets/logo.png" alt="CompareHubPrices" class="logo-img">
+        </div>
+        <div class="modern-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <h4>Loading...</h4>
+        <p>Please wait while we load </p>
+    </div>
+</div>
 
 <body>
-
-    <!-- Header -->
-    <div class="page-header">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="admin-monitor.html">Monitor</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Service Details</li>
-                </ol>
-            </nav>
-            <div class="d-flex align-items-center gap-3">
-                <h2 class="mb-0 fw-bold">Wishlist Service</h2>
-                <span class="status-badge status-active">
-                    <i class="fas fa-check-circle"></i> Operational
-                </span>
-            </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin-communications.html" class="sb9-tile">
+                <i class="fas fa-bullhorn"></i>
+                <span>Comms</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-settings.html" class="sb9-tile">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="admin-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
         </div>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
-            <button class="btn btn-dark btn-sm"><i class="fas fa-cog me-2"></i>Configure</button>
-        </div>
-    </div>
+    </aside>
 
-    <!-- Main Content -->
     <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">loading...</div>
+                        <div class="user-role" id="userRoleHeader">loading...</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
 
-        <!-- Top Metrics Row -->
-        <div class="row g-4 mb-4">
-            <!-- Latency -->
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">Avg. Latency (24h)</div>
-                    <div class="metric-value">45ms</div>
-                    <div class="metric-trend trend-up">
-                        <i class="fas fa-arrow-down"></i> 12% improvement
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">loading...</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">loading...</div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Requests -->
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">Total Requests</div>
-                    <div class="metric-value">124.5k</div>
-                    <div class="metric-trend text-muted">
-                        <i class="fas fa-minus"></i> Stable
-                    </div>
+        </header>
+
+        <!-- Monitoring View Content -->
+        <div class="header-design-modern">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2" style="font-size: 0.85rem; padding:0; background:none;">
+                        <li class="breadcrumb-item"><a href="admin-monitor.html"
+                                class="text-decoration-none text-muted">Monitor</a></li>
+                        <li class="breadcrumb-item active text-muted" aria-current="page">Service Details</li>
+                    </ol>
+                </nav>
+                <h2>Wishlist Service</h2>
+                <div class="status-text">
+                    <span class="status-indicator"></span>
+                    Operational &bull; v2.4.0 &bull; <span class="text-success">99.99% Uptime</span>
                 </div>
             </div>
-            <!-- Availability -->
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">Availability</div>
-                    <div class="metric-value text-success">99.99%</div>
-                    <div class="metric-trend trend-up">
-                        <i class="fas fa-check"></i> Within SLA
-                    </div>
-                </div>
-            </div>
-            <!-- Errors -->
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">Error Rate</div>
-                    <div class="metric-value">0.02%</div>
-                    <div class="metric-trend text-muted">
-                        <small>Last incident: 4d ago</small>
-                    </div>
-                </div>
+            <div class="header-btn-group">
+                <button class="btn-modern-light"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Main Chart Column -->
-            <div class="col-lg-8">
-                <!-- Latency Chart -->
-                <div class="chart-container">
-                    <h5 class="fw-bold mb-4">Latency & Traffic Volume</h5>
-                    <canvas id="mainChart"></canvas>
+        <div class="details-content">
+            <!-- Top Metrics Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <!-- Design 56: Clean & Modern Card -->
+                    <div class="stat-card-design-a">
+                        <div class="design-a-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="design-a-content">
+                            <div class="design-a-label">Avg. Latency</div>
+                            <div class="design-a-number" id="avgLatencyValue">--</div>
+                            <div class="design-a-change pos" id="avgLatencyChange">
+                                <i class="fas fa-arrow-down"></i> --%
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Recent Logs -->
-                <div class="logs-panel">
-                    <div class="logs-header">
-                        <h5 class="m-0 fw-bold">Recent Live Logs</h5>
-                        <input type="text" class="form-control form-control-sm w-auto" placeholder="Filter logs...">
+                <div class="col-md-3">
+                    <!-- Design 57: Vibrant Gradient Card -->
+                    <div class="stat-card-design-b">
+                        <div class="design-b-top">
+                            <div class="design-b-icon"><i class="fas fa-server"></i></div>
+                            <span class="design-b-pill" id="totalRequestsChange"><i class="fas fa-arrow-up"></i>
+                                --%</span>
+                        </div>
+                        <div class="design-b-value" id="totalRequestsValue">--</div>
+                        <div class="design-b-label">Total Requests</div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Method</th>
-                                    <th>Time</th>
-                                    <th>Message</th>
-                                    <th>Request ID</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">200</span></td>
-                                    <td><span class="badge-method badge-POST">POST</span></td>
-                                    <td>20:45:12</td>
-                                    <td>Item added to wishlist: iPhone 15 Pro</td>
-                                    <td class="text-muted small font-monospace">req-8a9d...</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">200</span></td>
-                                    <td><span class="badge-method badge-GET">GET</span></td>
-                                    <td>20:44:55</td>
-                                    <td>Retrieved wishlist items (Count: 12)</td>
-                                    <td class="text-muted small font-monospace">req-7b2c...</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-danger bg-opacity-10 text-danger">404</span></td>
-                                    <td><span class="badge-method badge-DELETE">DELETE</span></td>
-                                    <td>20:42:30</td>
-                                    <td>Item not found for deletion</td>
-                                    <td class="text-muted small font-monospace">req-6c1f...</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">200</span></td>
-                                    <td><span class="badge-method badge-GET">GET</span></td>
-                                    <td>20:41:12</td>
-                                    <td>Price Alert Check Triggered</td>
-                                    <td class="text-muted small font-monospace">req-5d0e...</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-success bg-opacity-10 text-success">200</span></td>
-                                    <td><span class="badge-method badge-POST">POST</span></td>
-                                    <td>20:40:05</td>
-                                    <td>New Wishlist created for User #882</td>
-                                    <td class="text-muted small font-monospace">req-4e9d...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </div>
+                <div class="col-md-3">
+                    <!-- Design 58: Glassmorphism Card -->
+                    <div class="stat-card-design-c">
+                        <div class="design-c-header">
+                            <span class="design-c-title">Availability</span>
+                            <i class="fas fa-check-circle design-c-icon"></i>
+                        </div>
+                        <div class="design-c-main">
+                            <span class="design-c-num" id="availabilityValue">--%</span>
+                            <span class="design-c-trend" id="availabilityText">--</span>
+                        </div>
                     </div>
-                    <div class="p-3 text-center border-top">
-                        <button class="btn btn-sm btn-link text-decoration-none">View All in CloudWatch</button>
+                </div>
+                <div class="col-md-3">
+                    <!-- Design 62: Circle Progress Card (Error Rate) -->
+                    <div class="stat-card-design-g">
+                        <div class="design-g-ring" style="border-top-color: #ef4444;" id="errorRateValue">--%</div>
+                        <div class="design-g-content">
+                            <h4>Error Rate</h4>
+                            <div id="errorRateStatus">--</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Side Panel -->
-            <div class="col-lg-4">
-                <!-- Configuration Card -->
-                <div class="chart-container h-auto mb-4">
-                    <h6 class="fw-bold mb-3 text-uppercase text-muted small">Configuration</h6>
-                    <div class="config-list">
-                        <div class="item">
-                            <span class="key">Function Name</span>
-                            <span class="val">wishlist-api-prod</span>
+            <!-- Row 1: Main Chart & Configuration -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="chart-container-view">
+                        <h5 class="fw-bold mb-4">Latency & Traffic Volume</h5>
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-container-view">
+                        <h6 class="fw-bold mb-3 text-uppercase text-muted small">Configuration</h6>
+                        <div class="config-list">
+                            <div class="item"><span class="key">Function Name</span><span
+                                    class="val">wishlist-api-prod</span></div>
+                            <div class="item"><span class="key">Region</span><span class="val">af-south-1</span></div>
+                            <div class="item"><span class="key">Memory Size</span><span class="val">128 MB</span></div>
+                            <div class="item"><span class="key">Timeout</span><span class="val">30s</span></div>
+                            <div class="item"><span class="key">Runtime</span><span class="val">Node.js 18.x</span>
+                            </div>
+                            <div class="item"><span class="key">Endpoint</span><span class="val text-truncate"
+                                    style="max-width: 150px;">https://api.hub...</span></div>
                         </div>
-                        <div class="item">
-                            <span class="key">Region</span>
-                            <span class="val">af-south-1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Logs & Errors -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="logs-panel">
+                        <div class="logs-header">
+                            <h5 class="m-0 fw-bold">Recent Live Logs</h5>
+                            <input type="text" class="form-control form-control-sm w-auto" placeholder="Filter logs...">
                         </div>
-                        <div class="item">
-                            <span class="key">Memory Size</span>
-                            <span class="val">128 MB</span>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Method</th>
+                                        <th>Time</th>
+                                        <th>Message</th>
+                                        <th>Request ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Loading logs...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="item">
-                            <span class="key">Timeout</span>
-                            <span class="val">30s</span>
-                        </div>
-                        <div class="item">
-                            <span class="key">Runtime</span>
-                            <span class="val">Node.js 18.x</span>
-                        </div>
-                        <div class="item">
-                            <span class="key">Endpoint</span>
-                            <span class="val text-truncate" style="max-width: 150px;">https://api.hub...</span>
+                        <div class="p-3 text-center border-top">
+                            <button class="btn btn-sm btn-link text-decoration-none">View All Logs</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Errors Breakdown -->
-                <div class="chart-container h-auto">
-                    <h6 class="fw-bold mb-3 text-uppercase text-muted small">Errors by Type (24h)</h6>
-                    <div style="position: relative; height: 250px; width: 100%;">
-                        <canvas id="errorChart"></canvas>
-                    </div>
-                    <div class="mt-3 small text-muted text-center">
-                        Most errors are client-side (404/400).
+                <div class="col-lg-4">
+                    <div class="chart-container-view">
+                        <h6 class="fw-bold mb-3 text-uppercase text-muted small">Errors by Type (24h)</h6>
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="errorChart"></canvas>
+                        </div>
+                        <div class="mt-3 small text-muted text-center">Most errors are client-side (404/400).</div>
                     </div>
                 </div>
             </div>
@@ -409,83 +560,94 @@
 
     </div>
 
-    <!-- Chart Logic -->
-    <script>
-        // Main Traffic & Latency Chart
-        const ctxMain = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctxMain, {
-            type: 'line',
-            data: {
-                labels: ['16:00', '17:00', '18:00', '19:00', '20:00', '21:00'],
-                datasets: [
-                    {
-                        label: 'Latency (ms)',
-                        data: [42, 45, 48, 44, 46, 45],
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        borderWidth: 2,
-                        yAxisID: 'y',
-                        fill: true,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Requests',
-                        data: [1200, 1500, 2100, 1800, 1600, 1400],
-                        borderColor: '#94a3b8',
-                        borderWidth: 1,
-                        borderDash: [5, 5],
-                        yAxisID: 'y1',
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { position: 'top' }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Latency (ms)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'Requests/hr' }
-                    }
-                }
-            }
-        });
 
-        // Error Breakdown Doughnut
-        const ctxErr = document.getElementById('errorChart').getContext('2d');
-        new Chart(ctxErr, {
-            type: 'doughnut',
-            data: {
-                labels: ['404 Not Found', '400 Bad Request', '500 Internal', '403 Forbidden'],
-                datasets: [{
-                    data: [65, 25, 5, 5],
-                    backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#64748b'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { boxWidth: 10, usePointStyle: true } }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+
+    <script src="assets/scripts/sidebar.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
+    <script>
+        // Check login state
+        function checkLoginState() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.getUserInfo().then(result => {
+                    if (result.success && result.user) {
+                        // Populate user info
+                        const user = result.user;
+                        document.getElementById('userName').textContent = user.givenName || 'Admin';
+                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
+                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
+
+                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
+                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
+                    } else {
+                        window.location.href = 'admin-login.html';
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkLoginState);
+
+        function logout() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.logout();
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Dropdown Logic for Target Audience
+        function toggleAudienceDropdown() {
+            const dropdown = document.getElementById('audienceDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectAudience(value, text) {
+            document.getElementById('targetAudience').value = value;
+            document.getElementById('audienceDropdownText').textContent = text;
+
+            // Update visual selection
+            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
+            items.forEach(item => item.classList.remove('selected'));
+
+            items.forEach(item => {
+                if (item.textContent === text) item.classList.add('selected');
+            });
+
+            toggleAudienceDropdown();
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+            // User Profile Dropdown
+            if (!event.target.closest('.user-profile')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
                 }
             }
-        });
+
+            // Audience Dropdown
+            if (!event.target.closest('#audienceDropdown')) {
+                const dropdown = document.getElementById('audienceDropdown');
+                if (dropdown && dropdown.classList.contains('active')) {
+                    dropdown.classList.remove('active');
+                }
+            }
+        };
     </script>
 
+
+    <script src="assets/scripts/admin-monitor-view.js"></script>
 </body>
 
 </html>

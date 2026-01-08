@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/sidebar.css" rel="stylesheet">
-    <link href="assets/css/admin-monitor-view.css" rel="stylesheet">
+    <link href="assets/css/admin-monitor.css" rel="stylesheet">
 
     <style>
         :root {
@@ -413,151 +413,139 @@
                 </div>
             </div>
         </header>
-
-        <!-- Monitoring View Content -->
-        <div class="header-design-modern">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-2" style="font-size: 0.85rem; padding:0; background:none;">
-                        <li class="breadcrumb-item"><a href="admin-monitor.html"
-                                class="text-decoration-none text-muted">Monitor</a></li>
-                        <li class="breadcrumb-item active text-muted" aria-current="page">Service Details</li>
-                    </ol>
-                </nav>
-                <h2>Wishlist Service</h2>
-                <div class="status-text">
-                    <span class="status-indicator"></span>
-                    Operational &bull; v2.4.0 &bull; <span class="text-success">99.99% Uptime</span>
+        <div class="monitor-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold mb-1">System Health Monitor</h1>
+                    <p class="text-muted">Real-time status of critical endpoints and services</p>
                 </div>
+                <button class="btn btn-primary" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt me-2"></i> Refresh
+                </button>
             </div>
-            <div class="header-btn-group">
-                <button class="btn-modern-light"><i class="fas fa-sync-alt me-2"></i>Refresh</button>
-            </div>
-        </div>
 
-        <div class="details-content">
-            <!-- Top Metrics Row -->
-            <div class="row g-4 mb-4">
-                <div class="col-md-3">
-                    <!-- Design 56: Clean & Modern Card -->
-                    <div class="stat-card-design-a">
-                        <div class="design-a-icon"><i class="fas fa-bolt"></i></div>
-                        <div class="design-a-content">
-                            <div class="design-a-label">Avg. Latency</div>
-                            <div class="design-a-number" id="avgLatencyValue">--</div>
-                            <div class="design-a-change pos" id="avgLatencyChange">
-                                <i class="fas fa-arrow-down"></i> --%
-                            </div>
-                        </div>
-                    </div>
+            <!-- Status Banner -->
+            <div class="status-banner">
+                <div class="status-info">
+                    <h2>All Systems Operational</h2>
+                    <p>Core services are running within expected parameters. <span class="text-muted ms-2">Last check:
+                            Just now</span></p>
                 </div>
-                <div class="col-md-3">
-                    <!-- Design 57: Vibrant Gradient Card -->
-                    <div class="stat-card-design-b">
-                        <div class="design-b-top">
-                            <div class="design-b-icon"><i class="fas fa-server"></i></div>
-                            <span class="design-b-pill" id="totalRequestsChange"><i class="fas fa-arrow-up"></i>
-                                --%</span>
-                        </div>
-                        <div class="design-b-value" id="totalRequestsValue">--</div>
-                        <div class="design-b-label">Total Requests</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <!-- Design 58: Glassmorphism Card -->
-                    <div class="stat-card-design-c">
-                        <div class="design-c-header">
-                            <span class="design-c-title">Availability</span>
-                            <i class="fas fa-check-circle design-c-icon"></i>
-                        </div>
-                        <div class="design-c-main">
-                            <span class="design-c-num" id="availabilityValue">--%</span>
-                            <span class="design-c-trend" id="availabilityText">--</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <!-- Design 62: Circle Progress Card (Error Rate) -->
-                    <div class="stat-card-design-g">
-                        <div class="design-g-ring" style="border-top-color: #ef4444;" id="errorRateValue">--%</div>
-                        <div class="design-g-content">
-                            <h4>Error Rate</h4>
-                            <div id="errorRateStatus">--</div>
-                        </div>
-                    </div>
+                <div class="status-indicator-large">
+                    <div class="status-indicator-ring"></div>
+                    <span>Active</span>
                 </div>
             </div>
 
-            <!-- Row 1: Main Chart & Configuration -->
-            <div class="row mb-4">
-                <div class="col-lg-8">
-                    <div class="chart-container-view">
-                        <h5 class="fw-bold mb-4">Latency & Traffic Volume</h5>
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="chart-container-view">
-                        <h6 class="fw-bold mb-3 text-uppercase text-muted small">Configuration</h6>
-                        <div class="config-list">
-                            <div class="item"><span class="key">Function Name</span><span
-                                    class="val">wishlist-api-prod</span></div>
-                            <div class="item"><span class="key">Region</span><span class="val">af-south-1</span></div>
-                            <div class="item"><span class="key">Memory Size</span><span class="val">128 MB</span></div>
-                            <div class="item"><span class="key">Timeout</span><span class="val">30s</span></div>
-                            <div class="item"><span class="key">Runtime</span><span class="val">Node.js 18.x</span>
-                            </div>
-                            <div class="item"><span class="key">Endpoint</span><span class="val text-truncate"
-                                    style="max-width: 150px;">https://api.hub...</span></div>
-                        </div>
-                    </div>
+            <!-- Filter Dropdown -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0"><i class="fas fa-network-wired me-2 text-muted"></i> Active Endpoints</h5>
+                <div class="dropdown">
+                    <button class="btn btn-white bg-white border dropdown-toggle py-2 px-3 shadow-sm" type="button"
+                        id="filterDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span id="filterDropdownText"><i class="fas fa-filter me-2 text-primary"></i> All
+                            Endpoints</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" aria-labelledby="filterDropdownBtn"
+                        style="border-radius: 12px;">
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#" data-value="all"><i
+                                    class="fas fa-globe me-2 text-muted"></i> All Endpoints</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header text-uppercase small fw-bold mt-2 text-primary">Business Users
+                            </h6>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#"
+                                data-value="business-register"><i class="fas fa-briefcase me-2 text-muted"></i>
+                                Register</a></li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#"
+                                data-value="business-login"><i class="fas fa-building me-2 text-muted"></i> Login</a>
+                        </li>
+
+                        <li>
+                            <h6 class="dropdown-header text-uppercase small fw-bold mt-2 text-info">Regular Users</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#" data-value="register"><i
+                                    class="fas fa-user-plus me-2 text-muted"></i> Register</a></li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#" data-value="login"><i
+                                    class="fas fa-sign-in-alt me-2 text-muted"></i> Login</a></li>
+
+                        <li>
+                            <h6 class="dropdown-header text-uppercase small fw-bold mt-2">Shared Services</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#" data-value="logout"><i
+                                    class="fas fa-sign-out-alt me-2 text-muted"></i> Logout</a></li>
+
+                        <li>
+                            <h6 class="dropdown-header text-uppercase small fw-bold mt-2">User Features</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#"
+                                data-value="price-alerts"><i class="fas fa-bell me-2 text-muted"></i> Price Alert</a>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#" data-value="wishlist"><i
+                                    class="fas fa-heart me-2 text-muted"></i> Wishlist</a></li>
+
+                        <li>
+                            <h6 class="dropdown-header text-uppercase small fw-bold mt-2">Account Recovery</h6>
+                        </li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#"
+                                data-value="forgot-password"><i class="fas fa-key me-2 text-muted"></i> Forgot
+                                Password</a></li>
+                        <li><a class="dropdown-item filter-option rounded px-3 py-2" href="#"
+                                data-value="reset-password"><i class="fas fa-unlock-alt me-2 text-muted"></i> Reset
+                                Password</a></li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Row 2: Logs & Errors -->
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="logs-panel">
-                        <div class="logs-header">
-                            <h5 class="m-0 fw-bold">Recent Live Logs</h5>
-                            <input type="text" class="form-control form-control-sm w-auto" placeholder="Filter logs...">
+            <!-- Endpoint Grid -->
+            <div class="endpoint-grid" id="endpointGrid">
+                <!-- Cards will be injected by JS -->
+            </div>
+
+            <!-- Live Stats & Logs -->
+            <div class="live-monitor-section">
+                <!-- Charts/Stats -->
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <div class="monitor-title">
+                            <i class="fas fa-chart-area text-primary"></i> System Load
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Status</th>
-                                        <th>Method</th>
-                                        <th>Time</th>
-                                        <th>Message</th>
-                                        <th>Request ID</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="logsTableBody">
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted">Loading logs...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="badge bg-light text-dark">Live (1m)</div>
+                    </div>
+                    <div class="chart-container-wrapper">
+                        <canvas id="loadChart"></canvas>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="text-muted small">Total Requests</div>
+                            <div class="fw-bold fs-4">24.5K</div>
+                            <div class="text-success small"><i class="fas fa-arrow-up"></i> 12% vs last hr</div>
                         </div>
-                        <div class="p-3 text-center border-top">
-                            <button class="btn btn-sm btn-link text-decoration-none">View All Logs</button>
+                        <div class="col-6">
+                            <div class="text-muted small">Error Rate</div>
+                            <div class="fw-bold fs-4 text-success">0.02%</div>
+                            <div class="text-muted small">Within limits</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-4">
-                    <div class="chart-container-view">
-                        <h6 class="fw-bold mb-3 text-uppercase text-muted small">Errors by Type (24h)</h6>
-                        <div style="position: relative; height: 250px; width: 100%;">
-                            <canvas id="errorChart"></canvas>
+                <!-- Terminal/Logs -->
+                <div class="monitor-card" style="background: #0f172a; color: white;">
+                    <div class="monitor-header">
+                        <div class="monitor-title" style="color: white;">
+                            <i class="fas fa-terminal text-info"></i> Live Logs
                         </div>
-                        <div class="mt-3 small text-muted text-center">Most errors are client-side (404/400).</div>
+                        <div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
+                    </div>
+                    <div class="log-container" id="liveLogs">
+                        <!-- Logs injected here -->
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
 
@@ -565,7 +553,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-
+    <script src="assets/scripts/admin-monitor.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
     <script>
@@ -647,7 +635,6 @@
     </script>
 
 
-    <script src="assets/scripts/admin-monitor-view.js"></script>
 </body>
 
 </html>

@@ -236,7 +236,7 @@ function updateDashboard(realData, serverTimestamp) {
                     // Optional: color code it
                     if (rate < 90) successEl.style.color = '#dc2626'; // Red
                     else if (rate < 99) successEl.style.color = '#f59e0b'; // Orange
-                    else successEl.style.color = ''; // Default (inherit/green)
+                    else successEl.style.color = '#10b981'; // Green
                 }
             }
         }

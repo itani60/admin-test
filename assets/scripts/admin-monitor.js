@@ -47,18 +47,18 @@ const endpoints = [
         name: 'Business Registration',
         url: '/api/v1/business/register',
         icon: 'fa-briefcase',
-        status: 'active',
-        avgLatency: 140,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'business-login',
         name: 'Business Login',
         url: '/api/v1/business/login',
         icon: 'fa-building',
-        status: 'active',
-        avgLatency: 95,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     // Core Services - Regular Users
     {
@@ -66,18 +66,18 @@ const endpoints = [
         name: 'User Registration',
         url: '/api/v1/user/register',
         icon: 'fa-user-plus',
-        status: 'active',
-        avgLatency: 120,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'login',
         name: 'User Login',
         url: '/api/v1/auth/login',
         icon: 'fa-sign-in-alt',
-        status: 'active',
-        avgLatency: 85,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     // User Features
     {
@@ -85,45 +85,45 @@ const endpoints = [
         name: 'Price Alerts Engine',
         url: '/api/v1/price-alert',
         icon: 'fa-bell',
-        status: 'active',
-        avgLatency: 210,
-        uptime: '99.5%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'forgot-password',
         name: 'Forgot Password',
         url: '/api/v1/user/forgot-password',
         icon: 'fa-key',
-        status: 'active',
-        avgLatency: 150,
-        uptime: '99.8%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'wishlist',
         name: 'Wishlist Service',
         url: '/api/v1/user/wishlist',
         icon: 'fa-heart',
-        status: 'active',
-        avgLatency: 95,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'reset-password',
         name: 'Reset Password',
         url: '/api/v1/user/reset-password',
         icon: 'fa-unlock-alt',
-        status: 'active',
-        avgLatency: 160,
-        uptime: '99.8%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     },
     {
         id: 'logout',
         name: 'Logout Service',
         url: '/api/v1/auth/logout',
         icon: 'fa-sign-out-alt',
-        status: 'active',
-        avgLatency: 45,
-        uptime: '99.9%'
+        status: 'pending',
+        avgLatency: '-',
+        uptime: '-'
     }
 ];
 

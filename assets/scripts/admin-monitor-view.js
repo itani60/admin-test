@@ -21,26 +21,21 @@ let errorChart = null;
  */
 async function initDashboard() {
     // 1. Initial Data Fetch
-    await Promise.all([
-        fetchMetrics(),
-        fetchLogs(),
-        fetchChartData()
-    ]);
+    await fetchDashboardData();
 
     // 2. Set up polling (every 30 seconds)
     setInterval(() => {
-        fetchMetrics();
-        fetchLogs();
+        fetchDashboardData();
     }, 30000); // 30s polling
 }
 
 /**
- * Fetch Key Metrics (Latency, Requests, Ability, Errors)
+ * Fetch All Dashboard Data (Single Endpoint)
  */
-async function fetchMetrics() {
+async function fetchDashboardData() {
     try {
         const token = localStorage.getItem('id_token');
-        const response = await fetch(`${API_BASE_URL}/metrics?service=${SERVICE_ID}`, {
+        const response = await fetch(API_BASE_URL, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -49,87 +44,69 @@ async function fetchMetrics() {
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
+        const result = await response.json();
 
-        updateMetricCard('avgLatency', data.latency, 'ms', false);
-        updateMetricCard('totalRequests', data.requests, 'k', true);
-        updateMetricCard('availability', data.availability, '%', true);
-        updateMetricCard('errorRate', data.errorRate, '%', false);
-
-    } catch (error) {
-        console.error('Failed to fetch metrics:', error);
-        // Fallback to '-' if fetch fails
-        updateMetricCard('avgLatency', '-', '', false);
-        updateMetricCard('totalRequests', '-', '', false);
-        updateMetricCard('availability', '-', '', false);
-        updateMetricCard('errorRate', '-', '', false);
-    }
-}
-
-/**
- * Fetch Logs
- */
-async function fetchLogs() {
-    const tableBody = document.getElementById('logsTableBody');
-    if (!tableBody) return;
-
-    try {
-        const token = localStorage.getItem('id_token');
-        const response = await fetch(`${API_BASE_URL}/logs?service=${SERVICE_ID}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const logs = await response.json();
-
-        if (!logs || logs.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No recent logs found.</td></tr>';
+        if (!result.success || !result.data) {
+            console.warn('Monitor returned unsuccessful or empty data');
             return;
         }
 
-        tableBody.innerHTML = logs.map(log => `
-            <tr>
-                <td><span class="badge ${getStatusBadgeClass(log.status)}">${log.status}</span></td>
-                <td><span class="badge-method badge-${log.method}">${log.method}</span></td>
-                <td>${formatTime(log.timestamp)}</td>
-                <td>${log.message}</td>
-                <td class="text-muted small font-monospace">${log.requestId}</td>
-            </tr>
-        `).join('');
+        // 1. Extract Details for THIS Service
+        const serviceMetrics = result.data[SERVICE_ID];
+
+        if (!serviceMetrics) {
+            console.warn(`Service ID "${SERVICE_ID}" not found in monitor response.`);
+            // Update UI to show "Unknown" or disconnect
+            updateMetricCard('avgLatency', '-', '', false);
+            updateMetricCard('totalRequests', '-', '', false);
+            updateMetricCard('availability', '-', '', false);
+            updateMetricCard('errorRate', '-', '', false);
+            return;
+        }
+
+        // 2. Update Metric Cards
+        updateMetricCard('avgLatency', serviceMetrics.avgLatency !== null ? serviceMetrics.avgLatency : '-', 'ms', false);
+        updateMetricCard('totalRequests', serviceMetrics.invocations, '', true);
+        updateMetricCard('availability', serviceMetrics.uptime, '', true);
+
+        // Calculate Error Rate for display
+        const total = serviceMetrics.invocations || 0;
+        const totalErrs = (serviceMetrics.errors || 0) + (serviceMetrics.logErrors || 0);
+        let errRate = 0;
+        if (total > 0) errRate = ((totalErrs / total) * 100).toFixed(2);
+        updateMetricCard('errorRate', errRate, '%', false);
+
+        // 3. Update Charts (Accumulate data points)
+        processMainChart(result.timestamp, serviceMetrics);
+        renderErrorChart(serviceMetrics);
+
+        // 4. Filter and Render Logs
+        const serviceLogs = result.logs ? result.logs.filter(l => l.functionId === SERVICE_ID) : [];
+        renderLogs(serviceLogs);
 
     } catch (error) {
-        console.error('Failed to fetch logs:', error);
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load logs.</td></tr>';
+        console.error('Failed to fetch dashboard data:', error);
     }
 }
 
-/**
- * Fetch Chart Data
- */
-async function fetchChartData() {
-    try {
-        const token = localStorage.getItem('id_token');
-        const response = await fetch(`${API_BASE_URL}/charts?service=${SERVICE_ID}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+function renderLogs(logs) {
+    const tableBody = document.getElementById('logsTableBody');
+    if (!tableBody) return;
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-
-        if (data.mainChart) renderMainChart(data.mainChart);
-        if (data.errorChart) renderErrorChart(data.errorChart);
-
-    } catch (error) {
-        console.error('Failed to fetch chart data:', error);
+    if (!logs || logs.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No recent logs found for this service.</td></tr>';
+        return;
     }
+
+    tableBody.innerHTML = logs.map(log => `
+        <tr>
+            <td><span class="badge ${getStatusBadgeClass(log.type === 'ERROR' ? 500 : 200)}">${log.type}</span></td>
+            <td><span class="badge-method badge-GET">LOG</span></td>
+            <td>${formatTime(log.timestamp)}</td>
+            <td title="${log.message}" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${log.message}</td>
+            <td class="text-muted small font-monospace">-</td>
+        </tr>
+    `).join('');
 }
 
 // --- Rendering Functions ---
@@ -144,46 +121,7 @@ function updateMetricCard(type, value, unit, isPositiveTrend) {
     // Note: This matches the IDs added to the HTML
 }
 
-function renderMainChart(data) {
-    const ctx = document.getElementById('mainChart');
-    if (!ctx) return;
 
-    if (mainChart) mainChart.destroy();
-
-    mainChart = new Chart(ctx.getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: data.labels,
-            datasets: [
-                {
-                    label: 'Avg Latency (ms)',
-                    data: data.latency,
-                    borderColor: '#3b82f6',
-                    yAxisID: 'y',
-                    tension: 0.4
-                },
-                {
-                    label: 'Traffic (req/min)',
-                    data: data.traffic,
-                    borderColor: '#10b981',
-                    yAxisID: 'y1',
-                    tension: 0.4,
-                    borderDash: [5, 5]
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { position: 'top' } },
-            scales: {
-                y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Latency (ms)' } },
-                y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Requests' } }
-            }
-        }
-    });
-}
 
 function renderErrorChart(data) {
     const ctx = document.getElementById('errorChart');

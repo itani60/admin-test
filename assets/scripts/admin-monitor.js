@@ -180,7 +180,8 @@ function updateDashboard(realData, serverTimestamp) {
         const metrics = realData[ep.id];
         if (metrics) {
             ep.status = metrics.status;
-            ep.avgLatency = metrics.avgLatency || 0;
+            // Use null check to distinguish 0 from null
+            ep.avgLatency = metrics.avgLatency !== null ? metrics.avgLatency : null;
             ep.uptime = metrics.uptime || '100%';
 
             // Update DOM Elements
@@ -196,8 +197,10 @@ function updateDashboard(realData, serverTimestamp) {
                 // Latency
                 const latEl = document.getElementById(`latency-${ep.id}`);
                 if (latEl) {
-                    latEl.innerText = `${ep.avgLatency}ms`;
-                    latEl.className = `metric-value ${getLatencyClass(ep.avgLatency)}`;
+                    const displayLatency = ep.avgLatency !== null ? `${ep.avgLatency}ms` : '-';
+                    latEl.innerText = displayLatency;
+                    // If null, use a neutral class or existing one
+                    latEl.className = `metric-value ${ep.avgLatency !== null ? getLatencyClass(ep.avgLatency) : 'latency-ok'}`;
                 }
 
                 // Last Check - FIX: Actually update this element

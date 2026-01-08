@@ -111,23 +111,95 @@ function renderLogs(logs) {
 
 // --- Rendering Functions ---
 
+// --- Rendering Functions ---
+
 function updateMetricCard(type, value, unit, isPositiveTrend) {
     const valueEl = document.getElementById(`${type}Value`);
-    const changeEl = document.getElementById(`${type}Change`) || document.getElementById(`${type}Status`) || document.getElementById(`${type}Text`);
+    // const changeEl = document.getElementById(`${type}Change`); 
 
     if (valueEl) valueEl.textContent = `${value}${unit}`;
-
-    // Update trend/status if applicable
-    // Note: This matches the IDs added to the HTML
 }
 
+function processMainChart(timestamp, metrics) {
+    const ctx = document.getElementById('mainChart');
+    if (!ctx) return;
 
+    if (!mainChart) {
+        mainChart = new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Avg Latency (ms)',
+                        data: [],
+                        borderColor: '#3b82f6',
+                        yAxisID: 'y',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Total Requests',
+                        data: [],
+                        borderColor: '#10b981',
+                        yAxisID: 'y1',
+                        tension: 0.4,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Latency (ms)' } },
+                    y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Requests (15m sum)' } }
+                }
+            }
+        });
+    }
 
-function renderErrorChart(data) {
+    const timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Add new data point
+    mainChart.data.labels.push(timeLabel);
+
+    const latency = metrics.avgLatency || 0;
+    const requests = metrics.invocations || 0;
+
+    mainChart.data.datasets[0].data.push(latency);
+    mainChart.data.datasets[1].data.push(requests);
+
+    // Keep only last 20 points
+    if (mainChart.data.labels.length > 20) {
+        mainChart.data.labels.shift();
+        mainChart.data.datasets[0].data.shift();
+        mainChart.data.datasets[1].data.shift();
+    }
+
+    mainChart.update();
+}
+
+function renderErrorChart(metrics) {
     const ctx = document.getElementById('errorChart');
     if (!ctx) return;
 
-    if (errorChart) errorChart.destroy();
+    // Derived values
+    const total = metrics.invocations || 0;
+    const errors = (metrics.errors || 0) + (metrics.logErrors || 0);
+    const success = Math.max(0, total - errors);
+
+    const data = {
+        labels: ['Success', 'Errors'],
+        values: [success, errors]
+    };
+
+    if (errorChart) {
+        errorChart.data.datasets[0].data = data.values;
+        errorChart.update();
+        return;
+    }
 
     errorChart = new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
@@ -135,7 +207,7 @@ function renderErrorChart(data) {
             labels: data.labels,
             datasets: [{
                 data: data.values,
-                backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+                backgroundColor: ['#10b981', '#ef4444'],
                 borderWidth: 0,
                 hoverOffset: 4
             }]

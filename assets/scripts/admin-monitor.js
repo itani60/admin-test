@@ -45,7 +45,7 @@ const endpoints = [
     {
         id: 'business-register',
         name: 'Business Registration',
-        url: '/api/v1/business/register',
+        url: 'https://hub.comparehubprices.co.za/business/business/register',
         icon: 'fa-briefcase',
         status: 'pending',
         avgLatency: '-',
@@ -54,7 +54,7 @@ const endpoints = [
     {
         id: 'business-login',
         name: 'Business Login',
-        url: '/api/v1/business/login',
+        url: 'https://hub.comparehubprices.co.za/business/business/login',
         icon: 'fa-building',
         status: 'pending',
         avgLatency: '-',
@@ -64,7 +64,7 @@ const endpoints = [
     {
         id: 'register',
         name: 'User Registration',
-        url: '/api/v1/user/register',
+        url: 'https://hub.comparehubprices.co.za/acc/auth/register',
         icon: 'fa-user-plus',
         status: 'pending',
         avgLatency: '-',
@@ -73,7 +73,7 @@ const endpoints = [
     {
         id: 'login',
         name: 'User Login',
-        url: '/api/v1/auth/login',
+        url: 'https://hub.comparehubprices.co.za/acc/auth/login',
         icon: 'fa-sign-in-alt',
         status: 'pending',
         avgLatency: '-',
@@ -83,7 +83,7 @@ const endpoints = [
     {
         id: 'price-alerts',
         name: 'Price Alerts Engine',
-        url: '/api/v1/price-alert',
+        url: 'https://hub.comparehubprices.co.za/price-alerts/alerts',
         icon: 'fa-bell',
         status: 'pending',
         avgLatency: '-',
@@ -92,7 +92,7 @@ const endpoints = [
     {
         id: 'forgot-password',
         name: 'Forgot Password',
-        url: '/api/v1/user/forgot-password',
+        url: 'https://hub.comparehubprices.co.za/acc/auth/forgot-password',
         icon: 'fa-key',
         status: 'pending',
         avgLatency: '-',
@@ -101,7 +101,7 @@ const endpoints = [
     {
         id: 'wishlist',
         name: 'Wishlist Service',
-        url: '/api/v1/user/wishlist',
+        url: 'https://hub.comparehubprices.co.za/wishlist/wishlist',
         icon: 'fa-heart',
         status: 'pending',
         avgLatency: '-',
@@ -110,7 +110,7 @@ const endpoints = [
     {
         id: 'reset-password',
         name: 'Reset Password',
-        url: '/api/v1/user/reset-password',
+        url: 'https://hub.comparehubprices.co.za/acc/auth/reset-password',
         icon: 'fa-unlock-alt',
         status: 'pending',
         avgLatency: '-',
@@ -119,7 +119,7 @@ const endpoints = [
     {
         id: 'logout',
         name: 'Logout Service',
-        url: '/api/v1/auth/logout',
+        url: 'https://hub.comparehubprices.co.za/acc/auth/logout',
         icon: 'fa-sign-out-alt',
         status: 'pending',
         avgLatency: '-',

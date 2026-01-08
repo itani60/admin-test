@@ -160,7 +160,11 @@ function processMainChart(timestamp, metrics) {
         });
     }
 
-    const timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeLabel = new Date().toLocaleTimeString('en-ZA', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Africa/Johannesburg'
+    });
 
     // Add new data point
     mainChart.data.labels.push(timeLabel);
@@ -234,7 +238,12 @@ function getStatusBadgeClass(status) {
 
 function formatTime(isoString) {
     const date = new Date(isoString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date.toLocaleTimeString('en-ZA', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Africa/Johannesburg'
+    });
 }
 
 

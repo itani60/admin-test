@@ -161,7 +161,7 @@ async function fetchSystemHealth() {
 
         if (result.success && result.data) {
             console.log('Monitor Data Received:', result.data); // Debug for testing
-            updateDashboard(result.data);
+            updateDashboard(result.data, result.timestamp);
         }
 
     } catch (error) {
@@ -170,7 +170,11 @@ async function fetchSystemHealth() {
     }
 }
 
-function updateDashboard(realData) {
+
+function updateDashboard(realData, serverTimestamp) {
+    // Pass server timestamp if available
+    const lastCheckTime = serverTimestamp ? new Date(serverTimestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+
     // Update endpoints array with real values
     endpoints.forEach(ep => {
         const metrics = realData[ep.id];
@@ -194,6 +198,13 @@ function updateDashboard(realData) {
                 if (latEl) {
                     latEl.innerText = `${ep.avgLatency}ms`;
                     latEl.className = `metric-value ${getLatencyClass(ep.avgLatency)}`;
+                }
+
+                // Last Check - FIX: Actually update this element
+                const timeEl = document.getElementById(`last-check-${ep.id}`);
+                if (timeEl) {
+                    // Check if a global timestamp was passed, or if specific endpoint has one (backend doesn't provide per-endpoint TS currently)
+                    timeEl.innerText = lastCheckTime;
                 }
             }
         }

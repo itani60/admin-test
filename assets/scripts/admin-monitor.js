@@ -161,7 +161,8 @@ async function fetchSystemHealth() {
 
         if (result.success && result.data) {
             console.log('Monitor Data Received:', result.data); // Debug for testing
-            updateDashboard(result.data, result.timestamp);
+            console.log('Monitor Data Received:', result.data); // Debug for testing
+            updateDashboard(result.data, result.timestamp, result.logs);
         }
 
     } catch (error) {
@@ -171,9 +172,14 @@ async function fetchSystemHealth() {
 }
 
 
-function updateDashboard(realData, serverTimestamp) {
+function updateDashboard(realData, serverTimestamp, recentLogs) {
     // Pass server timestamp if available
     const lastCheckTime = serverTimestamp ? new Date(serverTimestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+
+    // Render Logs
+    if (recentLogs && Array.isArray(recentLogs)) {
+        renderLiveLogs(recentLogs);
+    }
 
     // Update endpoints array with real values
     endpoints.forEach(ep => {
@@ -390,32 +396,31 @@ function getLatencyClass(ms) {
     return 'latency-bad';
 }
 
-function addLogEntry(ep) {
+function renderLiveLogs(logs) {
     const logContainer = document.getElementById('liveLogs');
     if (!logContainer) return;
 
-    const methods = ['GET', 'POST', 'PUT'];
-    const method = methods[Math.floor(Math.random() * methods.length)];
-    // Most success, rarely fail
-    const isSuccess = Math.random() > 0.05;
-    const status = isSuccess ? 200 : 500;
+    logContainer.innerHTML = ''; // Clear existing logs
 
-    // Create entry
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-        <span class="log-time">${new Date().toLocaleTimeString()}</span>
-        <span class="log-method">${method}</span>
-        <span class="log-status ${!isSuccess ? 'error' : ''}">${status}</span>
-        <span class="log-path">${ep.url}</span>
-    `;
-
-    logContainer.prepend(entry);
-
-    // Limit log size
-    if (logContainer.children.length > 50) {
-        logContainer.lastElementChild.remove();
+    if (logs.length === 0) {
+        logContainer.innerHTML = '<div class="text-center text-muted p-2">No active errors found.</div>';
+        return;
     }
+
+    logs.forEach(log => {
+        const ep = endpoints.find(e => e.id === log.functionId) || { name: log.functionId, url: '-' };
+        const time = new Date(log.timestamp).toLocaleTimeString();
+
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+            <span class="log-time">${time}</span>
+            <span class="log-method" style="color:#ef4444">ERROR</span>
+            <span class="log-status error">500</span>
+            <span class="log-path" title="${log.message}">${ep.name}: ${log.message}</span>
+        `;
+        logContainer.appendChild(entry);
+    });
 }
 
 function initLoadChart() {

@@ -311,6 +311,12 @@ function renderEndpointCards(data = endpoints) {
             <div class="latency-sparkline" id="spark-${ep.id}">
                 ${generateSparkBars(20)}
             </div>
+            
+            <div class="mt-3 text-center">
+                 <a href="admin-monitor-view.html?id=${ep.id}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-eye me-1"></i> View Details
+                 </a>
+            </div>
         </div>
     `).join('');
 }

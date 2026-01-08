@@ -4,230 +4,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Creator Studio | Admin</title>
+    <title>Creator Design Studio</title>
+    <!-- Dependencies -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@400;700&family=Outfit:wght@400;700&family=Roboto+Mono&display=swap"
         rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&display=swap"
-        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --bg: #f8f9fa;
-            --border: #e9ecef;
-            --text: #2c3e50;
+            --primary: #2563eb;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
             height: 100vh;
             overflow: hidden;
             display: flex;
         }
 
-        /* --- SIDEBAR --- */
+        /* SIDEBAR */
         .sidebar {
-            width: 280px;
-            background: white;
+            width: 260px;
+            background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            z-index: 1000;
+            z-index: 20;
         }
 
         .logo-area {
-            padding: 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo-area h4 {
+            padding: 20px;
             font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-        .tools-panel {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .asset-tray {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .asset-thumb {
-            width: 100%;
-            height: 80px;
-            border-radius: 6px;
-            cursor: pointer;
-            object-fit: cover;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-            background: #eee;
-        }
-
-        .asset-thumb:hover,
-        .asset-thumb.selected {
-            border-color: var(--accent);
-            opacity: 0.8;
-        }
-
-        .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #fafafa;
-        }
-
-        .upload-zone:hover {
-            border-color: var(--accent);
-            background: #f0f7ff;
-        }
-
-        /* --- MAIN CANVAS AREA --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .top-bar {
-            height: 60px;
-            background: white;
+            font-size: 1.2rem;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
+            color: #0f172a;
         }
 
-        .canvas-wrapper {
-            flex: 1;
-            background: #e9ecef;
-            /* Neutral bg for canvas */
-            padding: 40px;
-            overflow: auto;
-            display: flex;
-            align-items: center;
-            /* Center canvas vertically */
-            justify-content: center;
-            /* Center canvas horizontally */
+        .nav-tabs {
+            border-bottom: 1px solid var(--border);
         }
 
-        #designCanvas {
-            background: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            transform-origin: center top;
-            width: 1200px;
-            /* Fixed Base Width for scaling */
-            min-height: 600px;
-            position: relative;
-            overflow: hidden;
-            /* We will scale this element via CSS transform for zoom */
-        }
-
-        /* --- EDITABLE SLOTS --- */
-        .img-slot {
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .img-slot::after {
-            content: 'Click to Add Image';
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .nav-link {
+            border: none;
+            color: #64748b;
             font-size: 0.9rem;
-            color: #666;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
+            padding: 15px 10px;
         }
 
-        .img-slot:hover::after {
-            opacity: 1;
+        .nav-link.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            font-weight: 600;
         }
 
-        .img-slot.has-image::after {
-            display: none;
-        }
-
-        .img-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* --- TEMPLATE SELECTOR --- */
-        .template-selector {
-            width: 300px;
-            background: white;
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-        }
-
-        .template-list {
-            padding: 20px;
-            overflow-y: auto;
+        .sidebar-content {
             flex: 1;
+            overflow-y: auto;
+            padding: 15px;
         }
 
+        /* TEMPLATE CARDS */
         .template-card {
             border: 1px solid var(--border);
             border-radius: 8px;
-            margin-bottom: 15px;
             overflow: hidden;
+            margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .template-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
         }
 
-        .template-preview {
+        .t-preview {
             height: 100px;
             background: #eee;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
-            color: #aaa;
+            color: #94a3b8;
         }
 
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
 
-        /* =========================================
-           DESIGN STYLES (Imported & Scoped)
-           ========================================= */
+        #designCanvas {
+            width: 1000px;
+            height: 600px;
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* General Helpers for Designs */
+        /* PROPERTIES TOOLBAR (Top Bar) */
+        .properties-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s;
+        }
+
+        .properties-bar.active {
+            opacity: 1;
+            pointer-events: all;
+            top: 30px;
+        }
+
+        .prop-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 15px;
+            border-right: 1px solid #eee;
+        }
+
+        .prop-group:last-child {
+            border-right: none;
+        }
+
+        /* INTERACT STYLES */
+        .canvas-element {
+            position: absolute;
+            /* Allows free positioning */
+            cursor: grab;
+            user-select: none;
+            /* Prevent text selection while dragging container */
+            border: 1px dashed transparent;
+            min-width: 50px;
+        }
+
+        .canvas-element:hover {
+            border-color: var(--primary);
+        }
+
+        .canvas-element.selected {
+            border-color: var(--primary);
+            outline: 2px solid rgba(37, 99, 235, 0.1);
+        }
+
+        /* Content Editable Area within Element */
+        .element-content {
+            outline: none;
+            cursor: text;
+        }
+
+        /* IMAGE SLOTS */
+        .img-placeholder,
+        .img-slot {
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .img-placeholder:hover,
+        .img-slot:hover {
+            background: #e2e8f0;
+        }
+
+        .img-placeholder img,
+        .img-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+    </style>
+    <style>
+        /* --- MIGRATED TEMPLATE STYLES --- */
         .ls-2 {
             letter-spacing: 2px;
         }
@@ -240,12 +219,9 @@
             pointer-events: none;
         }
 
-        /* Disable pointer events on layout wrappers, enable on slots */
         .img-slot {
             pointer-events: auto;
         }
-
-        /* Re-enable for slots */
 
         /* Design 1: Bento */
         .d1-section {
@@ -351,7 +327,7 @@
             border-bottom: 1px solid #ddd;
         }
 
-        /* Design 4: Centered Arch */
+        /* Design 4: Center */
         .d4-section {
             padding: 40px;
             background: #fff;
@@ -382,7 +358,48 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* Design 6: Minimalist Gallery */
+        /* Design 5 */
+        .d5-section {
+            height: 600px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f9ff;
+        }
+
+        .d5-bg-slot {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .d5-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .d5-mini-grid {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .d5-mini-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Design 6: Gallery */
         .d6-section {
             display: flex;
             padding: 60px;
@@ -416,24 +433,13 @@
         }
 
         .d6-img {
-            margin: 100px auto;
+            height: 50%;
+            width: 100%;
+            object-fit: cover;
             border-radius: 20px;
         }
 
-        .d5-mini-grid {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .d5-mini-img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        /* Design 7: Split Diagonal */
+        /* Design 7 */
         .d7-section {
             display: flex;
             height: 600px;
@@ -462,7 +468,7 @@
             z-index: 1;
         }
 
-        /* Design 8: Typography Grid */
+        /* Design 8 */
         .d8-section {
             display: flex;
             padding: 40px;
@@ -500,7 +506,7 @@
             border-radius: 12px;
         }
 
-        /* Design 9: Circle Showcase */
+        /* Design 9 */
         .d9-section {
             height: 600px;
             display: flex;
@@ -540,47 +546,7 @@
             z-index: 1;
         }
 
-        /* Design 9: Circle Showcase */
-        .d9-section {
-            height: 600px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            position: relative;
-        }
-
-        .d9-circle {
-            width: 450px;
-            height: 450px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 10px solid white;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 2;
-        }
-
-        .d9-text-left {
-            position: absolute;
-            left: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 250px;
-            z-index: 1;
-            text-align: right;
-        }
-
-        .d9-text-right {
-            position: absolute;
-            right: 50px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 250px;
-            z-index: 1;
-        }
-
-        /* --- DESIGNS 10-20: LAYOUT VARIATIONS --- */
+        /* 10-40 Condensed */
         .d10-section {
             display: flex;
             flex-direction: column;
@@ -841,7 +807,6 @@
             z-index: 1;
         }
 
-        /* --- DESIGNS 21-30: SHAPES & OVERLAPS --- */
         .d21-section {
             height: 600px;
             display: flex;
@@ -887,25 +852,6 @@
         .d22-img {
             flex: 1;
             clip-path: polygon(20% 0%, 100% 0, 100% 100%, 0% 100%);
-        }
-
-        #designCanvas {
-            width: 1200px;
-            height: 600px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-            transform-origin: top center;
-            transition: transform 0.2s;
-            position: relative;
-            overflow: hidden;
-            /* Ensure bg doesn't spill */
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        /* Ensure template sections don't block the canvas background */
-        #designCanvas section {
-            background: transparent !important;
         }
 
         .d23-section {
@@ -1098,7 +1044,6 @@
             height: 100%;
         }
 
-        /* --- DESIGNS 31-40: MODERN & VIBRANT --- */
         .d31-section {
             height: 600px;
             background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
@@ -1381,1353 +1326,816 @@
             letter-spacing: 2px;
         }
 
-        /* Typography Override for Canvas */
-        #designCanvas h1 {
-            font-family: 'Playfair Display', serif;
-        }
-
-        #designCanvas h1.d1-title {
-            font-weight: 700;
-            font-size: 3rem;
-        }
-
-        [contenteditable]:hover {
-            outline: 1px dashed var(--accent);
-            cursor: text;
-        }
-
-        [contenteditable]:focus {
-            outline: 2px solid var(--accent);
-            background: rgba(52, 152, 219, 0.05);
+        /* Helpers */
+        #designCanvas h1,
+        #designCanvas h2,
+        #designCanvas h3 {
+            position: relative;
+            z-index: 2;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR: ASSETS -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo-area">
-            <h4><i class="fas fa-palette me-2"></i>Content Creator</h4>
+            <i class="fas fa-layer-group text-primary me-2"></i> Creator Studio
         </div>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item flex-fill text-center">
+                <button class="nav-link active w-100" data-bs-toggle="tab"
+                    data-bs-target="#tab-templates">Templates</button>
+            </li>
+            <li class="nav-item flex-fill text-center">
+                <button class="nav-link w-100" data-bs-toggle="tab" data-bs-target="#tab-add">Add</button>
+            </li>
+        </ul>
 
-        <div class="tools-panel">
-            <h6 class="text-uppercase small text-muted fw-bold mb-3">1. Assets</h6>
-            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                <p class="small mb-0 text-muted">Click to Upload Images</p>
-                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+        <div class="tab-content sidebar-content">
+            <!-- 1. TEMPLATES -->
+            <div class="tab-pane fade show active" id="tab-templates">
+                <div class="template-card" onclick="loadTemplate(1)">
+                    <div class="t-preview" style="background:#f8f9fa;">
+                        <span class="fw-bold">Modern Hero</span>
+                    </div>
+                </div>
+                <div class="template-card" onclick="loadTemplate(2)">
+                    <div class="t-preview" style="background:#fff1f2;">
+                        <span class="fw-bold text-danger">Fashion Sale</span>
+                    </div>
+                </div>
+                <div class="template-card" onclick="loadTemplate(3)">
+                    <div class="t-preview" style="background:#f0f9ff;">
+                        <span class="fw-bold text-primary">Tech Minimal</span>
+                    </div>
+                </div>
+                <div class="template-card" onclick="loadTemplate(4)">
+                    <div class="t-preview" style="background:#1e293b;">
+                        <span class="fw-bold text-white">Dark Mode</span>
+                    </div>
+                </div>
+                <div class="template-card" onclick="loadTemplate(5)">
+                    <div class="t-preview" style="background-image: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%);">
+                        <span class="fw-bold text-dark">Fresh Gradient</span>
+                    </div>
+                </div>
             </div>
 
-            <div id="assetTray" class="asset-tray">
-                <!-- Thumbnails go here -->
+            <!-- 2. ADD ELEMENTS -->
+            <div class="tab-pane fade" id="tab-add">
+                <h6 class="small fw-bold text-muted mb-3">TEXT COMPONENTS</h6>
+                <div class="d-grid gap-2 mb-4">
+                    <button class="btn btn-outline-dark text-start" onclick="addText('h1')">
+                        <span class="h4 fw-bold m-0 d-block">Add Heading</span>
+                    </button>
+                    <button class="btn btn-outline-dark text-start" onclick="addText('h3')">
+                        <span class="h6 fw-bold m-0 d-block">Add Subheading</span>
+                    </button>
+                    <button class="btn btn-outline-dark text-start" onclick="addText('p')">
+                        <span class="small m-0 d-block">Add Body Text</span>
+                    </button>
+                </div>
+
+                <h6 class="small fw-bold text-muted mb-3">IMAGE COMPONENTS</h6>
+                <div class="d-grid gap-2 mb-4">
+                    <input type="file" id="imgInput" hidden accept="image/*" onchange="handleImageUpload(this)">
+                    <button class="btn btn-outline-primary text-start"
+                        onclick="document.getElementById('imgInput').click()">
+                        <i class="fas fa-upload me-2"></i> Upload Image
+                    </button>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button class="btn btn-outline-secondary w-100 btn-sm"
+                                onclick="addImageSlot('square')">Square</button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-secondary w-100 btn-sm"
+                                onclick="addImageSlot('circle')">Circle</button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-secondary w-100 btn-sm"
+                                onclick="addImageSlot('portrait')">Portrait</button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-secondary w-100 btn-sm"
+                                onclick="addImageSlot('blob')">Blob</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="small fw-bold text-muted mb-3">BACKGROUNDS</h6>
+                <div class="mb-3">
+                    <label class="small text-muted d-block mb-1">Canvas Color</label>
+                    <input type="color" class="form-control form-control-color w-100"
+                        oninput="setCanvasColor(this.value)" value="#ffffff" title="Set Canvas Background Color">
+                </div>
+                <div class="d-grid gap-2 mb-4">
+                    <input type="file" id="bgInput" hidden accept="image/*" onchange="handleBgUpload(this)">
+                    <button class="btn btn-outline-secondary text-start"
+                        onclick="document.getElementById('bgInput').click()">
+                        <i class="fas fa-image me-2"></i> Upload Background Image
+                    </button>
+                    <button class="btn btn-outline-secondary text-start" onclick="addGradientSlot('warm')">
+                        <i class="fas fa-fire me-2"></i> Warm Mesh
+                    </button>
+                    <button class="btn btn-outline-secondary text-start" onclick="addGradientSlot('cool')">
+                        <i class="fas fa-water me-2"></i> Cool Breeze
+                    </button>
+                    <button class="btn btn-outline-secondary text-start" onclick="addGradientSlot('dark')">
+                        <i class="fas fa-moon me-2"></i> Dark Mode
+                    </button>
+                </div>
+
+                <h6 class="small fw-bold text-muted mb-3">ACTIONS</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="exportDesign('desktop')">
+                        <i class="fas fa-desktop me-2"></i> Download Desktop
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="exportDesign('mobile')">
+                        <i class="fas fa-mobile-alt me-2"></i> Download Mobile
+                    </button>
+                </div>
             </div>
-
-            <hr class="my-4">
-
-            <h6 class="text-uppercase small text-muted fw-bold mb-3">Instructions</h6>
-            <p class="small text-muted">
-                1. Upload images.<br>
-                2. Select a template on the right.<br>
-                3. Click an uploaded image to "pick" it.<br>
-                4. Click a gray slot in the canvas to place it.<br>
-                5. Click text to edit copy.
-            </p>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <div class="top-bar">
-            <div>
-                <button class="btn btn-outline-secondary btn-sm me-2" onclick="setZoom(0.5)"><i
-                        class="fas fa-minus"></i></button>
-                <span class="small text-muted fw-bold">CANVAS VIEW</span>
-                <button class="btn btn-outline-secondary btn-sm ms-2" onclick="setZoom(1.0)"><i
-                        class="fas fa-plus"></i></button>
+    <!-- MAIN WORKSPACE -->
+    <div class="canvas-area">
+
+        <!-- FLOATING PROPERTIES BAR -->
+        <div id="propBar" class="properties-bar">
+            <!-- Font Family -->
+            <div class="prop-group pg-text">
+                <select id="fontFamily" class="form-select form-select-sm border-0"
+                    onchange="propChange('font', this.value)" style="width: 140px;">
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Cormorant Garamond', serif">Cormorant</option>
+                    <option value="'Outfit', sans-serif">Outfit</option>
+                    <option value="'Roboto Mono', monospace">Mono</option>
+                </select>
             </div>
-            <div>
-                <button class="btn btn-link text-decoration-none text-muted me-3"
-                    onclick="window.location.href='admin-hero_carousel-settings.html'">Back to Settings</button>
-                <button class="btn btn-primary rounded-pill px-4" onclick="downloadDesign()">
-                    <i class="fas fa-download me-2"></i> Download Image
+
+            <!-- Font Size -->
+            <div class="prop-group pg-text">
+                <input type="number" id="fontSize" class="form-control form-control-sm border-0 text-center" value="16"
+                    style="width: 60px;" onchange="propChange('size', this.value)">
+                <span class="text-muted small">px</span>
+            </div>
+
+            <!-- Color -->
+            <div class="prop-group pg-text">
+                <input type="color" id="fontColor" class="form-control form-control-color border-0 p-0"
+                    title="Text Color" oninput="propChange('color', this.value)">
+            </div>
+
+            <!-- IMAGE CONTROLS (Hidden by default) -->
+            <div class="prop-group pg-img" style="display:none;">
+                <span class="small text-muted me-2">Zoom:</span>
+                <input type="range" class="form-range" min="1" max="3" step="0.1" value="1" style="width:100px;"
+                    oninput="updateImageScale(this.value)">
+            </div>
+            <div class="prop-group pg-img" style="display:none;">
+                <button class="btn btn-sm btn-outline-secondary" onclick="updateObjectFit('cover')"
+                    title="Cover (Fill)"><i class="fas fa-compress-arrows-alt"></i></button>
+                <button class="btn btn-sm btn-outline-secondary ms-1" onclick="updateObjectFit('contain')"
+                    title="Contain (Fit)"><i class="fas fa-expand"></i></button>
+            </div>
+
+            <!-- Actions -->
+            <div class="prop-group border-0">
+                <button class="btn btn-light btn-sm text-danger" onclick="deleteActive()">
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>
 
-        <div class="canvas-wrapper">
-            <div id="designCanvas">
-                <!-- TEMPLATES RENDER HERE -->
-                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
-                    <div class="text-center">
-                        <i class="fas fa-layer-group fa-3x mb-3"></i>
-                        <h5>Select a Template</h5>
-                        <p class="small">Choose a layout from the right sidebar to begin.</p>
-                    </div>
-                </div>
+        <!-- THE DESIGN CANVAS -->
+        <div id="designCanvas">
+            <!-- Default Content -->
+            <div class="d-flex h-100 align-items-center justify-content-center text-muted">
+                Select a template to start
             </div>
+        </div>
+    </div>
 
-            <!-- RIGHT SIDEBAR: TEMPLATES ONLY -->
-            <div class="right-sidebar" id="creatorSidebar">
-                <h5 class="mb-3 fw-bold">Templates</h5>
-                <input type="text" id="templateSearch" class="form-control form-control-sm mb-3"
-                    placeholder="Search templates..." onkeyup="filterTemplates()">
-                <div class="template-list" id="templateListContainer"
-                    style="overflow-y:auto; height: calc(100vh - 150px);">
-                    <!-- Templates 1-40 will be loaded here -->
-                    <!-- Existing Templates Structure (Simplified for this edit, logic remains for loading) -->
-                    <div class="template-card" onclick="loadTemplate(1)">
-                        <div class="template-preview"
-                            style="background:#f8f9fa; display:flex; align-items:center; justify-content:center; color:#adb5bd; font-size:0.8rem;">
-                            Bento Grid</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 1: Standard</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(2)">
-                        <div class="template-preview" style="background:#fff; border:1px solid #eee;">Elegant
-                        </div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 2: Luxury</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(3)">
-                        <div class="template-preview">Bold</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 3: Bold</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(4)">
-                        <div class="template-preview">Center</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 4: Centered</h6>
-                    </div>
+    <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
-                    <!-- Designs 5-9 -->
-                    <div class="template-card" onclick="loadTemplate(5)">
-                        <div class="template-preview">Modern</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 5: Modern</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(6)">
-                        <div class="template-preview">Gallery</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 6: Gallery</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(7)">
-                        <div class="template-preview">Split</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 7: Split</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(8)">
-                        <div class="template-preview">Typo</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 8: Typography</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(9)">
-                        <div class="template-preview">Circle</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 9: Circle</h6>
-                    </div>
+    <script>
+        let activeEl = null;
 
-                    <!-- Designs 10-40 (Condensed for brevity, user has mapped these) -->
-                    <div class="template-card" onclick="loadTemplate(10)">
-                        <div class="template-preview">Strip</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 10: Strip</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(11)">
-                        <div class="template-preview bg-dark text-white">Dark</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 11: Dark Side</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(12)">
-                        <div class="template-preview bg-light">Light</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 12: Light Side</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(13)">
-                        <div class="template-preview">4 Grid</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 13: Seasons</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(14)">
-                        <div class="template-preview">Checker</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 14: Checker</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(15)">
-                        <div class="template-preview">Bottom</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 15: Bottom Bar</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(16)">
-                        <div class="template-preview">Tri</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 16: Triple</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(17)">
-                        <div class="template-preview">Frame</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 17: Inset</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(18)">
-                        <div class="template-preview">Focus</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 18: Focus</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(19)">
-                        <div class="template-preview">Mason</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 19: Masonry</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(20)">
-                        <div class="template-preview">Lap</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 20: Overlap</h6>
-                    </div>
+        // 1. TEMPLATE GENERATION & LOADING
+        const designs = [];
 
-                    <div class="template-card" onclick="loadTemplate(21)">
-                        <div class="template-preview">Inv</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 21: Inverse</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(22)">
-                        <div class="template-preview">Ang</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 22: Angle</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(23)">
-                        <div class="template-preview">Gem</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 23: Diamond</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(24)">
-                        <div class="template-preview">Bub</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 24: Bubbles</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(25)">
-                        <div class="template-preview">ArcL</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 25: Arch Left</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(26)">
-                        <div class="template-preview">ArcR</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 26: Arch Right</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(27)">
-                        <div class="template-preview">Pill</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 27: Pill Center</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(28)">
-                        <div class="template-preview">2Pill</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 28: Dual Pill</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(29)">
-                        <div class="template-preview">Cards</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 29: Hand Picked</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(30)">
-                        <div class="template-preview">Half</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 30: split View</h6>
-                    </div>
+        function registerDesigns() {
+            // Design 1: Bento Grid
+            designs[1] = `<section class="d1-section h-100 d-flex align-items-center"><div class="container-fluid"><div class="row align-items-center"><div class="col-lg-5"><div class="text-uppercase fw-bold text-muted small mb-3" contenteditable="true">FEATURED COLLECTION</div><h1 class="d1-title mb-4" contenteditable="true">Capture Your<br>Vision on Paper</h1><p class="lead text-muted mb-4" contenteditable="true">Elegant designs for weddings, birthdays, and special events.</p><button class="btn btn-dark rounded-pill px-4" contenteditable="true">SHOP NOW</button></div><div class="col-lg-7"><div class="bento-grid"><div class="img-slot bi-1" onclick="placeImage(this)"></div><div class="img-slot bi-2" onclick="placeImage(this)"></div><div class="img-slot bi-3" onclick="placeImage(this)"></div><div class="img-slot bi-4" onclick="placeImage(this)"></div></div></div></div></div></section>`;
 
-                    <div class="template-card" onclick="loadTemplate(31)">
-                        <div class="template-preview">Grad</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 31: Gradient</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(32)">
-                        <div class="template-preview">Cyber</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 32: Cyber</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(33)">
-                        <div class="template-preview">Raw</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 33: Raw</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(34)">
-                        <div class="template-preview">Retro</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 34: Retro Box</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(35)">
-                        <div class="template-preview">Imp</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 35: Impact</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(36)">
-                        <div class="template-preview">Hero</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 36: Big Hero</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(37)">
-                        <div class="template-preview">Quote</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 37: Testimonial</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(38)">
-                        <div class="template-preview">App</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 38: Mobile</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(39)">
-                        <div class="template-preview" style="background:linear-gradient(90deg, red 50%, grey 50%);">Dual
-                        </div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 39: Split Color</h6>
-                    </div>
-                    <div class="template-card" onclick="loadTemplate(40)">
-                        <div class="template-preview" style="background:black;color:white;">Cinema</div>
-                        <h6 class="text-uppercase small fw-bold mb-0">Design 40: Cinema</h6>
-                    </div>
-                </div>
-            </div>
+            // Design 2: Luxury
+            designs[2] = `<section class="d2-section"><div class="d2-content"><div style="width:50px; height:2px; background:#c9a45e; margin-bottom: 20px;"></div><span class="text-uppercase ls-2 mb-2 text-muted" contenteditable="true">THE COLLECTION</span><h1 style="font-family: 'Playfair Display'; font-size: 3.5rem; margin-bottom: 20px;" contenteditable="true">Artistry in<br>Every Detail</h1><p class="opacity-75 mb-4" contenteditable="true">Discover our new range of luxury stationery.</p><button class="btn btn-outline-light rounded-0" contenteditable="true">EXPLORE NOW</button></div><div class="d2-visuals"><div class="d2-main-img img-slot" onclick="placeImage(this)"></div><div class="d2-float-card img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-            <!-- FLOATING TOOLBOX (Bottom Center) -->
-            <div id="mainToolbox" class="position-fixed shadow-lg rounded bg-white p-2 d-flex gap-2 align-items-center"
-                style="bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1050; border: 1px solid #ccc;">
+            // Design 3: Bold
+            designs[3] = `<section class="d3-container"><div class="d3-col-1"><div class="img-slot" style="width: 100px; height: 100px; border-radius: 50%;" onclick="placeImage(this)"></div><div><div style="font-size: 2.5rem; font-weight: 800; line-height: 1;" contenteditable="true">Bold.<br>Simple.<br>Unique.</div><p class="mt-3 text-muted" contenteditable="true">Redefining print standards.</p></div><a href="#" class="text-dark fw-bold text-decoration-none" contenteditable="true">Our Story &rarr;</a></div><div class="d3-col-2 img-slot" onclick="placeImage(this)"></div><div class="d3-col-3"><div class="d3-img-box img-slot" onclick="placeImage(this)"></div><div class="d3-img-box img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                <!-- DRAG / MOVE MODE TOGGLE -->
-                <button class="btn btn-outline-dark" id="btnMoveMode" onclick="toggleFreeMove()"
-                    title="Toggle Free Move Mode">
-                    <i class="fas fa-arrows-alt me-2"></i> Free Move
-                </button>
+            // Design 4: Center
+            designs[4] = `<section class="d4-section h-100 d-flex align-items-center justify-content-center"><div class="d4-banner"><div class="d4-center-img img-slot" onclick="placeImage(this)"></div><div class="d4-overlay"><span class="text-uppercase text-muted small ls-2" contenteditable="true">Established 2024</span><h1 style="font-family: 'Playfair Display'; font-size: 2.5rem;" class="mt-2" contenteditable="true">Blossom Prints</h1><p class="text-secondary mt-2" contenteditable="true">Where memories meet paper.</p></div></div></section>`;
 
-                <div class="vr mx-2"></div>
+            // Design 5: Modern
+            designs[5] = `<section class="d5-section"><div class="d5-bg-slot img-slot" onclick="placeImage(this)"></div><div class="d5-card"><div class="img-slot" style="width:60px; height:60px; border-radius:50%; margin-bottom: 20px;" onclick="placeImage(this)"></div><h2 class="display-6 fw-bold mb-3" contenteditable="true">Premium Quality</h2><p class="mb-4" contenteditable="true">We ensure every pixel matches the print. Experience the difference.</p><button class="btn btn-primary rounded-pill px-4 shadow" contenteditable="true">Start Project</button><div class="d5-mini-grid"><div class="d5-mini-img img-slot" onclick="placeImage(this)"></div><div class="d5-mini-img img-slot" onclick="placeImage(this)"></div><div class="d5-mini-img img-slot" onclick="placeImage(this)"></div></div></div></section>`;
 
-                <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle" type="button" id="textDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-font me-2"></i> Add Text
-                    </button>
-                    <div class="dropdown-menu p-3 shadow" aria-labelledby="textDropdown" style="width: 250px;">
-                        <button class="btn btn-light w-100 text-start mb-2 fw-bold display-6"
-                            onclick="addText('h1')">Heading 1</button>
-                        <button class="btn btn-light w-100 text-start mb-2 fw-bold h3" onclick="addText('h3')">Heading
-                            3</button>
-                        <button class="btn btn-light w-100 text-start mb-2" onclick="addText('p')">Paragraph</button>
-                        <button class="btn btn-light w-100 text-start mb-2 small text-uppercase"
-                            onclick="addText('small')">Small Label</button>
-                    </div>
-                </div>
+            // Design 6: Gallery
+            designs[6] = `<section class="d6-section"><div class="d6-text"><h1 style="font-size: 3.5rem; font-family: 'Cormorant Garamond';" contenteditable="true">Timeless<br>Stationery.</h1><div style="width: 50px; height: 2px; background: #000; margin: 20px 0;"></div><p class="text-muted" style="max-width: 300px;" contenteditable="true">Explore our curated selection of bespoke designs, tailored for the moments that matter most.</p></div><div class="d6-gallery"><div class="d6-col"><div class="d6-big img-slot" onclick="placeImage(this)"></div></div><div class="d6-col"><div class="d6-img img-slot" onclick="placeImage(this)"></div><div class="d6-img img-slot" onclick="placeImage(this)"></div></div></div></section>`;
 
-                <div class="vr mx-2"></div>
+            // Design 7: Split
+            designs[7] = `<section class="d7-section"><div class="d7-text"><span class="text-uppercase fw-bold text-primary mb-2" contenteditable="true">New Arrival</span><h1 class="display-4 fw-bold mb-4" style="font-family:'Inter'" contenteditable="true">The Future<br>of Design</h1><p class="lead text-muted mb-4" contenteditable="true">Sharp angles, bold colors, and a layout that demands attention.</p><a href="#" class="btn btn-dark btn-lg rounded-0 w-50" contenteditable="true">READ MORE</a></div><div class="d7-img img-slot" onclick="placeImage(this)"></div></section>`;
 
-                <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle" type="button" id="visualsDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-shapes me-2"></i> Add Visuals
-                    </button>
-                    <!-- Visuals Dropdown Content -->
-                    <div class="dropdown-menu p-3 shadow" aria-labelledby="visualsDropdown" style="width: 300px;">
-                        <h6 class="small fw-bold text-muted mb-2">BADGES</h6>
-                        <div class="d-flex gap-2 mb-3">
-                            <button class="btn btn-sm btn-outline-secondary"
-                                onclick="addVisual('badge-new')">New</button>
-                            <button class="btn btn-sm btn-outline-secondary"
-                                onclick="addVisual('badge-sale')">Sale</button>
-                            <button class="btn btn-sm btn-outline-secondary"
-                                onclick="addVisual('text-label')">Label</button>
-                        </div>
-                        <h6 class="small fw-bold text-muted mb-2">SHAPES & ICONS</h6>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-light text-dark border"
-                                onclick="addVisual('shape-circle')">⬤</button>
-                            <button class="btn btn-sm btn-outline-light text-dark border"
-                                onclick="addVisual('shape-blob')">☁</button>
-                            <button class="btn btn-sm btn-outline-light text-dark border"
-                                onclick="addVisual('sticker-star')">★</button>
-                            <button class="btn btn-sm btn-outline-light text-dark border"
-                                onclick="addVisual('sticker-heart')">♥</button>
-                            <button class="btn btn-sm btn-outline-light text-dark border"
-                                onclick="addVisual('arrow-scribble')">↗</button>
-                        </div>
-                    </div>
-                </div>
+            // Design 8: Typography
+            designs[8] = `<section class="d8-section"><div class="d8-text"><h1 class="d8-big-title" contenteditable="true">BIG.<br>BOLD.<br>TYPE.</h1><p class="mt-3 text-muted" style="max-width: 300px;" contenteditable="true">Sometimes the message is the medium. Make it loud.</p></div><div class="d8-grid"><div class="d8-img img-slot" onclick="placeImage(this)"></div><div class="d8-img img-slot" onclick="placeImage(this)"></div><div class="d8-img img-slot" onclick="placeImage(this)"></div><div class="d8-img img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                <div class="vr mx-2"></div>
+            // Design 9: Circle
+            designs[9] = `<section class="d9-section"><div class="d9-text-left"><h2 class="fw-bold" contenteditable="true">Focus Center</h2><p class="text-muted" contenteditable="true">Everything revolves around the product.</p></div><div class="d9-circle img-slot" onclick="placeImage(this)"></div><div class="d9-text-right"><h4 class="fw-bold" contenteditable="true">$299.00</h4><button class="btn btn-primary rounded-pill btn-sm" contenteditable="true">Add to Cart</button></div></section>`;
 
-                <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle" type="button" id="bgDropdown" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <i class="fas fa-image me-2"></i> Background
-                    </button>
-                    <!-- Background Dropdown Content (Previous Implementation) -->
-                    <div class="dropdown-menu p-3 shadow" aria-labelledby="bgDropdown" style="width: 320px;">
-                        <div class="mb-3">
-                            <label class="btn btn-primary btn-sm w-100">
-                                <i class="fas fa-upload me-2"></i> Upload Image
-                                <input type="file" hidden id="bgInputTool" accept="image/*"
-                                    onchange="handleBgUpload(this)">
-                            </label>
-                        </div>
-                        <div class="bg-light p-2 rounded mb-3 border">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="small fw-bold">Position</span>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-white border" onclick="setBgPos('top')">⬆</button>
-                                    <button class="btn btn-white border" onclick="setBgPos('center')">⏺</button>
-                                    <button class="btn btn-white border" onclick="setBgPos('bottom')">⬇</button>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="small fw-bold">Size</span>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-white border" onclick="setBgSize('cover')">Cover</button>
-                                    <button class="btn btn-white border" onclick="setBgSize('contain')">Contain</button>
-                                </div>
-                            </div>
-                        </div>
-                        <h6 class="small fw-bold text-muted mb-2">PRESETS</h6>
-                        <ul class="nav nav-tabs nav-fill mb-2 small" id="bgTabs" role="tablist">
-                            <li class="nav-item"><a class="nav-link active p-1" data-bs-toggle="tab"
-                                    href="#tab-color">Colors</a></li>
-                            <li class="nav-item"><a class="nav-link p-1" data-bs-toggle="tab"
-                                    href="#tab-pat">Patterns</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active" id="tab-color">
-                                <div id="tool-bg-solids" class="d-flex flex-wrap gap-1"></div>
-                            </div>
-                            <div class="tab-pane fade" id="tab-pat">
-                                <div id="tool-bg-patterns" class="d-flex flex-wrap gap-1"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            // Design 10: Strip
+            designs[10] = `<section class="d10-section"><h1 contenteditable="true">Simple Strip</h1><div class="d10-img-strip img-slot" onclick="placeImage(this)"></div><p contenteditable="true">Minimalist approach to highlighting a key visual.</p></section>`;
 
-            <style>
-                /* ... (Visual Styles kept same) ... */
-                /* Visual Styles */
-                .visual-item {
-                    background: #f8f9fa;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border: 1px solid transparent;
-                    transition: all 0.2s;
-                }
+            // Design 11: Dark Side
+            designs[11] = `<section class="d11-section"><div class="d11-text"><h2 contenteditable="true">Dark Side</h2><p contenteditable="true">Elegance in the shadows.</p></div><div class="d11-img img-slot" onclick="placeImage(this)"></div></section>`;
 
-                .visual-item:hover {
-                    border-color: var(--accent);
-                    background: white;
-                }
+            // Design 12: Light Side
+            designs[12] = `<section class="d12-section"><div class="d12-img img-slot" onclick="placeImage(this)"></div><div class="d12-text"><h2 contenteditable="true">Light Side</h2><p contenteditable="true">Bright and airy composition.</p></div></section>`;
 
-                .added-visual {
-                    position: absolute;
-                    z-index: 100;
-                    cursor: move;
-                    display: inline-block;
-                }
+            // Design 13: Seasons
+            designs[13] = `<section class="d13-section"><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-overlay"><h2 contenteditable="true">FOUR SEASONS</h2></div></section>`;
 
-                .added-visual:hover {
-                    outline: 1px dashed var(--accent);
-                }
+            // Design 14: Checker
+            designs[14] = `<section class="d14-section"><div class="d14-box d14-dark"><h2 contenteditable="true">Q1</h2></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-box d14-light"><h2 contenteditable="true">Q2</h2></div></section>`;
 
-                .v-badge-new {
-                    background: #ff0055;
-                    color: white;
-                    padding: 5px 10px;
-                    font-weight: bold;
-                    border-radius: 4px;
-                    font-size: 0.8rem;
-                }
+            // Design 15: Bottom Bar
+            designs[15] = `<section class="d15-section"><div class="d15-img img-slot" onclick="placeImage(this)"></div><div class="d15-text"><h3 contenteditable="true">Bottom Bar Info</h3><button class="btn btn-outline-light" contenteditable="true">Action</button></div></section>`;
 
-                .v-badge-sale {
-                    background: #ffc107;
-                    color: black;
-                    padding: 5px 10px;
-                    font-weight: bold;
-                    border-radius: 50px;
-                    font-size: 0.8rem;
-                }
+            // Design 16: Triple
+            designs[16] = `<section class="d16-section"><div class="d16-text"><h1 contenteditable="true">Triple Header</h1></div><div class="d16-grid"><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                .v-shape-circle {
-                    width: 40px;
-                    height: 40px;
-                    background: rgba(52, 152, 219, 0.5);
-                    border-radius: 50%;
-                }
+            // Design 17: Inset
+            designs[17] = `<section class="d17-section"><div class="d17-frame"><div class="d17-img img-slot" onclick="placeImage(this)"></div><div class="d17-text"><h2 contenteditable="true">Inset Frame</h2><p contenteditable="true">A picture within a picture.</p></div></div></section>`;
 
-                .v-shape-blob {
-                    width: 40px;
-                    height: 40px;
-                    background: #2ecc71;
-                    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-                }
+            // Design 18: Focus
+            designs[18] = `<section class="d18-section"><div class="d18-img img-slot" onclick="placeImage(this)"></div><div class="d18-center"><h1 contenteditable="true">FOCUS</h1><p contenteditable="true">Center stage.</p></div><div class="d18-img img-slot" onclick="placeImage(this)"></div></section>`;
 
-                /* Text Added Styles */
-                .added-text {
-                    position: absolute;
-                    z-index: 105;
-                    cursor: text;
-                    outline: 1px dashed transparent;
-                    min-width: 50px;
-                    min-height: 20px;
-                }
+            // Design 19: Masonry
+            designs[19] = `<section class="d19-section"><div class="d19-col"><div class="d19-img img-slot" onclick="placeImage(this)"></div></div><div class="d19-text"><h2 contenteditable="true">Masonry</h2><p contenteditable="true">Asymmetric balance.</p></div><div class="d19-col"><div class="d19-img img-slot" style="flex:0.6" onclick="placeImage(this)"></div><div class="d19-img img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                .added-text:hover {
-                    outline-color: var(--accent);
-                }
+            // Design 20: Overlap
+            designs[20] = `<section class="d20-section"><div class="d20-text-card"><h2 contenteditable="true">Overlap</h2><p contenteditable="true">Breaking the grid.</p></div><div class="d20-img img-slot" onclick="placeImage(this)"></div></section>`;
 
-                .free-move-enabled .added-text {
-                    cursor: move !important;
-                }
+            // Design 21: Inverse
+            designs[21] = `<section class="d21-section"><div class="d21-img img-slot" onclick="placeImage(this)"></div><div class="d21-text-card"><h2 contenteditable="true">Inverse</h2><p contenteditable="true">Dark mode overlap.</p></div></section>`;
 
-                /* FREE MOVE MODE STYLES */
-                .free-move-enabled .img-slot,
-                .free-move-enabled h1,
-                .free-move-enabled h2,
-                .free-move-enabled h3,
-                .free-move-enabled p,
-                .free-move-enabled button,
-                .free-move-enabled a,
-                .free-move-enabled span.badge {
-                    cursor: move !important;
-                    outline: 1px dashed rgba(0, 0, 0, 0.1);
-                    position: relative;
-                    /* Ensure relative pos for transform to feel right if not abs */
-                    z-index: 50;
-                }
+            // Design 22: Angle
+            designs[22] = `<section class="d22-section"><div class="d22-text"><h1 contenteditable="true">Angle</h1></div><div class="d22-img img-slot" onclick="placeImage(this)"></div></section>`;
 
-                .free-move-enabled .img-slot:hover,
-                .free-move-enabled h1:hover,
-                .free-move-enabled p:hover {
-                    outline: 1px dashed var(--accent);
-                }
+            // Design 23: Diamond
+            designs[23] = `<section class="d23-section"><div class="d23-diamond"><div class="d23-img img-slot" onclick="placeImage(this)"></div></div><div class="d23-text"><h1 contenteditable="true" style="color:white; text-shadow:0 2px 10px black;">GEM</h1></div></section>`;
 
-                .btn-move-active {
-                    background-color: var(--primary) !important;
-                    color: white !important;
-                    border-color: var(--primary) !important;
-                }
-            </style>
+            // Design 24: Bubbles
+            designs[24] = `<section class="d24-section"><h2 contenteditable="true">Bubbles</h2><div class="d24-circles"><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-            <!-- FLOATING TOOLBAR (Hidden by default) -->
-            <div id="propPanel" class="position-fixed shadow-lg rounded bg-white p-3"
-                style="bottom: 100px; left: 50%; transform: translateX(-50%); display: none; z-index: 1100; width: 300px; border: 1px solid #ddd;">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="m-0 small fw-bold text-uppercase" id="propTitle">Properties</h6>
-                    <button class="btn-close btn-sm" onclick="closePropPanel()"></button>
-                </div>
+            // Design 25: Arch Left
+            designs[25] = `<section class="d25-section"><div class="d25-img img-slot" onclick="placeImage(this)"></div><div class="d25-text"><h1 contenteditable="true">Arch Left</h1><p contenteditable="true">Smooth curves.</p></div></section>`;
 
-                <!-- IMAGE PROPERTIES (Hidden unless image selected) -->
-                <div id="propImageOpts" style="display:none;">
-                    <div class="mb-2">
-                        <label class="small text-muted form-label">Size / Zoom</label>
-                        <input type="range" class="form-range" min="0.5" max="3" step="0.1" value="1" id="imgScaleInfo"
-                            oninput="updateActiveImage()">
-                    </div>
-                    <!-- Position Controls -->
-                    <div class="mb-2">
-                        <label class="small text-muted form-label d-block">Position (X / Y)</label>
-                        <div class="btn-group btn-group-sm w-100">
-                            <button class="btn btn-outline-secondary" onclick="nudgeImg(0, -5)"><i
-                                    class="fas fa-arrow-up"></i></button>
-                            <button class="btn btn-outline-secondary" onclick="nudgeImg(0, 5)"><i
-                                    class="fas fa-arrow-down"></i></button>
-                            <button class="btn btn-outline-secondary" onclick="nudgeImg(-5, 0)"><i
-                                    class="fas fa-arrow-left"></i></button>
-                            <button class="btn btn-outline-secondary" onclick="nudgeImg(5, 0)"><i
-                                    class="fas fa-arrow-right"></i></button>
-                        </div>
-                    </div>
-                    <!-- Fit Mode -->
-                    <div class="btn-group btn-group-sm w-100">
-                        <input type="radio" class="btn-check" name="fitmode" id="fitCover" autocomplete="off"
-                            onchange="updateActiveFit('cover')">
-                        <label class="btn btn-outline-secondary" for="fitCover">Cover</label>
-                        <input type="radio" class="btn-check" name="fitmode" id="fitContain" autocomplete="off"
-                            onchange="updateActiveFit('contain')">
-                        <label class="btn btn-outline-secondary" for="fitContain">Contain</label>
-                    </div>
-                </div>
+            // Design 26: Arch Right
+            designs[26] = `<section class="d26-section"><div class="d26-img img-slot" onclick="placeImage(this)"></div><div class="d26-text"><h1 contenteditable="true">Arch Right</h1><p contenteditable="true">Balanced composition.</p></div></section>`;
 
-                <!-- TEXT PROPERTIES (Hidden unless text selected) -->
-                <div id="propTextOpts" style="display:none;">
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <label class="small text-muted form-label">Font Color</label>
-                            <input type="color" class="form-control form-control-color w-100" id="textColor"
-                                value="#000000" oninput="updateActiveText('color', this.value)">
-                        </div>
-                        <div class="col-6">
-                            <label class="small text-muted form-label">Size</label>
-                            <input type="number" class="form-control" id="textSize" value="16"
-                                onchange="updateActiveText('size', this.value)">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="small text-muted form-label">Font Family</label>
-                        <select class="form-select form-select-sm" id="textFont"
-                            onchange="updateActiveText('font', this.value)">
-                            <option value="Inter, sans-serif">Inter (Default)</option>
-                            <option value="'Playfair Display', serif">Playfair Display</option>
-                            <option value="'Cormorant Garamond', serif">Cormorant Garamond</option>
-                            <option value="'Courier New', monospace">Courier</option>
-                            <option value="cursive">Cursive</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-danger btn-sm w-100" onclick="deleteActiveElement()"><i
-                            class="fas fa-trash me-2"></i> Remove Element</button>
-                </div>
-            </div>
+            // Design 27: Pill
+            designs[27] = `<section class="d27-section"><div class="d27-pill"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><h1 contenteditable="true" style="background:white; padding:10px 30px; border-radius:30px;">PILL</h1></div></div></section>`;
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
+            // Design 28: Dual Pill
+            designs[28] = `<section class="d28-section"><div class="d28-pill img-slot" onclick="placeImage(this)"></div><div class="d28-pill img-slot" onclick="placeImage(this)"></div></section>`;
 
-            <script>
+            // Design 29: Hand Picked
+            designs[29] = `<section class="d29-section"><div><h1 contenteditable="true">Hand Picked</h1></div><div class="d29-cards"><div class="d29-card img-slot" onclick="placeImage(this)"></div><div class="d29-card img-slot" style="transform:translateY(-20px)" onclick="placeImage(this)"></div><div class="d29-card img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                let isFreeMoveMode = false;
-                let activeElement = null; // Can be image slot OR straight text element
+            // Design 30: Split View
+            designs[30] = `<section class="d30-section"><div class="d30-left"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div><div class="d30-right"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                function toggleFreeMove() {
-                    const btn = document.getElementById('btnMoveMode');
-                    const canvas = document.getElementById('designCanvas');
-                    isFreeMoveMode = !isFreeMoveMode;
+            // Design 31: Gradient
+            designs[31] = `<section class="d31-section"><div class="d31-card"><div class="d31-img img-slot" onclick="placeImage(this)"></div><div class="d31-text"><h2 contenteditable="true">Soft Gradient</h2><p contenteditable="true">Pastel vibes.</p></div></div></section>`;
 
-                    if (isFreeMoveMode) {
-                        btn.classList.add('btn-move-active');
-                        btn.innerHTML = '<i class="fas fa-check me-2"></i> Done Moving';
-                        canvas.classList.add('free-move-enabled');
-                        initFreeMoveInteract();
-                        // Disable contenteditable
-                        document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
-                    } else {
-                        btn.classList.remove('btn-move-active');
-                        btn.innerHTML = '<i class="fas fa-arrows-alt me-2"></i> Free Move';
-                        canvas.classList.remove('free-move-enabled');
-                        // Re-enable contenteditable
-                        canvas.querySelectorAll('h1, h2, h3, p, span, div, .added-text').forEach(el => {
-                            if (el.innerText.trim().length > 0 && !el.classList.contains('img-slot')) {
-                                el.setAttribute('contenteditable', 'true');
-                            }
-                        });
-                    }
-                }
+            // Design 32: Cyber
+            designs[32] = `<section class="d32-section"><div class="d32-border"><div class="d32-content"><div class="d32-img img-slot" onclick="placeImage(this)"></div><div class="d32-text"><h2 contenteditable="true">CYBER</h2><p contenteditable="true">Neon future.</p></div></div></div></section>`;
 
-                function initFreeMoveInteract() {
-                    interact('.free-move-enabled .img-slot, .free-move-enabled h1, .free-move-enabled h2, .free-move-enabled h3, .free-move-enabled p, .free-move-enabled button, .free-move-enabled a, .free-move-enabled .added-text')
-                        .draggable({
-                            listeners: {
-                                move(event) {
-                                    if (!isFreeMoveMode) return;
-                                    var target = event.target;
-                                    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                                    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-                                    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-                                    target.setAttribute('data-x', x);
-                                    target.setAttribute('data-y', y);
-                                }
-                            }
-                        });
-                }
+            // Design 33: Raw
+            designs[33] = `<section class="d33-section"><div class="d33-top"><h1 contenteditable="true" style="font-size:4rem; line-height:1;">RAW<br>DESIGN</h1><p contenteditable="true">No filler.</p></div><div class="d33-bot"><div class="d33-img img-slot" onclick="placeImage(this)"></div><div class="d33-img img-slot" onclick="placeImage(this)"></div></div></section>`;
 
-                // --- TEXT ADDDITION LOGIC ---
-                function addText(type) {
-                    const canvas = document.getElementById('designCanvas');
-                    const el = document.createElement(type === 'small' ? 'span' : type);
-                    el.className = 'added-text';
+            // Design 34: Retro
+            designs[34] = `<section class="d34-section"><div class="d34-box"><div class="d34-img img-slot" onclick="placeImage(this)"></div><div><h1 contenteditable="true" style="font-family:'Courier New'">RETRO</h1><p contenteditable="true">Grid systems.</p></div></div></section>`;
 
-                    // Default to editable, but give it move cursor
-                    el.setAttribute('contenteditable', 'true');
-                    el.style.left = '50%';
-                    el.style.top = '50%';
-                    el.style.transform = 'translate(-50%, -50%)'; // default center
-                    el.innerText = 'Edit Text';
-                    el.style.zIndex = '105';
-                    el.style.position = 'absolute'; // Critical for free movement
-                    el.style.cursor = 'move'; // Always show move cursor
+            // Design 35: Impact
+            designs[35] = `<section class="d35-section"><div class="img-slot d35-img" onclick="placeImage(this)"></div><h1 class="d35-title" contenteditable="true">IMPACT</h1></section>`;
 
-                    if (type === 'h1') { el.style.fontSize = '3rem'; el.style.fontWeight = 'bold'; }
-                    if (type === 'h3') { el.style.fontSize = '1.75rem'; el.style.fontWeight = 'bold'; }
-                    if (type === 'small') { el.style.fontSize = '0.8rem'; el.className += ' text-uppercase ls-2'; }
+            // Design 36: Hero
+            designs[36] = `<section class="d36-section"><h1 class="d36-bg-text" contenteditable="true">HERO</h1><div class="d36-img img-slot" onclick="placeImage(this)"></div><p contenteditable="true" style="z-index:1; position:relative;">The product speaks for itself.</p></section>`;
 
-                    // Double click to edit text content, Single click to select/move properties
-                    el.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        activeElement = el;
-                        openPropPanel('text');
-                    });
+            // Design 37: Testimonial
+            designs[37] = `<section class="d37-section"><div class="d37-avatar img-slot" onclick="placeImage(this)"></div><div class="d37-quote" contenteditable="true">"This is the most flexible design tool I've ever used."</div><p contenteditable="true">- Sarah Creator</p></section>`;
 
-                    canvas.appendChild(el);
+            // Design 38: Mobile
+            designs[38] = `<section class="d38-section"><div class="d38-phone"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d38-text"><h1 contenteditable="true">Mobile First</h1><p contenteditable="true">Showcase your app.</p></div></section>`;
 
-                    // Always enable drag for added text, using the visual interact init
-                    initInteract(el);
+            // Design 39: Split Color
+            designs[39] = `<section class="d39-section"><div class="d39-left"><div class="img-slot" style="width:100%; height:100%; opacity:0.5; mix-blend-mode:multiply;" onclick="placeImage(this)"></div></div><div class="d39-right"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d39-text"><h2 contenteditable="true">Dual Tone</h2></div></section>`;
 
-                    // Auto-select
-                    activeElement = el;
-                    openPropPanel('text');
-                }
+            // Design 40: Cinema
+            designs[40] = `<section class="d40-section"><div class="d40-letterbox"><div class="d40-img img-slot" onclick="placeImage(this)"></div><h2 class="d40-caption" contenteditable="true">CINEMATIC EXPERIENCE</h2></div></section>`;
 
-                function rgbToHex(rgb) {
-                    if (!rgb || rgb.indexOf('rgb') === -1) return '#000000';
-                    const rgbValues = rgb.match(/\d+/g);
-                    if (!rgbValues) return '#000000';
-                    return '#' + rgbValues.slice(0, 3).map(x => {
-                        const hex = parseInt(x).toString(16);
-                        return hex.length === 1 ? '0' + hex : hex;
-                    }).join('');
-                }
+            // Render Sidebar List
+            const list = document.getElementById('tab-templates');
+            list.innerHTML = '';
+            for (let i = 1; i <= 40; i++) {
+                const div = document.createElement('div');
+                div.className = 'template-card mb-2 p-2 small border rounded bg-white';
+                div.style.cursor = 'pointer';
+                div.innerHTML = `<div class="d-flex justify-content-between align-items-center"><span class="fw-bold">Design ${i}</span> <i class="fas fa-chevron-right text-muted xsmall"></i></div>`;
+                div.onclick = () => loadTemplate(i);
+                list.appendChild(div);
+            }
+        }
 
-                function openPropPanel(mode) {
-                    const panel = document.getElementById('propPanel');
-                    const imgOpts = document.getElementById('propImageOpts');
-                    const textOpts = document.getElementById('propTextOpts');
-                    const title = document.getElementById('propTitle');
+        // Procedural Generator for Variety
+        function generateProceduralTemplate(seed) {
+            // Simple deterministic RNG based on seed
+            const rnd = (n) => Math.floor(Math.abs(Math.sin(seed * n) * 1000));
+            const pick = (arr) => arr[rnd(1) % arr.length];
 
-                    panel.style.display = 'block';
+            const bgs = ['#f8f9fa', '#ffffff', '#fff1f2', '#f0f9ff', '#fdf2f8', '#ecfccb', '#1e293b', '#fafafa'];
+            const alignments = ['left', 'center', 'right'];
+            const fonts = ["'Inter'", "'Playfair Display'", "'Cormorant Garamond'", "'Outfit'"];
 
-                    // Ensure explicit hiding/showing with property resetting
-                    if (mode === 'image') {
-                        title.innerText = 'Image Properties';
-                        imgOpts.style.display = 'block';
-                        textOpts.style.display = 'none';
+            const type = seed % 5; // 5 layout types
+            const bg = bgs[seed % bgs.length];
+            const isDark = bg === '#1e293b';
+            const txtCol = isDark ? 'text-white' : 'text-dark';
 
-                        const img = activeImgSlot ? activeImgSlot.querySelector('img') : null;
-                        if (img) {
-                            document.getElementById('imgScaleInfo').value = img.getAttribute('data-scale') || 1;
-                            if (img.style.objectFit === 'contain') document.getElementById('fitContain').checked = true;
-                            else document.getElementById('fitCover').checked = true;
+            let html = `<div style="position:absolute; inset:0; background:${bg};"></div>`;
+
+            if (type === 0) { // Hero Center
+                html += `<div class="canvas-element" style="top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:10;">
+                    <h1 class="element-content display-3 fw-bold ${txtCol}" style="font-family:${pick(fonts)}" contenteditable="true">Design ${seed}</h1>
+                    <p class="element-content lead ${txtCol} opacity-75" contenteditable="true">Procedural layout generation.</p>
+                </div>`;
+            } else if (type === 1) { // Split
+                html += `<div class="canvas-element img-placeholder" style="top:0; right:0; width:50%; bottom:0;"><span>Image</span></div>
+                    <div class="canvas-element" style="top:50%; left:100px; transform:translateY(-50%); z-index:10;">
+                         <h1 class="element-content display-4 fw-bold ${txtCol}" style="font-family:${pick(fonts)}" contenteditable="true">Split ${seed}</h1>
+                    </div>`;
+            } else if (type === 2) { // Grid
+                html += `<div class="canvas-element img-placeholder" style="top:50px; left:50px; width:200px; height:200px;"></div>
+                          <div class="canvas-element img-placeholder" style="top:50px; left:270px; width:200px; height:200px;"></div>
+                          <div class="canvas-element" style="top:300px; left:50px;"><h2 class="element-content ${txtCol}" contenteditable="true">Grid Layout ${seed}</h2></div>`;
+            } else if (type === 3) { // Image BG
+                html += `<div class="canvas-element img-placeholder" style="inset:20px; z-index:0; position:absolute;"><span>Full BG</span></div>
+                          <div class="canvas-element" style="top:50%; left:50%; transform:translate(-50%,-50%); z-index:10; background:white; padding:30px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+                            <h2 class="element-content fw-bold" contenteditable="true">Overlay Card</h2>
+                          </div>`;
+            } else { // Scatter
+                html += `<div class="canvas-element" style="top:100px; left:100px;"><h1 class="element-content display-1 ${txtCol}" style="opacity:0.2" contenteditable="true">${seed}</h1></div>
+                          <div class="canvas-element" style="top:200px; left:150px;"><h2 class="element-content display-5 fw-bold ${txtCol}" contenteditable="true">Abstract ${seed}</h2></div>
+                          <div class="canvas-element img-placeholder rounded-circle" style="bottom:50px; right:50px; width:150px; height:150px;"></div>`;
+            }
+            return html;
+        }
+
+        // Initialize
+        registerDesigns();
+
+        function loadTemplate(id) {
+            const canvas = document.getElementById('designCanvas');
+            if (designs[id]) {
+                canvas.innerHTML = designs[id];
+                // Re-init drag for all new elements
+                initInteract();
+                // Clear selection
+                deselectAll();
+
+                // Add default props to new elements
+                document.querySelectorAll('.canvas-element').forEach(el => {
+                    // Ensure data attributes
+                    if (!el.getAttribute('data-x')) { el.setAttribute('data-x', 0); el.setAttribute('data-y', 0); }
+                });
+            }
+        }
+
+        // 2. INTERACTION & SELECTION
+        function initInteract() {
+            interact('.canvas-element')
+                .draggable({
+                    ignoreFrom: '.element-content',
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                            target.style.transform = `translate(${x}px, ${y}px)`;
+                            target.setAttribute('data-x', x);
+                            target.setAttribute('data-y', y);
+
+                            selectElement(target);
                         }
+                    }
+                })
+                .resizable({
+                    edges: { left: true, right: true, bottom: true, top: true },
+                    listeners: {
+                        move: function (event) {
+                            let { x, y } = event.target.dataset;
+                            x = (parseFloat(x) || 0) + event.deltaRect.left;
+                            y = (parseFloat(y) || 0) + event.deltaRect.top;
 
-                    } else if (mode === 'text') {
-                        title.innerText = 'Text Properties';
-                        imgOpts.style.display = 'none';
-                        textOpts.style.display = 'block';
+                            Object.assign(event.target.style, {
+                                width: `${event.rect.width}px`,
+                                height: `${event.rect.height}px`,
+                                transform: `translate(${x}px, ${y}px)`
+                            });
 
-                        if (activeElement) {
-                            const style = window.getComputedStyle(activeElement);
-
-                            // Sync Color
-                            const hex = rgbToHex(style.color);
-                            document.getElementById('textColor').value = hex;
-
-                            // Sync Size
-                            const size = parseFloat(style.fontSize);
-                            document.getElementById('textSize').value = size || 16;
-
-                            // Sync Font (Best effort match)
-                            const currentFont = style.fontFamily.replace(/['"]/g, '');
-                            const fontSelect = document.getElementById('textFont');
-                            // Reset to default then try to match
-                            fontSelect.value = 'Inter, sans-serif';
-                            for (let i = 0; i < fontSelect.options.length; i++) {
-                                const optVal = fontSelect.options[i].value.replace(/['"]/g, '');
-                                if (currentFont.includes(optVal.split(',')[0])) {
-                                    fontSelect.selectedIndex = i;
-                                    break;
-                                }
-                            }
+                            Object.assign(event.target.dataset, { x, y });
                         }
-                    } else {
-                        // Default empty or generic?
-                        imgOpts.style.display = 'none';
-                        textOpts.style.display = 'none';
                     }
-                }
+                })
+                .on('tap', function (event) {
+                    selectElement(event.currentTarget);
+                });
+        }
 
-                function closePropPanel() {
-                    document.getElementById('propPanel').style.display = 'none';
-                }
+        function selectElement(el) {
+            // Remove previous selection
+            document.querySelectorAll('.canvas-element').forEach(e => e.classList.remove('selected'));
 
-                function updateActiveText(prop, val) {
-                    if (!activeElement) return;
-                    if (prop === 'color') activeElement.style.color = val;
-                    if (prop === 'size') activeElement.style.fontSize = val + 'px';
-                    if (prop === 'font') activeElement.style.fontFamily = val;
-                }
+            // Add new
+            activeEl = el;
+            activeEl.classList.add('selected');
 
-                function deleteActiveElement() {
-                    if (activeElement) {
-                        activeElement.remove();
-                        activeElement = null;
-                        closePropPanel();
+            // Show toolbar
+            const bar = document.getElementById('propBar');
+            bar.classList.add('active');
+
+            // Sync values
+            syncValues(activeEl);
+        }
+
+        function deselectAll() {
+            activeEl = null;
+            document.querySelectorAll('.canvas-element').forEach(e => e.classList.remove('selected'));
+            document.getElementById('propBar').classList.remove('active');
+        }
+
+        // Click outside to deselect
+        document.getElementById('designCanvas').addEventListener('click', function (e) {
+            if (e.target.id === 'designCanvas') {
+                deselectAll();
+            }
+        });
+
+        // 3. PROPERTY SYNCING
+        function syncValues(el) {
+            const content = el.querySelector('.element-content') || el;
+            const style = window.getComputedStyle(content);
+
+            // Color
+            const rgb = style.color;
+            document.getElementById('fontColor').value = rgbToHex(rgb);
+
+            // Size
+            const size = parseFloat(style.fontSize);
+            document.getElementById('fontSize').value = size;
+
+            // Font (Basic check)
+            const family = style.fontFamily.replace(/['"]/g, '');
+            // Just set simple value for now
+            // document.getElementById('fontFamily').value = ... (Complexity in matching string)
+        }
+
+        function propChange(prop, val) {
+            if (!activeEl) return;
+            const target = activeEl.querySelector('.element-content') || activeEl;
+
+            if (prop === 'color') target.style.color = val;
+            if (prop === 'size') target.style.fontSize = val + 'px';
+            if (prop === 'font') target.style.fontFamily = val;
+        }
+
+        function deleteActive() {
+            if (activeEl) {
+                activeEl.remove();
+                deselectAll();
+            }
+        }
+
+        // 4. ADD TEXT
+        function addText(type) {
+            const canvas = document.getElementById('designCanvas');
+            const el = document.createElement('div');
+            el.className = 'canvas-element';
+            el.style.top = '50%';
+            el.style.left = '50%';
+            el.style.transform = 'translate(-50%, -50%)';
+            el.setAttribute('data-x', 0);
+            el.setAttribute('data-y', 0);
+            el.style.zIndex = '100';
+
+            let inner = '';
+            if (type === 'h1') inner = '<h1 class="element-content fw-bold display-4" contenteditable="true">Heading</h1>';
+            if (type === 'h3') inner = '<h3 class="element-content fw-bold" contenteditable="true">Subheading</h3>';
+            if (type === 'p') inner = '<p class="element-content lead" contenteditable="true">Body text goes here</p>';
+
+            el.innerHTML = inner;
+            canvas.appendChild(el);
+
+            // IMPORTANT: Select immediately
+            selectElement(el);
+        }
+
+        // 5. BACKGROUNDS
+        function setCanvasColor(val) {
+            document.getElementById('designCanvas').style.background = val;
+        }
+
+        function handleBgUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const canvas = document.getElementById('designCanvas');
+
+                    // Remove existing backgrounds to prevent stacking mess
+                    const existing = canvas.querySelectorAll('.custom-bg-layer');
+                    existing.forEach(e => e.remove());
+
+                    const el = document.createElement('div');
+                    el.className = 'canvas-element custom-bg-layer';
+                    el.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; background-size: cover; background-position: center;';
+                    el.style.backgroundImage = `url('${e.target.result}')`;
+                    el.setAttribute('data-x', 0);
+                    el.setAttribute('data-y', 0);
+
+                    // Add to start (background)
+                    canvas.insertBefore(el, canvas.firstChild);
+
+                    initInteract();
+                    selectElement(el);
+
+                    // Reset input
+                    input.value = '';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addBgSlot() {
+            const canvas = document.getElementById('designCanvas');
+            const el = document.createElement('div');
+            el.className = 'canvas-element img-placeholder';
+            el.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;';
+            el.innerHTML = '<span class="text-muted small">Background Image</span>';
+            el.setAttribute('data-x', 0);
+            el.setAttribute('data-y', 0);
+
+            // Add to start (background)
+            canvas.insertBefore(el, canvas.firstChild);
+
+            initInteract();
+            selectElement(el);
+        }
+
+        function addGradientSlot(type) {
+            const canvas = document.getElementById('designCanvas');
+            const el = document.createElement('div');
+            el.className = 'canvas-element';
+            el.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;';
+            el.setAttribute('data-x', 0);
+            el.setAttribute('data-y', 0);
+
+            let grad = '';
+            if (type === 'warm') grad = 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)';
+            if (type === 'cool') grad = 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)';
+            if (type === 'dark') grad = '#0f172a';
+
+            el.style.background = grad;
+
+            canvas.insertBefore(el, canvas.firstChild);
+
+            initInteract();
+            selectElement(el);
+        }
+
+        // 6. IMAGE HANDLING
+        function addImageSlot(type) {
+            const canvas = document.getElementById('designCanvas');
+            const el = document.createElement('div');
+            el.className = 'canvas-element img-placeholder';
+            el.setAttribute('data-x', 0);
+            el.setAttribute('data-y', 0);
+            el.style.zIndex = '5';
+
+            // Positioning
+            el.style.top = '50%';
+            el.style.left = '50%';
+            el.style.transform = 'translate(-50%, -50%)';
+
+            if (type === 'square') {
+                el.style.width = '300px';
+                el.style.height = '300px';
+                el.style.borderRadius = '8px';
+            } else if (type === 'circle') {
+                el.style.width = '300px';
+                el.style.height = '300px';
+                el.style.borderRadius = '50%';
+            } else if (type === 'portrait') {
+                el.style.width = '300px';
+                el.style.height = '450px';
+                el.style.borderRadius = '8px';
+            } else if (type === 'blob') {
+                el.style.width = '300px';
+                el.style.height = '300px';
+                el.style.borderRadius = '30% 70% 70% 30% / 30% 30% 70% 70%';
+            }
+
+            el.innerHTML = '<span class="small text-muted">Click to Upload</span>';
+
+            // Allow clicking placeholder to upload
+            el.onclick = function (e) {
+                if (e.target === el || e.target.tagName === 'SPAN') {
+                    // Trigger hidden upload but for THIS element? 
+                    // Simpler: Just trigger global upload and add new image
+                    // OR: Replace content. Let's do replace content context.
+                    // For now, let's keep it simple: Adding a slot adds a visual placeholder.
+                }
+            };
+
+            canvas.appendChild(el);
+            initInteract();
+            selectElement(el);
+        }
+
+        let activeSlot = null;
+
+        function placeImage(el) {
+            activeSlot = el;
+            const input = document.getElementById('imgInput');
+            if (input) input.click();
+        }
+
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Check if we are filling a slot
+                    if (activeSlot) {
+                        activeSlot.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.style.pointerEvents = 'none'; // Ensure clicks go to container
+                        activeSlot.appendChild(img);
+
+                        // Select it to allow props editing
+                        selectElement(activeSlot);
+                        activeSlot = null;
+                        input.value = '';
+                        return;
                     }
-                }
 
-                // Keep original variables 
-                let selectedImageSrc = null;
-                let scale = 1;
-                let activeImgSlot = null;
-
-                // Include original functions 
-                // ... [VISUALS LOGIC] ...
-                function addVisual(type) {
-                    // ... (Keep existing implementation)
                     const canvas = document.getElementById('designCanvas');
                     const el = document.createElement('div');
-                    el.className = 'added-visual';
-                    el.style.left = '40%';
-                    el.style.top = '40%';
+                    el.className = 'canvas-element';
+                    el.setAttribute('data-x', 0);
+                    el.setAttribute('data-y', 0);
+                    el.style.zIndex = '5';
+                    el.style.top = '50%'; // Center initial spawn
+                    el.style.left = '50%';
+                    el.style.transform = 'translate(-50%, -50%)';
 
-                    let content = '';
-                    switch (type) {
-                        case 'badge-new': content = '<div class="v-badge-new" contenteditable="true">NEW ARRIVAL</div>'; break;
-                        case 'badge-sale': content = '<div class="v-badge-sale" contenteditable="true">50% OFF</div>'; break;
-                        case 'shape-circle': content = '<div class="v-shape-circle" style="width:100px; height:100px;"></div>'; break;
-                        case 'shape-blob': content = '<div class="v-shape-blob" style="width:150px; height:150px;"></div>'; break;
-                        case 'sticker-star': content = '<i class="fas fa-star text-warning" style="font-size: 4rem;"></i>'; break;
-                        case 'sticker-heart': content = '<i class="fas fa-heart text-danger" style="font-size: 4rem;"></i>'; break;
-                        case 'arrow-scribble': content = '<i class="fas fa-location-arrow text-primary" style="font-size: 3rem; transform: rotate(-45deg);"></i>'; break;
-                        case 'text-label': content = '<span class="badge bg-dark" style="font-size:1.5rem;" contenteditable="true">Add Label</span>'; break;
-                    }
-                    el.innerHTML = content;
+                    // Create img tag for content
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '300px'; // Default startup size
+                    img.style.pointerEvents = 'none'; // Allow drag on container
+                    img.style.borderRadius = '8px';
 
-                    // Delete button 
-                    const del = document.createElement('div');
-                    del.innerHTML = '&times;';
-                    del.style.cssText = 'position:absolute; top:-10px; right:-10px; background:red; color:white; width:20px; height:20px; border-radius:50%; text-align:center; line-height:18px; cursor:pointer; font-size:14px; display:none;';
-                    del.onclick = function (e) { e.stopPropagation(); el.remove(); }
-                    el.onmouseenter = () => del.style.display = 'block';
-                    el.onmouseleave = () => del.style.display = 'none';
-                    el.appendChild(del);
-
+                    el.appendChild(img);
                     canvas.appendChild(el);
-                    initInteract(el);
+
+                    initInteract();
+                    selectElement(el);
+
+                    input.value = '';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Helper
+        function rgbToHex(rgb) {
+            if (!rgb || rgb.indexOf('rgb') === -1) return '#000000';
+            const res = rgb.match(/\d+/g);
+            return '#' + res.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+        }
+
+        // OVERWRITE SYNC VALUES FOR IMAGE SUPPORT
+        function syncValues(el) {
+            const hasImg = el.querySelector('img') || el.classList.contains('img-placeholder');
+            const pgText = document.querySelectorAll('.pg-text');
+            const pgImg = document.querySelectorAll('.pg-img');
+
+            if (hasImg) {
+                pgText.forEach(e => e.style.display = 'none');
+                pgImg.forEach(e => e.style.display = 'flex');
+            } else {
+                pgText.forEach(e => e.style.display = 'flex');
+                pgImg.forEach(e => e.style.display = 'none');
+
+                const content = el.querySelector('.element-content') || el;
+                if (content) {
+                    const style = window.getComputedStyle(content);
+                    const rgb = style.color;
+                    const hex = rgbToHex(rgb);
+                    const colorInput = document.getElementById('fontColor');
+                    if (colorInput) colorInput.value = hex;
+
+                    const size = parseFloat(style.fontSize);
+                    const sizeInput = document.getElementById('fontSize');
+                    if (sizeInput) sizeInput.value = size || 16;
+                }
+            }
+        }
+
+        function updateImageScale(val) {
+            if (!activeEl) return;
+            const img = activeEl.querySelector('img');
+            if (img) {
+                img.style.transform = `scale(${val})`;
+            }
+        }
+
+        function updateObjectFit(val) {
+            if (!activeEl) return;
+            const img = activeEl.querySelector('img');
+            if (img) img.style.objectFit = val;
+        }
+
+        // 6. EXPORT
+        async function exportDesign(mode) {
+            deselectAll();
+            const canvas = document.getElementById('designCanvas');
+            const btn = event ? event.currentTarget : null;
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                let scale = 2; // Default High Res
+                let filename = 'design';
+
+                if (mode === 'desktop') {
+                    filename = 'desktop-banner-' + Date.now();
+                } else if (mode === 'mobile') {
+                    // For mobile, since our canvas is 1000px wide, we can just export 
+                    // and rely on the device to scale, OR we could try to simulate a crop?
+                    // User request is "mobile optimized".
+                    // Best approach: Export the same high-res image but name it for mobile usage?
+                    // OR: Temporarily CSS transform the Container? (Risky for layout reflow).
+                    // Let's stick to High Res Capture which serves both well.
+                    // But maybe increase scale for crispness on phones.
+                    scale = 3;
+                    filename = 'mobile-opt-banner-' + Date.now();
                 }
 
-                function initInteract(el) {
-                    interact(el).draggable({
-                        listeners: {
-                            move(event) {
-                                // If it's a template element (like h1, p in template), check mode
-                                // But if it's an added visual or text, allow always?
-                                // Actually initInteract is mainly used for added visuals.
-                                // The template elements use 'initFreeMoveInteract'.
-                                // So we can remove the check or make it specific.
-
-                                var target = event.target;
-                                var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                                var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-                                target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-                                target.setAttribute('data-x', x);
-                                target.setAttribute('data-y', y);
-                            }
-                        }
-                    })
-                        .resizable({
-                            edges: { left: true, right: true, bottom: true, top: true },
-                            listeners: {
-                                move: function (event) {
-                                    let { x, y } = event.target.dataset;
-                                    x = (parseFloat(x) || 0) + event.deltaRect.left;
-                                    y = (parseFloat(y) || 0) + event.deltaRect.top;
-                                    Object.assign(event.target.style, {
-                                        width: `${event.rect.width}px`,
-                                        height: `${event.rect.height}px`,
-                                        transform: `translate(${x}px, ${y}px)`
-                                    })
-                                    Object.assign(event.target.dataset, { x, y });
-                                }
-                            }
-                        });
-                }
-
-
-                // --- 1. UPLOAD HANDLING ---
-                document.getElementById('fileInput').addEventListener('change', function (e) {
-                    const files = e.target.files;
-                    Array.from(files).forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = function (evt) {
-                            createAssetIcon(evt.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    });
+                const result = await html2canvas(canvas, {
+                    scale: scale,
+                    useCORS: true,
+                    backgroundColor: null
                 });
 
-                function createAssetIcon(src) {
-                    const div = document.createElement('img');
-                    div.src = src;
-                    div.className = 'asset-thumb';
-                    div.onclick = function () {
-                        // Select tool
-                        document.querySelectorAll('.asset-thumb').forEach(el => el.classList.remove('selected'));
-                        div.classList.add('selected');
-                        selectedImageSrc = src;
-                    };
-                    document.getElementById('assetTray').appendChild(div);
+                const link = document.createElement('a');
+                link.download = `${filename}.png`;
+                link.href = result.toDataURL('image/png', 1.0);
+                link.click();
 
-                    // Auto select first one if none selected
-                    if (!selectedImageSrc) {
-                        div.click();
-                    }
-                }
+            } catch (err) {
+                console.error(err);
+                alert('Export failed. See console.');
+            } finally {
+                if (btn) btn.innerHTML = originalText;
+            }
+        }
 
-                // --- 2. TEMPLATE LOADING ---
-                function loadTemplate(id) {
-                    const canvas = document.getElementById('designCanvas');
-                    let html = '';
-                    // Close panel on change
-                    document.getElementById('propPanel').style.display = 'none';
-
-                    switch (id) {
-                        case 1:
-                            html = `
-                    <section class="d1-section h-100 d-flex align-items-center">
-                        <div class="container-fluid">
-                            <div class="row align-items-center">
-                                <div class="col-lg-5">
-                                    <div class="text-uppercase fw-bold text-muted small mb-3" contenteditable="true">FEATURED COLLECTION</div>
-                                    <h1 class="d1-title mb-4" contenteditable="true">Capture Your<br>Vision on Paper</h1>
-                                    <p class="lead text-muted mb-4" contenteditable="true">Elegant designs for weddings, birthdays, and special events.</p>
-                                    <button class="btn btn-dark rounded-pill px-4" contenteditable="true">SHOP NOW</button>
-                                </div>
-                                <div class="col-lg-7">
-                                    <div class="bento-grid">
-                                        <div class="img-slot bi-1" onclick="placeImage(this)"></div>
-                                        <div class="img-slot bi-2" onclick="placeImage(this)"></div>
-                                        <div class="img-slot bi-3" onclick="placeImage(this)"></div>
-                                        <div class="img-slot bi-4" onclick="placeImage(this)"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 2:
-                            html = `
-                    <section class="d2-section">
-                        <div class="d2-content">
-                            <div style="width:50px; height:2px; background:#c9a45e; margin-bottom: 20px;"></div>
-                            <span class="text-uppercase ls-2 mb-2 text-muted" contenteditable="true">THE COLLECTION</span>
-                            <h1 style="font-family: 'Playfair Display'; font-size: 3.5rem; margin-bottom: 20px;" contenteditable="true">Artistry in<br>Every Detail</h1>
-                            <p class="opacity-75 mb-4" contenteditable="true">Discover our new range of luxury stationery.</p>
-                             <button class="btn btn-outline-light rounded-0" contenteditable="true">EXPLORE NOW</button>
-                        </div>
-                        <div class="d2-visuals">
-                            <div class="d2-main-img img-slot" onclick="placeImage(this)"></div>
-                            <div class="d2-float-card img-slot" onclick="placeImage(this)"></div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 3:
-                            html = `
-                    <section class="d3-container">
-                        <div class="d3-col-1">
-                            <div class="img-slot" style="width: 100px; height: 100px; border-radius: 50%;" onclick="placeImage(this)"></div>
-                            <div>
-                                <div style="font-size: 2.5rem; font-weight: 800; line-height: 1;" contenteditable="true">Bold.<br>Simple.<br>Unique.</div>
-                                <p class="mt-3 text-muted" contenteditable="true">Redefining print standards.</p>
-                            </div>
-                            <a href="#" class="text-dark fw-bold text-decoration-none" contenteditable="true">Our Story &rarr;</a>
-                        </div>
-                        <div class="d3-col-2 img-slot" onclick="placeImage(this)"></div>
-                        <div class="d3-col-3">
-                            <div class="d3-img-box img-slot" onclick="placeImage(this)"></div>
-                            <div class="d3-img-box img-slot" onclick="placeImage(this)"></div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 4:
-                            html = `
-                    <section class="d4-section h-100 d-flex align-items-center justify-content-center">
-                        <div class="d4-banner">
-                            <div class="d4-center-img img-slot" onclick="placeImage(this)"></div>
-                            <div class="d4-overlay">
-                                <span class="text-uppercase text-muted small ls-2" contenteditable="true">Established 2024</span>
-                                <h1 style="font-family: 'Playfair Display'; font-size: 2.5rem;" class="mt-2" contenteditable="true">Blossom Prints</h1>
-                                <p class="text-secondary mt-2" contenteditable="true">Where memories meet paper.</p>
-                            </div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 5:
-                            html = `
-                    <section class="d5-section">
-                        <div class="d5-bg-slot img-slot" onclick="placeImage(this)"></div>
-                        <div class="d5-card">
-                            <div class="img-slot" style="width:60px; height:60px; border-radius:50%; margin-bottom: 20px;" onclick="placeImage(this)"></div>
-                            <h2 class="display-6 fw-bold mb-3" contenteditable="true">Premium Quality</h2>
-                            <p class="mb-4" contenteditable="true">We ensure every pixel matches the print. Experience the difference.</p>
-                            <button class="btn btn-primary rounded-pill px-4 shadow" contenteditable="true">Start Project</button>
-                            <div class="d5-mini-grid">
-                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
-                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
-                                <div class="d5-mini-img img-slot" onclick="placeImage(this)"></div>
-                            </div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 6:
-                            html = `
-                    <section class="d6-section">
-                        <div class="d6-text">
-                            <h1 style="font-size: 3.5rem; font-family: 'Cormorant Garamond';" contenteditable="true">Timeless<br>Stationery.</h1>
-                            <div style="width: 50px; height: 2px; background: #000; margin: 20px 0;"></div>
-                            <p class="text-muted" style="max-width: 300px;" contenteditable="true">
-                                Explore our curated selection of bespoke designs, tailored for the moments that matter most.
-                            </p>
-                        </div>
-                        <div class="d6-gallery">
-                            <div class="d6-col">
-                                <div class="d6-big img-slot" onclick="placeImage(this)"></div>
-                            </div>
-                            <div class="d6-col">
-                                <div class="d6-img img-slot" onclick="placeImage(this)"></div>
-                                <div class="d6-img img-slot" onclick="placeImage(this)"></div>
-                            </div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 7:
-                            html = `
-                    <section class="d7-section">
-                        <div class="d7-text">
-                            <span class="text-uppercase fw-bold text-primary mb-2" contenteditable="true">New Arrival</span>
-                            <h1 class="display-4 fw-bold mb-4" style="font-family:'Inter'" contenteditable="true">The Future<br>of Design</h1>
-                            <p class="lead text-muted mb-4" contenteditable="true">Sharp angles, bold colors, and a layout that demands attention.</p>
-                            <a href="#" class="btn btn-dark btn-lg rounded-0 w-50" contenteditable="true">READ MORE</a>
-                        </div>
-                        <div class="d7-img img-slot" onclick="placeImage(this)"></div>
-                    </section>`;
-                            break;
-                        case 8:
-                            html = `
-                    <section class="d8-section">
-                        <div class="d8-text">
-                            <h1 class="d8-big-title" contenteditable="true">BIG.<br>BOLD.<br>TYPE.</h1>
-                            <p class="mt-3 text-muted" style="max-width: 300px;" contenteditable="true">Sometimes the message is the medium. Make it loud.</p>
-                        </div>
-                        <div class="d8-grid">
-                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
-                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
-                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
-                            <div class="d8-img img-slot" onclick="placeImage(this)"></div>
-                        </div>
-                    </section>`;
-                            break;
-                        case 9:
-                            html = `
-                    <section class="d9-section">
-                        <div class="d9-text-left">
-                            <h2 class="fw-bold" contenteditable="true">Focus Center</h2>
-                            <p class="text-muted" contenteditable="true">Everything revolves around the product.</p>
-                        </div>
-                        <div class="d9-circle img-slot" onclick="placeImage(this)"></div>
-                        <div class="d9-text-right">
-                             <h4 class="fw-bold" contenteditable="true">$299.00</h4>
-                             <button class="btn btn-primary rounded-pill btn-sm" contenteditable="true">Add to Cart</button>
-                        </div>
-                    </section>`;
-                            break;
-
-                        /* --- DESIGNS 10-20 --- */
-                        case 10:
-                            html = `<section class="d10-section"><h1 contenteditable="true">Simple Strip</h1><div class="d10-img-strip img-slot" onclick="placeImage(this)"></div><p contenteditable="true">Minimalist approach to highlighting a key visual.</p></section>`;
-                            break;
-                        case 11:
-                            html = `<section class="d11-section"><div class="d11-text"><h2 contenteditable="true">Dark Side</h2><p contenteditable="true">Elegance in the shadows.</p></div><div class="d11-img img-slot" onclick="placeImage(this)"></div></section>`;
-                            break;
-                        case 12:
-                            html = `<section class="d12-section"><div class="d12-img img-slot" onclick="placeImage(this)"></div><div class="d12-text"><h2 contenteditable="true">Light Side</h2><p contenteditable="true">Bright and airy composition.</p></div></section>`;
-                            break;
-                        case 13:
-                            html = `<section class="d13-section"><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-img img-slot" onclick="placeImage(this)"></div><div class="d13-overlay"><h2 contenteditable="true">FOUR SEASONS</h2></div></section>`;
-                            break;
-                        case 14:
-                            html = `<section class="d14-section"><div class="d14-box d14-dark"><h2 contenteditable="true">Q1</h2></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-img img-slot" onclick="placeImage(this)"></div><div class="d14-box d14-light"><h2 contenteditable="true">Q2</h2></div></section>`;
-                            break;
-                        case 15:
-                            html = `<section class="d15-section"><div class="d15-img img-slot" onclick="placeImage(this)"></div><div class="d15-text"><h3 contenteditable="true">Bottom Bar Info</h3><button class="btn btn-outline-light" contenteditable="true">Action</button></div></section>`;
-                            break;
-                        case 16:
-                            html = `<section class="d16-section"><div class="d16-text"><h1 contenteditable="true">Triple Header</h1></div><div class="d16-grid"><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div><div class="d16-img img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-                        case 17:
-                            html = `<section class="d17-section"><div class="d17-frame"><div class="d17-img img-slot" onclick="placeImage(this)"></div><div class="d17-text"><h2 contenteditable="true">Inset Frame</h2><p contenteditable="true">A picture within a picture.</p></div></div></section>`;
-                            break;
-                        case 18:
-                            html = `<section class="d18-section"><div class="d18-img img-slot" onclick="placeImage(this)"></div><div class="d18-center"><h1 contenteditable="true">FOCUS</h1><p contenteditable="true">Center stage.</p></div><div class="d18-img img-slot" onclick="placeImage(this)"></div></section>`;
-                            break;
-                        case 19:
-                            html = `<section class="d19-section"><div class="d19-col"><div class="d19-img img-slot" onclick="placeImage(this)"></div></div><div class="d19-text"><h2 contenteditable="true">Masonry</h2><p contenteditable="true">Asymmetric balance.</p></div><div class="d19-col"><div class="d19-img img-slot" style="flex:0.6" onclick="placeImage(this)"></div><div class="d19-img img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-                        case 20:
-                            html = `<section class="d20-section"><div class="d20-text-card"><h2 contenteditable="true">Overlap</h2><p contenteditable="true">Breaking the grid.</p></div><div class="d20-img img-slot" onclick="placeImage(this)"></div></section>`;
-                            break;
-
-                        /* --- DESIGNS 21-30 --- */
-                        case 21:
-                            html = `<section class="d21-section"><div class="d21-img img-slot" onclick="placeImage(this)"></div><div class="d21-text-card"><h2 contenteditable="true">Inverse</h2><p contenteditable="true">Dark mode overlap.</p></div></section>`;
-                            break;
-                        case 22:
-                            html = `<section class="d22-section"><div class="d22-text"><h1 contenteditable="true">Angle</h1></div><div class="d22-img img-slot" onclick="placeImage(this)"></div></section>`;
-                            break;
-                        case 23:
-                            html = `<section class="d23-section"><div class="d23-diamond"><div class="d23-img img-slot" onclick="placeImage(this)"></div></div><div class="d23-text"><h1 contenteditable="true" style="color:white; text-shadow:0 2px 10px black;">GEM</h1></div></section>`;
-                            break;
-                        case 24:
-                            html = `<section class="d24-section"><h2 contenteditable="true">Bubbles</h2><div class="d24-circles"><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div><div class="d24-circle img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-                        case 25:
-                            html = `<section class="d25-section"><div class="d25-img img-slot" onclick="placeImage(this)"></div><div class="d25-text"><h1 contenteditable="true">Arch Left</h1><p contenteditable="true">Smooth curves.</p></div></section>`;
-                            break;
-                        case 26:
-                            html = `<section class="d26-section"><div class="d26-img img-slot" onclick="placeImage(this)"></div><div class="d26-text"><h1 contenteditable="true">Arch Right</h1><p contenteditable="true">Balanced composition.</p></div></section>`;
-                            break;
-                        case 27:
-                            html = `<section class="d27-section"><div class="d27-pill"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;"><h1 contenteditable="true" style="background:white; padding:10px 30px; border-radius:30px;">PILL</h1></div></div></section>`;
-                            break;
-                        case 28:
-                            html = `<section class="d28-section"><div class="d28-pill img-slot" onclick="placeImage(this)"></div><div class="d28-pill img-slot" onclick="placeImage(this)"></div></section>`;
-                            break;
-                        case 29:
-                            html = `<section class="d29-section"><div><h1 contenteditable="true">Hand Picked</h1></div><div class="d29-cards"><div class="d29-card img-slot" onclick="placeImage(this)"></div><div class="d29-card img-slot" style="transform:translateY(-20px)" onclick="placeImage(this)"></div><div class="d29-card img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-                        case 30:
-                            html = `<section class="d30-section"><div class="d30-left"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div><div class="d30-right"><div class="d30-img-fix img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-
-                        /* --- DESIGNS 31-40 --- */
-                        case 31:
-                            html = `<section class="d31-section"><div class="d31-card"><div class="d31-img img-slot" onclick="placeImage(this)"></div><div class="d31-text"><h2 contenteditable="true">Soft Gradient</h2><p contenteditable="true">Pastel vibes.</p></div></div></section>`;
-                            break;
-                        case 32:
-                            html = `<section class="d32-section"><div class="d32-border"><div class="d32-content"><div class="d32-img img-slot" onclick="placeImage(this)"></div><div class="d32-text"><h2 contenteditable="true">CYBER</h2><p contenteditable="true">Neon future.</p></div></div></div></section>`;
-                            break;
-                        case 33:
-                            html = `<section class="d33-section"><div class="d33-top"><h1 contenteditable="true" style="font-size:4rem; line-height:1;">RAW<br>DESIGN</h1><p contenteditable="true">No filler.</p></div><div class="d33-bot"><div class="d33-img img-slot" onclick="placeImage(this)"></div><div class="d33-img img-slot" onclick="placeImage(this)"></div></div></section>`;
-                            break;
-                        case 34:
-                            html = `<section class="d34-section"><div class="d34-box"><div class="d34-img img-slot" onclick="placeImage(this)"></div><div><h1 contenteditable="true" style="font-family:'Courier New'">RETRO</h1><p contenteditable="true">Grid systems.</p></div></div></section>`;
-                            break;
-                        case 35:
-                            html = `<section class="d35-section"><div class="img-slot d35-img" onclick="placeImage(this)"></div><h1 class="d35-title" contenteditable="true">IMPACT</h1></section>`;
-                            break;
-                        case 36:
-                            html = `<section class="d36-section"><h1 class="d36-bg-text" contenteditable="true">HERO</h1><div class="d36-img img-slot" onclick="placeImage(this)"></div><p contenteditable="true" style="z-index:1; position:relative;">The product speaks for itself.</p></section>`;
-                            break;
-                        case 37:
-                            html = `<section class="d37-section"><div class="d37-avatar img-slot" onclick="placeImage(this)"></div><div class="d37-quote" contenteditable="true">"This is the most flexible design tool I've ever used."</div><p contenteditable="true">- Sarah Creator</p></section>`;
-                            break;
-                        case 38:
-                            html = `<section class="d38-section"><div class="d38-phone"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d38-text"><h1 contenteditable="true">Mobile First</h1><p contenteditable="true">Showcase your app.</p></div></section>`;
-                            break;
-                        case 39:
-                            html = `<section class="d39-section"><div class="d39-left"><div class="img-slot" style="width:100%; height:100%; opacity:0.5; mix-blend-mode:multiply;" onclick="placeImage(this)"></div></div><div class="d39-right"><div class="img-slot" style="width:100%; height:100%;" onclick="placeImage(this)"></div></div><div class="d39-text"><h2 contenteditable="true">Dual Tone</h2></div></section>`;
-                            break;
-                        case 40:
-                            html = `<section class="d40-section"><div class="d40-letterbox"><div class="d40-img img-slot" onclick="placeImage(this)"></div><h2 class="d40-caption" contenteditable="true">CINEMATIC EXPERIENCE</h2></div></section>`;
-                            break;
-
-                    }
-
-                    canvas.innerHTML = html;
-
-                    // Attach listeners for text editing
-                    setTimeout(attachTextListeners, 100);
-                }
-
-                // --- 3. EDITOR ACTION ---
-                function placeImage(el) {
-                    // Check if user is clicking an already full slot
-                    if (el.classList.contains('has-image')) {
-                        // Open Property Panel
-                        activeImgSlot = el;
-                        openPropPanel();
-                        return;
-                    }
-
-                    if (!selectedImageSrc) {
-                        alert('Please upload/select an image from the 1. Assets list first!');
-                        return;
-                    }
-
-                    // Clear existing
-                    el.innerHTML = '';
-                    el.classList.add('has-image');
-
-                    // Default Style
-                    const img = document.createElement('img');
-                    img.src = selectedImageSrc;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'cover';
-                    img.style.transition = 'all 0.1s ease';
-                    el.appendChild(img);
-                }
-
-                // Image Props Logic
-                function openPropPanel() {
-                    const panel = document.getElementById('propPanel');
-                    panel.style.display = 'block';
-
-                    // Get current props if any
-                    const img = activeImgSlot.querySelector('img');
-                    if (img) {
-                        // Try to read current scale from transform?
-                        // For simplicity reset to 1 or read data-attribute
-                        document.getElementById('imgScaleInfo').value = img.getAttribute('data-scale') || 1;
-
-                        // Set radio
-                        if (img.style.objectFit === 'contain') document.getElementById('fitContain').checked = true;
-                        else document.getElementById('fitCover').checked = true;
-                    }
-                }
-
-                function updateActiveImage() {
-                    if (!activeImgSlot) return;
-                    const img = activeImgSlot.querySelector('img');
-                    if (!img) return;
-
-                    const scaleVal = document.getElementById('imgScaleInfo').value;
-                    img.style.transform = `scale(${scaleVal})`;
-                    img.setAttribute('data-scale', scaleVal); // Save state
-                }
-
-                function updateActiveFit(mode) {
-                    if (!activeImgSlot) return;
-                    const img = activeImgSlot.querySelector('img');
-                    if (!img) return;
-                    img.style.objectFit = mode;
-                }
-
-                function nudgeImg(x, y) {
-                    if (!activeImgSlot) return;
-                    const img = activeImgSlot.querySelector('img');
-                    if (!img) return;
-
-                    // Get current X/Y form data-attr
-                    let curX = parseFloat(img.getAttribute('data-x') || 0);
-                    let curY = parseFloat(img.getAttribute('data-y') || 0);
-
-                    curX += x;
-                    curY += y;
-
-                    img.style.objectPosition = `${50 + curX}% ${50 + curY}%`;
-                    img.setAttribute('data-x', curX);
-                    img.setAttribute('data-y', curY);
-                }
-
-                function setZoom(val) {
-                    scale = val;
-                    const canvas = document.getElementById('designCanvas');
-                    canvas.style.transform = `scale(${scale})`;
-                }
-
-
-                // --- 4. EXPORT ---
-                function downloadDesign() {
-                    const canvas = document.getElementById('designCanvas');
-
-                    // Hide selection outlines / cursors
-                    document.querySelectorAll('[contenteditable]').forEach(e => e.blur());
-
-                    // Reset scale for clear capture
-                    canvas.style.transform = 'scale(1)';
-
-                    const btn = document.querySelector('.btn-primary');
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-                    // Temp hide visual delete buttons
-                    document.querySelectorAll('.added-visual > div').forEach(d => d.style.display = 'none');
-
-                    html2canvas(canvas, { scale: 2, useCORS: true }).then(c => {
-                        const link = document.createElement('a');
-                        link.download = 'comparehub_creation_' + Date.now() + '.png';
-                        link.href = c.toDataURL();
-                        link.click();
-
-                        // Restore scale
-                        canvas.style.transform = `scale(${scale})`;
-                        btn.innerHTML = '<i class="fas fa-download me-2"></i> Download Image';
-                    });
-                }
-                // --- 5. BACKGROUNDS LOGIC (UPDATED FOR TOOLBOX) ---
-                function initBackgrounds() {
-                    // 1. Solids & Paper
-                    const solids = [
-                        '#ffffff', '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da',
-                        '#fefae0', '#faedcd', '#eae2b7', '#d4a373', '#e6ccb2',
-                        '#000000', '#212529', '#343a40', '#495057'
-                    ];
-                    const solidContainer = document.getElementById('tool-bg-solids');
-                    if (solidContainer) {
-                        solidContainer.innerHTML = '';
-                        solids.forEach(c => createBgThumb(solidContainer, c));
-                    }
-
-                    // 2. Patterns & Textures
-                    const patterns = [
-                        // --- AESTHETIC / VIBES ---
-                        'linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%)', // Pastel Dream
-                        'linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%)', // Soft Lavender
-                        'radial-gradient(circle at 50% 50%, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)', // Blush
-                        'background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898; background-blend-mode: multiply,multiply', // Metallic Zen
-                        'linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%)', // Silver
-                        'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)', // Blue Pop
-                        'conic-gradient(at 50% 50%, #ffafbd 0%, #ffc3a0 25%, #ffafbd 50%, #ffc3a0 75%, #ffafbd 100%)', // Peachy
-                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Deep Purple (Vaporwave)
-                        'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)', // Sky Candy
-
-                        // --- GEOMETRIC CLEAN ---
-                        'repeating-linear-gradient(45deg, #f8f9fa, #f8f9fa 10px, #ffffff 10px, #ffffff 20px)', // Subtle Stripes
-                        'radial-gradient(#ccc 2px, transparent 2px) 0 0 / 20px 20px', // Minimal Dots
-                        'linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent)', // Soft Grid
-
-                        // --- NATURE / ORGANIC ---
-                        'linear-gradient(to top, #fff1eb 0%, #ace0f9 100%)', // Cloud
-                        'linear-gradient(to top, #d299c2 0%, #fef9d7 100%)', // Sunset
-                        'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)', // Mint Water
-
-                        // --- DARK MODE --- 
-                        'linear-gradient(to right, #434343 0%, black 100%)', // Deep Dark
-                        'repeating-linear-gradient(90deg, transparent 0, transparent 4px, #222 4px, #222 5px)', // Dark Scanlines
-                        'radial-gradient(circle at 50% 50%, #2b2b2b 0%, #000 100%)', // Vignette
-
-                        // --- TEXTURE ---
-                        'repeating-radial-gradient(circle, #dbd4b4, #dbd4b4 10px, #ffffff 10px, #ffffff 20px)', // Mandala
-                        'linear-gradient(135deg, #ECEDDC 25%, transparent 25%) -50px 0, linear-gradient(225deg, #ECEDDC 25%, transparent 25%) -50px 0, linear-gradient(315deg, #ECEDDC 25%, transparent 25%), linear-gradient(45deg, #ECEDDC 25%, transparent 25%)', // Houndstooth
-                    ];
-                    const patContainer = document.getElementById('tool-bg-patterns');
-                    if (patContainer) {
-                        patContainer.innerHTML = '';
-                        patterns.forEach(p => createBgThumb(patContainer, p));
-                    }
-                }
-
-                function createBgThumb(container, bg) {
-                    const div = document.createElement('div');
-                    div.className = 'bg-thumb';
-                    div.style.cssText = 'width:25px; height:25px; border-radius:4px; cursor:pointer; border:1px solid #ddd; display:inline-block;';
-                    div.style.background = bg;
-                    div.onclick = () => {
-                        applyBackground(bg);
-                    };
-                    container.appendChild(div);
-                }
-
-                function handleBgUpload(input) {
-                    const file = input.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function (evt) {
-                            const url = evt.target.result;
-                            // Ensure we set a clean background property
-                            const canvas = document.getElementById('designCanvas');
-                            canvas.style.backgroundImage = `url('${url}')`;
-                            canvas.style.backgroundSize = 'cover';
-                            canvas.style.backgroundPosition = 'center';
-                            canvas.style.backgroundRepeat = 'no-repeat';
-
-                            // Also clear any solid color that might be set
-                            canvas.style.backgroundColor = 'transparent';
-
-                            // Transparentize internal section
-                            const section = canvas.querySelector('section');
-                            if (section) section.style.background = 'transparent';
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-
-                function applyBackground(bgStyle) {
-                    const canvas = document.getElementById('designCanvas');
-
-                    // Check if it's a gradient or simple color or url
-                    if (bgStyle.includes('url') || bgStyle.includes('gradient')) {
-                        canvas.style.background = bgStyle;
-                    } else {
-                        canvas.style.background = bgStyle;
-                    }
-
-                    // Make inner section transparent
-                    const section = canvas.querySelector('section');
-                    if (section) {
-                        section.style.background = 'transparent';
-                    }
-                }
-
-                function setBgPos(pos) {
-                    const canvas = document.getElementById('designCanvas');
-                    if (pos === 'top') canvas.style.backgroundPosition = 'center top';
-                    else if (pos === 'bottom') canvas.style.backgroundPosition = 'center bottom';
-                    else canvas.style.backgroundPosition = 'center center';
-                }
-
-                function setBgSize(size) {
-                    document.getElementById('designCanvas').style.backgroundSize = size;
-                }
-
-                // Initialize on load
-                window.onload = function () {
-                    initBackgrounds();
-                };
-                // Also call it immediately
-                initBackgrounds();
-            </script>
+        // Initialize
+        registerDesigns();
+    </script>
 </body>
 
 </html>

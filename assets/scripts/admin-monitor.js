@@ -411,12 +411,19 @@ function renderLiveLogs(logs) {
         const ep = endpoints.find(e => e.id === log.functionId) || { name: log.functionId, url: '-' };
         const time = new Date(log.timestamp).toLocaleTimeString();
 
+        const isError = log.type === 'ERROR';
+        const methodColor = isError ? '#ef4444' : '#3b82f6'; // Red or Blue
+        const methodText = isError ? 'ERROR' : 'INFO';
+        const statusClass = isError ? 'error' : 'success'; // You likely need a css class for success or just inline color
+        const statusText = isError ? '500' : '200';
+        const statusStyle = isError ? 'color: #ef4444' : 'color: #10b981';
+
         const entry = document.createElement('div');
         entry.className = 'log-entry';
         entry.innerHTML = `
             <span class="log-time">${time}</span>
-            <span class="log-method" style="color:#ef4444">ERROR</span>
-            <span class="log-status error">500</span>
+            <span class="log-method" style="color:${methodColor}">${methodText}</span>
+            <span class="log-status" style="${statusStyle}">${statusText}</span>
             <span class="log-path" title="${log.message}">${ep.name}: ${log.message}</span>
         `;
         logContainer.appendChild(entry);

@@ -4,21 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Tracking | CompareHubPrices Admin</title>
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.png">
+    <title>Admin Activity Tracking | CompareHubPrices</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/sidebar.css" rel="stylesheet">
     <link href="assets/css/admin_activity_tracking.css" rel="stylesheet">
+
     <style>
         :root {
             --primary: #dc2626;
             --primary-dark: #991b1b;
             --primary-light: #f87171;
             --secondary: #ef4444;
-            --success: #16a34a;
-            --danger: #dc2626;
+            --success: #dc2626;
+            --danger: #f43f5e;
             --warning: #f59e0b;
-            --info: #2563eb;
+            --info: #b91c1c;
             --dark: #1e293b;
             --light: #fef2f2;
             --border: #fecaca;
@@ -41,230 +43,13 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: -270px;
-            top: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: white;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
-            z-index: 1000;
-            overflow-y: auto;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 2px solid var(--border);
-        }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            border-bottom: 2px solid var(--border);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-
-        .sidebar-nav {
-            padding: 1.5rem 0;
-        }
-
-        .nav-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .nav-section-title {
-            padding: 0.625rem 1.5rem;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text);
-            margin-bottom: 0.875rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-
-        .nav-section-title:hover {
-            color: var(--primary);
-        }
-
-        .nav-section-title i {
-            font-size: 0.65rem;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-section-title.collapsed i {
-            transform: rotate(-90deg);
-        }
-
-        .nav-section-items {
-            max-height: 1000px;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .nav-section-items.collapsed {
-            max-height: 0;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            transition: all 0.25s ease;
-            border-left: 4px solid transparent;
-            position: relative;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .nav-item:hover {
-            background: rgba(220, 38, 38, 0.08);
-            color: var(--primary);
-            border-left-color: var(--primary);
-        }
-
-        /* Design 9: Dual Tile Grid Styles */
-        .sb9-header {
-            margin-bottom: 1.5rem;
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: #334155;
-            padding-left: 0.5rem;
-        }
-
-        .sb9-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .sb9-tile {
-            background: white;
-            border-radius: 16px;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            text-decoration: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: 0.2s;
-            text-align: center;
-            padding: 0.75rem;
-        }
-
-        .sb9-tile i {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #94a3b8;
-        }
-
-        .sb9-tile span {
-            font-size: 0.75rem;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-
-        .sb9-tile:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            color: #dc2626;
-        }
-
-        .sb9-tile:hover i {
-            color: #dc2626;
-        }
-
-        .sb9-tile.active {
-            background: #dc2626;
-            color: white;
-        }
-
-        .sb9-tile.active i {
-            color: white;
-        }
-
-        /* Overlay CSS */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .sidebar-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(220, 38, 38, 0.12) 0%, transparent 100%);
-            color: var(--primary);
-            border-left-color: var(--primary);
-            font-weight: 700;
-        }
-
-        .nav-item i {
-            width: 24px;
-            font-size: 1.05rem;
-            margin-right: 1rem;
-            text-align: center;
-        }
-
-        .nav-item img {
-            width: 24px;
-            height: 24px;
-            margin-right: 1rem;
-            object-fit: contain;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover img {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .nav-item.active img {
-            opacity: 1;
-            filter: brightness(1.2);
-        }
-
-        .nav-badge {
-            margin-left: auto;
-            background: var(--danger);
-            color: white;
-            font-size: 0.65rem;
-            padding: 0.3rem 0.6rem;
-            border-radius: 14px;
-            font-weight: 700;
-            min-width: 24px;
-            text-align: center;
-        }
+        /* Sidebar styles moved to assets/css/sidebar.css */
 
         /* Main Content */
         .main-content {
             margin-left: 0;
             min-height: 100vh;
             transition: all 0.3s ease;
-        }
-
-        .sidebar.active {
-            left: 0;
         }
 
         /* Header */
@@ -309,10 +94,12 @@
             display: flex;
             align-items: center;
             gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
         .header-logo img {
-            height: 40px;
+            height: 38px;
             width: auto;
         }
 
@@ -320,6 +107,42 @@
             display: flex;
             align-items: center;
             gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
         }
 
         .user-profile {
@@ -330,7 +153,6 @@
             padding: 0.5rem 0.875rem;
             border-radius: 12px;
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .user-profile:hover {
@@ -366,6 +188,10 @@
         .user-role {
             font-size: 0.7rem;
             color: var(--text);
+        }
+
+        .user-profile {
+            position: relative;
         }
 
         .user-dropdown {
@@ -440,16 +266,38 @@
             color: var(--danger);
         }
 
-       
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+
+        
     </style>
+   
 </head>
+</head>
+<div class="page-loading-overlay" id="pageLoadingOverlay">
+    <div class="loading-content">
+        <div class="logo-container">
+            <img src="assets/logo.png" alt="CompareHubPrices" class="logo-img">
+        </div>
+        <div class="modern-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <h4>Loading...</h4>
+        <p>Please wait while we load </p>
+    </div>
+</div>
 
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sb9-grid" style="padding: 1.5rem;">
-            <a href="index.html" class="sb9-tile">
+            <a href="index.html" class="sb9-tile active">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
@@ -469,11 +317,15 @@
                 <i class="fas fa-bell"></i>
                 <span>Alerts</span>
             </a>
+            <a href="admin-communications.html" class="sb9-tile">
+                <i class="fas fa-bullhorn"></i>
+                <span>Comms</span>
+            </a>
             <a href="admin_business_analytics.html" class="sb9-tile">
                 <i class="fas fa-chart-pie"></i>
                 <span>Biz Stats</span>
             </a>
-            <a href="admin_price_alert_tracking.html" class="sb9-tile active">
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
                 <i class="fas fa-crosshairs"></i>
                 <span>Tracking</span>
             </a>
@@ -535,17 +387,36 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="user-profile" id="userProfile">
-                    <div class="user-avatar" id="userAvatar">A</div>
+                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
-                        <div class="user-name" id="userName">Admin User</div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-name" id="userName">loading...</div>
+                        <div class="user-role" id="userRoleHeader">loading...</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">loading...</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">loading...</div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
-
-        <div class="content-wrapper">
+     <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Page Tracking</h1>
                 <p class="page-subtitle">Real-time usage statistics and page popularity tracking</p>
@@ -633,21 +504,96 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        // CONFIGURATION: Replace with your actual deployed API Endpoint URL
-       
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="assets/scripts/admin-aws-auth.js"></script>
+  <script src="assets/scripts/admin-activity-tracking.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
+  <script>
+        // Check login state
+        function checkLoginState() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.getUserInfo().then(result => {
+                    if (result.success && result.user) {
+                        // Populate user info
+                        const user = result.user;
+                        document.getElementById('userName').textContent = user.givenName || 'Admin';
+                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
+                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
 
-    <script>
-        // Initialize
-      
+                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
+                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
+                    } else {
+                        window.location.href = 'admin-login.html';
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkLoginState);
+
+        function logout() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.logout();
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Dropdown Logic for Target Audience
+        function toggleAudienceDropdown() {
+            const dropdown = document.getElementById('audienceDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectAudience(value, text) {
+            document.getElementById('targetAudience').value = value;
+            document.getElementById('audienceDropdownText').textContent = text;
+
+            // Update visual selection
+            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
+            items.forEach(item => item.classList.remove('selected'));
+
+            items.forEach(item => {
+                if (item.textContent === text) item.classList.add('selected');
+            });
+
+            toggleAudienceDropdown();
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+            // User Profile Dropdown
+            if (!event.target.closest('.user-profile')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+
+            // Audience Dropdown
+            if (!event.target.closest('#audienceDropdown')) {
+                const dropdown = document.getElementById('audienceDropdown');
+                if (dropdown && dropdown.classList.contains('active')) {
+                    dropdown.classList.remove('active');
+                }
+            }
+        };
     </script>
+
+  
 </body>
 
 </html>

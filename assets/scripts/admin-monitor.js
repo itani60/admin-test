@@ -191,10 +191,19 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
             ep.uptime = metrics.uptime || '100%';
 
             // Maintain history for sparkline
-            if (!ep.history) ep.history = Array.from({ length: 15 }, () => 20); // Default low latency
-            if (ep.avgLatency !== null) {
-                ep.history.shift();
-                ep.history.push(ep.avgLatency);
+            if (metrics.latencyHistory && Array.isArray(metrics.latencyHistory) && metrics.latencyHistory.length > 0) {
+                // Use real history from API (fill with 0s if short to keep graph width consistent-ish, or just use as is)
+                ep.history = metrics.latencyHistory;
+
+                // If history is too short, maybe pad getting "previous" context?
+                // For now, raw history is better than fake.
+            } else {
+                // Fallback: Maintain local history
+                if (!ep.history) ep.history = Array.from({ length: 15 }, () => 20);
+                if (ep.avgLatency !== null) {
+                    ep.history.shift();
+                    ep.history.push(ep.avgLatency);
+                }
             }
 
             // Update DOM Elements

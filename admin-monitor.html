@@ -60,12 +60,67 @@
             color: white;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            position: relative;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+
+            /* ... rest of Design 3 */
         }
+
+        /* --- Design 5: Vertical Timeline (For Live Logs) --- */
+        .d5-container {
+            padding: 10px 20px;
+            height: 300px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .d5-container::before {
+            content: '';
+            position: absolute;
+            left: 29px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .d5-entry {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .d5-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid #cbd5e1;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .d5-entry.error .d5-dot {
+            border-color: var(--accent-red);
+        }
+
+        .d5-entry.info .d5-dot {
+            border-color: var(--accent-blue);
+        }
+
+        .d5-time {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
+
+        .d5-msg {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #334155;
+        }
+
+
 
         .lc3-header {
             display: flex;
@@ -671,7 +726,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
- <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-monitor.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>

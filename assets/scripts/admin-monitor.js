@@ -422,33 +422,41 @@ function getLatencyClass(ms) {
 
 function renderLiveLogs(logs) {
     const logContainer = document.getElementById('liveLogs');
+    // Ensure container has Design 5 class
     if (!logContainer) return;
+
+    // Check if we already applied D5 container class
+    if (!logContainer.classList.contains('d5-container')) {
+        logContainer.className = 'log-container d5-container';
+    }
 
     logContainer.innerHTML = ''; // Clear existing logs
 
     if (logs.length === 0) {
-        logContainer.innerHTML = '<div class="text-center text-muted p-2">No active errors found.</div>';
+        logContainer.innerHTML = '<div class="text-center text-muted p-2" style="position:relative; z-index:2;">No active errors found.</div>';
         return;
     }
 
     logs.forEach(log => {
-        const ep = endpoints.find(e => e.id === log.functionId) || { name: log.functionId, url: '-' };
+        // Mock ID if missing
+        if (!log.id) log.id = Math.random().toString(36).substr(2, 5);
+        if (!log.type) log.type = 'INFO';
+
+        const ep = endpoints.find(e => e.id === log.functionId);
+        const epName = ep ? ep.name : log.functionId;
         const time = new Date(log.timestamp).toLocaleTimeString();
-
         const isError = log.type === 'ERROR';
-        const methodColor = isError ? '#ef4444' : '#3b82f6'; // Red or Blue
-        const methodText = isError ? 'ERROR' : 'INFO';
-        const statusClass = isError ? 'error' : 'success'; // You likely need a css class for success or just inline color
-        const statusText = isError ? '500' : '200';
-        const statusStyle = isError ? 'color: #ef4444' : 'color: #10b981';
 
+        // Design 5 HTML Structure
         const entry = document.createElement('div');
-        entry.className = 'log-entry';
+        entry.className = `d5-entry ${isError ? 'error' : 'info'}`;
         entry.innerHTML = `
-            <span class="log-time">${time}</span>
-            <span class="log-method" style="color:${methodColor}">${methodText}</span>
-            <span class="log-status" style="${statusStyle}">${statusText}</span>
-            <span class="log-path" title="${log.message}">${ep.name}: ${log.message}</span>
+            <div class="d5-dot"></div>
+            <div class="d5-time">${time}</div>
+            <div class="d5-msg">
+                <span class="${isError ? 'text-danger' : 'text-primary'} fw-bold">${log.type}</span> 
+                - ${epName}: ${log.message}
+            </div>
         `;
         logContainer.appendChild(entry);
     });

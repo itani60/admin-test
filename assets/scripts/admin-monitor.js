@@ -190,6 +190,13 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
             ep.avgLatency = metrics.avgLatency !== null ? metrics.avgLatency : null;
             ep.uptime = metrics.uptime || '100%';
 
+            // Maintain history for sparkline
+            if (!ep.history) ep.history = Array.from({ length: 15 }, () => 20); // Default low latency
+            if (ep.avgLatency !== null) {
+                ep.history.shift();
+                ep.history.push(ep.avgLatency);
+            }
+
             // Update DOM Elements
             const card = document.getElementById(`card-${ep.id}`);
             if (card) {
@@ -209,40 +216,40 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
                     latEl.className = `metric-value ${ep.avgLatency !== null ? getLatencyClass(ep.avgLatency) : 'latency-ok'}`;
                 }
 
-                // Uptime - FIX: Actually update this element
+                // Uptime 
                 const uptimeEl = document.getElementById(`uptime-${ep.id}`);
                 if (uptimeEl) {
                     uptimeEl.innerText = ep.uptime;
                 }
 
-                // Last Check - FIX: Actually update this element
+                // Last Check 
                 const timeEl = document.getElementById(`last-check-${ep.id}`);
                 if (timeEl) {
-                    // Check if a global timestamp was passed, or if specific endpoint has one (backend doesn't provide per-endpoint TS currently)
-                    // Check if a global timestamp was passed
                     timeEl.innerText = lastCheckTime;
                 }
 
-                // Success Rate - FIX: Calculate and update
+                // Success Rate
                 const successEl = document.getElementById(`success-${ep.id}`);
                 if (successEl) {
                     let rate = 100;
-                    // Metrics from backend: invocations, totalErrors
                     const totalInv = metrics.invocations || 0;
                     const totalErr = metrics.totalErrors || 0;
 
                     if (totalInv > 0) {
                         rate = ((totalInv - totalErr) / totalInv) * 100;
-                        // Clamp to 0-100 just in case
                         rate = Math.max(0, Math.min(100, rate));
                     }
-                    // If no invocations, we assume 100% or "N/A"? Let's stick to 100% (Green) for idle.
 
                     successEl.innerText = `${rate.toFixed(1)}%`;
-                    // Optional: color code it
-                    if (rate < 90) successEl.style.color = '#dc2626'; // Red
-                    else if (rate < 99) successEl.style.color = '#f59e0b'; // Orange
-                    else successEl.style.color = '#10b981'; // Green
+                    if (rate < 90) successEl.style.color = '#dc2626';
+                    else if (rate < 99) successEl.style.color = '#f59e0b';
+                    else successEl.style.color = '#10b981';
+                }
+
+                // Update SVG Sparkline
+                const svgPath = document.getElementById(`spark-path-${ep.id}`);
+                if (svgPath && ep.history) {
+                    svgPath.setAttribute('d', getSparkSvgPath(ep.history, 300, 50)); // Assuming approx width 300
                 }
             }
         }
@@ -252,19 +259,34 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
 // Fallback Simulation (Original Logic condensed)
 function simulateOneStep() {
     endpoints.forEach(ep => {
+        // Init history if missing
+        if (!ep.history) ep.history = Array.from({ length: 15 }, () => Math.floor(Math.random() * 30 + 10));
+
         // Randomize latency slightly to show life
         const fluctuation = Math.floor(Math.random() * 20) - 10;
-        let newLatency = ep.avgLatency + fluctuation;
+        let newLatency = (ep.avgLatency === '-' ? 20 : ep.avgLatency) + fluctuation;
         if (newLatency < 10) newLatency = 10;
+        ep.avgLatency = newLatency;
+
+        ep.history.shift();
+        ep.history.push(newLatency);
 
         // Update DOM
         const latEl = document.getElementById(`latency-${ep.id}`);
         if (latEl) {
             latEl.innerText = `${newLatency}ms`;
+            latEl.className = `metric-value ${getLatencyClass(newLatency)}`;
         }
         // Update Last Check
         const timeEl = document.getElementById(`last-check-${ep.id}`);
         if (timeEl) timeEl.innerText = new Date().toLocaleTimeString();
+
+        // Update SVG Sparkline
+        const svgPath = document.getElementById(`spark-path-${ep.id}`);
+        if (svgPath) {
+            // ViewBox 0 0 100 40, keeping coords simple
+            svgPath.setAttribute('d', getSparkSvgPath(ep.history, 100, 40));
+        }
     });
 }
 
@@ -277,7 +299,12 @@ function renderEndpointCards(data = endpoints) {
         return;
     }
 
-    container.innerHTML = data.map(ep => `
+    container.innerHTML = data.map(ep => {
+        // Prepare initial path
+        if (!ep.history) ep.history = Array.from({ length: 15 }, () => 20);
+        const sparkPath = getSparkSvgPath(ep.history, 100, 40);
+
+        return `
         <div class="endpoint-card" id="card-${ep.id}">
             <div class="endpoint-header">
                 <div class="endpoint-icon">
@@ -300,16 +327,20 @@ function renderEndpointCards(data = endpoints) {
                     <span class="metric-value" id="uptime-${ep.id}">${ep.uptime}</span>
                 </div>
                 <div class="metric-item">
-                     <span class="metric-label">Last Check</span>
-                     <span class="metric-value" id="last-check-${ep.id}">Just now</span>
+                    <span class="metric-label">Last Check</span>
+                    <span class="metric-value" id="last-check-${ep.id}">Just now</span>
                 </div>
                 <div class="metric-item">
-                     <span class="metric-label">Success Rate</span>
-                     <span class="metric-value" id="success-${ep.id}">100%</span>
+                    <span class="metric-label">Success Rate</span>
+                    <span class="metric-value" id="success-${ep.id}">100%</span>
                 </div>
             </div>
-            <div class="latency-sparkline" id="spark-${ep.id}">
-                ${generateSparkBars(20)}
+            
+            <!-- Design 6 SVG Sparkline Replace -->
+            <div class="spark-svg-container">
+                 <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%; height:100%;">
+                    <path class="g6-line" id="spark-path-${ep.id}" d="${sparkPath}" vector-effect="non-scaling-stroke"></path>
+                 </svg>
             </div>
             
             <div class="mt-3 text-center">
@@ -318,7 +349,7 @@ function renderEndpointCards(data = endpoints) {
                  </a>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 function setupFilterListener() {
@@ -345,54 +376,41 @@ function setupFilterListener() {
     });
 }
 
-function generateSparkBars(count) {
-    let bars = '';
-    for (let i = 0; i < count; i++) {
-        const height = Math.floor(Math.random() * 80) + 20;
-        bars += `<div class="spark-bar" style="height: ${height}%"></div>`;
+function getSparkSvgPath(data, width, height) {
+    if (!data || data.length === 0) return '';
+
+    // Normalize data to fit 0-height range
+    // Assume max latency around 150ms for scaling
+    const maxVal = 150;
+
+    const step = width / (data.length - 1);
+
+    // Start Point
+    const y0 = height - (Math.min(data[0], maxVal) / maxVal * height);
+    let d = `M0,${y0}`;
+
+    for (let i = 1; i < data.length; i++) {
+        const val = Math.min(data[i], maxVal);
+        const x = i * step;
+        const y = height - (val / maxVal * height);
+
+        // Simpler Curve
+        const prevX = (i - 1) * step;
+        const prevY = height - (Math.min(data[i - 1], maxVal) / maxVal * height);
+        const cp1x = prevX + (step / 2);
+        const cp1y = prevY;
+        const cp2x = x - (step / 2);
+        const cp2y = y;
+
+        d += ` C${cp1x},${cp1y} ${cp2x},${cp2y} ${x},${y}`;
     }
-    return bars;
+    return d;
 }
 
 function startSimulation() {
     // Simulate periodic checks
     setInterval(() => {
-        endpoints.forEach(ep => {
-            // Randomize latency
-            const fluctuation = Math.floor(Math.random() * 40) - 20;
-            let newLatency = ep.avgLatency + fluctuation;
-            if (newLatency < 10) newLatency = 10;
-
-            // Occasionally spike
-            if (Math.random() > 0.95) newLatency += 300;
-
-            // Update DOM
-            const latEl = document.getElementById(`latency-${ep.id}`);
-            if (latEl) {
-                latEl.innerText = `${newLatency}ms`;
-                latEl.className = `metric-value ${getLatencyClass(newLatency)}`;
-            }
-
-            // Update Sparkline (simple shift)
-            const sparkEl = document.getElementById(`spark-${ep.id}`);
-            if (sparkEl && sparkEl.children.length > 0) {
-                sparkEl.firstElementChild.remove();
-                const height = Math.min((newLatency / 300) * 100, 100);
-                const bar = document.createElement('div');
-                bar.className = 'spark-bar';
-                bar.style.height = `${Math.max(10, height)}%`;
-                sparkEl.appendChild(bar);
-            }
-
-            // Update Last Check
-            const timeEl = document.getElementById(`last-check-${ep.id}`);
-            if (timeEl) timeEl.innerText = new Date().toLocaleTimeString();
-
-            // Random Log Entry
-            if (Math.random() > 0.7) {
-                addLogEntry(ep);
-            }
-        });
+        simulateOneStep();
     }, 2000);
 }
 

@@ -262,7 +262,23 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
                 }
             }
         }
-    });
+    }); // End endpoints foreach
+
+    // Update System Load Chart with Real Data
+    updateLoadChart(realData);
+
+    // Update global latency stats based on average of all endpoints
+    const latencies = endpoints.map(e => e.avgLatency).filter(l => l !== null);
+    if (latencies.length > 0) {
+        const globalAvg = Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length);
+        const latEl = document.getElementById('lc3-latency');
+        if (latEl) latEl.innerText = globalAvg + 'ms';
+
+        // Jitter (variance proxy)
+        const jitter = Math.abs(Math.max(...latencies) - Math.min(...latencies)) / 2;
+        const jitEl = document.getElementById('lc3-jitter');
+        if (jitEl) jitEl.innerText = jitter.toFixed(1) + 'ms';
+    }
 }
 
 // Fallback Simulation (Original Logic condensed)
@@ -468,18 +484,20 @@ function renderLiveLogs(logs) {
     });
 }
 
+let systemLoadChart = null;
+
 function initLoadChart() {
     const ctx = document.getElementById('loadChart');
     if (!ctx) return;
 
-    // Simple mocked utilization chart
-    new Chart(ctx, {
+    // Initialize empty chart
+    systemLoadChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: Array(10).fill(''),
             datasets: [{
-                label: 'System Load',
-                data: [20, 30, 25, 40, 35, 50, 45, 60, 55, 65],
+                label: 'System Load (Req/min)',
+                data: Array(10).fill(0),
                 borderColor: '#dc2626',
                 tension: 0.4,
                 fill: true,
@@ -491,10 +509,31 @@ function initLoadChart() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, max: 100 },
+                y: { beginAtZero: true, suggestedMax: 50 },
                 x: { display: false }
             },
             animation: { duration: 0 }
         }
     });
+}
+
+function updateLoadChart(realData) {
+    if (!systemLoadChart) return;
+
+    // Calculate total invocations across all functions as a proxy for "System Load"
+    let totalInvocations = 0;
+    Object.values(realData).forEach(metrics => {
+        if (metrics.invocations) totalInvocations += metrics.invocations;
+    });
+
+    // Update Chart Data (Shift and Push)
+    const currentData = systemLoadChart.data.datasets[0].data;
+    currentData.shift();
+    currentData.push(totalInvocations);
+
+    systemLoadChart.update();
+
+    // Update Load Stats Text
+    // Assuming "24.5K" text element exists, we can update it too if IDs were assigned.
+    // For now, focusing on the chart itself.
 }

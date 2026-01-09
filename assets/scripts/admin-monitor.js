@@ -447,16 +447,13 @@ function renderLiveLogs(logs) {
         const time = new Date(log.timestamp).toLocaleTimeString();
         const isError = log.type === 'ERROR';
 
-        // Design 5 HTML Structure
+        // Design 5 HTML Structure - Exact Match
         const entry = document.createElement('div');
         entry.className = `d5-entry ${isError ? 'error' : 'info'}`;
         entry.innerHTML = `
             <div class="d5-dot"></div>
             <div class="d5-time">${time}</div>
-            <div class="d5-msg">
-                <span class="${isError ? 'text-danger' : 'text-primary'} fw-bold">${log.type}</span> 
-                - ${epName}: ${log.message}
-            </div>
+            <div class="d5-msg">${log.message}</div>
         `;
         logContainer.appendChild(entry);
     });

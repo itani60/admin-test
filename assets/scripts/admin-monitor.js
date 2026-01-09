@@ -263,8 +263,22 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
     }
 
     // Update endpoints array with real values
+    const KEY_MAPPING = {
+        'business-register': 'comparehubprices_business_registaration',
+        'business-login': 'comparehubprices_business_login',
+        'register': 'comparehubprices-register',
+        'login': 'comparehubprices-loginv1',
+        'price-alerts': 'comparehubprices_price_alerts_system',
+        'forgot-password': 'comparehubprices-forgot-password',
+        'wishlist': 'Comparehubprices_wishlist_system',
+        'reset-password': 'comparehubprices-reset-password',
+        'logout': 'comparehubprices_logout_users',
+        'CompareHubPrices-admin-LoginTracking': 'CompareHubPrices-Admin-LoginTracking'
+    };
+
     endpoints.forEach(ep => {
-        const metrics = realData[ep.id];
+        const lookupKey = KEY_MAPPING[ep.id] || ep.id;
+        const metrics = realData[lookupKey];
         if (metrics) {
             ep.status = metrics.status;
             // Use null check to distinguish 0 from null

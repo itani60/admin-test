@@ -249,7 +249,7 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
                 // Update SVG Sparkline
                 const svgPath = document.getElementById(`spark-path-${ep.id}`);
                 if (svgPath && ep.history) {
-                    svgPath.setAttribute('d', getSparkSvgPath(ep.history, 300, 50)); // Assuming approx width 300
+                    svgPath.setAttribute('d', getSparkSvgPath(ep.history, 100, 40));
                 }
             }
         }

@@ -472,28 +472,155 @@ function renderEndpointCards(data = endpoints) {
     `}).join('');
 }
 
-function setupFilterListener() {
-    const dropdownItems = document.querySelectorAll('.filter-option');
+// Custom Dropdown Logic
+function initializeFilterDropdown() {
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterDropdownBtn = document.getElementById('filterDropdownBtn');
+    const filterDropdownMenu = document.getElementById('filterDropdownMenu');
+    const filterDropdownItems = document.getElementById('filterDropdownItems');
+    const filterSelect = document.getElementById('filterSelect');
     const triggerText = document.getElementById('filterDropdownText');
 
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const value = item.dataset.value;
-            const text = item.textContent.trim();
+    if (!filterDropdown || !filterDropdownBtn || !filterDropdownMenu || !filterDropdownItems) return;
 
-            // Update dropdown text
-            if (triggerText) triggerText.innerHTML = `<i class="fas fa-filter me-2"></i> ${text}`;
+    // Define Structure
+    // Generate Structure from Endpoints
+    const structure = [
+        { type: 'option', label: 'All Endpoints', value: 'all', icon: 'fa-globe' }
+    ];
 
-            // Filter logic
-            if (value === 'all') {
-                renderEndpointCards(endpoints);
-            } else {
-                const filtered = endpoints.filter(ep => ep.id === value);
-                renderEndpointCards(filtered);
-            }
-        });
+    // Helper to categorize
+    const getCategory = (ep) => {
+        const lowerName = ep.name.toLowerCase();
+        const lowerId = ep.id.toLowerCase();
+        if (lowerName.includes('business') || lowerId.includes('business')) return 'Business Users';
+        if (lowerName.includes('admin') || lowerId.includes('admin')) return 'Admin Functions';
+        if (lowerName.includes('user') || lowerName.includes('register') || lowerName.includes('login') || lowerId.includes('auth')) return 'Regular Users';
+        return 'System & Other';
+    };
+
+    // Group endpoints
+    const groups = {
+        'Business Users': [],
+        'Regular Users': [],
+        'Admin Functions': [],
+        'System & Other': []
+    };
+
+    endpoints.forEach(ep => {
+        const cat = getCategory(ep);
+        groups[cat].push(ep);
     });
+
+    // Color map for headers
+    const colorMap = {
+        'Business Users': 'text-primary',
+        'Regular Users': 'text-info',
+        'Admin Functions': 'text-danger',
+        'System & Other': 'text-muted'
+    };
+
+    // Flatten to structure
+    Object.keys(groups).forEach(key => {
+        if (groups[key].length > 0) {
+            structure.push({ type: 'header', label: key, color: colorMap[key] || 'text-dark' });
+            // Sort alphabetically within group
+            groups[key].sort((a, b) => a.name.localeCompare(b.name));
+            groups[key].forEach(ep => {
+                structure.push({
+                    type: 'option',
+                    label: ep.name,
+                    value: ep.id,
+                    icon: ep.icon || 'fa-circle'
+                });
+            });
+        }
+    });
+
+    // Build Items
+    filterDropdownItems.innerHTML = '';
+
+    structure.forEach(item => {
+        if (item.type === 'header') {
+            const header = document.createElement('div');
+            header.style.cssText = 'padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: #f8fafc; border-bottom: 1px solid var(--border);';
+            // Add top border for all except first if needed (simplified here)
+            // header.className = `dropdown-header ${item.color}`; // Custom style preferred
+            // We use inline style or utility classes from monitor css if available. 
+            // Matching the previous look:
+            if (item.color === 'text-primary') header.style.color = 'var(--primary)';
+            else if (item.color === 'text-info') header.style.color = 'var(--info)';
+            else if (item.color === 'text-warning') header.style.color = 'var(--warning)';
+            else if (item.color === 'text-danger') header.style.color = 'var(--danger)';
+            else header.style.color = 'var(--text)';
+
+            header.innerHTML = item.label;
+            filterDropdownItems.appendChild(header);
+        } else {
+            const div = document.createElement('div');
+            div.className = 'custom-dropdown-item';
+            if (item.value === 'all') div.classList.add('selected');
+            div.dataset.value = item.value;
+            div.innerHTML = `<i class="fas ${item.icon}"></i> ${item.label}`;
+
+            div.addEventListener('click', () => {
+                // Update text
+                if (triggerText) triggerText.innerHTML = `<i class="fas ${item.icon} me-2 text-primary"></i> ${item.label}`;
+                if (filterSelect) filterSelect.value = item.value;
+
+                // Visual select
+                filterDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+
+                // Close
+                filterDropdown.classList.remove('active');
+                filterDropdownMenu.style.display = 'none';
+
+                // Action
+                if (item.value === 'all') {
+                    renderEndpointCards(endpoints);
+                } else {
+                    const filtered = endpoints.filter(ep => ep.id === item.value);
+                    renderEndpointCards(filtered);
+                }
+            });
+
+            filterDropdownItems.appendChild(div);
+        }
+    });
+
+    // Toggle Logic
+    filterDropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = filterDropdown.classList.contains('active');
+
+        // Close others
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            dd.classList.remove('active');
+            const menu = dd.querySelector('.custom-dropdown-menu');
+            if (menu) menu.style.display = 'none';
+        });
+
+        if (isActive) {
+            filterDropdown.classList.remove('active');
+            filterDropdownMenu.style.display = 'none';
+        } else {
+            filterDropdown.classList.add('active');
+            filterDropdownMenu.style.display = 'block';
+        }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+            filterDropdown.classList.remove('active');
+            filterDropdownMenu.style.display = 'none';
+        }
+    });
+}
+
+function setupFilterListener() {
+    initializeFilterDropdown();
 }
 
 function getSparkSvgPath(data, width, height) {

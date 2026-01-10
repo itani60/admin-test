@@ -385,17 +385,17 @@
             </div>
             <div class="header-right">
                 <div class="user-profile" id="userProfile">
-                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
-                        <div class="user-name" id="userName">loading...</div>
-                        <div class="user-role" id="userRoleHeader">loading...</div>
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role" id="userRoleHeader">Super Admin</div>
                     </div>
                     <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
 
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <div class="dropdown-user-name" id="dropdownUserName">loading...</div>
-                            <div class="dropdown-user-email" id="dropdownUserEmail">loading...</div>
+                            <div class="dropdown-user-name" id="dropdownUserName">Admin</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@comparehubprices.co.za</div>
                         </div>
                         <a href="admin-profile.html" class="dropdown-item">
                             <i class="fas fa-user"></i>
@@ -693,27 +693,7 @@
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
     <script>
-        // Check login state
-        function checkLoginState() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.getUserInfo().then(result => {
-                    if (result.success && result.user) {
-                        // Populate user info
-                        const user = result.user;
-                        document.getElementById('userName').textContent = user.givenName || 'Admin';
-                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
-                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
 
-                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
-                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
-                    } else {
-                        window.location.href = 'admin-login.html';
-                    }
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', checkLoginState);
 
 
 

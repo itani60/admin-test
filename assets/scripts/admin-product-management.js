@@ -19,8 +19,6 @@ if (savedUrl) {
     API_CONFIG.BASE_URL = savedUrl;
 }
 
-
-
 // Categories
 const CATEGORIES = [
     { value: 'smartphones', label: 'Smartphones' },
@@ -1060,95 +1058,7 @@ function createAlertContainer() {
     return alertContainer;
 }
 
-// Setup sidebar toggle
-function setupSidebar() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
 
-    if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-}
-
-// Check login state and update header
-async function checkLoginState() {
-    try {
-        if (typeof window.adminAWSAuthService === 'undefined') {
-            console.warn('Admin auth service not available');
-            return;
-        }
-
-        const result = await window.adminAWSAuthService.getUserInfo();
-
-        if (result.success && result.user) {
-            const user = result.user;
-            let displayName = '';
-            let initials = '';
-
-            if (user.givenName && user.familyName) {
-                displayName = `${user.givenName} ${user.familyName}`;
-                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-            } else if (user.givenName) {
-                displayName = user.givenName;
-                initials = user.givenName.substring(0, 2).toUpperCase();
-            } else if (user.email) {
-                const name = user.email.split('@')[0];
-                displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                initials = name.substring(0, 2).toUpperCase();
-            } else {
-                displayName = 'Admin User';
-                initials = 'AU';
-            }
-
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-
-            if (userAvatar) userAvatar.textContent = initials;
-            if (userName) userName.textContent = displayName;
-
-            // Start of Updates
-            currentUserRole = user.role || 'viewer';
-            const rawRole = (user.role || 'viewer').replace('_', ' ');
-            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
-
-            const roleHeader = document.getElementById('userRoleHeader');
-            if (roleHeader) roleHeader.textContent = roleDisplay;
-
-            const ddName = document.getElementById('dropdownUserName');
-            if (ddName) ddName.textContent = displayName;
-
-            const ddEmail = document.getElementById('dropdownUserEmail');
-            if (ddEmail) ddEmail.textContent = user.email || '';
-            // End of Updates
-
-        } else {
-            window.location.href = 'admin-login.html';
-        }
-    } catch (error) {
-        console.error('Error checking login state:', error);
-        window.location.href = 'admin-login.html';
-    }
-}
-
-// Handle logout
-async function handleLogout() {
-    try {
-        await window.adminAWSAuthService.logout();
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        window.location.href = 'admin-login.html';
-    }
-}
 
 // Initialize custom page size dropdown
 function initializePageSizeDropdown() {
@@ -1223,8 +1133,7 @@ function initializePageSizeDropdown() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    setupSidebar();
-    checkLoginState();
+
 
     // Initialize category and brand filters on page load
     initializeCategoryGrid();

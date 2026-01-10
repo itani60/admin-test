@@ -143,133 +143,6 @@
             font-weight: 700;
             border: 2px solid white;
         }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.875rem;
-            cursor: pointer;
-            padding: 0.5rem 0.875rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .user-profile:hover {
-            background: var(--light);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.9rem;
-            border: 2px solid white;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--text);
-        }
-
-        .user-profile {
-            position: relative;
-        }
-
-        .user-dropdown {
-            position: absolute;
-            top: calc(100% + 0.75rem);
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
-            min-width: 220px;
-            padding: 0.5rem;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            border: 2px solid var(--border);
-        }
-
-        .user-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-header {
-            padding: 1rem;
-            border-bottom: 2px solid var(--border);
-            margin-bottom: 0.5rem;
-        }
-
-        .dropdown-user-name {
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .dropdown-user-email {
-            font-size: 0.8rem;
-            color: var(--text);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .dropdown-item:hover {
-            background: var(--light);
-            color: var(--primary);
-        }
-
-        .dropdown-item.logout {
-            color: var(--danger);
-            margin-top: 0.5rem;
-            border-top: 2px solid var(--border);
-            padding-top: 1rem;
-        }
-
-        .dropdown-item.logout:hover {
-            background: #fff1f2;
-            color: var(--danger);
-        }
-
-        .dropdown-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 1rem;
-        }
     </style>
 
 </head>
@@ -379,7 +252,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
                         <div class="user-name" id="userName">loading...</div>
@@ -400,7 +273,7 @@
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
                         </a>
-                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                        <div class="dropdown-item logout" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
                         </div>
@@ -409,8 +282,8 @@
             </div>
         </header>
 
-   
-               <div class="content-wrapper">
+
+        <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Business Post Management</h1>
                 <p class="page-subtitle">Review, approve, and manage business posts and permissions</p>
@@ -728,10 +601,10 @@
             </div>
         </div>
     </div>
- 
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
- <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
 
 
@@ -739,83 +612,7 @@
     <script src="assets/scripts/admin-business.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
 
-  <script>
-        // Check login state
-        function checkLoginState() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.getUserInfo().then(result => {
-                    if (result.success && result.user) {
-                        // Populate user info
-                        const user = result.user;
-                        document.getElementById('userName').textContent = user.givenName || 'Admin';
-                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
-                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
 
-                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
-                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
-                    } else {
-                        window.location.href = 'admin-login.html';
-                    }
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', checkLoginState);
-
-        function logout() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.logout();
-            }
-        }
-
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // Dropdown Logic for Target Audience
-        function toggleAudienceDropdown() {
-            const dropdown = document.getElementById('audienceDropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        function selectAudience(value, text) {
-            document.getElementById('targetAudience').value = value;
-            document.getElementById('audienceDropdownText').textContent = text;
-
-            // Update visual selection
-            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
-            items.forEach(item => item.classList.remove('selected'));
-
-            items.forEach(item => {
-                if (item.textContent === text) item.classList.add('selected');
-            });
-
-            toggleAudienceDropdown();
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function (event) {
-            // User Profile Dropdown
-            if (!event.target.closest('.user-profile')) {
-                const dropdowns = document.getElementsByClassName("user-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-
-            // Audience Dropdown
-            if (!event.target.closest('#audienceDropdown')) {
-                const dropdown = document.getElementById('audienceDropdown');
-                if (dropdown && dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
-            }
-        };
-    </script>
 </body>
 
 </html>

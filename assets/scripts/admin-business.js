@@ -43,6 +43,45 @@ function initUserDropdown() {
     });
 }
 
+// Check login state
+async function checkLoginState() {
+    try {
+        if (typeof window.adminAWSAuthService === 'undefined') {
+            console.error('Auth service not loaded');
+            return;
+        }
+
+        const result = await window.adminAWSAuthService.getUserInfo();
+        if (result.success && result.user) {
+            const user = result.user;
+
+            // Update Header Profile
+            const userNameElements = document.querySelectorAll('#userName, #dropdownUserName');
+            const userEmailElements = document.querySelectorAll('#dropdownUserEmail');
+            const userRoleElements = document.querySelectorAll('#userRoleHeader');
+            const userAvatarElements = document.querySelectorAll('#userAvatar');
+
+            userNameElements.forEach(el => el.textContent = user.givenName || 'Admin');
+            userEmailElements.forEach(el => el.textContent = user.email || '');
+
+            if (userRoleElements.length > 0) {
+                const roleDisplay = (user.role || 'Super Admin').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                userRoleElements.forEach(el => el.textContent = roleDisplay);
+            }
+
+            // Avatar initials
+            if (userAvatarElements.length > 0) {
+                const initials = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
+                userAvatarElements.forEach(el => el.textContent = initials);
+            }
+        } else {
+            // window.location.href = 'admin-login.html';
+        }
+    } catch (error) {
+        console.error('Error checking login state:', error);
+    }
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUserDropdown);
 } else {
@@ -298,11 +337,7 @@ function setupEventListeners() {
     initializePermissionDropdown();
     initializePostTypeDropdown();
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.removeEventListener('click', handleLogout); // Avoid duplicates if any
-        logoutBtn.addEventListener('click', handleLogout);
-    }
+
 }
 
 // Load posts from API

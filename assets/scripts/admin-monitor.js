@@ -801,3 +801,40 @@ function updateLoadChart(realData) {
     // Assuming "24.5K" text element exists, we can update it too if IDs were assigned.
     // For now, focusing on the chart itself.
 }
+
+// --- User Profile & Interaction Logic ---
+
+// Expose functions to global scope for HTML onclick handlers
+window.toggleUserDropdown = function () {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+};
+
+window.logout = function () {
+    if (typeof window.adminAWSAuthService !== 'undefined') {
+        window.adminAWSAuthService.logout();
+    } else {
+        window.location.href = 'admin-login.html';
+    }
+};
+
+// Close dropdowns when clicking outside
+window.addEventListener('click', function (event) {
+    // User Profile Dropdown
+    const userProfile = document.getElementById('userProfile');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userProfile && !userProfile.contains(event.target)) {
+        if (userDropdown && userDropdown.classList.contains('show')) {
+            userDropdown.classList.remove('show');
+        }
+    }
+
+    // Filter Dropdown
+    const filterBox = document.querySelector('.filter-box');
+    const filterDropdown = document.getElementById('filterDropdown');
+    if (filterBox && !filterBox.contains(event.target)) {
+        if (filterDropdown) filterDropdown.classList.remove('active');
+    }
+});

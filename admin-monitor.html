@@ -694,91 +694,25 @@
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
     <script>
-        // Check login state
-        function checkLoginState() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.getUserInfo().then(result => {
-                    if (result.success && result.user) {
-                        // Populate user info
-                        const user = result.user;
-                        document.getElementById('userName').textContent = user.givenName || 'Admin';
-                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
-                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
-
-                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
-                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
-                    } else {
-                        window.location.href = 'admin-login.html';
-                    }
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', checkLoginState);
-
-        function logout() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.logout();
-            }
-        }
-
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // Dropdown Logic for Target Audience
-        function toggleAudienceDropdown() {
-            const dropdown = document.getElementById('audienceDropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        function selectAudience(value, text) {
-            document.getElementById('targetAudience').value = value;
-            document.getElementById('audienceDropdownText').textContent = text;
-
-            // Update visual selection
-            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
-            items.forEach(item => item.classList.remove('selected'));
-
-            items.forEach(item => {
-                if (item.textContent === text) item.classList.add('selected');
-            });
-
-            toggleAudienceDropdown();
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function (event) {
-            // User Profile Dropdown
-            if (!event.target.closest('.user-profile')) {
-                const dropdowns = document.getElementsByClassName("user-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-
-            // Audience Dropdown
-            if (!event.target.closest('#audienceDropdown')) {
-                const dropdown = document.getElementById('audienceDropdown');
-                if (dropdown && dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
-            }
-        };
-
-        // Animation for Design 3 Widget
-        setInterval(() => {
-            const lat = document.getElementById('lc3-latency');
-            if (lat) lat.innerText = (15 + Math.floor(Math.random() * 8)) + 'ms';
-
-            const jit = document.getElementById('lc3-jitter');
-            if (jit) jit.innerText = (Math.random()).toFixed(1) + 'ms';
-        }, 2000);
+        // Dropdown Logic for Filter is handled in admin-monitor.js
     </script>
+    // Close dropdown when clicking outside
+    window.onclick = function (event) {
+    // User Profile Dropdown
+    if (!event.target.closest('.user-profile')) {
+    const dropdowns = document.getElementsByClassName("user-dropdown");
+    for (let i = 0; i < dropdowns.length; i++) { const openDropdown=dropdowns[i]; if
+        (openDropdown.classList.contains('show')) { openDropdown.classList.remove('show'); } } } // Audience Dropdown if
+        (!event.target.closest('#audienceDropdown')) { const dropdown=document.getElementById('audienceDropdown'); if
+        (dropdown && dropdown.classList.contains('active')) { dropdown.classList.remove('active'); } } }; // Animation
+        for Design 3 Widget setInterval(()=> {
+        const lat = document.getElementById('lc3-latency');
+        if (lat) lat.innerText = (15 + Math.floor(Math.random() * 8)) + 'ms';
+
+        const jit = document.getElementById('lc3-jitter');
+        if (jit) jit.innerText = (Math.random()).toFixed(1) + 'ms';
+        }, 2000);
+        </script>
 
 
 </body>

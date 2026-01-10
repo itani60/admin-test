@@ -11,7 +11,7 @@ let currentPage = 1;
 let pageSize = 25;
 let lastKey = null;
 let currentCategory = '';
-let currentUserRole = 'viewer';
+let currentUserRole = 'admin';
 
 // Load saved API URL
 const savedUrl = localStorage.getItem('comparehubprices_api_url');

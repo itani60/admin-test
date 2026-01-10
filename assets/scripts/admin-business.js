@@ -11,38 +11,6 @@ function toggleNavSection(element) {
     navItems.classList.toggle('collapsed');
 }
 
-function initUserDropdown() {
-    const userProfile = document.getElementById('userProfile');
-    const userDropdown = document.getElementById('userDropdown');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (!userProfile || !userDropdown || !logoutBtn) return;
-
-    userProfile.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userDropdown.classList.toggle('show');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!userProfile.contains(e.target)) {
-            userDropdown.classList.remove('show');
-        }
-    });
-
-    logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                await window.adminAWSAuthService.logout();
-            }
-            window.location.href = 'admin-login.html';
-        } catch (error) {
-            console.error('Logout error:', error);
-            window.location.href = 'admin-login.html';
-        }
-    });
-}
-
 // Check login state
 async function checkLoginState() {
     try {
@@ -55,37 +23,32 @@ async function checkLoginState() {
         if (result.success && result.user) {
             const user = result.user;
 
-            // Update Header Profile
+            // Update Header Name
             const userNameElements = document.querySelectorAll('#userName, #dropdownUserName');
-            const userEmailElements = document.querySelectorAll('#dropdownUserEmail');
-            const userRoleElements = document.querySelectorAll('#userRoleHeader');
-            const userAvatarElements = document.querySelectorAll('#userAvatar');
-
             userNameElements.forEach(el => el.textContent = user.givenName || 'Admin');
+
+            // Update Email
+            const userEmailElements = document.querySelectorAll('#dropdownUserEmail');
             userEmailElements.forEach(el => el.textContent = user.email || '');
 
-            if (userRoleElements.length > 0) {
-                const roleDisplay = (user.role || 'Super Admin').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                userRoleElements.forEach(el => el.textContent = roleDisplay);
+            // Update Role
+            const userRoleElement = document.getElementById('userRoleHeader');
+            if (userRoleElement) {
+                const roleKey = user.role || 'Super Admin';
+                const roleDisplay = roleKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                userRoleElement.textContent = roleDisplay;
             }
 
-            // Avatar initials
+            // Update Avatar
+            const userAvatarElements = document.querySelectorAll('#userAvatar');
             if (userAvatarElements.length > 0) {
                 const initials = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
                 userAvatarElements.forEach(el => el.textContent = initials);
             }
-        } else {
-            // window.location.href = 'admin-login.html';
         }
     } catch (error) {
         console.error('Error checking login state:', error);
     }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initUserDropdown);
-} else {
-    initUserDropdown();
 }
 
 // Configuration

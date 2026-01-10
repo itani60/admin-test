@@ -12,39 +12,53 @@ function toggleNavSection(element) {
 }
 
 // Check login state
+// Check Login State
 async function checkLoginState() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
-            console.error('Auth service not loaded');
+            console.warn('Admin auth service not available');
             return;
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
+
         if (result.success && result.user) {
             const user = result.user;
+            let displayName = '';
+            let initials = '';
 
-            // Update Header Name
+            if (user.givenName && user.familyName) {
+                displayName = `${user.givenName} ${user.familyName}`;
+                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+            } else if (user.givenName) {
+                displayName = user.givenName;
+                initials = user.givenName.substring(0, 2).toUpperCase();
+            } else if (user.email) {
+                const name = user.email.split('@')[0];
+                displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                initials = name.substring(0, 2).toUpperCase();
+            } else {
+                displayName = 'Admin User';
+                initials = 'AU';
+            }
+
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.textContent = initials;
+
             const userNameElements = document.querySelectorAll('#userName, #dropdownUserName');
-            userNameElements.forEach(el => el.textContent = user.givenName || 'Admin');
+            userNameElements.forEach(el => el.textContent = displayName);
 
-            // Update Email
             const userEmailElements = document.querySelectorAll('#dropdownUserEmail');
             userEmailElements.forEach(el => el.textContent = user.email || '');
 
             // Update Role
-            const userRoleElement = document.getElementById('userRoleHeader');
-            if (userRoleElement) {
-                const roleKey = user.role || 'Super Admin';
-                const roleDisplay = roleKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                userRoleElement.textContent = roleDisplay;
-            }
+            const rawRole = (user.role || 'viewer').replace(/_/g, ' ');
+            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+            const roleHeader = document.getElementById('userRoleHeader');
+            if (roleHeader) roleHeader.textContent = roleDisplay;
 
-            // Update Avatar
-            const userAvatarElements = document.querySelectorAll('#userAvatar');
-            if (userAvatarElements.length > 0) {
-                const initials = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
-                userAvatarElements.forEach(el => el.textContent = initials);
-            }
+        } else {
+            // window.location.href = 'admin-login.html';
         }
     } catch (error) {
         console.error('Error checking login state:', error);

@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 
     loadNotifications();
-    checkLoginState();
+    initRBAC();
     initializeCharts();
-    initUserDropdown();
+
 });
 
 
@@ -579,7 +579,7 @@ function debounce(func, wait) {
 // Check Login State
 let currentUserRole = 'viewer';
 
-async function checkLoginState() {
+async function initRBAC() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
             console.warn('Admin auth service not available');
@@ -590,40 +590,7 @@ async function checkLoginState() {
 
         if (result.success && result.user) {
             const user = result.user;
-            let displayName = '';
-            let initials = '';
-
-            if (user.givenName && user.familyName) {
-                displayName = `${user.givenName} ${user.familyName}`;
-                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-            } else if (user.givenName) {
-                displayName = user.givenName;
-                initials = user.givenName.substring(0, 2).toUpperCase();
-            } else if (user.email) {
-                const name = user.email.split('@')[0];
-                displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                initials = name.substring(0, 2).toUpperCase();
-            } else {
-                displayName = 'Admin User';
-                initials = 'AU';
-            }
-
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const dropdownUserName = document.getElementById('dropdownUserName');
-            const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-
-            if (userAvatar) userAvatar.textContent = initials;
-            if (userName) userName.textContent = displayName;
-            if (dropdownUserName) dropdownUserName.textContent = displayName;
-            if (dropdownUserEmail) dropdownUserEmail.textContent = user.email || '';
-
-            // Update Role
             currentUserRole = user.role || 'viewer';
-            const rawRole = (user.role || 'viewer').replace('_', ' ');
-            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
-            const roleHeader = document.getElementById('userRoleHeader');
-            if (roleHeader) roleHeader.textContent = roleDisplay;
 
             // RBAC for Gloabl Actions (Clear All, Mark All)
             if (currentUserRole === 'viewer') {
@@ -632,6 +599,7 @@ async function checkLoginState() {
             }
 
             if (allNotifications.length > 0) {
+                // Re-render if role changed visibility of buttons
                 renderNotifications();
             }
 
@@ -645,37 +613,7 @@ async function checkLoginState() {
 }
 
 // Initialize User Dropdown
-function initUserDropdown() {
-    const userProfile = document.getElementById('userProfile');
-    const userDropdown = document.getElementById('userDropdown');
-    const logoutBtn = document.getElementById('logoutBtn');
 
-    if (!userProfile || !userDropdown || !logoutBtn) return;
-
-    userProfile.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userDropdown.classList.toggle('show');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!userProfile.contains(e.target)) {
-            userDropdown.classList.remove('show');
-        }
-    });
-
-    logoutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                await window.adminAWSAuthService.logout();
-            }
-            window.location.href = 'admin-login.html';
-        } catch (error) {
-            console.error('Logout error:', error);
-            window.location.href = 'admin-login.html';
-        }
-    });
-}
 
 // Show styled confirmation modal
 function showConfirmationModal(title, message, type = 'warning') {

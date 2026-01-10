@@ -1,0 +1,626 @@
+:root {
+    --primary: #dc2626;
+    --primary-dark: #991b1b;
+    --primary-light: #f87171;
+    --secondary: #ef4444;
+    --success: #dc2626;
+    --danger: #f43f5e;
+    --warning: #f59e0b;
+    --info: #b91c1c;
+    --dark: #1e293b;
+    --light: #fef2f2;
+    --border: #fecaca;
+    --text: #64748b;
+    --text-dark: #0f172a;
+    --sidebar-width: 270px;
+    --header-height: 72px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fef2f2;
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* Sidebar Styles (matching sidebar.css pattern but keeping detailed styles if unique) */
+.sidebar {
+    position: fixed;
+    left: -270px;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: white;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 2px solid var(--border);
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+/* Design 9: Dual Tile Grid Styles */
+.sb9-header {
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #334155;
+    padding-left: 0.5rem;
+}
+
+.sb9-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.sb9-tile {
+    background: white;
+    border-radius: 16px;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    text-decoration: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: 0.2s;
+    text-align: center;
+    padding: 0.75rem;
+}
+
+.sb9-tile i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #94a3b8;
+}
+
+.sb9-tile span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.sb9-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    color: #dc2626;
+}
+
+.sb9-tile:hover i {
+    color: #dc2626;
+}
+
+.sb9-tile.active {
+    background: #dc2626;
+    color: white;
+}
+
+.sb9-tile.active i {
+    color: white;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.sidebar-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 0;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+/* Header */
+.top-header {
+    height: var(--header-height);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--border);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+
+.menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.header-logo img {
+    height: 38px;
+    width: auto;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.125rem;
+}
+
+/* User Profile & Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    cursor: pointer;
+    padding: 0.5rem 0.875rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.user-profile:hover {
+    background: var(--light);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+.user-profile .user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-profile .user-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.user-profile .user-role {
+    font-size: 0.7rem;
+    color: var(--text);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    min-width: 220px;
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    border: 2px solid var(--border);
+}
+
+.user-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-header {
+    padding: 1rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 0.5rem;
+}
+
+.dropdown-user-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.dropdown-user-email {
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.dropdown-item:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+.dropdown-item.logout {
+    color: var(--danger);
+    margin-top: 0.5rem;
+    border-top: 2px solid var(--border);
+    padding-top: 1rem;
+}
+
+.dropdown-item.logout:hover {
+    background: #fff1f2;
+    color: var(--danger);
+}
+
+/* Custom Dropdown (Form) */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown.active {
+    z-index: 100;
+}
+
+.custom-dropdown-btn {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+    color: var(--text-dark);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-dropdown-btn:hover {
+    border-color: var(--primary);
+}
+
+.custom-dropdown.active .custom-dropdown-btn {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.custom-dropdown-btn i {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    color: var(--text);
+}
+
+.custom-dropdown.active .custom-dropdown-btn i {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+}
+
+.custom-dropdown.active .custom-dropdown-menu {
+    display: block;
+}
+
+.custom-dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.95rem;
+}
+
+.custom-dropdown-item:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+.custom-dropdown-item.selected {
+    background: #eff6ff;
+    color: #1e40af;
+    /* Adjusted slightly from var(--primary) for better contrast on light blue if needed, or stick to primary */
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Modal Styles */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.custom-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.custom-modal-overlay.active .custom-modal {
+    transform: translateY(0);
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    background: #fef2f2;
+    color: #ef4444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+
+.modal-message {
+    color: var(--text);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-actions .btn {
+    min-width: 120px;
+}
+
+.btn-outline-secondary {
+    border: 2px solid #e2e8f0;
+    background: transparent;
+    color: #64748b;
+}
+
+.btn-outline-secondary:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
+}
+
+/* Page Layout */
+.content-wrapper {
+    padding: 2.25rem;
+}
+
+.page-header {
+    margin-bottom: 2.25rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-bottom: 0.625rem;
+    letter-spacing: -1px;
+}
+
+.page-subtitle {
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 400;
+}
+
+/* Access Control Specific Styles */
+.access-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    margin-bottom: 2rem;
+}
+
+.access-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--text-dark);
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    outline: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.table-responsive {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.table th {
+    background: var(--light);
+    padding: 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+}
+
+.role-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-super {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.role-editor {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.role-viewer {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.status-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-active {
+    background: #22c55e;
+}
+
+.status-pending {
+    background: #f59e0b;
+}

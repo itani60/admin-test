@@ -362,15 +362,24 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
     // Update System Load Chart with Real Data
     updateLoadChart(realData);
 
-    // Update global latency stats based on average of all endpoints
-    const latencies = endpoints.map(e => e.avgLatency).filter(l => l !== null && l !== '-');
+    // Exclude background/admin tasks from Health Score to reflect User Experience
+    const excludedTerms = ['check-price-alerts', 'check-new-products', 'admin', 'report', 'monitor'];
+    const userFacingEndpoints = endpoints.filter(ep => !excludedTerms.some(term => ep.id.includes(term)));
 
-    // Calculate global stats from realData directly for accuracy
+    // Update global latency stats based on average of USER FACING endpoints
+    const latencies = userFacingEndpoints.map(e => e.avgLatency).filter(l => l !== null && l !== '-');
+
+    // Calculate global stats from realData directly for accuracy (Filtered)
     let totalInvocations = 0;
     let totalErrors = 0;
-    Object.values(realData).forEach(m => {
-        totalInvocations += (m.invocations || 0);
-        totalErrors += (m.totalErrors || 0);
+
+    // Only count invocations/errors from user-facing endpoints
+    userFacingEndpoints.forEach(ep => {
+        const m = realData[ep.id];
+        if (m) {
+            totalInvocations += (m.invocations || 0);
+            totalErrors += (m.totalErrors || 0);
+        }
     });
 
     if (latencies.length > 0) {

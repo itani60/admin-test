@@ -271,7 +271,7 @@
             font-size: 1rem;
         }
     </style>
-    <link href="assets/css/index.css" rel="stylesheet">
+
 </head>
 </head>
 <div class="page-loading-overlay" id="pageLoadingOverlay">
@@ -379,7 +379,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
                         <div class="user-name" id="userName">loading...</div>
@@ -400,7 +400,7 @@
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
                         </a>
-                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                        <div class="dropdown-item logout" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
                         </div>
@@ -409,8 +409,8 @@
             </div>
         </header>
 
-   
-    <div class="content-wrapper">
+
+        <div class="content-wrapper">
             <div class="page-header">
                 <h1 class="page-title">Bulk Import Products</h1>
                 <p class="page-subtitle">Import multiple products at once from JSON file</p>
@@ -624,92 +624,16 @@
             <div id="alertContainer"></div>
         </div>
     </div>
- 
 
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="assets/scripts/lazy_loading.js"></script>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-bulk-import.js?v=1"></script>
     <script src="assets/scripts/admin-bulk-import-charts.js?v=3"></script>
     <script src="assets/scripts/sidebar.js"></script>
-  <script>
-        // Check login state
-        function checkLoginState() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.getUserInfo().then(result => {
-                    if (result.success && result.user) {
-                        // Populate user info
-                        const user = result.user;
-                        document.getElementById('userName').textContent = user.givenName || 'Admin';
-                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
-                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
+    <script src="assets/scripts/lazy_loading.js"></script>
 
-                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
-                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
-                    } else {
-                        window.location.href = 'admin-login.html';
-                    }
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', checkLoginState);
-
-        function logout() {
-            if (typeof window.adminAWSAuthService !== 'undefined') {
-                window.adminAWSAuthService.logout();
-            }
-        }
-
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // Dropdown Logic for Target Audience
-        function toggleAudienceDropdown() {
-            const dropdown = document.getElementById('audienceDropdown');
-            dropdown.classList.toggle('active');
-        }
-
-        function selectAudience(value, text) {
-            document.getElementById('targetAudience').value = value;
-            document.getElementById('audienceDropdownText').textContent = text;
-
-            // Update visual selection
-            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
-            items.forEach(item => item.classList.remove('selected'));
-
-            items.forEach(item => {
-                if (item.textContent === text) item.classList.add('selected');
-            });
-
-            toggleAudienceDropdown();
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function (event) {
-            // User Profile Dropdown
-            if (!event.target.closest('.user-profile')) {
-                const dropdowns = document.getElementsByClassName("user-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-
-            // Audience Dropdown
-            if (!event.target.closest('#audienceDropdown')) {
-                const dropdown = document.getElementById('audienceDropdown');
-                if (dropdown && dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
-            }
-        };
-    </script>
 </body>
 
 </html>

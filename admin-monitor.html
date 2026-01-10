@@ -535,7 +535,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                <div class="user-profile" id="userProfile">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-info">
                         <div class="user-name" id="userName">loading...</div>
@@ -693,27 +693,6 @@
     <script src="assets/scripts/admin-monitor.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
-    <script>
-        // Dropdown Logic for Filter is handled in admin-monitor.js
-    </script>
-    // Close dropdown when clicking outside
-    window.onclick = function (event) {
-    // User Profile Dropdown
-    if (!event.target.closest('.user-profile')) {
-    const dropdowns = document.getElementsByClassName("user-dropdown");
-    for (let i = 0; i < dropdowns.length; i++) { const openDropdown=dropdowns[i]; if
-        (openDropdown.classList.contains('show')) { openDropdown.classList.remove('show'); } } } // Audience Dropdown if
-        (!event.target.closest('#audienceDropdown')) { const dropdown=document.getElementById('audienceDropdown'); if
-        (dropdown && dropdown.classList.contains('active')) { dropdown.classList.remove('active'); } } }; // Animation
-        for Design 3 Widget setInterval(()=> {
-        const lat = document.getElementById('lc3-latency');
-        if (lat) lat.innerText = (15 + Math.floor(Math.random() * 8)) + 'ms';
-
-        const jit = document.getElementById('lc3-jitter');
-        if (jit) jit.innerText = (Math.random()).toFixed(1) + 'ms';
-        }, 2000);
-        </script>
-
 
 </body>
 

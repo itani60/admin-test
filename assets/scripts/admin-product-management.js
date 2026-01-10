@@ -19,19 +19,7 @@ if (savedUrl) {
     API_CONFIG.BASE_URL = savedUrl;
 }
 
-// Toggle User Dropdown
-function toggleUserDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
-}
 
-document.addEventListener('click', (e) => {
-    const userProfile = document.getElementById('userProfile');
-    const userDropdown = document.getElementById('userDropdown');
-    if (userProfile && userDropdown && !userProfile.contains(e.target)) {
-        userDropdown.classList.remove('show');
-    }
-});
 
 // Categories
 const CATEGORIES = [

@@ -5,13 +5,18 @@ const API_CONFIG = {
     GET_PRODUCT_ENDPOINT: '/products',
     UPDATE_PRODUCT_ENDPOINT: '/products',
     DELETE_PRODUCT_ENDPOINT: '/products',
+    AUTH_CHECK_ENDPOINT: 'https://hub.comparehubprices.co.za/admin/admin/account/get-user-permissions'
 };
 
 let currentPage = 1;
 let pageSize = 25;
 let lastKey = null;
 let currentCategory = '';
-let currentUserRole = 'admin';
+let currentUserRole = 'viewer';
+let currentPermissions = {
+    canEditProducts: false,
+    canDeleteProducts: false
+};
 
 // Load saved API URL
 const savedUrl = localStorage.getItem('comparehubprices_api_url');
@@ -491,8 +496,8 @@ function displayProducts(products) {
                 </div>
                 <div class="card-actions">
                     <button class="btn-view" onclick="viewProduct('${product.product_id}', '${product.category}')">View</button>
-                    ${currentUserRole !== 'viewer' ? `<button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>` : ''}
-                    ${currentUserRole !== 'viewer' ? `<button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>` : ''}
+                    ${currentPermissions.canEditProducts ? `<button class="btn-edit" onclick="editProduct('${product.product_id}', '${product.category}')">Edit</button>` : ''}
+                    ${currentPermissions.canDeleteProducts ? `<button class="btn-delete" onclick="deleteProduct('${product.product_id}', '${product.category}')">Delete</button>` : ''}
                 </div>
             </div>
         `;
@@ -1060,6 +1065,45 @@ function createAlertContainer() {
 
 
 
+// Check user role directly via API
+// Check user role/permissions via API
+async function checkUserRole() {
+    try {
+        const response = await fetch(API_CONFIG.AUTH_CHECK_ENDPOINT, {
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                // Support both old (user.role) and new (permissions object) formats
+                if (data.permissions) {
+                    currentPermissions = data.permissions;
+                    currentUserRole = data.permissions.role || 'viewer';
+                } else if (data.user) {
+                    // Fallback for old endpoint
+                    currentUserRole = data.user.role || 'viewer';
+                    // Map old roles to simplified permissions
+                    const role = currentUserRole.toLowerCase();
+                    currentPermissions = {
+                        canEditProducts: ['admin', 'super admin', 'manager', 'editor'].includes(role),
+                        canDeleteProducts: ['admin', 'super admin'].includes(role)
+                    };
+                }
+
+                // Relad products if container has content (and not just loading)
+                const container = document.getElementById('productsContainer');
+                if (container && container.children.length > 0 && !container.innerHTML.includes('loading...')) {
+                    loadProducts();
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Permissions check failed:', error);
+    }
+}
+
 // Initialize custom page size dropdown
 function initializePageSizeDropdown() {
     const pageSizeDropdown = document.getElementById('pageSizeDropdown');
@@ -1133,6 +1177,7 @@ function initializePageSizeDropdown() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    checkUserRole();
 
 
     // Initialize category and brand filters on page load

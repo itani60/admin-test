@@ -363,16 +363,49 @@ function updateDashboard(realData, serverTimestamp, recentLogs) {
     updateLoadChart(realData);
 
     // Update global latency stats based on average of all endpoints
-    const latencies = endpoints.map(e => e.avgLatency).filter(l => l !== null);
+    const latencies = endpoints.map(e => e.avgLatency).filter(l => l !== null && l !== '-');
+
+    // Calculate global stats from realData directly for accuracy
+    let totalInvocations = 0;
+    let totalErrors = 0;
+    Object.values(realData).forEach(m => {
+        totalInvocations += (m.invocations || 0);
+        totalErrors += (m.totalErrors || 0);
+    });
+
     if (latencies.length > 0) {
         const globalAvg = Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length);
         const latEl = document.getElementById('lc3-latency');
         if (latEl) latEl.innerText = globalAvg + 'ms';
+        if (latEl) latEl.className = 'lc3-stat ' + (globalAvg < 100 ? 'green' : (globalAvg < 300 ? 'yellow' : 'red'));
 
         // Jitter (variance proxy)
         const jitter = Math.abs(Math.max(...latencies) - Math.min(...latencies)) / 2;
         const jitEl = document.getElementById('lc3-jitter');
         if (jitEl) jitEl.innerText = jitter.toFixed(1) + 'ms';
+
+        // Packet Loss (Approximated by Error Rate)
+        const lossRate = totalInvocations > 0 ? (totalErrors / totalInvocations) * 100 : 0;
+        const lossEl = document.getElementById('lc3-loss');
+        if (lossEl) {
+            lossEl.innerText = lossRate.toFixed(2) + '%';
+            lossEl.className = 'lc3-stat ' + (lossRate < 1 ? 'green' : 'red');
+        }
+
+        // Health Score
+        let score = 'F';
+        let scoreClass = 'red';
+        if (lossRate < 0.1 && globalAvg < 50) { score = 'A+'; scoreClass = 'green'; }
+        else if (lossRate < 0.5 && globalAvg < 150) { score = 'A'; scoreClass = 'green'; }
+        else if (lossRate < 2.0 && globalAvg < 300) { score = 'B'; scoreClass = 'yellow'; }
+        else if (lossRate < 5.0 && globalAvg < 500) { score = 'C'; scoreClass = 'yellow'; }
+        else if (lossRate < 10.0) { score = 'D'; scoreClass = 'red'; }
+
+        const healthEl = document.getElementById('lc3-health');
+        if (healthEl) {
+            healthEl.innerText = score;
+            healthEl.className = 'lc3-stat ' + scoreClass;
+        }
     }
 }
 

@@ -497,8 +497,8 @@ function renderEndpointCards(data = endpoints) {
             </div>
             
             <div class="mt-3 text-center">
-                 <a href="admin_monitor_view.html?id=${ep.id}" class="btn btn-sm btn-outline-primary w-100">
-                    <i class="fas fa-eye me-1"></i> View Details
+                 <a href="admin_monitor_view.html?id=${ep.id}" class="btn-neumorphic">
+                    View Details
                  </a>
             </div>
         </div>

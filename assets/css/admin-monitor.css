@@ -488,99 +488,125 @@ body {
     color: var(--primary);
 }
 
-.custom-dropdown-item.selected {
-    color: var(--primary);
+/* Button Design 5: Neumorphic Soft */
+.btn-neumorphic {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
     font-weight: 600;
-    background: rgba(220, 38, 38, 0.08) !important;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px #cbd5e1, -5px -5px 10px #ffffff;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    text-decoration: none;
+    /* Ensure link looks like button */
 }
-     /* Loading Overlay */
-        .page-loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
 
-        .page-loading-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
+.btn-neumorphic:hover {
+    transform: translateY(-1px);
+    color: #2563eb;
+    text-decoration: none;
+}
 
-        .loading-content {
-            text-align: center;
-            color: #333;
-        }
+.btn-neumorphic:active {
+    box-shadow: inset 5px 5px 10px #cbd5e1, inset -5px -5px 10px #ffffff;
+    transform: translateY(1px);
+}
 
-        .logo-container {
-            margin-bottom: 3rem;
-        }
+/* Loading Overlay */
+.page-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
 
-        .logo-container img {
-            max-width: 200px;
-            height: auto;
-        }
+.page-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
 
-        /* Modern Spinner */
-        .modern-spinner {
-            position: relative;
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 2rem auto;
-        }
+.loading-content {
+    text-align: center;
+    color: #333;
+}
 
-        .spinner-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            border-top: 3px solid #dc3545;
-            border-radius: 50%;
-            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        }
+.logo-container {
+    margin-bottom: 3rem;
+}
 
-        .spinner-ring:nth-child(1) {
-            animation-delay: -0.45s;
-            border-top-color: #dc3545;
-        }
+.logo-container img {
+    max-width: 200px;
+    height: auto;
+}
 
-        .spinner-ring:nth-child(2) {
-            animation-delay: -0.3s;
-            border-top-color: #28a745;
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
-        }
+/* Modern Spinner */
+.modern-spinner {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 2rem auto;
+}
 
-        .spinner-ring:nth-child(3) {
-            animation-delay: -0.15s;
-            border-top-color: #007bff;
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-        }
+.spinner-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid #dc3545;
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+.spinner-ring:nth-child(1) {
+    animation-delay: -0.45s;
+    border-top-color: #dc3545;
+}
 
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+.spinner-ring:nth-child(2) {
+    animation-delay: -0.3s;
+    border-top-color: #28a745;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+}
 
-        .loading-content h4 {
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
+.spinner-ring:nth-child(3) {
+    animation-delay: -0.15s;
+    border-top-color: #007bff;
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-content h4 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}

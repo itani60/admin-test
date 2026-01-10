@@ -214,6 +214,7 @@
  }
 
  /* User Profile Dropdown Styles (Synced with admin-analytics) */
+ /* User Profile Dropdown Styles (Synced with admin-analytics) */
  .user-profile {
      display: flex;
      align-items: center;
@@ -223,6 +224,8 @@
      border-radius: 12px;
      transition: all 0.3s ease;
      position: relative;
+     z-index: 101;
+     /* Ensure profile is above other header elements */
  }
 
  .user-profile:hover {
@@ -262,19 +265,24 @@
 
  .user-dropdown {
      position: absolute;
-     top: calc(100% + 0.75rem);
+     top: calc(100% + 10px);
+     /* Added slightly more space */
      right: 0;
-     background: white;
+     background: #ffffff;
+     /* Explicit hex white */
      border-radius: 12px;
-     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
-     min-width: 220px;
+     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+     /* stronger shadow */
+     min-width: 240px;
+     /* slightly wider */
      padding: 0.5rem;
      opacity: 0;
      visibility: hidden;
      transform: translateY(-10px);
-     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-     z-index: 1000;
-     border: 2px solid var(--border);
+     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+     z-index: 9999;
+     /* Very high z-index */
+     border: 1px solid var(--border);
  }
 
  .user-dropdown.show {
@@ -284,8 +292,9 @@
  }
 
  .dropdown-header {
-     padding: 1rem;
-     border-bottom: 2px solid var(--border);
+     padding: 1rem 1.25rem;
+     /* more padding */
+     border-bottom: 1px solid var(--border);
      margin-bottom: 0.5rem;
      background: transparent;
      text-align: left;
@@ -294,7 +303,7 @@
 
  .dropdown-user-name {
      font-weight: 700;
-     font-size: 0.95rem;
+     font-size: 1rem;
      color: var(--text-dark);
      margin-bottom: 0.25rem;
  }
@@ -302,13 +311,15 @@
  .dropdown-user-email {
      font-size: 0.8rem;
      color: var(--text);
+     word-break: break-all;
+     /* ensure long emails don't break layout */
  }
 
  .dropdown-item {
      display: flex;
      align-items: center;
      gap: 0.75rem;
-     padding: 0.875rem 1rem;
+     padding: 0.75rem 1rem;
      color: var(--text-dark);
      text-decoration: none;
      border-radius: 8px;
@@ -318,6 +329,8 @@
      font-weight: 500;
      background: transparent !important;
      border-bottom: none;
+     margin: 0 0.25rem;
+     /* slight margin for hover effect */
  }
 
  .dropdown-item:last-child {
@@ -325,20 +338,23 @@
  }
 
  .dropdown-item:hover {
-     background: #f8fafc !important;
+     background: #f1f5f9 !important;
+     /* brighter hover */
      color: var(--primary);
  }
 
  .dropdown-item.logout {
      color: var(--danger);
      margin-top: 0.5rem;
-     border-top: 2px solid var(--border);
-     padding-top: 1rem;
-     border-radius: 0 0 8px 8px;
+     border-top: 1px solid var(--border);
+     padding-top: 0.75rem;
+     border-radius: 8px;
+     /* fix radius */
  }
 
  .dropdown-item.logout:hover {
-     background: #fff1f2 !important;
+     background: #fee2e2 !important;
+     /* distinct error hover */
      color: var(--danger);
  }
 

@@ -514,9 +514,75 @@
     normalizeEmail(email) {
       return email.toLowerCase().trim();
     }
+
+    /**
+     * Check login state and populate UI elements
+     * @returns {Promise<void>}
+     */
+    async checkLoginAndPopulateUI() {
+      try {
+        // If we already have a profile, use it first for speed, then verify
+        let user = this._profile;
+
+        if (!user) {
+          const result = await this.getUserInfo();
+          if (result.success && result.user) {
+            user = result.user;
+          }
+        }
+
+        if (user) {
+          let displayName = '';
+          let initials = '';
+
+          if (user.givenName && user.familyName) {
+            displayName = `${user.givenName} ${user.familyName}`;
+            initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
+          } else if (user.givenName) {
+            displayName = user.givenName;
+            initials = user.givenName.substring(0, 2).toUpperCase();
+          } else if (user.email) {
+            const name = user.email.split('@')[0];
+            displayName = name.charAt(0).toUpperCase() + name.slice(1);
+            initials = name.substring(0, 2).toUpperCase();
+          } else {
+            displayName = 'Admin User';
+            initials = 'AU';
+          }
+
+          const userAvatar = document.getElementById('userAvatar');
+          if (userAvatar) userAvatar.textContent = initials;
+          const userName = document.getElementById('userName');
+          if (userName) userName.textContent = displayName;
+
+          // Update Role
+          const rawRole = (user.role || 'viewer').replace(/_/g, ' ');
+          const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+          const roleHeader = document.getElementById('userRoleHeader');
+          if (roleHeader) roleHeader.textContent = roleDisplay;
+
+          const ddName = document.getElementById('dropdownUserName');
+          if (ddName) ddName.textContent = displayName;
+          const ddEmail = document.getElementById('dropdownUserEmail');
+          if (ddEmail) ddEmail.textContent = user.email || '';
+
+        } else {
+          // Optional: Handle unauthenticated state UI if needed
+        }
+      } catch (error) {
+        console.error('Error in checkLoginAndPopulateUI:', error);
+      }
+    }
   }
 
   window.adminAWSAuthService = window.adminAWSAuthService || new AdminAWSAuthService();
   window.AdminAWSAuthService = AdminAWSAuthService;
+
+  // Auto-run UI population on page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => window.adminAWSAuthService.checkLoginAndPopulateUI());
+  } else {
+    window.adminAWSAuthService.checkLoginAndPopulateUI();
+  }
 })();
 

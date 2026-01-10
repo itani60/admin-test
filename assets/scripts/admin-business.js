@@ -12,7 +12,8 @@ function toggleNavSection(element) {
 }
 
 // Check login state
-// Check Login State
+let currentUserRole = 'viewer';
+
 async function checkLoginState() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
@@ -44,18 +45,20 @@ async function checkLoginState() {
 
             const userAvatar = document.getElementById('userAvatar');
             if (userAvatar) userAvatar.textContent = initials;
-
-            const userNameElements = document.querySelectorAll('#userName, #dropdownUserName');
-            userNameElements.forEach(el => el.textContent = displayName);
-
-            const userEmailElements = document.querySelectorAll('#dropdownUserEmail');
-            userEmailElements.forEach(el => el.textContent = user.email || '');
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = displayName;
 
             // Update Role
+            currentUserRole = user.role || 'viewer';
             const rawRole = (user.role || 'viewer').replace(/_/g, ' ');
             const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
             const roleHeader = document.getElementById('userRoleHeader');
             if (roleHeader) roleHeader.textContent = roleDisplay;
+
+            const ddName = document.getElementById('dropdownUserName');
+            if (ddName) ddName.textContent = displayName;
+            const ddEmail = document.getElementById('dropdownUserEmail');
+            if (ddEmail) ddEmail.textContent = user.email || '';
 
         } else {
             // window.location.href = 'admin-login.html';

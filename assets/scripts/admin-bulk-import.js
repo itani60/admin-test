@@ -532,7 +532,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.adminAWSAuthService) {
         const auth = await window.adminAWSAuthService.getUserInfo();
         if (!auth.success || !window.adminAWSAuthService.hasPermission('canBulkImport')) {
-            window.location.href = 'admin-dashboard.html';
+            window.location.href = 'index.html';
             return;
         }
     }

@@ -43,7 +43,7 @@ async function checkLoginState() {
                 const teamPerm = perms?.canManageTeam || 'none';
 
                 if (teamPerm === 'none') {
-                    window.location.href = 'admin-dashboard.html';
+                    window.location.href = 'index.html';
                     return;
                 }
 

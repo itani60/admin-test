@@ -32,7 +32,7 @@ async function initRBAC() {
             initPage();
         } else {
             console.warn('User not authorized, redirecting...');
-            if (result.success) window.location.href = 'admin-dashboard.html';
+            if (result.success) window.location.href = 'index.html';
             else window.location.href = 'admin-login.html';
         }
     } catch (error) {

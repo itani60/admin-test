@@ -567,6 +567,70 @@
             font-size: 0.95rem;
             white-space: nowrap;
         }
+
+        /* Dashboard Stats - Design 1 */
+        .card-d1 {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .card-d1:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .d1-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .d1-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            opacity: 0.2;
+        }
+
+        .d1-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-45deg);
+        }
+
+        .d1-content h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #1e293b;
+        }
+
+        .d1-content p {
+            margin: 4px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
@@ -718,43 +782,47 @@
 
             <div id="alertContainer"></div>
 
-            <!-- Stats Grid -->
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring primary">
+            <!-- Stats Grid (Design 1) -->
+            <div class="grid-4"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 30px;">
+                <!-- Total Users -->
+                <div class="card-d1">
+                    <div class="d1-ring text-primary">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="totalUsersCount">0</div>
-                        <div class="design-g-label">Total Users</div>
+                    <div class="d1-content">
+                        <h3 id="totalUsersCount">0</h3>
+                        <p>Total Users</p>
                     </div>
                 </div>
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring success">
+                <!-- Admin Users -->
+                <div class="card-d1">
+                    <div class="d1-ring text-danger">
                         <i class="fas fa-user-shield"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="adminUsersCount">0</div>
-                        <div class="design-g-label">Admin Users</div>
+                    <div class="d1-content">
+                        <h3 id="adminUsersCount">0</h3>
+                        <p>Admin Users</p>
                     </div>
                 </div>
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring warning">
+                <!-- Regular Users -->
+                <div class="card-d1">
+                    <div class="d1-ring text-warning">
                         <i class="fas fa-user"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="regularUsersCount">0</div>
-                        <div class="design-g-label">Regular Users</div>
+                    <div class="d1-content">
+                        <h3 id="regularUsersCount">0</h3>
+                        <p>Regular Users</p>
                     </div>
                 </div>
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring danger">
+                <!-- Business Users -->
+                <div class="card-d1">
+                    <div class="d1-ring text-info" style="color: #6366f1 !important;">
                         <i class="fas fa-briefcase"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="businessUsersCount">0</div>
-                        <div class="design-g-label">Business Users</div>
+                    <div class="d1-content">
+                        <h3 id="businessUsersCount">0</h3>
+                        <p>Business Users</p>
                     </div>
                 </div>
             </div>

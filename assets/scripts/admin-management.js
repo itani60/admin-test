@@ -987,7 +987,7 @@ function initializeSuspendDropdown() {
 }
 
 // Suspend User Modal
-function suspendUser(email) {
+function showSuspendModal(email) {
     const displayEl = document.getElementById('suspendUserEmail');
     if (displayEl) displayEl.textContent = email;
 

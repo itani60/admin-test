@@ -267,20 +267,20 @@ function renderUsers() {
     const pageUsers = filteredUsers.slice(startIndex, endIndex);
 
     let html = `
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Account Type</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Last Login</th>
-                        <th>Suspension Reason</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary text-uppercase small">
+                        <tr>
+                            <th class="ps-4">User</th>
+                            <th>Account Type</th>
+                            <th>Status</th>
+                            <th>Dates</th>
+                            <th>Reason/Notes</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
     `;
 
     pageUsers.forEach(user => {
@@ -290,49 +290,54 @@ function renderUsers() {
         const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
         const initials = getInitials(user.displayName || user.email);
 
-        // Display suspension reason if it exists (regardless of current status - for historical record)
-        let suspensionReason = '<span class="text-muted">-</span>';
+        // Design 1: Avatar Colors
+        const avatarClass = user.accountType === 'business' ? 'bg-info-subtle text-info-emphasis' : 'bg-primary-subtle text-primary-emphasis';
+
+        // Design 1: Suspension Reason Style
+        let suspensionReason = '<span class="text-muted small">-</span>';
         if (user.suspensionReason) {
             const reasonText = escapeHtml(user.suspensionReason);
-            const displayText = reasonText.length > 30 ? reasonText.substring(0, 30) + '...' : reasonText;
-            suspensionReason = `<span class="text-danger" title="${reasonText}"><i class="fas fa-info-circle"></i> ${displayText}</span>`;
+            const displayText = reasonText.length > 25 ? reasonText.substring(0, 25) + '...' : reasonText;
+            suspensionReason = `<span class="small text-danger" title="${reasonText}"><i class="fas fa-exclamation-circle me-1"></i> ${displayText}</span>`;
         }
 
         html += `
-            <tr>
-                <td>
-                    <div class="user-info" style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="Click to view details">
-                        <div class="user-avatar">${initials}</div>
-                        <div class="user-details">
-                            <div class="user-name">${escapeHtml(user.displayName || user.email)}</div>
-                            <div class="user-email">${escapeHtml(user.email)}</div>
+            <tr style="cursor: pointer;" onclick="showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')">
+                <td class="ps-4">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle ${avatarClass} me-3">${initials}</div>
+                        <div>
+                            <div class="fw-bold text-dark">${escapeHtml(user.displayName || user.email)}</div>
+                            <div class="text-muted small" style="font-size: 0.8rem;">${escapeHtml(user.email)}</div>
                         </div>
                     </div>
                 </td>
                 <td>${accountTypeBadge}</td>
                 <td>${statusBadge}</td>
-                <td>${createdDate}</td>
-                <td>${lastLogin}</td>
-                <td>${suspensionReason}</td>
                 <td>
-                    <div class="action-buttons">
-                        <button class="btn btn-info btn-sm" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="View Details">
+                    <div class="small fw-bold">Last: ${lastLogin}</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Created: ${createdDate}</div>
+                </td>
+                <td>${suspensionReason}</td>
+                <td class="text-end pe-4">
+                    <div class="action-buttons d-flex justify-content-end gap-1">
+                        <button class="btn btn-sm btn-light border text-secondary" onclick="event.stopPropagation(); showUserDetailsModal('${escapeHtml(user.email)}', '${escapeHtml(user.accountType)}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
                         ${user.accountType !== 'admin' && currentUserRole !== 'viewer' ? (
                 user.status !== 'suspended' ?
-                    `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')" title="Suspend">
+                    `<button class="btn btn-sm btn-light border text-warning" onclick="event.stopPropagation(); showSuspendModal('${escapeHtml(user.email)}', '${escapeHtml(user.displayName || user.email)}')\" title="Suspend">
                                     <i class="fas fa-ban"></i>
                                 </button>` :
-                    `<button class="btn btn-success btn-sm" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')" title="Unsuspend">
+                    `<button class="btn btn-sm btn-light border text-success" onclick="event.stopPropagation(); unsuspendUser('${escapeHtml(user.email)}')\" title="Unsuspend">
                                     <i class="fas fa-check"></i>
                                 </button>`
             ) : ''}
                         ${user.accountType !== 'admin' && currentUserRole === 'super_admin' ?
-                `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')" title="Delete">
+                `<button class="btn btn-sm btn-light border text-danger" onclick="event.stopPropagation(); deleteUser('${escapeHtml(user.email)}')\" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>` :
-                (user.accountType !== 'admin' ? '' : '<span class="text-muted small">Protected</span>')
+                (user.accountType !== 'admin' ? '' : '<span class="text-muted small ms-2">Protected</span>')
             }
                     </div>
                 </td>
@@ -344,6 +349,7 @@ function renderUsers() {
                 </tbody>
             </table>
         </div>
+    </div>
     `;
 
     container.innerHTML = html;

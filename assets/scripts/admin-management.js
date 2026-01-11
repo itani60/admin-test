@@ -4,8 +4,9 @@ let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://
 if (API_BASE_URL.endsWith('/data')) {
     API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
 }
-const USERS_API = `${API_BASE_URL}/admin/admin/users/list`;
-const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users`;
+// Unified endpoint for listing (GET) and management (PUT/DELETE)
+const USERS_API = `${API_BASE_URL}/admin/admin/users/manage`;
+const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users/manage`;
 
 // State
 let allUsers = [];
@@ -126,7 +127,11 @@ async function loadUsers() {
         updateStats();
         showLoading();
 
-        const response = await fetch(`${USERS_API}`, {
+        // Support for server-side search/pagination can be added here
+        // For now, we fetch all (defaulting to Lambda's limit or full list if supported)
+        // If we want to use the new ?limit=50 or ?search=... we would append query params.
+        // Keeping it simple as per original request, just updating endpoint.
+        const response = await fetch(`${USERS_API}?limit=100`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -799,222 +804,147 @@ function showUserDetailsModal(email, accountType) {
                 gap: 0.75rem;
                 flex-wrap: wrap;
             }
+            .detail-badge {
+                padding: 0.35rem 0.75rem;
+                border-radius: 9999px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
+            .detail-badge-account { background: #e0f2fe; color: #0284c7; }
+            .detail-badge-status { background: #dcfce7; color: #16a34a; }
         </style>
-        
-        <!-- User Profile Header -->
+
         <div class="user-profile-header">
-            <div class="user-profile-avatar">
-                ${getInitials(user.displayName || user.email)}
-            </div>
+            <div class="user-profile-avatar">${user.displayName ? (user.displayName.charAt(0) || user.email.charAt(0)).toUpperCase() : 'U'}</div>
             <h3 class="user-profile-name">${escapeHtml(user.displayName || user.email)}</h3>
-            <p class="user-profile-email">${escapeHtml(user.email)}</p>
+            <div class="user-profile-email">${escapeHtml(user.email)}</div>
             <div class="user-profile-badges">
-                ${getAccountTypeBadge(user.accountType)}
-                ${getStatusBadge(user)}
-                ${user.verified ? '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Verified</span>' : '<span class="badge badge-warning"><i class="fas fa-exclamation-circle"></i> Not Verified</span>'}
+                <span class="detail-badge detail-badge-account">
+                    <i class="fas fa-user-tag me-1"></i> ${escapeHtml(user.accountType)}
+                </span>
+                <span class="detail-badge ${user.status === 'suspended' ? 'bg-danger text-white' : 'detail-badge-status'}">
+                     <i class="fas ${user.status === 'suspended' ? 'fa-ban' : 'fa-check-circle'} me-1"></i>
+                     ${user.status === 'suspended' ? 'Suspended' : (user.verified ? 'Verified' : 'Pending')}
+                </span>
             </div>
         </div>
-        
+
         <div style="padding: 2rem;">
-            <!-- Account Information Card -->
+            <!-- Verification Card -->
             <div class="user-detail-card">
                 <div class="user-detail-card-header">
-                    <i class="fas fa-user-circle"></i>
-                    <h6 class="user-detail-card-title">Account Information</h6>
+                    <i class="fas fa-shield-alt"></i>
+                    <h4 class="user-detail-card-title">Verification Status</h4>
                 </div>
                 <div class="user-detail-grid">
                     <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-user-tag"></i> Account Type</div>
-                        <div class="user-detail-value">${getAccountTypeBadge(user.accountType)}</div>
-                    </div>
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-info-circle"></i> Status</div>
-                        <div class="user-detail-value">${getStatusBadge(user)}</div>
-                    </div>
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-check-circle"></i> Email Verified</div>
-                        <div class="user-detail-value">${user.verified ? '<span class="badge badge-success">Verified</span>' : '<span class="badge badge-warning">Not Verified</span>'}</div>
-                    </div>
-                    ${user.userId ? `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-id-card"></i> User ID</div>
-                        <div class="user-detail-value"><code style="font-size: 0.85rem; background: #eff6ff; padding: 0.25rem 0.5rem; border-radius: 6px;">${escapeHtml(user.userId)}</code></div>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-            
-            <!-- Timeline Information Card -->
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-clock"></i>
-                    <h6 class="user-detail-card-title">Timeline</h6>
-                </div>
-                <div class="user-detail-grid">
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-calendar-plus"></i> Account Created</div>
-                        <div class="user-detail-value">${createdDate}</div>
-                    </div>
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-sign-in-alt"></i> Last Login</div>
-                        <div class="user-detail-value">${lastLogin}</div>
-                    </div>
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-edit"></i> Last Updated</div>
-                        <div class="user-detail-value">${updatedDate}</div>
+                        <span class="user-detail-label">Status</span>
+                        <span class="user-detail-value">
+                            ${user.verified ?
+            '<span class="text-success"><i class="fas fa-check-circle"></i> Verified</span>' :
+            '<span class="text-warning"><i class="fas fa-clock"></i> Pending Verification</span>'
+        }
+                        </span>
                     </div>
                 </div>
             </div>
-            
-            <!-- Personal Information Card -->
-            ${(user.givenName || user.familyName) ? `
+
+            <!-- Account Details Card -->
             <div class="user-detail-card">
                 <div class="user-detail-card-header">
-                    <i class="fas fa-user"></i>
-                    <h6 class="user-detail-card-title">Personal Information</h6>
+                    <i class="fas fa-info-circle"></i>
+                    <h4 class="user-detail-card-title">Account Information</h4>
                 </div>
                 <div class="user-detail-grid">
-                    ${user.givenName ? `
                     <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-user"></i> First Name</div>
-                        <div class="user-detail-value">${escapeHtml(user.givenName)}</div>
+                        <span class="user-detail-label">Date Created</span>
+                        <span class="user-detail-value">${createdDate}</span>
                     </div>
-                    ` : ''}
-                    ${user.familyName ? `
                     <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-user"></i> Last Name</div>
-                        <div class="user-detail-value">${escapeHtml(user.familyName)}</div>
+                        <span class="user-detail-label">Last Login</span>
+                        <span class="user-detail-value">${lastLogin}</span>
                     </div>
-                    ` : ''}
+                    <div class="user-detail-item">
+                        <span class="user-detail-label">Last Updated</span>
+                        <span class="user-detail-value">${updatedDate}</span>
+                    </div>
                 </div>
             </div>
-            ` : ''}
-            
-            <!-- Business Information Card -->
-            ${(user.accountType === 'business' && user.businessName) ? `
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-building"></i>
-                    <h6 class="user-detail-card-title">Business Information</h6>
+
+            <!-- Suspension Details (Only if applicable) -->
+            ${user.status === 'suspended' || user.suspensionReason ? `
+            <div class="user-detail-card" style="border-color: #fca5a5;">
+                <div class="user-detail-card-header" style="border-color: #fca5a5;">
+                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                    <h4 class="user-detail-card-title text-danger">Suspension History</h4>
                 </div>
                 <div class="user-detail-grid">
+                    ${user.status === 'suspended' && suspendedDate ? `
                     <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-store"></i> Business Name</div>
-                        <div class="user-detail-value">${escapeHtml(user.businessName || 'N/A')}</div>
-                    </div>
-                    ${user.businessNumber ? `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-phone"></i> Business Phone</div>
-                        <div class="user-detail-value">${escapeHtml(user.businessNumber)}</div>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-            ` : ''}
-            
-            <!-- Suspension History Card -->
-            ${(user.suspensionReason || user.status === 'suspended' || suspendedDate) ? `
-            <div class="user-detail-card" style="border-left: 4px solid #f59e0b;">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-ban" style="color: #f59e0b;"></i>
-                    <h6 class="user-detail-card-title">Suspension History</h6>
-                </div>
-                <div class="user-detail-grid">
-                    ${user.suspensionReason ? `
-                    <div class="user-detail-item" style="grid-column: 1 / -1;">
-                        <div class="user-detail-label"><i class="fas fa-exclamation-triangle"></i> Suspension Reason</div>
-                        <div class="user-detail-value" style="background: #fff7ed; padding: 1rem; border-radius: 8px; border-left: 3px solid #f59e0b; color: #92400e; font-weight: 500;">${escapeHtml(user.suspensionReason)}</div>
-                    </div>
-                    ` : ''}
-                    ${suspendedDate ? `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-calendar-times"></i> Suspended At</div>
-                        <div class="user-detail-value">${suspendedDate}</div>
-                    </div>
-                    ` : ''}
+                        <span class="user-detail-label">Suspended On</span>
+                        <span class="user-detail-value text-danger">${suspendedDate}</span>
+                    </div>` : ''}
+                    
                     ${unsuspendedDate ? `
                     <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-calendar-check"></i> Unsuspended At</div>
-                        <div class="user-detail-value">${unsuspendedDate}</div>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-            ` : ''}
-            
-            <!-- Additional Information Card -->
-            ${(() => {
-            const metadataFields = ['city', 'province', 'phoneNumber', 'address', 'postalCode'];
-            const hasMetadata = metadataFields.some(field => user[field]);
-            if (!hasMetadata) return '';
+                        <span class="user-detail-label">Unsuspended On</span>
+                        <span class="user-detail-value text-success">${unsuspendedDate}</span>
+                    </div>` : ''}
 
-            let metadataHTML = `
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <h6 class="user-detail-card-title">Additional Information</h6>
-                </div>
-                <div class="user-detail-grid">
-                `;
-
-            if (user.city || user.province) {
-                metadataHTML += `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-location-dot"></i> Location</div>
-                        <div class="user-detail-value">${escapeHtml([user.city, user.province].filter(Boolean).join(', ') || 'N/A')}</div>
-                    </div>
-                    `;
-            }
-
-            if (user.phoneNumber) {
-                metadataHTML += `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-phone"></i> Phone Number</div>
-                        <div class="user-detail-value">${escapeHtml(user.phoneNumber)}</div>
-                    </div>
-                    `;
-            }
-
-            if (user.address) {
-                metadataHTML += `
                     <div class="user-detail-item" style="grid-column: 1 / -1;">
-                        <div class="user-detail-label"><i class="fas fa-home"></i> Address</div>
-                        <div class="user-detail-value">${escapeHtml(user.address)}</div>
-                    </div>
-                    `;
-            }
-
-            if (user.postalCode) {
-                metadataHTML += `
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-mail-bulk"></i> Postal Code</div>
-                        <div class="user-detail-value">${escapeHtml(user.postalCode)}</div>
-                    </div>
-                    `;
-            }
-
-            metadataHTML += `
-                </div>
-            </div>
-                `;
-            return metadataHTML;
-        })()}
-            
-            <!-- Authentication Provider Card -->
-            ${user.provider ? `
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-key"></i>
-                    <h6 class="user-detail-card-title">Authentication</h6>
-                </div>
-                <div class="user-detail-grid">
-                    <div class="user-detail-item">
-                        <div class="user-detail-label"><i class="fas fa-shield-alt"></i> Provider</div>
-                        <div class="user-detail-value"><span class="badge badge-info">${escapeHtml(user.provider)}</span></div>
+                        <span class="user-detail-label">Reason</span>
+                        <div class="p-3 bg-light rounded mt-1 border">
+                            ${escapeHtml(user.suspensionReason || 'No reason provided')}
+                        </div>
                     </div>
                 </div>
             </div>
             ` : ''}
+
+            <!-- Business Details (Only for Business Users) -->
+            ${user.accountType === 'business' ? `
+            <div class="user-detail-card">
+                <div class="user-detail-card-header">
+                    <i class="fas fa-briefcase"></i>
+                    <h4 class="user-detail-card-title">Business Profile</h4>
+                </div>
+                <div class="user-detail-grid">
+                    <div class="user-detail-item">
+                        <span class="user-detail-label">Business Name</span>
+                        <span class="user-detail-value">${escapeHtml(user.businessName || 'N/A')}</span>
+                    </div>
+                    <div class="user-detail-item">
+                        <span class="user-detail-label">Contact Person</span>
+                        <span class="user-detail-value">${escapeHtml(user.contactPerson || 'N/A')}</span>
+                    </div>
+                     <div class="user-detail-item">
+                        <span class="user-detail-label">Phone</span>
+                        <span class="user-detail-value">${escapeHtml(user.phone || 'N/A')}</span>
+                    </div>
+                     <div class="user-detail-item">
+                        <span class="user-detail-label">Website</span>
+                        <span class="user-detail-value">
+                            ${user.website ? `<a href="${escapeHtml(user.website)}" target="_blank" class="text-primary text-decoration-none hover:underline">${escapeHtml(user.website)} <i class="fas fa-external-link-alt small ms-1"></i></a>` : 'N/A'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+            
+            <!-- Raw JSON Data (Collapsible) -->
+            <div class="mt-4">
+                 <button class="btn btn-sm btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#rawJsonCollapse">
+                    <i class="fas fa-code me-2"></i> View Raw Data
+                 </button>
+                 <div class="collapse mt-2" id="rawJsonCollapse">
+                    <div class="card card-body bg-light">
+                        <pre class="mb-0" style="font-size: 0.75rem; max-height: 200px; overflow-y: auto;">${JSON.stringify(user, null, 2)}</pre>
+                    </div>
+                 </div>
+            </div>
+
         </div>
     `;
 
@@ -1022,152 +952,134 @@ function showUserDetailsModal(email, accountType) {
     modal.show();
 }
 
-function showSuspendModal(email, displayName) {
-    document.getElementById('suspendUserEmail').textContent = displayName || email;
-    document.getElementById('suspendUserEmailHidden').value = email;
-    document.getElementById('suspensionReason').value = '';
-    document.getElementById('suspendUserForm').reset();
+// Show suspend modal
+function showSuspendModal(email, name) {
+    document.getElementById('suspendUserEmail').value = email;
+    document.getElementById('suspendUserReason').value = '';
+    document.getElementById('suspendUserName').textContent = name;
     const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
     modal.show();
 }
 
+// Suspend user
 async function confirmSuspendUser() {
-    const form = document.getElementById('suspendUserForm');
-    if (!form.checkValidity()) {
-        form.classList.add('was-validated');
+    const email = document.getElementById('suspendUserEmail').value;
+    const reason = document.getElementById('suspendUserReason').value;
+
+    if (!reason.trim()) {
+        alert('Please provide a reason for suspension');
         return;
     }
 
-    const email = document.getElementById('suspendUserEmailHidden').value;
-    const reason = document.getElementById('suspensionReason').value;
-
     try {
+        const btn = document.querySelector('#suspendUserModal .btn-danger');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+        btn.disabled = true;
+
         const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
             method: 'PUT',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ reason: reason })
+            body: JSON.stringify({ reason }),
+            credentials: 'include'
         });
 
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json();
 
-        if (response.ok && data.success) {
+        if (data.success) {
+            showAlert('User suspended successfully', 'success');
             bootstrap.Modal.getInstance(document.getElementById('suspendUserModal')).hide();
-            loadUsers();
-            showAlert(`User suspended successfully. Reason: ${reason}`, 'success');
+            loadUsers(); // Reload list
         } else {
-            showAlert(data.message || 'Failed to suspend user', 'danger');
+            throw new Error(data.message || 'Failed to suspend user');
         }
     } catch (error) {
         console.error('Error suspending user:', error);
-        showAlert('Failed to suspend user. Please try again.', 'danger');
+        showAlert(error.message || 'Failed to suspend user', 'danger');
+    } finally {
+        const btn = document.querySelector('#suspendUserModal .btn-danger');
+        if (btn) {
+            btn.innerHTML = 'Suspend User';
+            btn.disabled = false;
+        }
     }
 }
 
+// Unsuspend user
 async function unsuspendUser(email) {
+    if (!confirm('Are you sure you want to unsuspend this user?')) return;
+
     try {
+        showLoading();
         const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/unsuspend`, {
             method: 'PUT',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include'
         });
 
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json();
 
-        if (response.ok && data.success) {
-            loadUsers();
+        if (data.success) {
             showAlert('User unsuspended successfully', 'success');
+            loadUsers(); // Reload list
         } else {
-            showAlert(data.message || 'Failed to unsuspend user', 'danger');
+            throw new Error(data.message || 'Failed to unsuspend user');
         }
     } catch (error) {
         console.error('Error unsuspending user:', error);
-        showAlert('Failed to unsuspend user. Please try again.', 'danger');
+        showAlert(error.message || 'Failed to unsuspend user', 'danger');
+        hideLoading(); // Hide loading if error (loadUsers handles it otherwise)
     }
 }
 
+// Delete user
 async function deleteUser(email) {
-    if (!confirm(`Are you sure you want to delete ${email}? This action cannot be undone.`)) return;
+    if (!confirm('Are you sure you want to DELETE this user? This action cannot be undone.')) return;
 
     try {
+        showLoading();
         const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}`, {
             method: 'DELETE',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include'
         });
 
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json();
 
-        if (response.ok && data.success) {
-            loadUsers();
+        if (data.success) {
             showAlert('User deleted successfully', 'success');
+            loadUsers(); // Reload list
         } else {
-            showAlert(data.message || 'Failed to delete user', 'danger');
+            throw new Error(data.message || 'Failed to delete user');
         }
     } catch (error) {
         console.error('Error deleting user:', error);
-        showAlert('Failed to delete user. Please try again.', 'danger');
+        showAlert(error.message || 'Failed to delete user', 'danger');
+        hideLoading();
     }
 }
 
-function refreshUsers() {
-    loadUsers();
-    showAlert('Refreshing users...', 'info');
-}
-
-function exportUsers() {
-    const csv = convertToCSV(filteredUsers);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showAlert('Users exported successfully', 'success');
-}
-
-// Utility functions
-function getStatusBadge(user) {
-    let status = user.verified ? 'verified' : 'pending';
-    if (user.status === 'suspended') status = 'suspended';
-
-    const badges = {
-        'verified': '<span class="badge badge-success">Verified</span>',
-        'pending': '<span class="badge badge-warning">Pending</span>',
-        'suspended': '<span class="badge badge-danger">Suspended</span>'
-    };
-    return badges[status] || '<span class="badge badge-secondary">Unknown</span>';
-}
-
-function getAccountTypeBadge(type) {
-    const badges = {
-        'admin': '<span class="badge badge-danger"><i class="fas fa-user-shield"></i> Admin</span>',
-        'business': '<span class="badge badge-info"><i class="fas fa-building"></i> Business</span>',
-        'regular': '<span class="badge badge-primary"><i class="fas fa-user"></i> Regular</span>'
-    };
-    return badges[type] || '<span class="badge badge-secondary">Unknown</span>';
-}
-
-function getInitials(name) {
-    if (!name) return '?';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
+// Helper functions (Utilities)
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-ZA', {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -1176,53 +1088,35 @@ function formatDate(dateString) {
     });
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+function getInitials(name) {
+    if (!name) return 'U';
+    return name
+        .split(' ')
+        .map(n => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
 }
 
-function showLoading() {
-    let containerId;
-    if (currentTab === 'users') {
-        containerId = 'usersTableContainer';
-    } else if (currentTab === 'admins') {
-        containerId = 'adminsTableContainer';
-    } else if (currentTab === 'regular') {
-        containerId = 'regularTableContainer';
-    } else if (currentTab === 'business') {
-        containerId = 'businessTableContainer';
+function getStatusBadge(user) {
+    if (user.status === 'suspended') {
+        return '<span class="badge bg-danger"><i class="fas fa-ban me-1"></i> Suspended</span>';
+    } else if (user.verified) {
+        return '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Verified</span>';
+    } else {
+        return '<span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> Pending</span>';
     }
-    document.getElementById(containerId).innerHTML = `
-        <div class="loading-spinner">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    `;
 }
 
-function showAlert(message, type = 'info') {
-    const alertContainer = document.getElementById('alertContainer');
-    const alertId = 'alert-' + Date.now();
-
-    const alertHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `;
-
-    alertContainer.innerHTML = alertHTML;
-
-    setTimeout(() => {
-        const alert = document.getElementById(alertId);
-        if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }
-    }, 5000);
+function getAccountTypeBadge(type) {
+    switch (type) {
+        case 'admin':
+            return '<span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i> Admin</span>';
+        case 'business':
+            return '<span class="badge bg-info text-dark"><i class="fas fa-briefcase me-1"></i> Business</span>';
+        default:
+            return '<span class="badge bg-primary"><i class="fas fa-user me-1"></i> Regular</span>';
+    }
 }
 
 function debounce(func, wait) {
@@ -1237,552 +1131,99 @@ function debounce(func, wait) {
     };
 }
 
-function convertToCSV(data) {
-    if (data.length === 0) return '';
-
-    const headers = ['Email', 'Name', 'Account Type', 'Status', 'Created Date', 'Last Login'];
-    const rows = data.map(user => [
-        user.email || '',
-        user.displayName || '',
-        user.accountType || '',
-        user.verified ? 'verified' : 'pending',
-        user.createdAt || '',
-        user.lastLogin || ''
-    ]);
-
-    const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
-
-    return csvContent;
-}
-
-// Check login state and update header
-async function checkLoginState() {
-    try {
-        if (typeof window.adminAWSAuthService === 'undefined') {
-            console.warn('Admin auth service not available');
-            return;
-        }
-
-        const result = await window.adminAWSAuthService.getUserInfo();
-
-        if (result.success && result.user) {
-            const user = result.user;
-            let displayName = '';
-            let initials = '';
-
-            if (user.givenName && user.familyName) {
-                displayName = `${user.givenName} ${user.familyName}`;
-                initials = `${user.givenName.charAt(0)}${user.familyName.charAt(0)}`.toUpperCase();
-            } else if (user.givenName) {
-                displayName = user.givenName;
-                initials = user.givenName.substring(0, 2).toUpperCase();
-            } else if (user.email) {
-                const name = user.email.split('@')[0];
-                displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                initials = name.substring(0, 2).toUpperCase();
-            } else {
-                displayName = 'Admin User';
-                initials = 'AU';
-            }
-
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-
-            if (userAvatar) userAvatar.textContent = initials;
-            if (userName) userName.textContent = displayName;
-
-            // Set current user role for RBAC
-            currentUserRole = user.role || 'viewer';
-
-            const rawRole = (user.role || 'viewer').replace('_', ' ');
-            const roleDisplay = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
-
-            const roleHeader = document.getElementById('userRoleHeader');
-            if (roleHeader) roleHeader.textContent = roleDisplay;
-
-            const ddName = document.getElementById('dropdownUserName');
-            if (ddName) ddName.textContent = displayName;
-            const ddEmail = document.getElementById('dropdownUserEmail');
-            if (ddEmail) ddEmail.textContent = user.email || '';
-
-            console.log('Current Admin Role:', currentUserRole);
-
-            // Re-render users if they were loaded before role was set
-            if (allUsers.length > 0) {
-                renderUsers();
-            }
-        } else {
-            window.location.href = 'admin-login.html';
-        }
-    } catch (error) {
-        console.error('Error checking login state:', error);
-        window.location.href = 'admin-login.html';
-    }
-}
-
-// Handle logout
-async function handleLogout() {
-    try {
-        await window.adminAWSAuthService.logout();
-    } catch (error) {
-        console.error('Logout error:', error);
-    } finally {
-        window.location.href = 'admin-login.html';
-    }
-}
-
-// Initialize custom account type dropdown
-function initializeAccountTypeDropdown() {
-    const accountTypeDropdown = document.getElementById('accountTypeDropdown');
-    const accountTypeDropdownBtn = document.getElementById('accountTypeDropdownBtn');
-    const accountTypeDropdownMenu = document.getElementById('accountTypeDropdownMenu');
-    const accountTypeDropdownItems = document.getElementById('accountTypeDropdownItems');
-    const accountTypeSelect = document.getElementById('accountTypeSelect');
-
-    if (!accountTypeDropdown || !accountTypeDropdownBtn || !accountTypeDropdownMenu || !accountTypeDropdownItems) return;
-
-    const accountTypeOptions = [
-        { value: 'all', text: 'All Account Types' },
-        { value: 'admin', text: 'Admin' },
-        { value: 'regular', text: 'Regular' },
-        { value: 'business', text: 'Business' }
-    ];
-
-    accountTypeOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            accountTypeDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('accountTypeDropdownText').textContent = option.text;
-            accountTypeSelect.value = option.value;
-
-            accountTypeDropdown.classList.remove('active');
-            accountTypeDropdownMenu.style.display = 'none';
-
-            applyFilters();
-        });
-        accountTypeDropdownItems.appendChild(itemDiv);
-    });
-
-    accountTypeDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = accountTypeDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'accountTypeDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            accountTypeDropdown.classList.remove('active');
-            accountTypeDropdownMenu.style.display = 'none';
-        } else {
-            accountTypeDropdown.classList.add('active');
-            accountTypeDropdownMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            accountTypeDropdown.classList.remove('active');
-            accountTypeDropdownMenu.style.display = 'none';
-        }
-    });
-}
-
-// Initialize custom status dropdown
-function initializeStatusDropdown() {
-    const statusDropdown = document.getElementById('statusDropdown');
-    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
-    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
-    const statusDropdownItems = document.getElementById('statusDropdownItems');
-    const statusSelect = document.getElementById('statusSelect');
-
-    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
-
-    const statusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'verified', text: 'Verified' },
-        { value: 'pending', text: 'Pending Verification' },
-        { value: 'suspended', text: 'Suspended' }
-    ];
-
-    statusOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('statusDropdownText').textContent = option.text;
-            statusSelect.value = option.value;
-
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-
-            applyFilters();
-        });
-        statusDropdownItems.appendChild(itemDiv);
-    });
-
-    statusDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = statusDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'statusDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-        } else {
-            statusDropdown.classList.add('active');
-            statusDropdownMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-        }
-    });
-}
-
-// Initialize account type selector dropdown
+// Initialization Wrappers
 function initializeAccountTypeSelector() {
-    const accountTypeSelectorDropdown = document.getElementById('accountTypeSelectorDropdown');
-    const accountTypeSelectorBtn = document.getElementById('accountTypeSelectorBtn');
-    const accountTypeSelectorMenu = document.getElementById('accountTypeSelectorMenu');
-    const accountTypeSelectorItems = document.getElementById('accountTypeSelectorItems');
-    const accountTypeSelector = document.getElementById('accountTypeSelector');
-
-    if (!accountTypeSelectorDropdown || !accountTypeSelectorBtn || !accountTypeSelectorMenu || !accountTypeSelectorItems) return;
-
-    const accountTypeOptions = [
-        { value: 'users', text: 'All Users', icon: 'fa-users' },
-        { value: 'admins', text: 'Admin Accounts', icon: 'fa-user-shield' },
-        { value: 'regular', text: 'Regular Accounts', icon: 'fa-user' },
-        { value: 'business', text: 'Business Accounts', icon: 'fa-building' }
-    ];
-
-    accountTypeOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
-        if (option.value === 'users') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            accountTypeSelectorItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('accountTypeSelectorText').innerHTML = `<i class="fas ${option.icon}"></i> ${option.text}`;
-            accountTypeSelector.value = option.value;
-
-            accountTypeSelectorDropdown.classList.remove('active');
-            accountTypeSelectorMenu.style.display = 'none';
-
-            // Switch tabs
-            switchTab(option.value);
-        });
-        accountTypeSelectorItems.appendChild(itemDiv);
-    });
-
-    accountTypeSelectorBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = accountTypeSelectorDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'accountTypeSelectorDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            accountTypeSelectorDropdown.classList.remove('active');
-            accountTypeSelectorMenu.style.display = 'none';
-        } else {
-            accountTypeSelectorDropdown.classList.add('active');
-            accountTypeSelectorMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            accountTypeSelectorDropdown.classList.remove('active');
-            accountTypeSelectorMenu.style.display = 'none';
-        }
-    });
-}
-
-// Initialize custom admin status dropdown
-function initializeAdminStatusDropdown() {
-    const adminStatusDropdown = document.getElementById('adminStatusDropdown');
-    const adminStatusDropdownBtn = document.getElementById('adminStatusDropdownBtn');
-    const adminStatusDropdownMenu = document.getElementById('adminStatusDropdownMenu');
-    const adminStatusDropdownItems = document.getElementById('adminStatusDropdownItems');
-    const adminStatusSelect = document.getElementById('adminStatusSelect');
-
-    if (!adminStatusDropdown || !adminStatusDropdownBtn || !adminStatusDropdownMenu || !adminStatusDropdownItems) return;
-
-    const adminStatusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'verified', text: 'Verified' },
-        { value: 'pending', text: 'Pending' }
-    ];
-
-    adminStatusOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            adminStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('adminStatusDropdownText').textContent = option.text;
-            adminStatusSelect.value = option.value;
-
-            adminStatusDropdown.classList.remove('active');
-            adminStatusDropdownMenu.style.display = 'none';
-
+    const accountTypeSelect = document.getElementById('accountTypeSelect');
+    if (accountTypeSelect) {
+        accountTypeSelect.addEventListener('change', () => {
+            // Reset search and pagination
+            document.getElementById('searchInput').value = '';
+            currentPage = 1;
             applyFilters();
         });
-        adminStatusDropdownItems.appendChild(itemDiv);
-    });
-
-    adminStatusDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = adminStatusDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'adminStatusDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            adminStatusDropdown.classList.remove('active');
-            adminStatusDropdownMenu.style.display = 'none';
-        } else {
-            adminStatusDropdown.classList.add('active');
-            adminStatusDropdownMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            adminStatusDropdown.classList.remove('active');
-            adminStatusDropdownMenu.style.display = 'none';
-        }
-    });
-}
-
-// Initialize custom business status dropdown
-function initializeBusinessStatusDropdown() {
-    const businessStatusDropdown = document.getElementById('businessStatusDropdown');
-    const businessStatusDropdownBtn = document.getElementById('businessStatusDropdownBtn');
-    const businessStatusDropdownMenu = document.getElementById('businessStatusDropdownMenu');
-    const businessStatusDropdownItems = document.getElementById('businessStatusDropdownItems');
-    const businessStatusSelect = document.getElementById('businessStatusSelect');
-
-    if (!businessStatusDropdown || !businessStatusDropdownBtn || !businessStatusDropdownMenu || !businessStatusDropdownItems) return;
-
-    const businessStatusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'verified', text: 'Verified' },
-        { value: 'pending', text: 'Pending' }
-    ];
-
-    businessStatusOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            businessStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('businessStatusDropdownText').textContent = option.text;
-            businessStatusSelect.value = option.value;
-
-            businessStatusDropdown.classList.remove('active');
-            businessStatusDropdownMenu.style.display = 'none';
-
-            applyFilters();
-        });
-        businessStatusDropdownItems.appendChild(itemDiv);
-    });
-
-    businessStatusDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = businessStatusDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'businessStatusDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            businessStatusDropdown.classList.remove('active');
-            businessStatusDropdownMenu.style.display = 'none';
-        } else {
-            businessStatusDropdown.classList.add('active');
-            businessStatusDropdownMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            businessStatusDropdown.classList.remove('active');
-            businessStatusDropdownMenu.style.display = 'none';
-        }
-    });
-}
-
-// Initialize custom regular status dropdown
-function initializeRegularStatusDropdown() {
-    const regularStatusDropdown = document.getElementById('regularStatusDropdown');
-    const regularStatusDropdownBtn = document.getElementById('regularStatusDropdownBtn');
-    const regularStatusDropdownMenu = document.getElementById('regularStatusDropdownMenu');
-    const regularStatusDropdownItems = document.getElementById('regularStatusDropdownItems');
-    const regularStatusSelect = document.getElementById('regularStatusSelect');
-
-    if (!regularStatusDropdown || !regularStatusDropdownBtn || !regularStatusDropdownMenu || !regularStatusDropdownItems) return;
-
-    const regularStatusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'verified', text: 'Verified' },
-        { value: 'pending', text: 'Pending' },
-        { value: 'suspended', text: 'Suspended' }
-    ];
-
-    regularStatusOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            regularStatusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            this.classList.add('selected');
-
-            document.getElementById('regularStatusDropdownText').textContent = option.text;
-            regularStatusSelect.value = option.value;
-
-            regularStatusDropdown.classList.remove('active');
-            regularStatusDropdownMenu.style.display = 'none';
-
-            applyFilters();
-        });
-        regularStatusDropdownItems.appendChild(itemDiv);
-    });
-
-    regularStatusDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = regularStatusDropdown.classList.contains('active');
-
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'regularStatusDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        if (isActive) {
-            regularStatusDropdown.classList.remove('active');
-            regularStatusDropdownMenu.style.display = 'none';
-        } else {
-            regularStatusDropdown.classList.add('active');
-            regularStatusDropdownMenu.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            regularStatusDropdown.classList.remove('active');
-            regularStatusDropdownMenu.style.display = 'none';
-        }
-    });
-}
-
-// Switch between tabs
-function switchTab(tabValue) {
-    currentTab = tabValue;
-
-    // Hide all tab panes
-    document.querySelectorAll('.tab-pane').forEach(pane => {
-        pane.style.display = 'none';
-        pane.classList.remove('show', 'active');
-    });
-
-    // Show selected tab pane
-    const targetPane = document.getElementById(tabValue);
-    if (targetPane) {
-        targetPane.style.display = 'block';
-        targetPane.classList.add('show', 'active');
     }
-
-    // Apply filters for the new tab
-    applyFilters();
 }
 
-// Attach logout handler
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
+function initializeAccountTypeDropdown() {
+    // Custom logic if using custom dropdown implementation, else standard select listener above is fine
 }
 
+function initializeStatusDropdown() {
+    const statusSelect = document.getElementById('statusSelect');
+    if (statusSelect) {
+        statusSelect.addEventListener('change', () => {
+            currentPage = 1;
+            applyFilters();
+        });
+    }
+}
+
+function initializeAdminStatusDropdown() {
+    const adminStatusSelect = document.getElementById('adminStatusSelect');
+    if (adminStatusSelect) {
+        adminStatusSelect.addEventListener('change', () => {
+            currentPage = 1;
+            applyFilters();
+        });
+    }
+}
+
+function initializeRegularStatusDropdown() {
+    const regularStatusSelect = document.getElementById('regularStatusSelect');
+    if (regularStatusSelect) {
+        regularStatusSelect.addEventListener('change', () => {
+            currentPage = 1;
+            applyFilters();
+        });
+    }
+}
+
+function initializeBusinessStatusDropdown() {
+    const businessStatusSelect = document.getElementById('businessStatusSelect');
+    if (businessStatusSelect) {
+        businessStatusSelect.addEventListener('change', () => {
+            currentPage = 1;
+            applyFilters();
+        });
+    }
+}
+
+function showLoading() {
+    // Implement loading spinner show logic here if needed (e.g. overtable)
+    // Often handled by UI but good to have hook
+}
+
+function hideLoading() {
+    // Implement loading spinner hide logic
+}
+
+function showAlert(message, type = 'info') {
+    // Simple alert implementation or toast
+    // Falling back to standard alert if no UI container
+    const alertPlaceholder = document.getElementById('alertPlaceholder');
+    if (alertPlaceholder) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${escapeHtml(message)}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('');
+        alertPlaceholder.append(wrapper);
+
+        // Auto dismiss after 5s
+        setTimeout(() => {
+            wrapper.remove();
+        }, 5000);
+    } else {
+        alert(message);
+    }
+}
+
+// Global scope exposure
+window.showSuspendModal = showSuspendModal;
+window.confirmSuspendUser = confirmSuspendUser;
+window.unsuspendUser = unsuspendUser;
+window.deleteUser = deleteUser;
+window.showUserDetailsModal = showUserDetailsModal;
+window.changePage = changePage;

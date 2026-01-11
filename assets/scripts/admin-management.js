@@ -298,7 +298,7 @@ function renderUsers() {
 
     pageUsers.forEach(user => {
         const statusBadge = getStatusBadge(user);
-        const accountTypeBadge = getAccountTypeBadge(user.accountType);
+        const accountTypeBadge = getAccountTypeBadge(user);
         const createdDate = formatDate(user.createdAt);
         const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
         const initials = getInitials(user.displayName || user.email);
@@ -1108,10 +1108,14 @@ function getStatusBadge(user) {
     }
 }
 
-function getAccountTypeBadge(type) {
+function getAccountTypeBadge(user) {
+    const type = user.accountType;
     switch (type) {
         case 'admin':
-            return '<span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i> Admin</span>';
+            const roleName = user.role
+                ? user.role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                : 'Admin';
+            return `<span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i> ${roleName}</span>`;
         case 'business':
             return '<span class="badge bg-info text-dark"><i class="fas fa-briefcase me-1"></i> Business</span>';
         default:

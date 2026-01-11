@@ -65,28 +65,53 @@ function stringToColor(str) {
 }
 
 // 2. Fetch & Render Users
+// 2. Fetch & Render Users
 async function fetchUsers() {
     const tbody = document.getElementById('teamTableBody');
     if (!tbody) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/users`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
+        const headers = { 'Content-Type': 'application/json' };
 
-        if (!response.ok) throw new Error('Failed to fetch users');
+        // Fetch Users and Activity Status in parallel
+        // Assuming /users/activity-status endpoint maps to our new Lambda
+        const [usersRes, activityRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/users`, { method: 'GET', headers, credentials: 'include' }),
+            fetch(`${API_BASE_URL}/users/activity-status`, { method: 'GET', headers, credentials: 'include' })
+        ]);
 
-        const data = await response.json();
-        renderUsers(data.users || []);
+        if (!usersRes.ok) throw new Error('Failed to fetch users');
+
+        const userData = await usersRes.json();
+        let activityMap = {};
+
+        if (activityRes.ok) {
+            try {
+                const activityData = await activityRes.json();
+                if (activityData.success) {
+                    activityMap = activityData.activity || {};
+                }
+            } catch (e) {
+                console.warn('Failed to parse activity status', e);
+            }
+        } else {
+            console.warn('Activity status endpoint failed', activityRes.status);
+        }
+
+        // Merge Activity Status
+        const users = (userData.users || []).map(user => ({
+            ...user,
+            activityStatus: activityMap[user.email] || (user.activityStatus || 'Offline') // Fallback to existing or Offline
+        }));
+
+        renderUsers(users);
 
     } catch (error) {
         console.error('Fetch Users Error:', error);
-        if (error.message.includes('Failed to fetch')) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-warning"><i class="fas fa-exclamation-triangle me-2"></i>API connection failed. Please check configuration.</td></tr>`;
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-warning"><i class="fas fa-exclamation-triangle me-2"></i>API connection failed. Please check configuration.</td></tr>`;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger"><i class="fas fa-times-circle me-2"></i>Error loading users.</td></tr>`;
         }
     }
 }
@@ -106,15 +131,14 @@ function renderUsers(users) {
         const badgeClass = getRoleBadgeClass(user.role);
         const date = new Date(user.createdAt || Date.now()).toLocaleDateString();
 
-        // Calculate Status (Active vs Offline)
-        const lastLoginTime = user.lastLogin ? new Date(user.lastLogin).getTime() : 0;
-        const isOnline = (Date.now() - lastLoginTime) < (15 * 60 * 1000); // 15 mins threshold
+        // Calculate Status based on Activity API
+        const isOnline = (user.activityStatus === 'Online');
 
         let statusBadge;
         if (user.status !== 'active') {
             statusBadge = `<span class="badge bg-danger-subtle text-danger rounded-pill px-3">Suspended</span>`;
         } else if (isOnline) {
-            statusBadge = `<span class="badge bg-success-subtle text-success rounded-pill px-3"><i class="fas fa-circle me-1" style="font-size:6px"></i> Active</span>`;
+            statusBadge = `<span class="badge bg-success-subtle text-success rounded-pill px-3"><i class="fas fa-circle me-1" style="font-size:6px"></i> Online</span>`;
         } else {
             statusBadge = `<span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Offline</span>`;
         }

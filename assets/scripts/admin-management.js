@@ -28,8 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // loadUsers(); // Moved to checkLoginState
     checkLoginState();
 
-    // Initialize account type selector dropdown
-    initializeAccountTypeSelector();
+
 });
 
 // Check login state

@@ -113,7 +113,7 @@ function renderUsers(users) {
         const canDelete = !isSelf;
 
         tr.innerHTML = `
-            <td>
+            <td class="ps-4">
                 <div class="d-flex align-items-center gap-3">
                     <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.8rem; background: ${stringToColor(user.email || 'U')}">${initials}</div>
                     <div>
@@ -122,10 +122,11 @@ function renderUsers(users) {
                     </div>
                 </div>
             </td>
-            <td><span class="role-badge ${badgeClass}">${formatRole(user.role)}</span></td>
+            <td><span class="badge rounded-pill px-3 ${badgeClass}">${formatRole(user.role)}</span></td>
             <td>${statusHtml}</td>
             <td class="text-muted small">${date}</td>
-            <td>
+            <td class="text-muted small">${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+            <td class="text-end pe-4">
                  ${canDelete ? `
                     <button class="btn btn-sm btn-light text-primary me-1" onclick="renewUser('${user.email}')" title="Renew Access">
                         <i class="fas fa-sync-alt"></i>

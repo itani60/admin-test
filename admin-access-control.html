@@ -205,36 +205,136 @@
                     <!-- Role Definitions -->
                     <div class="access-card">
                         <h3><i class="fas fa-shield-alt"></i> Role Definitions</h3>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge role-super me-3" style="background: #dc3545; color: white;">Super
-                                Admin</span>
-                            <span class="text-muted small">Full access to settings, team, and sensitive data.</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge me-3" style="background: #fd7e14; color: white;">Manager</span>
-                            <span class="text-muted small">Can manage operations, approvals, and team view.</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge role-editor me-3"
-                                style="background: #0d6efd; color: white;">Editor</span>
-                            <span class="text-muted small">Can manage products, prices, and content.</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge me-3" style="background: #6f42c1; color: white;">Moderator</span>
-                            <span class="text-muted small">Approves businesses, reports, and communications.</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge me-3" style="background: #0dcaf0; color: white;">Analyst</span>
-                            <span class="text-muted small">View-only access to detailed analytics and logs.</span>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="role-badge me-3" style="background: #198754; color: white;">Support</span>
-                            <span class="text-muted small">Handles alerts and standard user communications.</span>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="role-badge role-viewer me-3"
-                                style="background: #6c757d; color: white;">Viewer</span>
-                            <span class="text-muted small">Basic read-only dashboard access.</span>
+                        <div class="d-flex flex-column gap-3 mt-3">
+                            <!-- Super Admin -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-danger text-white p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-crown fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">SUPER</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Super Admin</h6>
+                                        <p class="text-muted small mb-2">Full access to settings, team, billing, and
+                                            sensitive data.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Full Access</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Manager -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-warning text-dark p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-briefcase fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">MANAGER</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Manager</h6>
+                                        <p class="text-muted small mb-2">Operations control, team oversight, and
+                                            approvals.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Team</span>
+                                            <span class="badge bg-light text-dark border">Approvals</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Editor -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-primary text-white p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-pen-nib fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">EDITOR</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Editor</h6>
+                                        <p class="text-muted small mb-2">Content creation, product updates, and pricing.
+                                        </p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Content</span>
+                                            <span class="badge bg-light text-dark border">Products</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Moderator -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-purple text-white p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px; background: #6f42c1;">
+                                        <i class="fas fa-shield-alt fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">MOD</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Moderator</h6>
+                                        <p class="text-muted small mb-2">Approves businesses, reports, and reviews.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Reviews</span>
+                                            <span class="badge bg-light text-dark border">Reports</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Analyst -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-info text-dark p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-chart-bar fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">ANALYST</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Analyst</h6>
+                                        <p class="text-muted small mb-2">View-only access to detailed analytics and
+                                            logs.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Data</span>
+                                            <span class="badge bg-light text-dark border">Logs</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Support -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-success text-white p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-headset fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">SUPPORT</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Support</h6>
+                                        <p class="text-muted small mb-2">Handles alerts and standard user
+                                            communications.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Alerts</span>
+                                            <span class="badge bg-light text-dark border">Users</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Viewer -->
+                            <div class="card border-0 shadow-sm p-3">
+                                <div class="d-flex align-items-start gap-4">
+                                    <div class="bg-secondary text-white p-3 rounded-3 d-flex flex-column align-items-center justify-content-center"
+                                        style="min-width: 80px;">
+                                        <i class="fas fa-eye fs-4 mb-1"></i>
+                                        <small class="fw-bold" style="font-size:0.65rem;">VIEWER</small>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Viewer</h6>
+                                        <p class="text-muted small mb-2">Basic read-only dashboard access.</p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">Read Only</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -260,11 +360,12 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>User</th>
+                                        <th class="ps-4">Member</th>
                                         <th>Role</th>
                                         <th>Status</th>
                                         <th>Joined</th>
-                                        <th>Actions</th>
+                                        <th>Last Active</th>
+                                        <th class="text-end pe-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="teamTableBody">

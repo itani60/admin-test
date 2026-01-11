@@ -146,15 +146,23 @@ function renderUsers(users) {
 }
 
 // 3. Handle Invite
+// 3. Handle Invite
 async function handleInvite(e) {
     e.preventDefault();
     const form = e.target;
+    // Updated Selectors for Design 3 Form
+    const email = document.getElementById('inviteEmail').value;
+    const name = document.getElementById('inviteName').value;
+    const roleInput = form.querySelector('input[name="role"]:checked');
+    const role = roleInput ? roleInput.value : 'viewer';
+
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
 
-    const email = form.querySelector('input[type="email"]').value;
-    const name = form.querySelector('input[type="text"]').value;
-    const role = document.getElementById('roleInput').value;
+    if (!email || !name) {
+        showAlert('Please fill in all fields', 'warning');
+        return;
+    }
 
     try {
         submitBtn.disabled = true;
@@ -171,8 +179,17 @@ async function handleInvite(e) {
 
         if (!response.ok) throw new Error(data.message || 'Invitation failed');
 
-        showAlert(`Invitation sent successfully to <strong>${email}</strong>`, 'success');
+        showAlert(`Invitation sent successfully to <strong>${email}</strong> as ${role}`, 'success');
         form.reset();
+
+        // Reset Visual Selection
+        document.querySelectorAll('.role-select-card').forEach(c => c.classList.remove('border-primary', 'bg-primary-subtle'));
+        const defaultRole = document.querySelector('input[value="editor"]').closest('.role-select-card');
+        if (defaultRole) {
+            defaultRole.classList.add('border-primary', 'bg-primary-subtle');
+            defaultRole.querySelector('input').checked = true;
+        }
+
         fetchUsers(); // Refresh list
 
     } catch (error) {
@@ -183,6 +200,13 @@ async function handleInvite(e) {
         submitBtn.innerHTML = originalBtnText;
     }
 }
+
+window.selectRoleCard = function (el) {
+    document.querySelectorAll('.role-select-card').forEach(c => c.classList.remove('border-primary', 'bg-primary-subtle'));
+    el.classList.add('border-primary', 'bg-primary-subtle');
+    const input = el.querySelector('input[type="radio"]');
+    if (input) input.checked = true;
+};
 // Listeners for form
 function setupEventListeners() {
     const inviteForm = document.getElementById('inviteAdminForm');

@@ -1,5 +1,5 @@
 // TODO: Update this URL after deployment
-const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin';
+const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin/admin';
 
 // State
 let currentUser = null;

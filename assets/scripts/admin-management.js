@@ -1234,10 +1234,27 @@ function setupCustomDropdown(dropdownId, options, onSelect) {
 
 function initializeAccountTypeSelector() {
     setupCustomDropdown('accountTypeSelectorDropdown', [
-        { value: 'users', label: 'All Users', icon: 'fa-users' }
+        { value: 'users', label: 'All Users', icon: 'fa-users' },
+        { value: 'admins', label: 'Admin Accounts', icon: 'fa-user-shield' },
+        { value: 'regular', label: 'Regular Accounts', icon: 'fa-user' },
+        { value: 'business', label: 'Business Accounts', icon: 'fa-briefcase' }
     ], (value) => {
-        currentTab = 'users';
-        loadUsers();
+        currentTab = value;
+
+        // Hide all tab panes
+        document.querySelectorAll('.tab-pane').forEach(el => {
+            el.classList.remove('show', 'active');
+            el.style.display = 'none';
+        });
+
+        // Show selected tab pane
+        const selectedTab = document.getElementById(value);
+        if (selectedTab) {
+            selectedTab.classList.add('show', 'active');
+            selectedTab.style.display = 'block';
+        }
+
+        applyFilters();
     });
 }
 

@@ -1,5 +1,5 @@
 // TODO: Update this URL after deployment
-const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin/admin';
+const API_BASE_URL = 'https://hub.comparehubprices.co.za/admin';
 
 // State
 let currentUser = null;
@@ -74,10 +74,10 @@ async function fetchUsers() {
         const headers = { 'Content-Type': 'application/json' };
 
         // Fetch Users and Activity Status in parallel
-        // Assuming /users/activity-status endpoint maps to our new Lambda
+        // Users list uses /admin/users, Activity uses /admin/admin/users/activity-status
         const [usersRes, activityRes] = await Promise.all([
             fetch(`${API_BASE_URL}/users`, { method: 'GET', headers, credentials: 'include' }),
-            fetch(`${API_BASE_URL}/users/activity-status`, { method: 'GET', headers, credentials: 'include' })
+            fetch(`${API_BASE_URL}/admin/users/activity-status`, { method: 'GET', headers, credentials: 'include' })
         ]);
 
         if (!usersRes.ok) throw new Error('Failed to fetch users');

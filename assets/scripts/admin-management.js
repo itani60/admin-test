@@ -954,17 +954,23 @@ function showUserDetailsModal(email, accountType) {
 
 // Show suspend modal
 function showSuspendModal(email, name) {
-    document.getElementById('suspendUserEmail').value = email;
-    document.getElementById('suspendUserReason').value = '';
-    document.getElementById('suspendUserName').textContent = name;
+    const displayEl = document.getElementById('suspendUserEmail');
+    if (displayEl) displayEl.textContent = name || email;
+
+    const hiddenInput = document.getElementById('suspendUserEmailHidden');
+    if (hiddenInput) hiddenInput.value = email;
+
+    const reasonInput = document.getElementById('suspensionReason');
+    if (reasonInput) reasonInput.value = '';
+
     const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
     modal.show();
 }
 
 // Suspend user
 async function confirmSuspendUser() {
-    const email = document.getElementById('suspendUserEmail').value;
-    const reason = document.getElementById('suspendUserReason').value;
+    const email = document.getElementById('suspendUserEmailHidden').value;
+    const reason = document.getElementById('suspensionReason').value;
 
     if (!reason.trim()) {
         alert('Please provide a reason for suspension');

@@ -1142,30 +1142,92 @@ function debounce(func, wait) {
 }
 
 // Initialization Wrappers
-function initializeAccountTypeSelector() {
-    const accountTypeSelect = document.getElementById('accountTypeSelect');
-    if (accountTypeSelect) {
-        accountTypeSelect.addEventListener('change', () => {
-            // Reset search and pagination
-            document.getElementById('searchInput').value = '';
-            currentPage = 1;
-            applyFilters();
+// Helper to setup custom dropdowns
+function setupCustomDropdown(dropdownId, options, onSelect) {
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) return;
+
+    const btn = dropdown.querySelector('.custom-dropdown-btn');
+    const menu = dropdown.querySelector('.custom-dropdown-menu');
+    const itemsContainer = dropdown.querySelector('.custom-dropdown-items');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+    const btnText = dropdown.querySelector('span');
+
+    // Populate items
+    if (itemsContainer && options.length > 0) {
+        itemsContainer.innerHTML = options.map(opt => `
+            <div class="dropdown-item" data-value="${opt.value}">
+                ${opt.icon ? `<i class="fas ${opt.icon}"></i>` : ''} ${opt.label}
+            </div>
+        `).join('');
+    }
+
+    // Toggle menu
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = menu.style.display === 'block';
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown-menu').forEach(m => m.style.display = 'none');
+        menu.style.display = isVisible ? 'none' : 'block';
+    });
+
+    // Handle selection
+    if (itemsContainer) {
+        itemsContainer.addEventListener('click', (e) => {
+            const item = e.target.closest('.dropdown-item');
+            if (item) {
+                const value = item.dataset.value;
+
+                hiddenInput.value = value;
+                btnText.innerHTML = item.innerHTML; // Keep icon
+
+                menu.style.display = 'none';
+                if (onSelect) onSelect(value);
+            }
         });
     }
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+}
+
+function initializeAccountTypeSelector() {
+    setupCustomDropdown('accountTypeSelectorDropdown', [
+        { value: 'users', label: 'All Users', icon: 'fa-users' }
+    ], (value) => {
+        currentTab = 'users';
+        loadUsers();
+    });
 }
 
 function initializeAccountTypeDropdown() {
-    // Custom logic if using custom dropdown implementation, else standard select listener above is fine
+    setupCustomDropdown('accountTypeDropdown', [
+        { value: 'all', label: 'All Account Types' },
+        { value: 'admin', label: 'Admin' },
+        { value: 'business', label: 'Business' },
+        { value: 'regular', label: 'Regular' }
+    ], (value) => {
+        document.getElementById('accountTypeSelect').value = value;
+        currentPage = 1;
+        applyFilters();
+    });
 }
 
 function initializeStatusDropdown() {
-    const statusSelect = document.getElementById('statusSelect');
-    if (statusSelect) {
-        statusSelect.addEventListener('change', () => {
-            currentPage = 1;
-            applyFilters();
-        });
-    }
+    setupCustomDropdown('statusDropdown', [
+        { value: 'all', label: 'All Status' },
+        { value: 'active', label: 'Active' },
+        { value: 'suspended', label: 'Suspended' },
+        { value: 'pending', label: 'Pending' }
+    ], (value) => {
+        document.getElementById('statusSelect').value = value;
+        currentPage = 1;
+        applyFilters();
+    });
 }
 
 function initializeAdminStatusDropdown() {

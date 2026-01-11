@@ -1211,16 +1211,28 @@ function getStatusBadge(user) {
 
 function getAccountTypeBadge(user) {
     const type = user.accountType;
-    switch (type) {
-        case 'admin':
-            const roleName = user.role
-                ? user.role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-                : 'Admin';
-            return `<span class="badge bg-danger"><i class="fas fa-shield-alt me-1"></i> ${roleName}</span>`;
-        case 'business':
-            return '<span class="badge bg-info text-dark"><i class="fas fa-briefcase me-1"></i> Business</span>';
-        default:
-            return '<span class="badge bg-primary"><i class="fas fa-user me-1"></i> Regular</span>';
+
+    if (type === 'admin') {
+        const role = user.role || 'admin';
+        const roleName = role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const r = role.toLowerCase();
+
+        let badgeClass = 'bg-danger'; // Default for admin/super admin
+
+        if (r.includes('manager')) badgeClass = 'bg-warning text-dark';
+        else if (r.includes('editor')) badgeClass = 'bg-primary';
+        else if (r.includes('moderator')) badgeClass = 'bg-purple';
+        else if (r.includes('analyst')) badgeClass = 'bg-info text-dark';
+        else if (r.includes('support')) badgeClass = 'bg-success';
+        else if (r.includes('viewer')) badgeClass = 'bg-secondary';
+
+        return `<span class="badge ${badgeClass}"><i class="fas fa-shield-alt me-1"></i> ${roleName}</span>`;
+    } else if (type === 'business') {
+        // Business: Indigo
+        return '<span class="badge bg-indigo"><i class="fas fa-briefcase me-1"></i> Business</span>';
+    } else {
+        // Regular: Dark Green
+        return '<span class="badge bg-dark-green"><i class="fas fa-user me-1"></i> Regular</span>';
     }
 }
 

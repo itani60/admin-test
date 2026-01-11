@@ -104,12 +104,23 @@ function renderUsers(users) {
         const tr = document.createElement('tr');
         const initials = getInitials(user.name || 'User');
         const badgeClass = getRoleBadgeClass(user.role);
-        const statusHtml = getStatusHtml(user.status);
         const date = new Date(user.createdAt || Date.now()).toLocaleDateString();
+
+        // Calculate Status (Active vs Offline)
+        const lastLoginTime = user.lastLogin ? new Date(user.lastLogin).getTime() : 0;
+        const isOnline = (Date.now() - lastLoginTime) < (15 * 60 * 1000); // 15 mins threshold
+
+        let statusBadge;
+        if (user.status !== 'active') {
+            statusBadge = `<span class="badge bg-danger-subtle text-danger rounded-pill px-3">Suspended</span>`;
+        } else if (isOnline) {
+            statusBadge = `<span class="badge bg-success-subtle text-success rounded-pill px-3"><i class="fas fa-circle me-1" style="font-size:6px"></i> Active</span>`;
+        } else {
+            statusBadge = `<span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Offline</span>`;
+        }
 
         // Actions: Disable delete for self or Super Admin
         const isSelf = currentUser && currentUser.email === user.email;
-        // Allow Super Admins to manage other Super Admins, but not themselves
         const canDelete = !isSelf;
 
         tr.innerHTML = `
@@ -123,9 +134,9 @@ function renderUsers(users) {
                 </div>
             </td>
             <td><span class="badge rounded-pill px-3 ${badgeClass}">${formatRole(user.role)}</span></td>
-            <td>${statusHtml}</td>
+            <td>${statusBadge}</td>
             <td class="text-muted small">${date}</td>
-            <td class="text-muted small">${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+            <td class="text-muted small">${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}</td>
             <td class="text-end pe-4">
                  ${canDelete ? `
                     <button class="btn btn-sm btn-light text-primary me-1" onclick="renewUser('${user.email}')" title="Renew Access">

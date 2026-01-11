@@ -1038,16 +1038,36 @@ async function unsuspendUser(email) {
     } catch (error) {
         console.error('Error unsuspending user:', error);
         showAlert(error.message || 'Failed to unsuspend user', 'danger');
-        hideLoading(); // Hide loading if error (loadUsers handles it otherwise)
+        hideLoading();
     }
 }
 
-// Delete user
-async function deleteUser(email) {
-    if (!confirm('Are you sure you want to DELETE this user? This action cannot be undone.')) return;
+// Show Delete Modal
+function deleteUser(email) {
+    const displayEl = document.getElementById('deleteUserEmailDisplay');
+    if (displayEl) displayEl.textContent = email;
+
+    const hiddenInput = document.getElementById('deleteUserEmailHidden');
+    if (hiddenInput) hiddenInput.value = email;
+
+    const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+    modal.show();
+}
+
+// Confirm Delete User
+async function confirmDeleteUser() {
+    const email = document.getElementById('deleteUserEmailHidden').value;
 
     try {
+        // Show loading on button
+        const modalEl = document.getElementById('deleteUserModal');
+        const btn = modalEl.querySelector('.btn-danger');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+        btn.disabled = true;
+
         showLoading();
+
         const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}`, {
             method: 'DELETE',
             headers: {
@@ -1058,9 +1078,17 @@ async function deleteUser(email) {
 
         const data = await response.json();
 
+        // Close modal
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        // Reset button
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
         if (data.success) {
             showAlert('User deleted successfully', 'success');
-            loadUsers(); // Reload list
+            loadUsers();
         } else {
             throw new Error(data.message || 'Failed to delete user');
         }
@@ -1068,6 +1096,15 @@ async function deleteUser(email) {
         console.error('Error deleting user:', error);
         showAlert(error.message || 'Failed to delete user', 'danger');
         hideLoading();
+
+        const modalEl = document.getElementById('deleteUserModal');
+        if (modalEl) {
+            const btn = modalEl.querySelector('.btn-danger');
+            if (btn) {
+                btn.innerHTML = 'Delete';
+                btn.disabled = false;
+            }
+        }
     }
 }
 

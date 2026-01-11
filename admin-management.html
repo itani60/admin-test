@@ -271,6 +271,20 @@
             text-align: center;
             font-size: 1rem;
         }
+
+        /* Delete Modal - Modern Minimalist Design */
+        .modal-minimal .modal-content {
+            border: none;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .modal-minimal .modal-header,
+        .modal-minimal .modal-footer {
+            border: none;
+            justify-content: center;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
@@ -820,6 +834,28 @@
                         <i class="fas fa-ban"></i> Suspend User
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Delete User Modal (Design 3) -->
+    <div class="modal fade modal-minimal" id="deleteUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="mb-3 text-secondary">
+                    <i class="fas fa-trash-alt fa-3x"></i>
+                </div>
+                <h5 class="mb-2 fw-bold">Delete User</h5>
+                <p class="text-muted small mb-4">Are you sure you want to permanently delete <strong
+                        id="deleteUserEmailDisplay">this user</strong>? This action cannot be undone.</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">Delete</button>
+                    <button type="button" class="btn btn-link text-decoration-none text-muted"
+                        data-bs-dismiss="modal">Cancel</button>
+                </div>
+                <input type="hidden" id="deleteUserEmailHidden">
             </div>
         </div>
     </div>

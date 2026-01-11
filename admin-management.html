@@ -478,6 +478,95 @@
         .btn-d1-confirm.bg-success {
             background: #10b981 !important;
         }
+
+        /* Toast Container & Design 6 */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            pointer-events: auto;
+            animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform: translateX(100%);
+            width: auto;
+            max-width: 90vw;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toast-item.removing {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Design 6: Floating Icon */
+        .toast-d6 {
+            background: white;
+            border-radius: 30px;
+            padding: 10px 20px 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .toast-d6-icon-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.4);
+            flex-shrink: 0;
+        }
+
+        /* Variants based on type */
+        .toast-d6.success .toast-d6-icon-circle {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.4);
+        }
+
+        .toast-d6.error .toast-d6-icon-circle {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+        }
+
+        .toast-d6.info .toast-d6-icon-circle {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4);
+        }
+
+        .toast-d6-text {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
@@ -1065,6 +1154,9 @@
         </div>
     </div>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
     <!-- Generic Confirmation Modal (Design 1) -->
     <div class="modal-overlay" id="customConfirmModal">

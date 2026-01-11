@@ -1403,26 +1403,57 @@ function hideLoading() {
 }
 
 function showAlert(message, type = 'info') {
-    // Simple alert implementation or toast
-    // Falling back to standard alert if no UI container
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
-    if (alertPlaceholder) {
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-            `   <div>${escapeHtml(message)}</div>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('');
-        alertPlaceholder.append(wrapper);
-
-        // Auto dismiss after 5s
-        setTimeout(() => {
-            wrapper.remove();
-        }, 5000);
-    } else {
-        alert(message);
+    const container = document.getElementById('toast-container');
+    if (!container) {
+        // Fallback for pages without toast container
+        const alertPlaceholder = document.getElementById('alertPlaceholder');
+        if (alertPlaceholder) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `<div class="alert alert-${type} alert-dismissible" role="alert"><div>${escapeHtml(message)}</div><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+            alertPlaceholder.append(wrapper);
+            setTimeout(() => wrapper.remove(), 5000);
+        } else {
+            alert(message);
+        }
+        return;
     }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-item';
+
+    // Icon mapping
+    let iconClass = 'fa-info-circle';
+    if (type === 'success') iconClass = 'fa-check';
+    if (type === 'danger' || type === 'error') iconClass = 'fa-exclamation-triangle';
+    if (type === 'warning') iconClass = 'fa-exclamation';
+
+    // Type normalization for CSS classes
+    let typeClass = 'info'; // Default blue
+    if (type === 'success') typeClass = 'success';
+    if (type === 'danger' || type === 'error') typeClass = 'error';
+
+    toast.innerHTML = `
+        <div class="toast-d6 ${typeClass}">
+            <div class="toast-d6-icon-circle"><i class="fas ${iconClass}"></i></div>
+            <div class="toast-d6-text">${escapeHtml(message)}</div>
+        </div>
+    `;
+
+    // Remove on click
+    toast.onclick = () => {
+        toast.classList.add('removing');
+        toast.addEventListener('animationend', () => toast.remove());
+    };
+
+    container.appendChild(toast);
+
+    // Auto dismiss after 4 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('removing');
+            toast.addEventListener('animationend', () => toast.remove());
+        }
+    }, 4000);
 }
 
 // Global scope exposure

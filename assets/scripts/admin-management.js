@@ -966,10 +966,12 @@ async function confirmSuspendUser() {
     }
 
     try {
-        const btn = document.querySelector('#suspendUserModal .btn-danger');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
-        btn.disabled = true;
+        const btn = document.querySelector('#suspendUserModal .btn-warning');
+        const originalText = btn ? btn.innerHTML : 'Suspend User';
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+            btn.disabled = true;
+        }
 
         const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
             method: 'PUT',
@@ -993,9 +995,9 @@ async function confirmSuspendUser() {
         console.error('Error suspending user:', error);
         showAlert(error.message || 'Failed to suspend user', 'danger');
     } finally {
-        const btn = document.querySelector('#suspendUserModal .btn-danger');
+        const btn = document.querySelector('#suspendUserModal .btn-warning');
         if (btn) {
-            btn.innerHTML = 'Suspend User';
+            btn.innerHTML = '<i class="fas fa-ban"></i> Suspend User';
             btn.disabled = false;
         }
     }

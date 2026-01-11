@@ -7,7 +7,8 @@
     USER_INFO: `${BASE_URL}/account/get-user-permissions`, // Updated to fetch permissions + user info
     LOGOUT: `${BASE_URL}/account/logout`,
     FORGOT_PASSWORD: `${BASE_URL}/account/forgot-password`,
-    RESET_PASSWORD: `${BASE_URL}/account/reset-password`
+    RESET_PASSWORD: `${BASE_URL}/account/reset-password`,
+    PRESENCE: 'https://hub.comparehubprices.co.za/admin/admin/users/activity-status' // Absolute URL to ensure correctness
   };
 
   class AdminAWSAuthService {
@@ -19,7 +20,7 @@
     }
 
     /**
-     * Start periodic session validation
+     * Start periodic session validation & presence heartbeat
      * @private
      */
     _startPeriodicCheck() {
@@ -27,10 +28,28 @@
       setInterval(async () => {
         // Only check if we have a local profile (active session)
         if (this._profile) {
+          // Send heartbeat to update online status
+          await this.updatePresence();
           // getUserInfo handles 401/Expiry internally by calling clear() and logout handler
           await this.getUserInfo();
         }
       }, 60000);
+    }
+
+    /**
+     * Update user presence (heartbeat)
+     * @returns {Promise<void>}
+     */
+    async updatePresence() {
+      try {
+        await fetch(ENDPOINTS.PRESENCE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        }).catch(() => { }); // Ignore errors implies offline or network issue
+      } catch (e) {
+        // Silent fail
+      }
     }
 
     /**

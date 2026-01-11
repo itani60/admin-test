@@ -5,8 +5,8 @@ if (API_BASE_URL.endsWith('/data')) {
     API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
 }
 // Unified endpoint for listing (GET) and management (PUT/DELETE)
-const USERS_API = `${API_BASE_URL}/admin/admin/users`;
-const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users`;
+const USERS_API = `${API_BASE_URL}/admin/admin/users/manage`;
+const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users/manage`;
 
 // State
 let allUsers = [];

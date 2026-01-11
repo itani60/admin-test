@@ -572,6 +572,9 @@
         }
 
         if (user) {
+          // Trigger initial presence heartbeat
+          this.updatePresence();
+
           let displayName = '';
           let initials = '';
 

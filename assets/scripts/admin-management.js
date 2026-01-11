@@ -1073,7 +1073,16 @@ async function confirmSuspendUser() {
 
 // Unsuspend user
 async function unsuspendUser(email) {
-    if (!confirm('Are you sure you want to unsuspend this user?')) return;
+    const confirmed = await showConfirmModal({
+        title: 'Unsuspend User?',
+        message: `Are you sure you want to restore access for <strong>${escapeHtml(email)}</strong>?`,
+        iconClass: 'fa-check-circle',
+        iconColorClass: 'text-success',
+        confirmText: 'Yes, Unsuspend',
+        confirmColorClass: 'bg-success'
+    });
+
+    if (!confirmed) return;
 
     try {
         showLoading();
@@ -1424,3 +1433,45 @@ window.deleteUser = deleteUser;
 window.showUserDetailsModal = showUserDetailsModal;
 window.changePage = changePage;
 window.loadUsers = loadUsers;
+
+// Helper for Custom Confirmation Modal (Design 1)
+function showConfirmModal({ title, message, iconClass, iconColorClass, confirmText, confirmColorClass }) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('customConfirmModal');
+        const titleEl = document.getElementById('customConfirmTitle');
+        const msgEl = document.getElementById('customConfirmMessage');
+        const iconEl = document.getElementById('customConfirmIcon');
+        const cancelBtn = document.getElementById('customConfirmCancel');
+        const confirmBtn = document.getElementById('customConfirmOk');
+
+        if (!modal) {
+            // Fallback if modal generic HTML isn't injected yet or found
+            return resolve(window.confirm(message || 'Are you sure?'));
+        }
+
+        titleEl.textContent = title || 'Confirm Action';
+        msgEl.innerHTML = message || 'Are you sure you want to proceed?';
+
+        // Reset and set icon
+        iconEl.className = `fas fa-3x ${iconClass || 'fa-info-circle'} ${iconColorClass || 'text-primary'}`;
+
+        // Reset and set button style
+        confirmBtn.className = 'btn-d1-confirm'; // Base class
+        if (confirmColorClass) confirmBtn.classList.add(confirmColorClass);
+        confirmBtn.textContent = confirmText || 'Confirm';
+
+        const close = (result) => {
+            modal.classList.remove('active');
+            resolve(result);
+        };
+
+        cancelBtn.onclick = () => close(false);
+        confirmBtn.onclick = () => close(true);
+        modal.onclick = (e) => {
+            if (e.target === modal) close(false); // Close on background click
+        };
+
+        modal.classList.add('active');
+    });
+}
+window.showConfirmModal = showConfirmModal;

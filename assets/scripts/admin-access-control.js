@@ -99,10 +99,28 @@ async function fetchUsers() {
         }
 
         // Merge Activity Status
-        const users = (userData.users || []).map(user => ({
-            ...user,
-            activityStatus: activityMap[user.email] || (user.activityStatus || 'Offline') // Fallback to existing or Offline
-        }));
+        const users = (userData.users || []).map(user => {
+            const activity = activityMap[user.email];
+            let status = 'Offline';
+            let lastSeen = null;
+
+            if (activity) {
+                if (typeof activity === 'string') {
+                    status = activity; // Legacy support
+                } else if (typeof activity === 'object') {
+                    status = activity.status || 'Offline';
+                    lastSeen = activity.lastSeen;
+                }
+            } else if (user.activityStatus) {
+                status = user.activityStatus; // Fallback
+            }
+
+            return {
+                ...user,
+                activityStatus: status,
+                lastSeenTimestamp: lastSeen
+            };
+        });
 
         renderUsers(users);
 
@@ -147,6 +165,14 @@ function renderUsers(users) {
         const isSelf = currentUser && currentUser.email === user.email;
         const canDelete = !isSelf;
 
+        // Last Active Logic
+        let lastActiveStr = 'Never';
+        if (user.lastSeenTimestamp) {
+            // Timestamp is in seconds, convert to MS
+            lastActiveStr = new Date(user.lastSeenTimestamp * 1000).toLocaleString();
+        } else if (user.lastLogin) {
+            lastActiveStr = new Date(user.lastLogin).toLocaleString();
+        }
         tr.innerHTML = `
             <td class="ps-4">
                 <div class="d-flex align-items-center gap-3">
@@ -160,7 +186,7 @@ function renderUsers(users) {
             <td><span class="badge rounded-pill px-3 ${badgeClass}">${formatRole(user.role)}</span></td>
             <td>${statusBadge}</td>
             <td class="text-muted small">${date}</td>
-            <td class="text-muted small">${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}</td>
+            <td class="text-muted small">${lastActiveStr}</td>
             <td class="text-end pe-4">
                  ${canDelete ? `
                     <button class="btn btn-sm btn-light text-primary me-1" onclick="renewUser('${user.email}')" title="Renew Access">

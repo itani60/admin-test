@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // loadUsers(); // Moved to checkLoginState
     checkLoginState();
-
-
+    initializeSuspendDropdown();
 });
 
 // Check login state
@@ -940,16 +939,77 @@ function showUserDetailsModal(email, accountType) {
     modal.show();
 }
 
-// Show suspend modal
-function showSuspendModal(email, name) {
+// Initialize Custom Dropdown for Suspend Modal
+function initializeSuspendDropdown() {
+    const wrapper = document.getElementById('suspendReasonDropdown');
+    if (!wrapper) return;
+
+    const trigger = wrapper.querySelector('.custom-select-trigger');
+    const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+    const triggerSpan = trigger.querySelector('span');
+    const optionElements = wrapper.querySelectorAll('.custom-option');
+
+    // Toggle
+    trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        wrapper.classList.toggle('open');
+    });
+
+    // Select Option
+    optionElements.forEach(option => {
+        option.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const value = this.getAttribute('data-value');
+            const text = this.textContent.trim();
+            const icon = this.querySelector('i').cloneNode(true);
+
+            hiddenInput.value = value;
+
+            triggerSpan.innerHTML = '';
+            triggerSpan.appendChild(icon);
+            triggerSpan.appendChild(document.createTextNode(' ' + text));
+            triggerSpan.classList.remove('text-muted');
+            triggerSpan.classList.add('text-dark', 'fw-medium');
+
+            optionElements.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+
+            wrapper.classList.remove('open');
+        });
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+        if (!wrapper.contains(e.target)) {
+            wrapper.classList.remove('open');
+        }
+    });
+}
+
+// Suspend User Modal
+function suspendUser(email) {
     const displayEl = document.getElementById('suspendUserEmail');
-    if (displayEl) displayEl.textContent = name || email;
+    if (displayEl) displayEl.textContent = email;
 
     const hiddenInput = document.getElementById('suspendUserEmailHidden');
     if (hiddenInput) hiddenInput.value = email;
 
+    // Reset Form
     const reasonInput = document.getElementById('suspensionReason');
+    const detailsInput = document.getElementById('suspensionDetails');
+    const dropdownTriggerSpan = document.querySelector('#suspendReasonDropdown .custom-select-trigger span');
+    const dropdownOptions = document.querySelectorAll('#suspendReasonDropdown .custom-option');
+
     if (reasonInput) reasonInput.value = '';
+    if (detailsInput) detailsInput.value = '';
+
+    // Reset visual dropdown
+    if (dropdownTriggerSpan) {
+        dropdownTriggerSpan.textContent = 'Select a reason...';
+        dropdownTriggerSpan.classList.add('text-muted');
+        dropdownTriggerSpan.classList.remove('text-dark', 'fw-medium');
+    }
+    dropdownOptions.forEach(opt => opt.classList.remove('selected'));
 
     const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
     modal.show();
@@ -959,15 +1019,17 @@ function showSuspendModal(email, name) {
 async function confirmSuspendUser() {
     const email = document.getElementById('suspendUserEmailHidden').value;
     const reason = document.getElementById('suspensionReason').value;
+    const details = document.getElementById('suspensionDetails').value;
 
     if (!reason.trim()) {
-        alert('Please provide a reason for suspension');
+        alert('Please select a reason for suspension');
         return;
     }
 
+    const fullReason = details ? `${reason} - ${details}` : reason;
+
     try {
-        const btn = document.querySelector('#suspendUserModal .btn-warning');
-        const originalText = btn ? btn.innerHTML : 'Suspend User';
+        const btn = document.getElementById('confirmSuspendBtn');
         if (btn) {
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
             btn.disabled = true;
@@ -978,7 +1040,7 @@ async function confirmSuspendUser() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ reason }),
+            body: JSON.stringify({ reason: fullReason }),
             credentials: 'include'
         });
 
@@ -995,9 +1057,9 @@ async function confirmSuspendUser() {
         console.error('Error suspending user:', error);
         showAlert(error.message || 'Failed to suspend user', 'danger');
     } finally {
-        const btn = document.querySelector('#suspendUserModal .btn-warning');
+        const btn = document.getElementById('confirmSuspendBtn');
         if (btn) {
-            btn.innerHTML = '<i class="fas fa-ban"></i> Suspend User';
+            btn.innerHTML = '<i class="fas fa-ban me-2"></i> Suspend Account';
             btn.disabled = false;
         }
     }

@@ -47,20 +47,9 @@ async function checkLoginState() {
                     return;
                 }
 
-                // Populate user info (Legacy/Redundant but keeps UI consistent if auth fails to pop)
+                // Populate user info using the shared service to ensure consistency
+                await window.adminAWSAuthService.checkLoginAndPopulateUI();
                 const user = result.user;
-                const userNameEl = document.getElementById('userName');
-                const userRoleEl = document.getElementById('userRoleHeader');
-                const userAvatarEl = document.getElementById('userAvatar');
-                const dropdownNameEl = document.getElementById('dropdownUserName');
-                const dropdownEmailEl = document.getElementById('dropdownUserEmail');
-
-                if (userNameEl) userNameEl.textContent = user.givenName || 'Admin';
-                if (userRoleEl) userRoleEl.textContent = (user.role || 'Super Admin').replace('_', ' ');
-                if (userAvatarEl) userAvatarEl.textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
-
-                if (dropdownNameEl) dropdownNameEl.textContent = user.givenName || 'Admin';
-                if (dropdownEmailEl) dropdownEmailEl.textContent = user.email || '';
 
                 // Store current user role for RBAC
                 currentUserRole = user.role || 'viewer';

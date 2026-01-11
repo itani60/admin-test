@@ -109,10 +109,8 @@ function renderUsers(users) {
 
         // Actions: Disable delete for self or Super Admin
         const isSelf = currentUser && currentUser.email === user.email;
-        const isSuperAdmin = user.role === 'super_admin'; // Actually, target user is super admin? Usually shouldn't delete super admins.
-        // Logic: Can delete if logic allows. Original code: !isSelf && !isSuperAdmin
-        // This implies you can't delete other super admins.
-        const canDelete = !isSelf && !isSuperAdmin;
+        // Allow Super Admins to manage other Super Admins, but not themselves
+        const canDelete = !isSelf;
 
         tr.innerHTML = `
             <td>
@@ -244,9 +242,12 @@ window.renewUser = renewUser;
 function getRoleBadgeClass(role) {
     switch (role) {
         case 'super_admin': return 'role-super';
+        case 'manager': return 'bg-warning text-dark';
         case 'editor': return 'role-editor';
+        case 'moderator': return 'bg-primary text-white';
+        case 'analyst': return 'bg-info text-dark';
+        case 'support': return 'bg-success text-white';
         case 'viewer': return 'role-viewer';
-        case 'manager': return 'bg-info text-white';
         default: return 'bg-secondary text-white';
     }
 }

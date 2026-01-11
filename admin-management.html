@@ -332,6 +332,8 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.2s;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         .modal-minimal .custom-select-wrapper.open .custom-select-options {
@@ -854,7 +856,7 @@
 
     <!-- Suspend User Modal (Design 3 Modern Minimalist) -->
     <div class="modal fade modal-minimal" id="suspendUserModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4">
                 <div class="text-center mb-4">
                     <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"

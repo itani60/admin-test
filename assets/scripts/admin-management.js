@@ -24,7 +24,7 @@ let userGrowthChart = null;
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 
-    loadUsers();
+    // loadUsers(); // Moved to checkLoginState
     checkLoginState();
 
     // Initialize account type selector dropdown
@@ -32,12 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Check login state
+// Check login state
 async function checkLoginState() {
     if (typeof window.adminAWSAuthService !== 'undefined') {
         try {
             const result = await window.adminAWSAuthService.getUserInfo();
             if (result.success && result.user) {
-                // Populate user info
+                // Check Permission
+                const perms = window.adminAWSAuthService.getGlobalPermissions();
+                const teamPerm = perms?.canManageTeam || 'none';
+
+                if (teamPerm === 'none') {
+                    window.location.href = 'admin-dashboard.html';
+                    return;
+                }
+
+                // Populate user info (Legacy/Redundant but keeps UI consistent if auth fails to pop)
                 const user = result.user;
                 const userNameEl = document.getElementById('userName');
                 const userRoleEl = document.getElementById('userRoleHeader');
@@ -54,6 +64,20 @@ async function checkLoginState() {
 
                 // Store current user role for RBAC
                 currentUserRole = user.role || 'viewer';
+
+                // Load Data Now
+                loadUsers();
+
+                // Handle Limited Access (Manager)
+                if (teamPerm === 'limited') {
+                    document.body.classList.add('access-limited');
+                    // Hide Create Buttons if any
+                    const createBtns = document.querySelectorAll('.btn-create, .btn-primary');
+                    createBtns.forEach(btn => {
+                        if (btn.textContent.includes('Add') || btn.textContent.includes('Invite')) btn.style.display = 'none';
+                    });
+                }
+
             } else {
                 window.location.href = 'admin-login.html';
             }

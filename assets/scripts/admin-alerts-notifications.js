@@ -13,11 +13,20 @@ let activityByCategoryChart = null;
 let readStatusChart = null;
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canViewAlerts')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+        currentUserRole = auth.user.role || 'viewer';
+    }
+
     setupEventListeners();
 
     loadNotifications();
-    initRBAC();
     initializeCharts();
 
 });

@@ -1,7 +1,17 @@
 const ADMIN_API_BASE_URL = 'https://hub.comparehubprices.co.za/admin';
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize on load
+document.addEventListener('DOMContentLoaded', async () => {
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canManageComms')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+    }
+    console.log('Admin Communications loading...');
     loadCommunications();
 
     // Setup form listener if form exists

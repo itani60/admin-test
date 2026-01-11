@@ -686,7 +686,15 @@ function initializeBrandDropdown() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await checkLoginState();
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canViewBusinessAnalytics')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+    }
+
     initializeCategoryDropdown();
     initializeTimeRangeDropdown();
     initializeBrandDropdown();

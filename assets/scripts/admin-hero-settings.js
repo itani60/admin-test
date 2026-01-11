@@ -17,6 +17,7 @@ let currentSlideIndex = -1;
 let currentUserRole = 'viewer';
 
 // Initialize RBAC and User Info
+// Initialize RBAC and User Info
 async function initRBAC() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
@@ -26,21 +27,16 @@ async function initRBAC() {
 
         const result = await window.adminAWSAuthService.getUserInfo();
 
-        if (result.success && result.user) {
+        if (result.success && window.adminAWSAuthService.hasPermission('canManageHero')) {
             currentUserRole = result.user.role || 'viewer';
-
-            // Log for debugging
-            console.log(`User authenticated: ${result.user.email}, Role: ${currentUserRole}`);
-
-            // Initialize page logic here if needed, or allow it to proceed
             initPage();
         } else {
-            console.warn('User not authenticated, redirecting...');
-            window.location.href = 'admin-login.html';
+            console.warn('User not authorized, redirecting...');
+            if (result.success) window.location.href = 'admin-dashboard.html';
+            else window.location.href = 'admin-login.html';
         }
     } catch (error) {
         console.error('Error in initRBAC:', error);
-        // Fallback to login on error
         window.location.href = 'admin-login.html';
     }
 }

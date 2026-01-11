@@ -4,7 +4,7 @@
     REGISTER: `${BASE_URL}/account/register`,
     VERIFY_EMAIL: `${BASE_URL}/account/verify-email`,
     LOGIN: `${BASE_URL}/account/login`,
-    USER_INFO: `${BASE_URL}/account/get-user-info`,
+    USER_INFO: `${BASE_URL}/account/get-user-permissions`, // Updated to fetch permissions + user info
     LOGOUT: `${BASE_URL}/account/logout`,
     FORGOT_PASSWORD: `${BASE_URL}/account/forgot-password`,
     RESET_PASSWORD: `${BASE_URL}/account/reset-password`
@@ -13,6 +13,7 @@
   class AdminAWSAuthService {
     constructor() {
       this._profile = null;
+      this._permissions = null; // Store granular permissions
       this._listeners = [];
       this._startPeriodicCheck();
     }
@@ -233,6 +234,7 @@
 
         if (data.user) {
           this._profile = data.user;
+          this._permissions = data.permissions || null; // Capture permissions
         }
 
         return {
@@ -440,6 +442,25 @@
      */
     clear() {
       this._profile = null;
+      this._permissions = null;
+    }
+
+    /**
+     * Check if user has specific permission
+     * @param {string} permissionName
+     * @returns {boolean}
+     */
+    hasPermission(permissionName) {
+      if (!this._permissions) return false;
+      return this._permissions[permissionName] === true;
+    }
+
+    /**
+     * Get all permissions
+     * @returns {object|null}
+     */
+    getGlobalPermissions() {
+      return this._permissions;
     }
 
     /**

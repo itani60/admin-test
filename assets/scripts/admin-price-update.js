@@ -935,7 +935,16 @@ async function initRBAC() {
 
 // Initialize Auth
 // Initialize Auth
-document.addEventListener('DOMContentLoaded', () => {
-    initRBAC();
+// Initialize Auth
+document.addEventListener('DOMContentLoaded', async () => {
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canUpdatePrices')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+        currentUserRole = auth.user.role || 'viewer';
+    }
 });
 

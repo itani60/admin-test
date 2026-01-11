@@ -666,8 +666,18 @@ function initializeReasonDropdown() {
 }
 
 // Initialize
+// Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    await initRBAC();
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canReviewReports')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+        currentUserRole = auth.user.role || 'viewer';
+    }
+
     initializeStatusDropdown();
     initializeReasonDropdown();
     await loadReports();

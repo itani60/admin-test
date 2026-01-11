@@ -6,22 +6,19 @@ async function initRBAC() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
             console.error('adminAWSAuthService is not defined');
-            // Fallback redirect or allow if dev mode (but stricter is better)
             window.location.href = 'admin-login.html';
             return;
         }
 
         const result = await window.adminAWSAuthService.getUserInfo();
 
-        if (result.success && result.user) {
+        if (result.success && window.adminAWSAuthService.hasPermission('canTrackLogins')) {
             currentUserRole = result.user.role || 'viewer';
-            // console.log(`User authenticated: ${result.user.email}, Role: ${currentUserRole}`);
-
-            // Start Data Fetch
             fetchAnalyticsData();
         } else {
-            console.warn('User not authenticated, redirecting...');
-            window.location.href = 'admin-login.html';
+            console.warn('User not authenticated or authorized, redirecting...');
+            if (result.success) window.location.href = 'admin-dashboard.html';
+            else window.location.href = 'admin-login.html';
         }
     } catch (error) {
         console.error('Error in initRBAC:', error);

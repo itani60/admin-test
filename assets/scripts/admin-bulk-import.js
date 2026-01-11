@@ -526,42 +526,23 @@ function initializeCategoryDropdown() {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initFileUpload();
-    initRBAC();
-});
-
-// Auth Check
-let currentUserRole = 'viewer';
-
-async function initRBAC() {
-    try {
-        if (typeof window.adminAWSAuthService === 'undefined') {
-            console.warn('Admin auth service not available');
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canBulkImport')) {
+            window.location.href = 'admin-dashboard.html';
             return;
         }
-
-        const result = await window.adminAWSAuthService.getUserInfo();
-
-        if (result.success && result.user) {
-            currentUserRole = result.user.role || 'viewer';
-
-            // RBAC Logic
-            if (currentUserRole === 'viewer') {
-                const uploadSection = document.querySelector('.upload-section');
-                if (uploadSection) {
-                    uploadSection.innerHTML = '<div class="alert alert-warning">You do not have permission to import products.</div>';
-                }
-                const exampleSection = document.querySelector('.example-section');
-                if (exampleSection) exampleSection.style.display = 'none';
-            }
-
-        } else {
-            window.location.href = 'admin-login.html';
-        }
-    } catch (error) {
-        console.error('Error checking login state:', error);
-        window.location.href = 'admin-login.html';
     }
-}
+
+    initFileUpload();
+    // RBAC handled above
+});
+
+// Auth Check Helper (Legacy support removed)
+let currentUserRole = 'viewer';
+
+
 

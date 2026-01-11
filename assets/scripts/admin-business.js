@@ -33,6 +33,15 @@ let permissionStatusChart = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+    // Auth Check
+    if (window.adminAWSAuthService) {
+        const auth = await window.adminAWSAuthService.getUserInfo();
+        if (!auth.success || !window.adminAWSAuthService.hasPermission('canManageBusiness')) {
+            window.location.href = 'admin-dashboard.html';
+            return;
+        }
+    }
+
     setupEventListeners();
 
     await loadPosts();

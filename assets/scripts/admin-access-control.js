@@ -8,6 +8,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', initRBAC);
 
 // 1. Authentication Check & User UI
+// 1. Authentication Check & User UI
 async function initRBAC() {
     try {
         if (typeof window.adminAWSAuthService === 'undefined') {
@@ -18,7 +19,7 @@ async function initRBAC() {
 
         const result = await window.adminAWSAuthService.getUserInfo();
 
-        if (result.success && result.user) {
+        if (result.success && window.adminAWSAuthService.hasPermission('canManageAccessControl')) {
             currentUser = result.user;
             // Update Page Specific UI (Invite Card visibility)
             updatePageSpecificUI(currentUser);
@@ -29,8 +30,9 @@ async function initRBAC() {
             // Setup Listeners if needed
             setupEventListeners();
         } else {
-            console.warn('User not authenticated, redirecting...');
-            window.location.href = 'admin-login.html';
+            console.warn('User not authorized, redirecting...');
+            if (result.success) window.location.href = 'admin-dashboard.html';
+            else window.location.href = 'admin-login.html';
         }
     } catch (err) {
         console.error('Auth Check Failed:', err);

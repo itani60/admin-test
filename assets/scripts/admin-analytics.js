@@ -395,7 +395,7 @@ function displayCategoryStats(products) {
     }
 
     let html = `
-    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.5rem;">Category Statistics</h3>
+    <h3 class="mb-4 fw-bold" style="font-size:1.2rem; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">Category Statistics</h3>
     <div class="grid-d2">
     `;
 
@@ -464,12 +464,14 @@ function displayCategoryStats(products) {
 
     html += '</div>';
 
-    // Remove old wrapper styles
-    container.className = '';
-    container.style.background = 'transparent';
-    container.style.boxShadow = 'none';
-    container.style.border = 'none';
-    container.style.padding = '0';
+    // Apply the container card style instead of stripping it
+    container.className = 'card-d1'; // Use the Top Products card style
+
+    // Ensure we don't have conflicting inline styles if they were set previously
+    container.style.background = '';
+    container.style.boxShadow = '';
+    container.style.border = '';
+    container.style.padding = ''; // card-d1 has padding: 32px defined in CSS
 
     container.innerHTML = html;
 }

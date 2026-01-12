@@ -272,6 +272,7 @@
         }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
+    <link href="assets/css/widgets.css" rel="stylesheet">
 </head>
 </head>
 <div class="page-loading-overlay" id="pageLoadingOverlay">
@@ -555,6 +556,95 @@
                             style="background: -webkit-linear-gradient(45deg, #d97706, #b45309); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;"></i>
                         <h4>Alerts</h4>
                     </a>
+                </div>
+            </div>
+
+            <!-- Dashboard Widgets -->
+            <div class="dashboard-widgets-grid">
+                <!-- Pending Tasks -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h3 class="widget-title">Pending Tasks</h3>
+                        <a href="admin-business.html" class="text-primary"
+                            style="font-size: 0.9rem; text-decoration: none; font-weight: 600;">View All</a>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">
+                            <div class="task-icon bg-warning-subtle text-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 fs-6 fw-bold text-dark">Review Business Posts</h5>
+                                <p class="mb-0 text-muted small">5 new posts awaiting approval</p>
+                            </div>
+                            <a href="admin-business.html"
+                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Review</a>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-icon bg-danger-subtle text-danger">
+                                <i class="fas fa-flag"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 fs-6 fw-bold text-dark">Reported Reviews</h5>
+                                <p class="mb-0 text-muted small">3 reports need attention</p>
+                            </div>
+                            <a href="admin_reports_review.html"
+                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Check</a>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-icon bg-info-subtle text-info">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 fs-6 fw-bold text-dark">New Admin Request</h5>
+                                <p class="mb-0 text-muted small">1 invite pending acceptance</p>
+                            </div>
+                            <a href="admin-management.html"
+                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Manage</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h3 class="widget-title">Recent Activity</h3>
+                        <i class="fas fa-history text-muted"></i>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-dot bg-success"></div>
+                            <div class="activity-content">
+                                <h5>New Business Registered</h5>
+                                <p class="mb-1 text-muted small">TechWorld SA just created an account.</p>
+                                <span class="activity-time">2 mins ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot bg-primary"></div>
+                            <div class="activity-content">
+                                <h5>Price Update Completed</h5>
+                                <p class="mb-1 text-muted small">Automatic sync updated 1,240 prices.</p>
+                                <span class="activity-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot bg-warning"></div>
+                            <div class="activity-content">
+                                <h5>High Traffic Alert</h5>
+                                <p class="mb-1 text-muted small">Unusual spike in 'Electronics' category.</p>
+                                <span class="activity-time">3 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot bg-info"></div>
+                            <div class="activity-content">
+                                <h5>Admin Login</h5>
+                                <p class="mb-1 text-muted small">Sarah logged in from new device.</p>
+                                <span class="activity-time">5 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

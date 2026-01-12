@@ -458,7 +458,13 @@ async function dismissReport() {
 
         if (response.ok && data.success) {
             showAlert('Report dismissed successfully!', 'success');
-            bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+
+            const detailModalEl = document.getElementById('reportDetailModal');
+            if (detailModalEl) {
+                const modal = bootstrap.Modal.getInstance(detailModalEl);
+                if (modal) modal.hide();
+            }
+
             await loadReports(); // Reload reports
         } else {
             throw new Error(data.message || 'Failed to dismiss report');
@@ -489,7 +495,13 @@ async function resolveReport() {
 
         if (response.ok && data.success) {
             showAlert('Report marked as resolved!', 'success');
-            bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+
+            const detailModalEl = document.getElementById('reportDetailModal');
+            if (detailModalEl) {
+                const modal = bootstrap.Modal.getInstance(detailModalEl);
+                if (modal) modal.hide();
+            }
+
             await loadReports(); // Reload reports
         } else {
             throw new Error(data.message || 'Failed to resolve report');
@@ -520,7 +532,13 @@ async function removeReview() {
 
         if (response.ok && data.success) {
             showAlert('Review removed successfully!', 'success');
-            bootstrap.Modal.getInstance(document.getElementById('reportDetailModal')).hide();
+
+            const detailModalEl = document.getElementById('reportDetailModal');
+            if (detailModalEl) {
+                const modal = bootstrap.Modal.getInstance(detailModalEl);
+                if (modal) modal.hide();
+            }
+
             await loadReports(); // Reload reports
         } else {
             throw new Error(data.message || 'Failed to remove review');

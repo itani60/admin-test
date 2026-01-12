@@ -486,17 +486,9 @@ function renderPosts() {
                     <div class="text-muted small" style="font-size: 0.75rem;">${escapeHtml(post.submitted)}</div>
                 </td>
                 <td>
-                    <div class="dropdown">
-                        <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v text-muted"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
-                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="viewPost('${postId}')"><i class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-success" href="javascript:void(0)" onclick="approvePost('${postId}')"><i class="fas fa-check me-2"></i> Approve</a></li>
-                            <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="rejectPost('${postId}')"><i class="fas fa-times me-2"></i> Reject</a></li>
-                        </ul>
-                    </div>
+                    <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" onclick="viewPost('${postId}')" title="View Business Post">
+                        <i class="fas fa-ellipsis-v text-muted"></i>
+                    </button>
                 </td>
             </tr>
         `;

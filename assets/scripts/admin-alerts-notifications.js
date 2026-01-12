@@ -185,72 +185,59 @@ function renderNotifications() {
 
         html += `
             <div class="notification-item ${unreadClass}" data-notification-id="${notifId}">
-                <div class="notification-header">
-                    <div class="notification-icon ${iconClass}">
-                        <i class="${getIcon(notification.type)}"></i>
+                <div class="notification-icon ${iconClass}">
+                    <i class="${getIcon(notification.type)}"></i>
+                </div>
+                <div style="flex-grow: 1;">
+                    <div class="notification-header border-0 p-0 m-0">
+                        <div>
+                            <h5 class="notification-title d-inline">
+                                ${escapeHtml(notification.title)}
+                            </h5>
+                            <div class="d2-chip">${formattedTime}</div>
+                        </div>
+                        <div class="dropdown">
+                           <!-- Optional: Three dots menu could go here if needed, or keeping actions inline below -->
+                        </div>
                     </div>
-                    <div class="notification-content">
-                        <div class="notification-title">
-                            ${escapeHtml(notification.title)}
-                            <span class="badge ${badgeClass}">${badgeText}</span>
+
+                    <div class="notification-message">
+                         ${escapeHtml(notification.message)}
+                         ${notification.metadata && notification.metadata.targetPrice ? `
+                            <span class="d2-price-tag">${formatCurrency(notification.metadata.targetPrice)}</span>
+                         ` : ''}
+                    </div>
+
+                    <div class="notification-meta">
+                        <div class="notification-meta-item">
+                            <i class="fas fa-user me-1 text-muted"></i>
+                            ${escapeHtml(notification.userEmail || 'N/A')}
                         </div>
-                        <div class="notification-message">
-                            ${escapeHtml(notification.message)}
-                        </div>
-                        <div class="notification-meta">
+                        ${notification.metadata && notification.metadata.ipAddress ? `
                             <div class="notification-meta-item">
-                                <i class="fas fa-user"></i>
-                                <span>${escapeHtml(notification.userEmail || 'N/A')}</span>
-                            </div>
-                            <div class="notification-meta-item">
-                                <i class="fas fa-clock"></i>
-                                <span>${notification.metadata && notification.metadata.formattedTime ? escapeHtml(notification.metadata.formattedTime) : formattedTime}</span>
-                            </div>
-                            ${notification.metadata && notification.metadata.formattedDate ? `
-                                <div class="notification-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>${escapeHtml(notification.metadata.formattedDate)}</span>
-                                </div>
-                            ` : ''}
-                            ${notification.metadata && notification.metadata.os ? `
-                                <div class="notification-meta-item">
-                                    <i class="fas fa-mobile-alt"></i>
-                                    <span>${escapeHtml(notification.metadata.os)}</span>
-                                </div>
-                            ` : ''}
-                            ${notification.metadata && notification.metadata.ipAddress ? `
-                                <div class="notification-meta-item">
-                                    <i class="fas fa-network-wired"></i>
-                                    <span>${escapeHtml(notification.metadata.ipAddress)}</span>
-                                </div>
-                            ` : ''}
-                        </div>
-                        ${notification.metadata && notification.metadata.productName ? `
-                            <div class="notification-meta" style="margin-top: 0.5rem;">
-                                <div class="notification-meta-item">
-                                    <i class="fas fa-box"></i>
-                                    <span><strong>Product:</strong> ${escapeHtml(notification.metadata.productName)}</span>
-                                </div>
-                                ${notification.metadata.targetPrice ? `
-                                    <div class="notification-meta-item">
-                                        <i class="fas fa-tag"></i>
-                                        <span><strong>Target Price:</strong> ${formatCurrency(notification.metadata.targetPrice)}</span>
-                                    </div>
-                                ` : ''}
+                                <i class="fas fa-globe me-1 text-muted"></i>
+                                ${escapeHtml(notification.metadata.ipAddress)}
                             </div>
                         ` : ''}
-                        <div class="notification-actions">
-                            ${!notification.isRead && currentUserRole !== 'viewer' ? `
-                                <button class="btn btn-success btn-sm" onclick="markAsRead('${notifId}')">
-                                    Mark as Read
-                                </button>
-                            ` : ''}
-                            ${currentUserRole !== 'viewer' ? `
-                            <button class="btn btn-danger btn-sm" onclick="deleteNotification('${notifId}')">
-                                <i class="fas fa-trash"></i> Delete
+                         ${notification.metadata && notification.metadata.productName ? `
+                            <div class="notification-meta-item">
+                                <i class="fas fa-box me-1 text-muted"></i>
+                                ${escapeHtml(notification.metadata.productName)}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="notification-actions">
+                         ${!notification.isRead && currentUserRole !== 'viewer' ? `
+                            <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="markAsRead('${notifId}')">
+                                Mark as Read
                             </button>
-                            ` : ''}
-                        </div>
+                        ` : ''}
+                        ${currentUserRole !== 'viewer' ? `
+                            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="deleteNotification('${notifId}')">
+                                Remove
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             </div>

@@ -418,14 +418,8 @@ function initializeCharts() {
     const loginsOverTimeCtx = document.getElementById('loginsOverTimeChart');
     if (loginsOverTimeCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        loginsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
-        loginsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // loginsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // loginsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         const timeData = calculateLoginsOverTime();
         loginsOverTimeChart = new Chart(loginsOverTimeCtx, {
@@ -481,14 +475,8 @@ function initializeCharts() {
     const accountTypeCtx = document.getElementById('accountTypeChart');
     if (accountTypeCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        accountTypeCtx.addEventListener('wheel', preventScroll, { passive: false });
-        accountTypeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // accountTypeCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // accountTypeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         const typeData = calculateAccountTypeDistribution();
         accountTypeChart = new Chart(accountTypeCtx, {
@@ -525,14 +513,8 @@ function initializeCharts() {
     const loginActivityByHourCtx = document.getElementById('loginActivityByHourChart');
     if (loginActivityByHourCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        loginActivityByHourCtx.addEventListener('wheel', preventScroll, { passive: false });
-        loginActivityByHourCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // loginActivityByHourCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // loginActivityByHourCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         const hourData = calculateLoginActivityByHour();
         loginActivityByHourChart = new Chart(loginActivityByHourCtx, {
@@ -585,14 +567,8 @@ function initializeCharts() {
     const loginStatusCtx = document.getElementById('loginStatusChart');
     if (loginStatusCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        loginStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
-        loginStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // loginStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // loginStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         const statusData = calculateLoginStatus();
         loginStatusChart = new Chart(loginStatusCtx, {

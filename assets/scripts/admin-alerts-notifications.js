@@ -881,14 +881,8 @@ function initializeCharts() {
     const notificationsOverTimeCtx = document.getElementById('notificationsOverTimeChart');
     if (notificationsOverTimeCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        notificationsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
-        notificationsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // notificationsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // notificationsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         const timeData = calculateNotificationsOverTime();
         notificationsOverTimeChart = new Chart(notificationsOverTimeCtx, {
@@ -946,14 +940,8 @@ function initializeCharts() {
     const notificationTypesCtx = document.getElementById('notificationTypesChart');
     if (notificationTypesCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        notificationTypesCtx.addEventListener('wheel', preventScroll, { passive: false });
-        notificationTypesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // notificationTypesCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // notificationTypesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const typesData = calculateNotificationTypes();
         notificationTypesChart = new Chart(notificationTypesCtx, {
             type: 'doughnut',
@@ -1007,14 +995,8 @@ function initializeCharts() {
     const activityByCategoryCtx = document.getElementById('activityByCategoryChart');
     if (activityByCategoryCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        activityByCategoryCtx.addEventListener('wheel', preventScroll, { passive: false });
-        activityByCategoryCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // activityByCategoryCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // activityByCategoryCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const categoryData = calculateActivityByCategory();
         const ctxActivity = activityByCategoryCtx.getContext('2d');
         const gradientActivity = ctxActivity.createLinearGradient(0, 0, 0, 300);
@@ -1066,14 +1048,8 @@ function initializeCharts() {
     const readStatusCtx = document.getElementById('readStatusChart');
     if (readStatusCtx) {
         // Prevent wheel/scroll events from affecting the chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
-
-        readStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
-        readStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+        // readStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
+        // readStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         const statusData = calculateReadStatus();
         readStatusChart = new Chart(readStatusCtx, {
             type: 'doughnut',

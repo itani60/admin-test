@@ -162,14 +162,8 @@ function updateCharts() {
         const topFollowersCtx = document.getElementById('topFollowersChart');
         if (topFollowersCtx) {
             // Prevent wheel/scroll events from affecting the chart
-            const preventScroll = (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            };
-
-            topFollowersCtx.addEventListener('wheel', preventScroll, { passive: false });
-            topFollowersCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            // topFollowersCtx.addEventListener('wheel', preventScroll, { passive: false });
+            // topFollowersCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
             if (charts.topFollowers) charts.topFollowers.destroy();
 
@@ -232,14 +226,8 @@ function updateCharts() {
         const ratingsDistCtx = document.getElementById('ratingsDistributionChart');
         if (ratingsDistCtx) {
             // Prevent wheel/scroll events from affecting the chart
-            const preventScroll = (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            };
-
-            ratingsDistCtx.addEventListener('wheel', preventScroll, { passive: false });
-            ratingsDistCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            // ratingsDistCtx.addEventListener('wheel', preventScroll, { passive: false });
+            // ratingsDistCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
             if (charts.ratingsDistribution) charts.ratingsDistribution.destroy();
             charts.ratingsDistribution = new Chart(ratingsDistCtx.getContext('2d'), {
@@ -302,14 +290,8 @@ function updateCharts() {
         const goodReviewsCtx = document.getElementById('goodReviewsChart');
         if (goodReviewsCtx) {
             // Prevent wheel/scroll events from affecting the chart
-            const preventScroll = (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            };
-
-            goodReviewsCtx.addEventListener('wheel', preventScroll, { passive: false });
-            goodReviewsCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            // goodReviewsCtx.addEventListener('wheel', preventScroll, { passive: false });
+            // goodReviewsCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
             if (charts.goodReviews) charts.goodReviews.destroy();
             charts.goodReviews = new Chart(goodReviewsCtx.getContext('2d'), {
@@ -378,14 +360,8 @@ function updateCharts() {
         const productLikesCtx = document.getElementById('productLikesChart');
         if (productLikesCtx) {
             // Prevent wheel/scroll events from affecting the chart
-            const preventScroll = (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                return false;
-            };
-
-            productLikesCtx.addEventListener('wheel', preventScroll, { passive: false });
-            productLikesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
+            // productLikesCtx.addEventListener('wheel', preventScroll, { passive: false });
+            // productLikesCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
             if (charts.productLikes) charts.productLikes.destroy();
             charts.productLikes = new Chart(productLikesCtx.getContext('2d'), {

@@ -143,6 +143,106 @@
             font-weight: 700;
             border: 2px solid white;
         }
+
+        /* --- Design 1 Styles --- */
+        .table-design-1 {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-design-1 thead {
+            background: #fef2f2;
+        }
+
+        .table-design-1 th {
+            font-weight: 600;
+            color: #1e293b;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table-design-1 td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .img-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .badge-soft-warning {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+
+        .badge-soft-success {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #6ee7b7;
+        }
+
+        .badge-soft-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        /* --- Design 1 Styles --- */
+        .table-design-1 {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .table-design-1 thead {
+            background: #fef2f2;
+        }
+
+        .table-design-1 th {
+            font-weight: 600;
+            color: #1e293b;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table-design-1 td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .img-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .badge-soft-warning {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+
+        .badge-soft-success {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #6ee7b7;
+        }
+
+        .badge-soft-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
     </style>
 
 </head>
@@ -460,30 +560,32 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Business</th>
-                                <th>Post Title</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Permission</th>
-                                <th>Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="businessPostsContainer">
-                            <tr>
-                                <td colspan="7" class="text-center">
-                                    <div class="loading-state">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <p>Loading posts...</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="table-design-1">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Business</th>
+                                    <th>Post Title</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Permission</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="businessPostsContainer">
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="loading-state">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <p>Loading posts...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

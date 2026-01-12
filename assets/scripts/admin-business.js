@@ -438,17 +438,18 @@ function applyFilters() {
 }
 
 // Render posts
+// Render posts (Design 1 Implementation)
 function renderPosts() {
     const container = document.getElementById('businessPostsContainer');
 
     if (filteredPosts.length === 0) {
         container.innerHTML = `
             <tr>
-                <td colspan="8" class="text-center">
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
+                <td colspan="7" class="text-center">
+                    <div class="empty-state p-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                         <h4>No posts found</h4>
-                        <p>No posts match your current filters.</p>
+                        <p class="text-muted">No posts match your current filters.</p>
                     </div>
                 </td>
             </tr>
@@ -458,32 +459,44 @@ function renderPosts() {
 
     let html = '';
     filteredPosts.forEach(post => {
+        const postId = post.postId || post.id;
         const statusBadge = getStatusBadge(post.status);
         const permissionBadge = getPermissionBadge(post.permission);
         const typeBadge = getTypeBadge(post.type);
         const timeAgo = getTimeAgo(post.submitted);
+        const logo = post.logo || 'https://placehold.co/40';
 
         html += `
             <tr>
                 <td>
-                    <div class="business-name-cell">
-                        ${post.logo ? `<img src="${escapeHtml(post.logo)}" alt="${escapeHtml(post.businessName)}" class="business-logo-small" onerror="this.style.display='none'">` : ''}
-                        <div class="business-name-info">
-                            <strong>${escapeHtml(post.businessName)}</strong><br>
-                            <small class="text-muted">${escapeHtml(post.businessEmail)}</small>
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="${escapeHtml(logo)}" class="img-avatar" alt="Logo" onerror="this.src='https://placehold.co/40'">
+                        <div>
+                            <div class="fw-bold fs-6">${escapeHtml(post.businessName)}</div>
+                            <div class="text-muted small">${escapeHtml(post.businessEmail)}</div>
                         </div>
                     </div>
                 </td>
-                <td>${escapeHtml(post.title)}</td>
+                <td class="fw-medium text-dark">${escapeHtml(post.title)}</td>
                 <td>${typeBadge}</td>
                 <td>${statusBadge}</td>
                 <td>${permissionBadge}</td>
                 <td>
-                    <small>${timeAgo}</small><br>
-                    <small class="text-muted">${escapeHtml(post.submitted)}</small>
+                    <div class="small fw-bold">${timeAgo}</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">${escapeHtml(post.submitted)}</div>
                 </td>
                 <td>
-                    ${getActionButtons(post)}
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="viewPost('${postId}')"><i class="fas fa-eye me-2 text-primary"></i> View Detail</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-success" href="javascript:void(0)" onclick="approvePost('${postId}')"><i class="fas fa-check me-2"></i> Approve</a></li>
+                            <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="rejectPost('${postId}')"><i class="fas fa-times me-2"></i> Reject</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         `;
@@ -492,70 +505,39 @@ function renderPosts() {
     container.innerHTML = html;
 }
 
-// Get status badge
+// Get status badge (Design 1)
 function getStatusBadge(status) {
     const badges = {
-        'pending': '<span class="badge badge-warning">Pending</span>',
-        'approved': '<span class="badge badge-success">Approved</span>',
-        'rejected': '<span class="badge badge-danger">Rejected</span>'
+        'pending': '<span class="badge badge-soft-warning rounded-2 text-uppercase" style="font-size: 0.7rem;">Pending</span>',
+        'approved': '<span class="badge badge-soft-success rounded-2 text-uppercase" style="font-size: 0.7rem;">Approved</span>',
+        'rejected': '<span class="badge badge-soft-danger rounded-2 text-uppercase" style="font-size: 0.7rem;">Rejected</span>'
     };
-    return badges[status] || '<span class="badge">Unknown</span>';
+    return badges[status] || '<span class="badge bg-secondary">Unknown</span>';
 }
 
-// Get permission badge
+// Get permission badge (Design 1)
 function getPermissionBadge(permission) {
     const badges = {
-        'granted': '<span class="badge badge-success permission-badge"><i class="fas fa-check-circle"></i> Granted</span>',
-        'pending': '<span class="badge badge-warning permission-badge"><i class="fas fa-clock"></i> Pending</span>',
-        'revoked': '<span class="badge badge-danger permission-badge"><i class="fas fa-ban"></i> Revoked</span>'
+        'granted': '<span class="badge bg-success rounded-pill"><i class="fas fa-check-circle me-1"></i> Granted</span>',
+        'pending': '<span class="badge bg-warning rounded-pill"><i class="fas fa-clock me-1"></i> Pending</span>',
+        'revoked': '<span class="badge bg-danger rounded-pill"><i class="fas fa-ban me-1"></i> Revoked</span>'
     };
-    return badges[permission] || '<span class="badge">Unknown</span>';
+    return badges[permission] || '<span class="badge bg-secondary rounded-pill">Unknown</span>';
 }
 
-// Get type badge
+// Get type badge (Design 1)
 function getTypeBadge(type) {
     const badges = {
-        'Service': '<span class="badge badge-info">Service</span>',
-        'Product': '<span class="badge badge-primary">Product</span>',
-        'Announcement': '<span class="badge badge-warning">Announcement</span>'
+        'Service': '<span class="badge bg-danger rounded-1">Service</span>',
+        'Product': '<span class="badge bg-primary rounded-1">Product</span>',
+        'Announcement': '<span class="badge bg-info rounded-1">Announcement</span>'
     };
-    return badges[type] || '<span class="badge">Unknown</span>';
+    return badges[type] || '<span class="badge bg-secondary rounded-1">Unknown</span>';
 }
 
-// Get action buttons
+// Helper: Action Buttons not needed as we use dropdown now
 function getActionButtons(post) {
-    let buttons = '';
-    const postId = post.postId || post.id;
-
-    // Admin can always approve/reject immediately - no wait period checks
-    if (post.status === 'pending') {
-        buttons += `
-            <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
-                <i class="fas fa-check"></i> Approve
-            </button>
-            <button class="btn btn-danger btn-sm" onclick="rejectPost('${postId}')" title="Reject this post">
-                <i class="fas fa-times"></i> Reject
-            </button>
-        `;
-    } else if (post.status === 'approved') {
-        buttons += `
-            <span class="badge badge-success">Approved</span>
-        `;
-    } else if (post.status === 'rejected') {
-        buttons += `
-            <button class="btn btn-success btn-sm" onclick="approvePost('${postId}')" title="Approve this post">
-                <i class="fas fa-check"></i> Approve
-            </button>
-        `;
-    }
-
-    buttons += `
-        <button class="btn btn-info btn-sm" onclick="viewPost('${postId}')" title="View post details">
-            <i class="fas fa-eye"></i> View
-        </button>
-    `;
-
-    return `<div class="action-buttons">${buttons}</div>`;
+    return '';
 }
 
 // Get time ago

@@ -291,13 +291,14 @@ function renderCharts(products) {
     }
 }
 
-// Display top products
+// Display top products (Design 1: Modern Gradient Card)
 function displayTopProducts(products) {
-    const tbody = document.getElementById('topProductsTable');
-    if (!tbody) return;
+    // We target the CONTAINER of the table section, not the tbody directly, because we need to replace the wrapper
+    const container = document.querySelector('.table-section:has(#topProductsTable)');
+    if (!container) return;
 
     if (products.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No products found</td></tr>`;
+        container.innerHTML = `<div class="card-d1 text-center text-muted py-4">No products found</div>`;
         return;
     }
 
@@ -308,29 +309,69 @@ function displayTopProducts(products) {
         return bOffers - aOffers;
     }).slice(0, 10);
 
-    tbody.innerHTML = sortedProducts.map((product, index) => {
+    let html = `
+    <div class="card-d1">
+        <h3 class="mb-3 fw-bold" style="font-size:1.2rem; color: #1e293b;">Top Products by Price Updates</h3>
+        <div class="table-responsive">
+            <table class="table-d1 w-100">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Product</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Updates</th>
+                        <th>Lowest Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    html += sortedProducts.map((product, index) => {
         const offers = product.offers || [];
         const prices = offers.map(o => o.price || o.originalPrice || 0).filter(p => p > 0);
         const lowestPrice = prices.length > 0 ? Math.min(...prices) : 0;
+        const brand = product.brand || 'N/A';
+        const category = product.category || 'N/A';
 
         return `
             <tr>
-                <td><strong>#${index + 1}</strong></td>
-                <td>${product.model || product.title || product.product_id || 'Unknown'}</td>
-                <td><span class="badge badge-primary">${product.brand || 'N/A'}</span></td>
-                <td>${product.category || 'N/A'}</td>
-                <td><strong>${offers.length}</strong></td>
-                <td>R${lowestPrice.toLocaleString()}</td>
-                <td><span class="badge badge-success">Active</span></td>
+                <td style="font-weight:700; color:#64748b;">#${index + 1}</td>
+                <td class="fw-bold">${product.model || product.title || product.product_id || 'Unknown'}</td>
+                <td><span class="badge-brand-modern">${brand}</span></td>
+                <td>${category}</td>
+                <td style="font-weight:700; color:#1e293b;">${offers.length}</td>
+                <td><span style="font-weight:700; color:#0f172a;">R${lowestPrice.toLocaleString()}</span></td>
+                <td><span class="badge-status-modern">Active</span></td>
             </tr>
         `;
     }).join('');
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+    </div>
+    `;
+
+    // Replace the entire old table-section content or the container itself if feasible
+    // Since we selected the .table-section, we replace that entirely with our new card design structure
+    // But wait, .table-section has its own styles (white bg, padding). 
+    // Design 1 expects to be standalone. Let's clear the container classes to avoid double padding/shadow.
+    container.className = '';
+    container.style.background = 'transparent';
+    container.style.padding = '0';
+    container.style.boxShadow = 'none';
+    container.style.border = 'none';
+
+    container.innerHTML = html;
 }
 
-// Display category statistics
+// Display category statistics (Design 2: Grid Cards)
 function displayCategoryStats(products) {
-    const tbody = document.getElementById('categoryStatsTable');
-    if (!tbody) return;
+    const container = document.querySelector('.table-section:has(#categoryStatsTable)');
+    if (!container) return;
 
     const categoryMap = {};
     products.forEach(product => {
@@ -349,27 +390,88 @@ function displayCategoryStats(products) {
     });
 
     if (Object.keys(categoryMap).length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No category data available</td></tr>`;
+        container.innerHTML = `<div class="text-center text-muted py-4">No category data available</div>`;
         return;
     }
 
-    tbody.innerHTML = Object.entries(categoryMap).map(([category, data]) => {
+    let html = `
+    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.5rem;">Category Statistics</h3>
+    <div class="grid-d2">
+    `;
+
+    const iconMap = {
+        'smartphones': 'fa-mobile-alt',
+        'laptops': 'fa-laptop',
+        'windows-laptops': 'fa-laptop',
+        'macbooks-laptops': 'fa-laptop',
+        'chromebooks-laptops': 'fa-laptop',
+        'tablets': 'fa-tablet-alt',
+        'wearables': 'fa-clock',
+        'televisions': 'fa-tv',
+        'audio': 'fa-headphones',
+        'gaming': 'fa-gamepad',
+        'appliances': 'fa-blender'
+    };
+
+    html += Object.entries(categoryMap).map(([category, data]) => {
         const prices = data.prices;
         const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
-        const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
-        const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+        // Activity status text
+        let activityText = 'Moderate';
+        if (data.updates > 50) activityText = 'High Activity';
+        else if (data.updates < 10) activityText = 'Low Activity';
+
+        // Icon logic
+        let iconClass = 'fa-tag'; // default
+        // Simple partial match check
+        for (const key in iconMap) {
+            if (category.toLowerCase().includes(key)) {
+                iconClass = iconMap[key];
+                break;
+            }
+        }
+
+        // Format Category Name
+        const catName = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
 
         return `
-            <tr>
-                <td><strong>${category}</strong></td>
-                <td>${data.count}</td>
-                <td>${data.updates}</td>
-                <td>R${avgPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                <td>R${minPrice.toLocaleString()}</td>
-                <td>R${maxPrice.toLocaleString()}</td>
-            </tr>
+        <div class="card-d2">
+            <div class="d2-header">
+                <div class="d2-icon"><i class="fas ${iconClass}"></i></div>
+                <div>
+                    <div class="fw-bold text-dark">${catName}</div>
+                    <small class="text-muted">${activityText}</small>
+                </div>
+            </div>
+            <div class="d2-stats">
+                <div>
+                    <div>Count</div>
+                    <div class="d2-val">${data.count}</div>
+                </div>
+                <div>
+                    <div>Updates</div>
+                    <div class="d2-val">${data.updates}</div>
+                </div>
+                <div>
+                    <div>Avg</div>
+                    <div class="d2-val">R${(avgPrice / 1000).toFixed(1)}k</div>
+                </div>
+            </div>
+        </div>
         `;
     }).join('');
+
+    html += '</div>';
+
+    // Remove old wrapper styles
+    container.className = '';
+    container.style.background = 'transparent';
+    container.style.boxShadow = 'none';
+    container.style.border = 'none';
+    container.style.padding = '0';
+
+    container.innerHTML = html;
 }
 
 // Show alert

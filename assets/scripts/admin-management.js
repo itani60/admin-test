@@ -500,58 +500,63 @@ function updateCharts() {
         });
     }
 
-    // Status Distribution (Progress Bars)
+    // Status Distribution (Design 6: Circular Progress)
     const verifiedCount = allUsers.filter(u => u.verified && u.status !== 'suspended').length;
     const pendingCount = allUsers.filter(u => !u.verified && u.status !== 'suspended').length;
     const suspendedCount = allUsers.filter(u => u.status === 'suspended').length;
     const total = allUsers.length;
 
-    const statusChartContainer = document.getElementById('statusDistributionChart');
-    if (statusChartContainer && total > 0) {
-        const verifiedPercent = ((verifiedCount / total) * 100).toFixed(1);
-        const pendingPercent = ((pendingCount / total) * 100).toFixed(1);
-        const suspendedPercent = ((suspendedCount / total) * 100).toFixed(1);
+    if (total > 0) {
+        // Calculate Percentages
+        const verifiedPercent = Math.round((verifiedCount / total) * 100);
+        const pendingPercent = Math.round((pendingCount / total) * 100);
+        const suspendedPercent = Math.round((suspendedCount / total) * 100);
 
-        statusChartContainer.innerHTML = `
-            <div class="race-item">
-                <div class="race-header">
-                    <span class="race-title">
-                        Verified
-                        <i class="fas fa-check-circle text-success" style="font-size: 0.8rem;"></i>
-                    </span>
-                    <span class="race-count" style="color: #10b981;">${verifiedCount} (${verifiedPercent}%)</span>
-                </div>
-                <div class="race-track">
-                    <div class="race-bar" style="width: ${verifiedPercent}%; background: #10b981;"></div>
-                </div>
-            </div>
+        // Update Text
+        const verifiedEl = document.getElementById('verifiedPercent');
+        const pendingEl = document.getElementById('pendingPercent');
+        const suspendedEl = document.getElementById('suspendedPercent');
 
-            <div class="race-item">
-                <div class="race-header">
-                    <span class="race-title">
-                        Pending
-                        <i class="fas fa-clock text-warning" style="font-size: 0.8rem;"></i>
-                    </span>
-                    <span class="race-count" style="color: #f59e0b;">${pendingCount} (${pendingPercent}%)</span>
-                </div>
-                <div class="race-track">
-                    <div class="race-bar" style="width: ${pendingPercent}%; background: #f59e0b;"></div>
-                </div>
-            </div>
+        if (verifiedEl) verifiedEl.textContent = `${verifiedPercent}%`;
+        if (pendingEl) pendingEl.textContent = `${pendingPercent}%`;
+        if (suspendedEl) suspendedEl.textContent = `${suspendedPercent}%`;
 
-            <div class="race-item">
-                <div class="race-header">
-                    <span class="race-title">
-                        Suspended
-                        <i class="fas fa-ban text-danger" style="font-size: 0.8rem;"></i>
-                    </span>
-                    <span class="race-count" style="color: #ef4444;">${suspendedCount} (${suspendedPercent}%)</span>
-                </div>
-                <div class="race-track">
-                    <div class="race-bar" style="width: ${suspendedPercent}%; background: #ef4444;"></div>
-                </div>
-            </div>
-        `;
+        // Draw Gauges Helper
+        const drawGauge = (canvasId, percent, color) => {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const x = canvas.width / 2;
+            const y = canvas.height / 2;
+            const radius = 35;
+
+            // Clear previous
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background Ring
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.stroke();
+
+            // Foreground Ring
+            // Start at top (-Math.PI / 2)
+            const startAngle = -Math.PI / 2;
+            const endAngle = (percent / 100) * 2 * Math.PI + startAngle;
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, startAngle, endAngle);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        };
+
+        // Draw the 3 gauges
+        drawGauge('gaugeVerified', verifiedPercent, '#10b981');
+        drawGauge('gaugePending', pendingPercent, '#f59e0b');
+        drawGauge('gaugeSuspended', suspendedPercent, '#ef4444');
     }
 
     // User Growth Chart (based on creation dates)

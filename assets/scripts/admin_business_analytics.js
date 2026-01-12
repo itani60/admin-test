@@ -302,24 +302,27 @@ function updateCharts() {
                         {
                             label: 'Good Reviews (4+ Stars)',
                             data: chartsData.goodReviewsByMonth.goodReviews || [],
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            borderWidth: 3,
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderColor: '#10b981',
+                            borderWidth: 2,
                             fill: true,
                             tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 7
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#10b981'
                         },
                         {
                             label: 'Total Reviews',
                             data: chartsData.goodReviewsByMonth.totalReviews || [],
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
+                            backgroundColor: 'transparent',
+                            borderColor: '#cbd5e1', // Light gray for context
+                            borderWidth: 2,
+                            fill: false,
                             tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 7
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#cbd5e1',
+                            borderDash: [5, 5]
                         }
                     ]
                 },
@@ -329,27 +332,18 @@ function updateCharts() {
                     plugins: {
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: '#eff6ff'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } }
+                    }
                 }
             });
         }
@@ -372,24 +366,26 @@ function updateCharts() {
                         {
                             label: 'Product Likes',
                             data: chartsData.productLikesByMonth.totalLikes || [],
-                            borderColor: '#f43f5e',
-                            backgroundColor: 'rgba(244, 63, 94, 0.1)',
-                            borderWidth: 3,
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
                             fill: true,
                             tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 7
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#ef4444'
                         },
                         {
                             label: 'New Likes This Month',
                             data: chartsData.productLikesByMonth.newLikes || [],
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            backgroundColor: 'transparent',
+                            borderColor: '#10b981',
                             borderWidth: 2,
-                            fill: true,
+                            fill: false,
                             tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            pointRadius: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#10b981'
                         }
                     ]
                 },
@@ -399,31 +395,24 @@ function updateCharts() {
                     plugins: {
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: '#eff6ff'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] } }
+                    }
                 }
             });
+
         }
     }
+
 }
 
 // Update tables
@@ -530,27 +519,28 @@ function updateTables() {
                 tbody.innerHTML = analyticsData.underperformingBusinesses.map(business => `
                     <tr>
                         <td>
-                            <div class="d-flex align-items-center">
-                                ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="business-logo me-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                                <div class="business-logo me-3 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 50px; height: 50px; display: ${business.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 18px;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
+                            <div class="d-flex align-items-center gap-3">
+                                ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="avatar-initials" style="object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+                                <div class="avatar-initials" style="display: ${business.businessLogo ? 'none' : 'flex'}; font-size: 0.9rem;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
                                 <div>
-                                    <div class="fw-semibold">${escapeHtml(business.businessName)}</div>
+                                    <div class="fw-bold text-dark">${escapeHtml(business.businessName)}</div>
                                     <small class="text-muted">${escapeHtml(business.businessCategory)}</small>
                                 </div>
                             </div>
                         </td>
-                        <td><span class="badge badge-custom ${getCategoryBadgeClass(business.businessCategory)}">${escapeHtml(business.businessCategory)}</span></td>
+                        <td><span class="badge bg-light text-dark border">${escapeHtml(business.businessCategory)}</span></td>
                         <td>
-                            <div class="rating-stars">${renderStars(business.averageRating || 0)}</div>
-                            <small class="${business.averageRating < 3.0 ? 'text-danger' : 'text-warning'}">${business.averageRating || '0.0'}</small>
+                            <div class="text-warning small rating-stars">${renderStars(business.averageRating || 0)} <span class="text-muted ms-1">${business.averageRating || '0.0'}</span></div>
                         </td>
-                        <td>${formatNumber(business.totalReviews || 0)}</td>
-                        <td>${formatNumber(business.totalFollowers || 0)}</td>
+                        <td class="fw-bold">${formatNumber(business.totalReviews || 0)}</td>
+                        <td class="fw-bold">${formatNumber(business.totalFollowers || 0)}</td>
                         <td>
-                            ${(business.issues || []).map(issue => `<span class="badge badge-custom ${issue.includes('Low') || issue.includes('Very') ? 'badge-danger' : 'badge-warning'}">${escapeHtml(issue)}</span>`).join(' ')}
+                            ${(business.issues || []).map(issue => `<span class="issue-badge">${escapeHtml(issue)}</span>`).join('')}
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-outline-primary" onclick="viewBusinessDetails('${business.businessId}')">View Details</button>
+                            <button class="d1-btn-icon" onclick="openBusinessDetailsModal('${business.businessId}')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
                         </td>
                     </tr>
                 `).join('');
@@ -574,8 +564,66 @@ function showError(message) {
 }
 
 // View business details (placeholder)
-function viewBusinessDetails(businessId) {
-    alert(`View details for business: ${businessId}\n\nThis feature will be implemented in a future update.`);
+// Open Business Details Modal
+function openBusinessDetailsModal(businessId) {
+    const business = analyticsData.underperformingBusinesses.find(b => b.businessId === businessId);
+    if (!business) return;
+
+    const modalBody = document.getElementById('businessDetailsModalBody');
+    if (!modalBody) return;
+
+    modalBody.innerHTML = `
+        <div class="d-flex align-items-center gap-3 mb-4">
+            ${business.businessLogo ?
+            `<img src="${business.businessLogo}" alt="${business.businessName}" class="avatar-initials" style="object-fit: cover; width: 50px; height: 50px;" onerror="this.onerror=null; this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';">` :
+            ''}
+            <div class="avatar-initials bg-primary" style="width: 50px; height: 50px; font-size: 1.2rem; display: ${business.businessLogo ? 'none' : 'flex'};">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
+            <div>
+                <h5 class="fw-bold mb-0">${escapeHtml(business.businessName)}</h5>
+                <span class="badge bg-light text-dark border mt-1">${escapeHtml(business.businessCategory)}</span>
+            </div>
+        </div>
+        
+        <div class="alert alert-warning border-0 d-flex align-items-start gap-3 mb-4" role="alert">
+            <i class="fas fa-exclamation-triangle mt-1"></i>
+            <div>
+                <div class="fw-bold">Performance Issues Detected</div>
+                <div class="small opacity-75">This business has significantly lower engagement than the category average.</div>
+                <div class="mt-2">
+                    ${(business.issues || []).map(issue => `<span class="badge bg-white text-warning border border-warning-subtle me-1">${escapeHtml(issue)}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-4">
+                <div class="p-3 bg-light rounded text-center">
+                    <div class="fw-bold fs-5">${business.averageRating || '0.0'}</div>
+                    <div class="small text-muted">Rating</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-3 bg-light rounded text-center">
+                    <div class="fw-bold fs-5">${formatNumber(business.totalReviews || 0)}</div>
+                    <div class="small text-muted">Reviews</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="p-3 bg-light rounded text-center">
+                    <div class="fw-bold fs-5">${formatNumber(business.totalFollowers || 0)}</div>
+                    <div class="small text-muted">Followers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+                <button class="btn btn-primary fw-semibold">Contact Business Owner</button>
+                <button class="btn btn-light fw-semibold text-muted" data-bs-dismiss="modal">Close</button>
+        </div>
+    `;
+
+    const modal = new bootstrap.Modal(document.getElementById('businessDetailsModal'));
+    modal.show();
 }
 
 // Escape HTML to prevent XSS

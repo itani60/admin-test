@@ -452,6 +452,37 @@
             color: #c2410c;
         }
 
+        .d1-btn-icon {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .d1-btn-icon:hover {
+            background: #f1f5f9;
+            color: #dc2626;
+        }
+
+        .issue-badge {
+            background-color: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #ffedd5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
         .d1-ring::after {
             content: '';
             position: absolute;
@@ -475,6 +506,22 @@
             color: #64748b;
             font-size: 0.9rem;
             font-weight: 500;
+        }
+
+        /* --- Design 1 Chart Card --- */
+        .d1-chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+            height: 100%;
+        }
+
+        .d1-chart-card .d-flex h4 {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
         }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
@@ -684,9 +731,9 @@
             <!-- Charts Row -->
             <div class="charts-grid">
                 <!-- Total Followers by Business -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Top Businesses by Followers</h3>
+                <div class="d1-chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0">Top Businesses by Followers</h4>
                     </div>
                     <div class="chart-container">
                         <canvas id="topFollowersChart"></canvas>
@@ -694,9 +741,9 @@
                 </div>
 
                 <!-- Average Ratings by Business -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Average Ratings Distribution</h3>
+                <div class="d1-chart-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0">Average Ratings Distribution</h4>
                     </div>
                     <div class="chart-container">
                         <canvas id="ratingsDistributionChart"></canvas>
@@ -705,9 +752,10 @@
             </div>
 
             <!-- Monthly Good Reviews Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3 class="chart-title"><i class="fas fa-thumbs-up"></i> Monthly Good Reviews (4+ Stars)</h3>
+            <div class="d1-chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Monthly Good Reviews (4+ Stars)</h4>
+                    <span class="badge bg-success bg-opacity-10 text-success">High Quality</span>
                 </div>
                 <div class="chart-container" style="height: 350px;">
                     <canvas id="goodReviewsChart"></canvas>
@@ -715,9 +763,10 @@
             </div>
 
             <!-- Product Likes Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3 class="chart-title"><i class="fas fa-heart"></i> Product Likes Over Time</h3>
+            <div class="d1-chart-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Product Likes Over Time</h4>
+                    <span class="badge bg-danger bg-opacity-10 text-danger">Engagement</span>
                 </div>
                 <div class="chart-container" style="height: 350px;">
                     <canvas id="productLikesChart"></canvas>
@@ -802,11 +851,14 @@
             </div>
         </div>
 
-        <!-- Underperforming Businesses -->
-        <div class="table-section">
-            <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
+        <!-- Underperforming Businesses (Design 1) -->
+        <div class="d1-card-table">
+            <div class="d1-header-table">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+                <h3>Underperforming Businesses</h3>
+            </div>
             <div class="table-responsive">
-                <table class="table">
+                <table class="d1-table">
                     <thead>
                         <tr>
                             <th>Business</th>
@@ -819,13 +871,27 @@
                         </tr>
                     </thead>
                     <tbody id="underperformingBusinessesTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading data...
-                            </td>
-                        </tr>
+                        <!-- Populated by JavaScript -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Business Details Modal -->
+        <div class="modal fade" id="businessDetailsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold">Business Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="businessDetailsModalBody">
+                        <!-- Dynamic Content -->
+                        <div class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

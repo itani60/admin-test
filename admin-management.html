@@ -394,7 +394,7 @@
             color: white;
         }
 
-        /* Modal Overlay & Design 1 */
+        /* Modal Overlay & Design 2 (Separated Cards) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -415,68 +415,231 @@
             opacity: 1;
         }
 
-        .modal-d1 {
-            background: white;
-            padding: 24px;
+        /* UD = User Details */
+        .ud-modal-container {
+            width: 100%;
+            max-width: 650px;
+            background: #f1f5f9;
             border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin: 20px;
         }
 
-        .modal-overlay.active .modal-d1 {
-            transform: scale(1);
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .modal-d1 h3 {
+        .ud-modal-header {
+            background: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .ud-modal-title {
+            font-family: 'Outfit', sans-serif;
             font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: #1e293b;
-        }
-
-        .modal-d1 p {
-            color: #64748b;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
-        }
-
-        .modal-d1-actions {
+            color: #0f172a;
             display: flex;
-            gap: 12px;
+            align-items: center;
+            gap: 10px;
         }
 
-        .btn-d1-cancel {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
+        .ud-modal-body {
+            padding: 30px;
+        }
+
+        /* Profile Card */
+        .ud-profile-card {
             background: white;
-            border-radius: 8px;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
         }
 
-        .btn-d1-confirm {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: #3b82f6;
-            border-radius: 8px;
-            font-weight: 600;
+        .ud-avatar-circle {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            flex-shrink: 0;
+        }
+
+        .ud-profile-info h2 {
+            margin: 0 0 4px 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .ud-profile-email {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .ud-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ud-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .ud-badge-admin {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .ud-badge-verified {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .ud-badge-pending {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .ud-badge-suspended {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* Info Cards */
+        .ud-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ud-info-card.acc-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .ud-info-card.acc-info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .ud-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .acc-success .ud-section-header i {
+            color: #10b981;
+        }
+
+        .acc-info .ud-section-header i {
+            color: #3b82f6;
+        }
+
+        .ud-data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .ud-data-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .ud-data-item span {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        /* Footer */
+        .ud-modal-footer {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-ud {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
-        .btn-d1-confirm.bg-danger {
-            background: #ef4444 !important;
+        .btn-ud-ghost {
+            background: transparent;
+            color: #64748b;
+            border: 1px dashed #e2e8f0;
         }
 
-        .btn-d1-confirm.bg-success {
-            background: #10b981 !important;
+        .btn-ud-ghost:hover {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #64748b;
+        }
+
+        .btn-ud-primary {
+            background: #0f172a;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-ud-primary:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
         }
 
         /* Toast Container & Design 6 */
@@ -1095,30 +1258,25 @@
         </div>
     </div>
 
-    <!-- View User Details Modal -->
+    <!-- View User Details Modal (Clean Design) -->
     <div class="modal fade" id="viewUserDetailsModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
-            <div class="modal-content" style="border-radius: 16px; border: 2px solid var(--border); overflow: hidden;">
-                <div class="modal-header"
-                    style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; padding: 2rem;">
-                    <h5 class="modal-title"
-                        style="font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem;">
-                        <i class="fas fa-user-circle"></i> User Details
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 rounded-4 overflow-hidden">
+                <div class="modal-header border-bottom-0 bg-white px-4 py-3">
+                    <h5 class="modal-title fw-bold text-dark" style="font-family: 'Outfit', sans-serif;">User Details
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        style="opacity: 1;"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="userDetailsContent" style="padding: 0;">
-                    <div class="text-center" style="padding: 3rem;">
-                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <div class="modal-body p-0 bg-light" id="userDetailsContent">
+                    <div class="d-flex justify-content-center align-items-center p-5">
+                        <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer"
-                    style="border-top: 2px solid var(--border); padding: 1.5rem 2rem; background: white;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                        style="border-radius: 10px; padding: 0.75rem 1.5rem; font-weight: 600;">Close</button>
+                <div class="modal-footer border-top-0 bg-light px-4 py-3">
+                    <button type="button" class="btn btn-light text-secondary fw-bold"
+                        data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -1226,16 +1384,18 @@
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <!-- Generic Confirmation Modal (Design 1) -->
+    <!-- Generic Confirmation Modal (Design 2 Adapted) -->
     <div class="modal-overlay" id="customConfirmModal">
-        <div class="modal-d1">
-            <div class="mb-3" id="customConfirmIconWrapper"><i class="fas fa-check-circle fa-3x text-primary"
-                    id="customConfirmIcon"></i></div>
-            <h3 id="customConfirmTitle">Confirm Action</h3>
-            <p id="customConfirmMessage">Are you sure you want to proceed?</p>
-            <div class="modal-d1-actions">
-                <button class="btn-d1-cancel" id="customConfirmCancel">Cancel</button>
-                <button class="btn-d1-confirm" id="customConfirmOk">Confirm Action</button>
+        <div class="ud-modal-container p-4 text-center" style="max-width: 400px; background: white;">
+            <div class="mb-3" id="customConfirmIconWrapper">
+                <i class="fas fa-check-circle fa-3x text-primary" id="customConfirmIcon"></i>
+            </div>
+            <h3 id="customConfirmTitle" class="fw-bold mb-2 text-dark">Confirm Action</h3>
+            <p id="customConfirmMessage" class="text-muted mb-4">Are you sure you want to proceed?</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <button class="btn btn-light flex-fill fw-bold text-secondary" id="customConfirmCancel"
+                    style="border: 1px solid #e2e8f0;">Cancel</button>
+                <button class="btn btn-primary flex-fill fw-bold" id="customConfirmOk">Confirm</button>
             </div>
         </div>
     </div>

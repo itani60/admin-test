@@ -662,7 +662,15 @@ function updateCharts() {
 
 // User actions
 function showUserDetailsModal(email, accountType) {
-    const modal = new bootstrap.Modal(document.getElementById('viewUserDetailsModal'));
+    const modalId = 'viewUserDetailsModal';
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+
+    const modal = new bootstrap.Modal(modalEl);
+
+    // We target the modal-body to inject our custom design. 
+    // Ideally we'd replace the whole modal content but Bootstrap expects .modal-content.
+    // We will clear existing styles/content via JS injection.
     const content = document.getElementById('userDetailsContent');
 
     // Determine account type from current tab (source of truth)
@@ -690,7 +698,7 @@ function showUserDetailsModal(email, accountType) {
     }
 
     if (!user) {
-        content.innerHTML = `<div class="alert alert-danger">
+        content.innerHTML = `<div class="alert alert-danger m-4">
             <strong>User not found</strong><br>
             Email: ${escapeHtml(email)}<br>
             Looking for account type: ${targetAccountType || 'any'}<br>
@@ -700,244 +708,112 @@ function showUserDetailsModal(email, accountType) {
         return;
     }
 
-    // Format dates
+    // Prepare Data for Design 2
     const createdDate = formatDate(user.createdAt) || 'N/A';
     const lastLogin = user.lastLogin ? formatDate(user.lastLogin) : 'Never';
     const updatedDate = user.updatedAt ? formatDate(user.updatedAt) : 'N/A';
-    const suspendedDate = user.suspendedAt ? formatDate(user.suspendedAt) : null;
-    const unsuspendedDate = user.unsuspendedAt ? formatDate(user.unsuspendedAt) : null;
+    const initials = getInitials(user.displayName || user.email);
 
-    // Build user details HTML with modern card-based design
+    // Badges Generation
+    let badgeHtml = '';
+    // Admin/Role Badge
+    if (user.accountType === 'admin') {
+        badgeHtml += `<span class="ud-badge ud-badge-admin"><i class="fas fa-shield-alt"></i> ${escapeHtml(user.role || 'Admin')}</span> `;
+    } else if (user.accountType === 'business') {
+        badgeHtml += `<span class="ud-badge" style="background:#e0e7ff; color:#4338ca;"><i class="fas fa-briefcase"></i> Business</span> `;
+    } else {
+        badgeHtml += `<span class="ud-badge" style="background:#f1f5f9; color:#475569;"><i class="fas fa-user"></i> Regular</span> `;
+    }
+
+    // Status Badge
+    let verificationStatusHtml = '';
+    if (user.status === 'suspended') {
+        badgeHtml += `<span class="ud-badge ud-badge-suspended"><i class="fas fa-ban"></i> Suspended</span>`;
+        verificationStatusHtml = `<span style="color: #ef4444; font-weight:600;"><i class="fas fa-ban"></i> Account Suspended</span>`;
+    } else if (user.verified) {
+        badgeHtml += `<span class="ud-badge ud-badge-verified"><i class="fas fa-check-circle"></i> Verified</span>`;
+        verificationStatusHtml = `<span style="color: #10b981; font-weight:600;"><i class="fas fa-check-circle"></i> Verified Account</span>`;
+    } else {
+        badgeHtml += `<span class="ud-badge ud-badge-pending"><i class="fas fa-clock"></i> Pending</span>`;
+        verificationStatusHtml = `<span style="color: #d97706; font-weight:600;"><i class="fas fa-clock"></i> Pending Verification</span>`;
+    }
+
+    // Build HTML (Design 2 Structure)
+    // Note: We are injecting into .modal-body. The Bootstrap modal wrapper surrounds this.
+    // To make it look like the full separate card design, we might need a wrapper.
     let detailsHTML = `
-        <style>
-            .user-detail-card {
-                background: white;
-                border-radius: 12px;
-                padding: 1.5rem;
-                margin-bottom: 1.25rem;
-                border: 2px solid #bfdbfe;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            }
-            .user-detail-card-header {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 1.25rem;
-                padding-bottom: 1rem;
-                border-bottom: 2px solid #bfdbfe;
-            }
-            .user-detail-card-header i {
-                font-size: 1.25rem;
-                color: #2563eb;
-            }
-            .user-detail-card-title {
-                font-size: 1rem;
-                font-weight: 700;
-                color: #0f172a;
-                margin: 0;
-            }
-            .user-detail-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1.25rem;
-            }
-            .user-detail-item {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            .user-detail-label {
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.8px;
-                color: #64748b;
-            }
-            .user-detail-value {
-                font-size: 0.95rem;
-                font-weight: 600;
-                color: #0f172a;
-            }
-            .user-profile-header {
-                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-                padding: 2.5rem 2rem;
-                border-bottom: 2px solid #bfdbfe;
-            }
-            .user-profile-avatar {
-                width: 100px;
-                height: 100px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-weight: 700;
-                font-size: 2.5rem;
-                border: 4px solid white;
-                box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
-                margin: 0 auto 1.25rem;
-            }
-            .user-profile-name {
-                font-size: 1.75rem;
-                font-weight: 900;
-                color: #0f172a;
-                margin-bottom: 0.5rem;
-                text-align: center;
-            }
-            .user-profile-email {
-                font-size: 1rem;
-                color: #64748b;
-                text-align: center;
-                margin-bottom: 1.5rem;
-            }
-            .user-profile-badges {
-                display: flex;
-                justify-content: center;
-                gap: 0.75rem;
-                flex-wrap: wrap;
-            }
-            .detail-badge {
-                padding: 0.35rem 0.75rem;
-                border-radius: 9999px;
-                font-size: 0.75rem;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-            }
-            .detail-badge-account { background: #e0f2fe; color: #0284c7; }
-            .detail-badge-status { background: #dcfce7; color: #16a34a; }
-        </style>
-
-        <div class="user-profile-header">
-            <div class="user-profile-avatar">${user.displayName ? (user.displayName.charAt(0) || user.email.charAt(0)).toUpperCase() : 'U'}</div>
-            <h3 class="user-profile-name">${escapeHtml(user.displayName || user.email)}</h3>
-            <div class="user-profile-email">${escapeHtml(user.email)}</div>
-            <div class="user-profile-badges">
-                <span class="detail-badge detail-badge-account">
-                    <i class="fas fa-user-tag me-1"></i> ${escapeHtml(user.accountType)}
-                </span>
-                <span class="detail-badge ${user.status === 'suspended' ? 'bg-danger text-white' : 'detail-badge-status'}">
-                     <i class="fas ${user.status === 'suspended' ? 'fa-ban' : 'fa-check-circle'} me-1"></i>
-                     ${user.status === 'suspended' ? 'Suspended' : (user.verified ? 'Verified' : 'Pending')}
-                </span>
-            </div>
-        </div>
-
-        <div style="padding: 2rem;">
-            <!-- Verification Card -->
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-shield-alt"></i>
-                    <h4 class="user-detail-card-title">Verification Status</h4>
-                </div>
-                <div class="user-detail-grid">
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Status</span>
-                        <span class="user-detail-value">
-                            ${user.verified ?
-            '<span class="text-success"><i class="fas fa-check-circle"></i> Verified</span>' :
-            '<span class="text-warning"><i class="fas fa-clock"></i> Pending Verification</span>'
-        }
-                        </span>
+        <div style="background: #f8fafc; padding: 20px;">
+            <!-- Profile Card -->
+            <div class="ud-profile-card">
+                <div class="ud-avatar-circle">${initials}</div>
+                <div class="ud-profile-info">
+                    <h2>${escapeHtml(user.displayName || 'User')}</h2>
+                    <div class="ud-profile-email">${escapeHtml(user.email)}</div>
+                    <div class="ud-badges">
+                        ${badgeHtml}
                     </div>
                 </div>
             </div>
 
-            <!-- Account Details Card -->
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-info-circle"></i>
-                    <h4 class="user-detail-card-title">Account Information</h4>
+            <!-- Verification Status Card -->
+            <div class="ud-info-card acc-success">
+                <div class="ud-section-header">
+                    <i class="fas fa-shield-check"></i> Verification Status
                 </div>
-                <div class="user-detail-grid">
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Date Created</span>
-                        <span class="user-detail-value">${createdDate}</span>
-                    </div>
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Last Login</span>
-                        <span class="user-detail-value">${lastLogin}</span>
-                    </div>
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Last Updated</span>
-                        <span class="user-detail-value">${updatedDate}</span>
+                <div class="ud-data-item">
+                    <label>Current Status</label>
+                    <div style="font-size: 0.95rem;">
+                        ${verificationStatusHtml}
                     </div>
                 </div>
             </div>
 
-            <!-- Suspension Details (Only if applicable) -->
-            ${user.status === 'suspended' || user.suspensionReason ? `
-            <div class="user-detail-card" style="border-color: #fca5a5;">
-                <div class="user-detail-card-header" style="border-color: #fca5a5;">
-                    <i class="fas fa-exclamation-triangle text-danger"></i>
-                    <h4 class="user-detail-card-title text-danger">Suspension History</h4>
+            <!-- Account Information Card -->
+            <div class="ud-info-card acc-info">
+                <div class="ud-section-header">
+                    <i class="fas fa-info-circle"></i> Account Information
                 </div>
-                <div class="user-detail-grid">
-                    ${user.status === 'suspended' && suspendedDate ? `
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Suspended On</span>
-                        <span class="user-detail-value text-danger">${suspendedDate}</span>
-                    </div>` : ''}
-                    
-                    ${unsuspendedDate ? `
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Unsuspended On</span>
-                        <span class="user-detail-value text-success">${unsuspendedDate}</span>
-                    </div>` : ''}
-
-                    <div class="user-detail-item" style="grid-column: 1 / -1;">
-                        <span class="user-detail-label">Reason</span>
-                        <div class="p-3 bg-light rounded mt-1 border">
-                            ${escapeHtml(user.suspensionReason || 'No reason provided')}
-                        </div>
+                <div class="ud-data-grid">
+                    <div class="ud-data-item">
+                        <label>Date Created</label>
+                        <span>${createdDate}</span>
+                    </div>
+                    <div class="ud-data-item">
+                        <label>Last Login</label>
+                        <span>${lastLogin}</span>
+                    </div>
+                    <div class="ud-data-item">
+                        <label>Last Updated</label>
+                         <span>${updatedDate}</span>
                     </div>
                 </div>
             </div>
-            ` : ''}
 
-            <!-- Business Details (Only for Business Users) -->
             ${user.accountType === 'business' ? `
-            <div class="user-detail-card">
-                <div class="user-detail-card-header">
-                    <i class="fas fa-briefcase"></i>
-                    <h4 class="user-detail-card-title">Business Profile</h4>
+            <!-- Business Info Card -->
+            <div class="ud-info-card" style="border-left: 4px solid #8b5cf6;">
+                 <div class="ud-section-header" style="color: #8b5cf6;">
+                    <i class="fas fa-building"></i> Business Profile
                 </div>
-                <div class="user-detail-grid">
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Business Name</span>
-                        <span class="user-detail-value">${escapeHtml(user.businessName || 'N/A')}</span>
-                    </div>
-                    <div class="user-detail-item">
-                        <span class="user-detail-label">Contact Person</span>
-                        <span class="user-detail-value">${escapeHtml(user.contactPerson || 'N/A')}</span>
-                    </div>
-                     <div class="user-detail-item">
-                        <span class="user-detail-label">Phone</span>
-                        <span class="user-detail-value">${escapeHtml(user.phone || 'N/A')}</span>
-                    </div>
-                     <div class="user-detail-item">
-                        <span class="user-detail-label">Website</span>
-                        <span class="user-detail-value">
-                            ${user.website ? `<a href="${escapeHtml(user.website)}" target="_blank" class="text-primary text-decoration-none hover:underline">${escapeHtml(user.website)} <i class="fas fa-external-link-alt small ms-1"></i></a>` : 'N/A'}
-                        </span>
-                    </div>
+                <div class="ud-data-grid">
+                    <div class="ud-data-item"><label>Company</label><span>${escapeHtml(user.businessName || '-')}</span></div>
+                    <div class="ud-data-item"><label>Contact</label><span>${escapeHtml(user.contactPerson || '-')}</span></div>
+                    <div class="ud-data-item"><label>Phone</label><span>${escapeHtml(user.phone || '-')}</span></div>
                 </div>
             </div>
             ` : ''}
-            
-            <!-- Raw JSON Data (Collapsible) -->
-            <div class="mt-4">
-                 <button class="btn btn-sm btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#rawJsonCollapse">
+
+            <!-- Footer / Raw Data -->
+            <div class="text-end mt-3">
+                 <button class="btn-ud btn-ud-ghost" type="button" data-bs-toggle="collapse" data-bs-target="#rawJsonCollapse">
                     <i class="fas fa-code me-2"></i> View Raw Data
                  </button>
-                 <div class="collapse mt-2" id="rawJsonCollapse">
-                    <div class="card card-body bg-light">
-                        <pre class="mb-0" style="font-size: 0.75rem; max-height: 200px; overflow-y: auto;">${JSON.stringify(user, null, 2)}</pre>
-                    </div>
-                 </div>
             </div>
-
+            <div class="collapse mt-3" id="rawJsonCollapse">
+                <div class="card card-body bg-white border small">
+                    <pre class="mb-0" style="max-height: 200px; overflow-y: auto;">${JSON.stringify(user, null, 2)}</pre>
+                </div>
+             </div>
         </div>
     `;
 
@@ -1466,6 +1342,7 @@ window.changePage = changePage;
 window.loadUsers = loadUsers;
 
 // Helper for Custom Confirmation Modal (Design 1)
+// Helper for Custom Confirmation Modal (Uses new UD classes)
 function showConfirmModal({ title, message, iconClass, iconColorClass, confirmText, confirmColorClass }) {
     return new Promise((resolve) => {
         const modal = document.getElementById('customConfirmModal');
@@ -1476,20 +1353,26 @@ function showConfirmModal({ title, message, iconClass, iconColorClass, confirmTe
         const confirmBtn = document.getElementById('customConfirmOk');
 
         if (!modal) {
-            // Fallback if modal generic HTML isn't injected yet or found
             return resolve(window.confirm(message || 'Are you sure?'));
         }
 
         titleEl.textContent = title || 'Confirm Action';
         msgEl.innerHTML = message || 'Are you sure you want to proceed?';
 
-        // Reset and set icon
+        // Icon
         iconEl.className = `fas fa-3x ${iconClass || 'fa-info-circle'} ${iconColorClass || 'text-primary'}`;
 
         // Reset and set button style
-        confirmBtn.className = 'btn-d1-confirm'; // Base class
-        if (confirmColorClass) confirmBtn.classList.add(confirmColorClass);
+        // Using new .btn-ud-primary instead of .btn-d1-confirm
+        confirmBtn.className = 'btn-ud btn-ud-primary';
+        if (confirmColorClass === 'bg-danger') confirmBtn.style.backgroundColor = '#ef4444';
+        else if (confirmColorClass === 'bg-success') confirmBtn.style.backgroundColor = '#10b981';
+        else confirmBtn.style.backgroundColor = '';
+
         confirmBtn.textContent = confirmText || 'Confirm';
+
+        // Cancel button
+        cancelBtn.className = 'btn-ud btn-ud-ghost';
 
         const close = (result) => {
             modal.classList.remove('active');
@@ -1499,7 +1382,7 @@ function showConfirmModal({ title, message, iconClass, iconColorClass, confirmTe
         cancelBtn.onclick = () => close(false);
         confirmBtn.onclick = () => close(true);
         modal.onclick = (e) => {
-            if (e.target === modal) close(false); // Close on background click
+            if (e.target === modal) close(false);
         };
 
         modal.classList.add('active');

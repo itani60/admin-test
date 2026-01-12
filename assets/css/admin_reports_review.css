@@ -938,7 +938,7 @@
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 8px;
-    color: var(--dark);
+    color: var(--text-dark);
 }
 
 .modal-d1 p {
@@ -966,6 +966,8 @@
 
 .btn-d1-cancel:hover {
     background: var(--light);
+    border-color: var(--border);
+    color: var(--text-dark);
 }
 
 .btn-d1-confirm {
@@ -982,4 +984,6 @@
 
 .btn-d1-confirm:hover {
     background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }

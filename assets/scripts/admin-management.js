@@ -561,15 +561,7 @@ function updateCharts() {
 
     const userGrowthCtx = document.getElementById('userGrowthChart');
     if (userGrowthCtx && allUsers.length > 0) {
-        // Prevent scroll on chart
-        const preventScroll = (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            return false;
-        };
 
-        userGrowthCtx.addEventListener('wheel', preventScroll, { passive: false });
-        userGrowthCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
 
         // Group users by month based on createdAt
         const monthlyData = {};

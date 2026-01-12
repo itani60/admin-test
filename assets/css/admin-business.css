@@ -996,29 +996,7 @@
     color: inherit;
 }
 
-/* --- Global Theme overrides for Business Page (Red Pastel) --- */
-:root {
-    --primary: #dc2626;
-    --primary-dark: #991b1b;
-    --primary-light: #f87171;
-    --secondary: #ef4444;
-    --success: #059669;
-    --danger: #f43f5e;
-    --warning: #f59e0b;
-    --info: #b91c1c;
-    --dark: #1e293b;
-    --light: #fef2f2;
-    --border: #fecaca;
-    --text: #64748b;
-    --text-dark: #0f172a;
-}
-
-body {
-    background: #fef2f2;
-    color: #0f172a;
-}
-
-/* --- Chart Section Styles (Synced with Analytics) --- */
+/* --- Chart Section Styles --- */
 .chart-section {
     background: white;
     border-radius: 20px;
@@ -1041,56 +1019,4 @@ body {
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid #f1f5f9;
-}
-
-/* --- Design 1 Styles (Reference Clean) --- */
-.table-design-1 {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.table-design-1 thead {
-    background: #fef2f2;
-}
-
-.table-design-1 th {
-    font-weight: 600;
-    color: #1e293b;
-    border: none;
-    padding: 1rem;
-    background: #fef2f2;
-    /* Explicitly set pastel red background */
-}
-
-.table-design-1 td {
-    vertical-align: middle;
-    padding: 1rem;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.img-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.badge-soft-warning {
-    background: #fffbeb;
-    color: #d97706;
-    border: 1px solid #fcd34d;
-}
-
-.badge-soft-success {
-    background: #ecfdf5;
-    color: #059669;
-    border: 1px solid #6ee7b7;
-}
-
-.badge-soft-danger {
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fca5a5;
 }

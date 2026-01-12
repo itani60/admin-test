@@ -163,15 +163,11 @@ function renderLoginEvents() {
 
     if (filteredLoginEvents.length === 0) {
         container.innerHTML = `
-            <tr>
-                <td colspan="8" class="text-center">
-                    <div class="empty-state">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <h4>No login events found</h4>
-                        <p>No login events match your current filters.</p>
-                    </div>
-                </td>
-            </tr>
+            <div class="empty-state">
+                <i class="fas fa-sign-in-alt"></i>
+                <h4>No login events found</h4>
+                <p>No login events match your current filters.</p>
+            </div>
         `;
         return;
     }
@@ -179,54 +175,56 @@ function renderLoginEvents() {
     let html = '';
 
     filteredLoginEvents.forEach(event => {
-        const statusBadge = event.status === 'success'
-            ? '<span class="badge badge-success">Success</span>'
-            : '<span class="badge badge-danger">Failed</span>';
+        const isSuccess = event.status === 'success';
+        const statusClass = isSuccess ? 'success' : 'fail';
+        const iconClass = isSuccess ? 'fa-check' : 'fa-times';
+        const borderStyle = isSuccess ? '' : 'style="border-left: 5px solid #ef4444;"';
 
-        const accountTypeBadge = event.accountType === 'business'
-            ? '<span class="badge badge-info">Business</span>'
-            : event.accountType === 'admin'
-                ? '<span class="badge badge-danger">Admin</span>'
-                : '<span class="badge badge-primary">Regular</span>';
-
-        const formattedTime = formatTimeAgo(event.timestamp || event.createdAt);
+        // Format Date and Time
         const eventDate = timestampToDate(event.timestamp || event.createdAt);
-        const formattedDate = eventDate
-            ? eventDate.toLocaleString('en-ZA', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-            : 'N/A';
+        let timeString = 'Unknown Time';
+        let dateString = 'Unknown Date';
 
-        const deviceInfo = event.device || event.userAgent || 'Unknown';
+        if (eventDate) {
+            timeString = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            dateString = eventDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
 
-        // Get failure reason for failed logins
-        let failureReasonHtml = '<span class="text-muted">-</span>';
+        const deviceInfo = event.device || event.userAgent || 'Unknown Device';
+        const deviceIcon = (deviceInfo).toLowerCase().includes('mobile') || (deviceInfo).toLowerCase().includes('android') || (deviceInfo).toLowerCase().includes('iphone')
+            ? 'fa-mobile-alt'
+            : 'fa-desktop';
+
+        const ipAddress = event.ipAddress || 'Unknown IP';
+        const userEmail = event.email || event.username || 'Unknown User';
+
+        let failureReasonHtml = '';
         if (event.status === 'failed') {
             const failureReason = event.failureReason || event.errorCode || event.errorMessage || 'Unknown reason';
-            failureReasonHtml = `<span class="badge badge-warning" style="background-color: #ffc107; color: #000;">${escapeHtml(failureReason)}</span>`;
+            failureReasonHtml = `<span class="text-danger">Failed: ${escapeHtml(failureReason)}</span>`;
         }
 
         html += `
-            <tr>
-                <td>
-                    <strong>${escapeHtml(event.email || 'N/A')}</strong>
-                </td>
-                <td>${accountTypeBadge}</td>
-                <td>${statusBadge}</td>
-                <td>${failureReasonHtml}</td>
-                <td>${escapeHtml(event.ipAddress || 'N/A')}</td>
-                <td>
-                    <small>${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</small>
-                </td>
-                <td>
-                    <div>${escapeHtml(formattedDate)}</div>
-                    <small class="text-muted">${formattedTime}</small>
-                </td>
-            </tr>
+            <div class="d2-card" ${borderStyle}>
+                <div class="d2-icon ${statusClass === 'fail' ? 'fail' : ''}">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="d2-main">
+                    <div class="d2-title">${escapeHtml(userEmail)}</div>
+                    <div class="d2-meta">
+                        ${failureReasonHtml ? failureReasonHtml : `<span><i class="fas ${deviceIcon} me-1"></i> ${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</span>`}
+                        ${failureReasonHtml ? `<span><i class="fas ${deviceIcon} me-1"></i> ${escapeHtml(deviceInfo.length > 50 ? deviceInfo.substring(0, 50) + '...' : deviceInfo)}</span>` : ''}
+                        <span><i class="fas fa-network-wired me-1"></i> ${escapeHtml(ipAddress)}</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold text-dark">${timeString}</div>
+                    <div class="small text-muted mb-1">${dateString}</div>
+                    <span class="d2-badge">
+                        ${isSuccess ? '<div class="d2-status-dot"></div>Success' : '<span class="badge bg-danger">Failed</span>'}
+                    </span>
+                </div>
+            </div>
         `;
     });
 

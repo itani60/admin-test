@@ -612,21 +612,25 @@ function updateCharts() {
                 datasets: [{
                     label: 'Total Users',
                     data: cumulativeData,
-                    borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
                     fill: true,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb'
                 }, {
                     label: 'New Users This Month',
                     data: monthlyCounts,
+                    backgroundColor: 'transparent',
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
                     tension: 0.4,
-                    fill: true,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointRadius: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#10b981'
                 }]
             },
             options: {
@@ -634,7 +638,13 @@ function updateCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
+                        display: true, // Show legend for Design 1
                         position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
                     },
                     tooltip: {
                         mode: 'index',
@@ -644,9 +654,13 @@ function updateCharts() {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        grid: { borderDash: [5, 5] },
                         ticks: {
                             stepSize: Math.ceil(Math.max(...cumulativeData) / 10) || 1
                         }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 },
                 interaction: {

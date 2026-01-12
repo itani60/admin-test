@@ -394,6 +394,17 @@
             color: white;
         }
 
+        /* Chart Design 1 (Standard Professional) */
+        .card-d1-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+
         /* Modal Overlay & Design 2 (Separated Cards) */
         .modal-overlay {
             position: fixed;
@@ -1008,9 +1019,10 @@
                         <!-- Progress bars will be inserted here -->
                     </div>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">User Growth Over Time</h3>
+                <div class="card-d1-chart">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="chart-title m-0">User Growth Over Time</h3>
+                        <!-- Optional: Add a badge or action button here if needed -->
                     </div>
                     <div class="chart-container">
                         <canvas id="userGrowthChart"></canvas>

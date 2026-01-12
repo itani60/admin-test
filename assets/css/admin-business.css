@@ -996,6 +996,28 @@
     color: inherit;
 }
 
+/* --- Global Theme overrides for Business Page (Red Pastel) --- */
+:root {
+    --primary: #dc2626;
+    --primary-dark: #991b1b;
+    --primary-light: #f87171;
+    --secondary: #ef4444;
+    --success: #059669;
+    --danger: #f43f5e;
+    --warning: #f59e0b;
+    --info: #b91c1c;
+    --dark: #1e293b;
+    --light: #fef2f2;
+    --border: #fecaca;
+    --text: #64748b;
+    --text-dark: #0f172a;
+}
+
+body {
+    background: #fef2f2;
+    color: #0f172a;
+}
+
 /* --- Chart Section Styles (Synced with Analytics) --- */
 .chart-section {
     background: white;
@@ -1038,6 +1060,8 @@
     color: #1e293b;
     border: none;
     padding: 1rem;
+    background: #fef2f2;
+    /* Explicitly set pastel red background */
 }
 
 .table-design-1 td {

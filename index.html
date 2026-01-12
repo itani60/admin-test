@@ -568,39 +568,11 @@
                         <a href="admin-business.html" class="text-primary"
                             style="font-size: 0.9rem; text-decoration: none; font-weight: 600;">View All</a>
                     </div>
-                    <div class="task-list">
-                        <div class="task-item">
-                            <div class="task-icon bg-warning-subtle text-warning">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1 fs-6 fw-bold text-dark">Review Business Posts</h5>
-                                <p class="mb-0 text-muted small">5 new posts awaiting approval</p>
-                            </div>
-                            <a href="admin-business.html"
-                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Review</a>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-icon bg-danger-subtle text-danger">
-                                <i class="fas fa-flag"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1 fs-6 fw-bold text-dark">Reported Reviews</h5>
-                                <p class="mb-0 text-muted small">3 reports need attention</p>
-                            </div>
-                            <a href="admin_reports_review.html"
-                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Check</a>
-                        </div>
-                        <div class="task-item">
-                            <div class="task-icon bg-info-subtle text-info">
-                                <i class="fas fa-user-check"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1 fs-6 fw-bold text-dark">New Admin Request</h5>
-                                <p class="mb-0 text-muted small">1 invite pending acceptance</p>
-                            </div>
-                            <a href="admin-management.html"
-                                class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">Manage</a>
+                    <div class="task-list" id="pendingTasksList">
+                        <!-- Loading State -->
+                        <div class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin text-primary"></i> <span
+                                class="text-muted small ms-2">Loading tasks...</span>
                         </div>
                     </div>
                 </div>
@@ -1082,12 +1054,75 @@
             return div.innerHTML;
         }
 
+        // Load Pending Tasks from API
+        async function loadPendingTasks() {
+            try {
+                let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za/admin';
+                if (API_BASE_URL.endsWith('/data')) API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+
+                const PENDING_TASKS_API = `${API_BASE_URL}/admin/dashboard/pending-tasks`;
+
+                const getAuthHeaders = () => {
+                    const token = localStorage.getItem('admin_access_token');
+                    return token ? { 'Authorization': `Bearer ${token}` } : {};
+                };
+
+                const response = await fetch(PENDING_TASKS_API, {
+                    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch tasks');
+                const data = await response.json();
+                const tasks = data.tasks || [];
+
+                const listContainer = document.getElementById('pendingTasksList');
+                if (!listContainer) return;
+
+                if (tasks.length === 0) {
+                    listContainer.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
+                    return;
+                }
+
+                let html = '';
+                tasks.forEach(task => {
+                    let bgClass = 'bg-primary-subtle text-primary';
+                    if (task.priority === 'critical') bgClass = 'bg-danger-subtle text-danger';
+                    if (task.priority === 'high') bgClass = 'bg-warning-subtle text-warning';
+                    if (task.priority === 'medium') bgClass = 'bg-info-subtle text-info';
+
+                    if (task.id === 'business-posts') bgClass = 'bg-warning-subtle text-warning';
+                    if (task.id === 'reported-content') bgClass = 'bg-danger-subtle text-danger';
+                    if (task.id === 'admin-requests') bgClass = 'bg-info-subtle text-info';
+
+                    html += `
+                    <div class="task-item">
+                        <div class="task-icon ${bgClass}">
+                            <i class="${task.icon || 'fas fa-clipboard-list'}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fs-6 fw-bold text-dark">${task.title}</h5>
+                            <p class="mb-0 text-muted small">${task.description}</p>
+                        </div>
+                        <a href="${task.link}" class="btn btn-sm btn-light rounded-pill px-3 fw-semibold">View</a>
+                    </div>`;
+                });
+
+                listContainer.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error loading pending tasks:', error);
+                const listContainer = document.getElementById('pendingTasksList');
+                if (listContainer) listContainer.innerHTML = '<div class="text-center py-4 text-danger small">Failed to load tasks</div>';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             checkLoginState();
             initCharts();
             loadTotalUsers();
-            loadPendingReviews();
+            loadPendingTasks(); // Updated from loadPendingReviews
             loadActiveBusinesses();
+            if (typeof loadRecentActivity === 'function') loadRecentActivity(); // Ensure this is called too
         });
 
 

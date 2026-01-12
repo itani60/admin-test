@@ -611,42 +611,93 @@
                         <h3 class="widget-title">Recent Activity</h3>
                         <i class="fas fa-history text-muted"></i>
                     </div>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-dot bg-success"></div>
-                            <div class="activity-content">
-                                <h5>New Business Registered</h5>
-                                <p class="mb-1 text-muted small">TechWorld SA just created an account.</p>
-                                <span class="activity-time">2 mins ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-dot bg-primary"></div>
-                            <div class="activity-content">
-                                <h5>Price Update Completed</h5>
-                                <p class="mb-1 text-muted small">Automatic sync updated 1,240 prices.</p>
-                                <span class="activity-time">1 hour ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-dot bg-warning"></div>
-                            <div class="activity-content">
-                                <h5>High Traffic Alert</h5>
-                                <p class="mb-1 text-muted small">Unusual spike in 'Electronics' category.</p>
-                                <span class="activity-time">3 hours ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-dot bg-info"></div>
-                            <div class="activity-content">
-                                <h5>Admin Login</h5>
-                                <p class="mb-1 text-muted small">Sarah logged in from new device.</p>
-                                <span class="activity-time">5 hours ago</span>
-                            </div>
+                    <div class="activity-list" id="recentActivityList">
+                        <!-- Loading State -->
+                        <div class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin text-primary"></i> <span
+                                class="text-muted small ms-2">Loading activity...</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <script>
+                async function loadRecentActivity() {
+                    try {
+                        let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za';
+                        if (API_BASE_URL.endsWith('/data')) API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+
+                        // Use the new endpoint
+                        const ACTIVITY_API = `${API_BASE_URL}/admin/admin/recent-activity`; // Note: You'll need to map this in API Gateway
+
+                        // MOCK DATA FALLBACK (Until API Gateway is mapped)
+                        // Remove this block once backend is active
+                        /*
+                        const mockData = [
+                            { type: 'registration', title: 'New Business Joined', description: 'Gadget Store verified.', time: 'Just now' },
+                            { type: 'alert', title: 'System Alert', description: 'High CPU usage detected.', time: '10 mins ago' },
+                            { type: 'update', title: 'Price Sync', description: 'Updated 500 products.', time: '1 hour ago' }
+                        ];
+                        renderActivity(mockData); 
+                        return; 
+                        */
+
+                        const response = await fetch(ACTIVITY_API, {
+                            method: 'GET',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success && Array.isArray(data.activities)) {
+                                renderActivity(data.activities);
+                            } else {
+                                document.getElementById('recentActivityList').innerHTML = '<p class="text-muted small text-center">No recent activity found.</p>';
+                            }
+                        } else {
+                            // Fallback for demo if API fails
+                            console.warn('Activity API failed, using fallback.');
+                            document.getElementById('recentActivityList').innerHTML = '<p class="text-muted small text-center">Unable to load activity.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error loading activity:', error);
+                        document.getElementById('recentActivityList').innerHTML = '<p class="text-muted small text-center">Error loading data.</p>';
+                    }
+                }
+
+                function renderActivity(activities) {
+                    const list = document.getElementById('recentActivityList');
+                    if (!list) return;
+
+                    list.innerHTML = '';
+
+                    activities.forEach(activity => {
+                        // Determine color based on type
+                        let dotColor = 'bg-primary';
+                        if (activity.type === 'registration') dotColor = 'bg-success';
+                        else if (activity.type === 'alert' || activity.type === 'error') dotColor = 'bg-danger';
+                        else if (activity.type === 'warning') dotColor = 'bg-warning';
+                        else if (activity.type === 'login') dotColor = 'bg-info';
+
+                        const timeString = activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+
+                        const html = `
+                        <div class="activity-item">
+                            <div class="activity-dot ${dotColor}"></div>
+                            <div class="activity-content">
+                                <h5>${activity.title || 'System Notification'}</h5>
+                                <p class="mb-1 text-muted small">${activity.description || activity.message || ''}</p>
+                                <span class="activity-time">${timeString}</span>
+                            </div>
+                        </div>`;
+                        list.insertAdjacentHTML('beforeend', html);
+                    });
+                }
+
+                // Initialize
+                document.addEventListener('DOMContentLoaded', loadRecentActivity);
+            </script>
 
         </div>
     </div>

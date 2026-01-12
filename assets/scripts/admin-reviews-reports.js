@@ -58,55 +58,86 @@ async function loadReports(status = null) {
 
 
 function renderReports() {
-    const tbody = document.getElementById('reportsTableBody');
-    tbody.innerHTML = '';
+    const container = document.getElementById('reportsContainer');
+
+    // If container not found, try finding the table body for backward compatibility or error handling
+    if (!container) {
+        console.error('Reports container not found');
+        return;
+    }
+
+    container.innerHTML = '';
 
     if (isLoading) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+        container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
         return;
     }
 
     if (filteredReports.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No reports found</td></tr>';
+        container.innerHTML = '<div class="text-center py-5 text-muted">No reports found matching your criteria</div>';
         return;
     }
 
-    filteredReports.forEach(report => {
-        const row = document.createElement('tr');
-        row.className = 'report-item';
-        row.onclick = () => viewReportDetail(report);
+    filteredReports.forEach((report, index) => {
+        // Determine status class and icon
+        let statusClass = (report.status || 'pending').toLowerCase();
+        let iconClass = 'fa-exclamation-triangle';
 
-        const reportedDate = new Date(report.createdAt || report.reportedDate).toLocaleDateString();
-        const reviewComment = report.review?.comment || 'No comment available';
-        const reviewPreview = reviewComment.length > 50
-            ? reviewComment.substring(0, 50) + '...'
-            : reviewComment;
-        const rating = report.review?.rating || 0;
+        if (statusClass === 'resolved') {
+            statusClass = 'resolved';
+            iconClass = 'fa-check-circle';
+        } else if (statusClass === 'dismissed') {
+            statusClass = 'dismissed';
+            iconClass = 'fa-ban';
+        } else if (statusClass === 'reviewed') {
+            statusClass = 'reviewed';
+            iconClass = 'fa-search';
+        } else {
+            // Default to pending styles
+            statusClass = 'pending';
+        }
 
-        row.innerHTML = `
-                    <td><code style="font-size: 0.8rem;">${(report.reportId || report.reviewId || '').substring(0, 20)}...</code></td>
-                    <td>
-                        <div class="review-preview" title="${reviewComment}">
-                            ${reviewPreview}
-                        </div>
-                        <div class="review-rating mt-1">
-                            ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
-                        </div>
-                    </td>
-                    <td>${report.businessName || report.businessId || 'N/A'}</td>
-                    <td>${report.reporterName || report.reporterEmail || 'Anonymous'}</td>
-                    <td><span class="reason-badge">${report.reason || 'other'}</span></td>
-                    <td><span class="status-badge ${report.status || 'pending'}">${report.status || 'pending'}</span></td>
-                    <td>${reportedDate}</td>
-                    <td>
-                        <div class="action-buttons" onclick="event.stopPropagation()">
-                            <button class="btn-action btn-view" onclick="viewReportDetail('${report.reviewId}', '${report.reporterUserId}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                        </div>
-                    </td>
-                `;
-        tbody.appendChild(row);
+        const dateStr = new Date(report.createdAt || report.reportedDate).toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
+
+        const card = document.createElement('div');
+        card.className = `d2-card ${statusClass}`;
+
+        // Pass the actual report object to viewReportDetail
+        // We use a closure approach or attach data to the element to avoid complex string escaping in onclick
+
+        card.innerHTML = `
+            <div class="d2-icon ${statusClass}">
+                <i class="fas ${iconClass}"></i>
+            </div>
+            <div class="d2-content">
+                <div class="d2-business">${report.businessName || report.businessId || 'Unknown Business'}</div>
+                <div class="d2-meta">
+                    <span><i class="fas fa-user-tag"></i> Reporter: ${report.reporterName || report.reporterEmail || 'Anonymous'}</span>
+                    <span><i class="fas fa-calendar"></i> ${dateStr}</span>
+                    <span><i class="fas fa-flag"></i> Reason: <span class="text-capitalize">${report.reason || 'Other'}</span></span>
+                </div>
+            </div>
+            <div class="text-end d-flex flex-column align-items-end gap-2">
+                <span class="status-badge ${statusClass}">${report.status || 'PENDING'}</span>
+                <button class="btn btn-link text-dark p-0 no-arrow report-detail-btn" type="button">
+                    <i class="fas fa-ellipsis-v fa-lg"></i>
+                </button>
+            </div>
+        `;
+
+        // Add click listener to the button
+        const btn = card.querySelector('.report-detail-btn');
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            viewReportDetail(report);
+        };
+
+        // Make the whole card clickable too if desired, matching previous behavior
+        card.onclick = () => viewReportDetail(report);
+
+        container.appendChild(card);
     });
 }
 

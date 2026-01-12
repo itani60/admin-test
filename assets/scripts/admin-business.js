@@ -441,6 +441,7 @@ function applyFilters() {
 // Render posts (Design 1 Implementation)
 function renderPosts() {
     const container = document.getElementById('businessPostsContainer');
+    if (!container) return; // Safety check
 
     if (filteredPosts.length === 0) {
         container.innerHTML = `
@@ -486,7 +487,7 @@ function renderPosts() {
                     <div class="text-muted small" style="font-size: 0.75rem;">${escapeHtml(post.submitted)}</div>
                 </td>
                 <td>
-                    <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" onclick="viewPost('${postId}')" title="View Business Post">
+                   <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button" onclick="viewPost('${postId}')" title="View Business Post">
                         <i class="fas fa-ellipsis-v text-muted"></i>
                     </button>
                 </td>
@@ -496,6 +497,8 @@ function renderPosts() {
 
     container.innerHTML = html;
 }
+
+
 
 // Get status badge (Design 1)
 function getStatusBadge(status) {
@@ -510,9 +513,9 @@ function getStatusBadge(status) {
 // Get permission badge (Design 1)
 function getPermissionBadge(permission) {
     const badges = {
-        'granted': '<span class="badge bg-success rounded-pill"><i class="fas fa-check-circle me-1"></i> Granted</span>',
+        'granted': '<span class="badge bg-danger rounded-pill"><i class="fas fa-check-circle me-1"></i> Granted</span>',
         'pending': '<span class="badge bg-warning rounded-pill"><i class="fas fa-clock me-1"></i> Pending</span>',
-        'revoked': '<span class="badge bg-danger rounded-pill"><i class="fas fa-ban me-1"></i> Revoked</span>'
+        'revoked': '<span class="badge bg-dark rounded-pill"><i class="fas fa-ban me-1"></i> Revoked</span>'
     };
     return badges[permission] || '<span class="badge bg-secondary rounded-pill">Unknown</span>';
 }
@@ -525,11 +528,6 @@ function getTypeBadge(type) {
         'Announcement': '<span class="badge bg-info rounded-1">Announcement</span>'
     };
     return badges[type] || '<span class="badge bg-secondary rounded-1">Unknown</span>';
-}
-
-// Helper: Action Buttons not needed as we use dropdown now
-function getActionButtons(post) {
-    return '';
 }
 
 // Get time ago

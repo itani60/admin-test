@@ -436,6 +436,46 @@
                 </div>
             </div>
 
+            <!-- Business Posts Section (Design 1 Reference Clean) -->
+            <div class="table-design-1 mb-5">
+                <div class="p-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold m-0">Business Posts</h5>
+                    <div>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="refreshPosts()">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </button>
+                        <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="exportPosts()">
+                            <i class="fas fa-download me-1"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Post Title</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Permission</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="businessPostsContainer">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="loading-state p-5">
+                                        <i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">Loading posts...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
 
 
             <!-- View Post Modal (Design 1) -->

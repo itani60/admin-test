@@ -270,6 +270,92 @@
             text-align: center;
             font-size: 1rem;
         }
+
+        /* --- Design 2: Modern Cards & Grid (Injected) --- */
+        .d2-card-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .d2-header {
+            padding: 20px 30px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .d2-avatar {
+            width: 45px;
+            height: 45px;
+            background: #cfe2ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #084298;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .d2-user-meta {
+            margin-left: 15px;
+            flex-grow: 1;
+        }
+
+        .d2-stat-pill {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            margin-left: 10px;
+        }
+
+        .d2-stat-pill i {
+            margin-right: 5px;
+            color: #3b82f6;
+        }
+
+        .d2-grid-area {
+            padding: 24px 30px;
+            background: #f8fafc;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .d2-alert-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .d2-alert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .d2-prod-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            padding: 2px;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
@@ -536,38 +622,21 @@
                 </div>
             </div>
 
-            <!-- Table Section -->
-            <div class="table-section">
-                <div class="table-header">
+            <!-- Cards Section (Replaces Table) -->
+            <div class="table-section border-0 bg-transparent shadow-none p-0">
+                <div class="table-header mb-4 bg-transparent p-0 border-0">
                     <h3>Price Alerts by User</h3>
-                    <button class="btn btn-danger btn-sm" onclick="exportAlerts()">
-                        <i class="fas fa-download"></i> Export
+                    <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="exportAlerts()">
+                        <i class="fas fa-download me-1"></i> Export
                     </button>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User Email</th>
-                                <th>Total Alerts</th>
-                                <th>Active Alerts</th>
-                                <th>Inactive Alerts</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="priceAlertsContainer">
-                            <tr>
-                                <td colspan="5" class="text-center">
-                                    <div class="loading-spinner">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="priceAlertsContainer" class="d-flex flex-column gap-3">
+                    <div class="loading-spinner text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -579,6 +648,27 @@
     <script src="assets/scripts/admin_price_alert_tracking.js"></script>
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
+
+    <!-- Shared User Alerts Modal -->
+    <div class="modal fade" id="userAlertsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalUserTitle">Alerts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-grid gap-3" id="modalAlertsList">
+                        <!-- Alert items will be injected here -->
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -5,7 +5,7 @@ const PRICE_ALERT_TRACKING_API = `${API_BASE_URL}/admin/admin/price-alert-tracki
 // State
 let allUserStats = [];
 let filteredUserStats = [];
-let expandedUsers = new Set();
+// let expandedUsers = new Set(); // Removed
 
 // Chart instances
 let alertsOverTimeChart = null;
@@ -116,22 +116,18 @@ function applyFilters() {
     renderUserStats();
 }
 
-// Render user statistics
+// Render user statistics (Design 2: Modern Cards)
 function renderUserStats() {
     const container = document.getElementById('priceAlertsContainer');
     if (!container) return;
 
     if (filteredUserStats.length === 0) {
         container.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center">
-                    <div class="empty-state">
-                        <i class="fas fa-bell-slash"></i>
-                        <h4>No price alerts found</h4>
-                        <p>No price alerts match your current filters.</p>
-                    </div>
-                </td>
-            </tr>
+            <div class="empty-state text-center p-5 bg-white rounded-3 shadow-sm border">
+                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                <h4>No price alerts found</h4>
+                <p class="text-muted">No price alerts match your current filters.</p>
+            </div>
         `;
         return;
     }
@@ -139,121 +135,137 @@ function renderUserStats() {
     let html = '';
 
     filteredUserStats.forEach(userStat => {
-        const isExpanded = expandedUsers.has(userStat.userId);
-        const activeBadge = userStat.activeAlerts > 0
-            ? `<span class="badge badge-success">${userStat.activeAlerts}</span>`
-            : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
-        const inactiveBadge = userStat.inactiveAlerts > 0
-            ? `<span class="badge badge-danger">${userStat.inactiveAlerts}</span>`
-            : '<span class="badge" style="background: #6c757d; color: white;">0</span>';
+        const initials = getInitials(userStat.userEmail);
+        // Determine preview alerts (take first 3)
+        const previewAlerts = userStat.alerts.slice(0, 3);
+        const remainingCount = userStat.alerts.length - 3;
 
-        html += `
-            <tr>
-                <td>
-                    <strong>${escapeHtml(userStat.userEmail || 'N/A')}</strong>
-                    <br>
-                    <small class="text-muted">User ID: ${escapeHtml(userStat.userId || 'N/A')}</small>
-                </td>
-                <td>
-                    <span class="badge badge-primary">${userStat.totalAlerts}</span>
-                </td>
-                <td>${activeBadge}</td>
-                <td>${inactiveBadge}</td>
-                <td>
-                    <button class="expand-btn" onclick="toggleUserAlerts('${userStat.userId}')">
-                        <i class="fas fa-${isExpanded ? 'chevron-up' : 'chevron-down'}"></i>
-                        ${isExpanded ? 'Hide' : 'Show'} Alerts (${userStat.alerts.length})
-                    </button>
-                </td>
-            </tr>
-        `;
-
-        // Add expanded alerts detail row
-        if (isExpanded && userStat.alerts.length > 0) {
-            html += `
-                <tr>
-                    <td colspan="5">
-                        <div class="alerts-detail show">
-                            <h5>Price Alerts for ${escapeHtml(userStat.userEmail || 'N/A')}</h5>
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th>Brand</th>
-                                            <th>Current Price</th>
-                                            <th>Target Price</th>
-                                            <th>Status</th>
-                                            <th>Notification</th>
-                                            <th>Created</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-            `;
-
-            userStat.alerts.forEach(alert => {
+        // Build Preview Grid HTML
+        let previewHtml = '';
+        if (previewAlerts.length > 0) {
+            previewHtml = '<div class="d2-grid-area">';
+            previewAlerts.forEach(alert => {
                 const statusBadge = alert.status === 'active'
-                    ? '<span class="badge badge-success">Active</span>'
-                    : '<span class="badge badge-danger">Inactive</span>';
-                const notificationBadge = alert.notificationMethod === 'email'
-                    ? '<span class="badge badge-info">Email</span>'
-                    : alert.notificationMethod === 'website'
-                        ? '<span class="badge badge-primary">Website</span>'
-                        : '<span class="badge badge-warning">Both</span>';
+                    ? '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1" style="font-size:0.7rem;">Active</span>'
+                    : '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-1" style="font-size:0.7rem;">Expired</span>';
 
-                const formattedDate = alert.dateCreated
-                    ? new Date(alert.dateCreated).toLocaleString('en-ZA', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })
-                    : 'N/A';
-
-                html += `
-                                        <tr>
-                                            <td>
-                                                ${alert.productImage
-                        ? `<img src="${escapeHtml(alert.productImage)}" alt="${escapeHtml(alert.productName)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">`
-                        : ''
-                    }
-                                                <strong>${escapeHtml(alert.productName || 'Unknown Product')}</strong>
-                                                ${alert.alertName ? `<br><small class="text-muted">${escapeHtml(alert.alertName)}</small>` : ''}
-                                            </td>
-                                            <td>${escapeHtml(alert.productBrand || 'Unknown')}</td>
-                                            <td>R ${(alert.currentPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                            <td>R ${(alert.targetPrice || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                            <td>${statusBadge}</td>
-                                            <td>${notificationBadge}</td>
-                                            <td><small>${formattedDate}</small></td>
-                                        </tr>
-                `;
+                previewHtml += `
+                    <div class="d2-alert-card">
+                        <img src="${escapeHtml(alert.productImage || 'https://via.placeholder.com/60')}" class="d2-prod-img" alt="Prod">
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <h6 class="fw-bold mb-1 text-truncate" title="${escapeHtml(alert.productName)}">${escapeHtml(alert.productName)}</h6>
+                            <div class="text-primary fw-bold small mb-2">Target: R ${(alert.targetPrice || 0).toLocaleString()}</div>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                 `;
             });
 
-            html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            // If there are more alerts, add a "View X more" card or indicator if desired, 
+            // but for this design we usually rely on the 3-dots menu to see all.
+            // We could add a simple text indicating more.
+            if (remainingCount > 0) {
+                previewHtml += `
+                    <div class="d2-alert-card justify-content-center align-items-center bg-light cursor-pointer" onclick="openUserAlertsModal('${userStat.userId}')" style="cursor:pointer;">
+                        <span class="text-muted fw-bold small">+${remainingCount} More</span>
+                    </div>
+                 `;
+            }
+            previewHtml += '</div>';
+        } else {
+            previewHtml = '<div class="p-4 text-center text-muted border-top">No active alerts to display.</div>';
         }
+
+        html += `
+            <div class="d2-card-container">
+                <div class="d2-header">
+                    <div class="d2-avatar">${initials}</div>
+                    <div class="d2-user-meta">
+                        <h5 class="fw-bold mb-0 text-dark">${escapeHtml(userStat.userEmail)}</h5>
+                        <small class="text-muted">User ID: ${userStat.userId}</small>
+                        <span class="d2-stat-pill"><i class="fas fa-bell"></i> ${userStat.totalAlerts} Alerts</span>
+                    </div>
+                    <button class="btn btn-light rounded-circle shadow-sm" onclick="openUserAlertsModal('${userStat.userId}')">
+                        <i class="fas fa-ellipsis-v text-muted"></i>
+                    </button>
+                </div>
+                ${previewHtml}
+            </div>
+        `;
     });
 
     container.innerHTML = html;
 }
 
-// Toggle user alerts expansion
-function toggleUserAlerts(userId) {
-    if (expandedUsers.has(userId)) {
-        expandedUsers.delete(userId);
-    } else {
-        expandedUsers.add(userId);
-    }
-    renderUserStats();
+// Open User Alerts Modal
+function openUserAlertsModal(userId) {
+    const userStat = allUserStats.find(u => u.userId === userId);
+    if (!userStat) return;
+
+    const modalTitle = document.getElementById('modalUserTitle');
+    const modalList = document.getElementById('modalAlertsList');
+
+    // Set Title
+    modalTitle.textContent = `Alerts for ${userStat.userEmail}`;
+
+    // Build List
+    let listHtml = '';
+
+    userStat.alerts.forEach(alert => {
+        const isExpired = alert.status !== 'active';
+        const statusBadge = !isExpired
+            ? '<span class="badge bg-success">Active</span>'
+            : '<span class="badge bg-danger">Expired</span>';
+
+        // Assuming dateCreated string format, parse it
+        const dateStr = alert.dateCreated ? new Date(alert.dateCreated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+
+        let notifIcon = '<i class="far fa-bell me-1"></i>';
+        let notifText = 'Unknown';
+        if (alert.notificationMethod === 'email') {
+            notifIcon = '<i class="far fa-envelope me-1"></i>';
+            notifText = 'Email Only';
+        } else if (alert.notificationMethod === 'both') {
+            notifText = 'Email & SMS';
+        }
+
+        listHtml += `
+            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                <img src="${escapeHtml(alert.productImage || 'https://via.placeholder.com/60')}" class="rounded me-3 border" style="width: 60px; height: 60px; object-fit: cover;" alt="Product">
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold m-0 text-dark">${escapeHtml(alert.productName)}</h6>
+                    <div class="small text-muted mb-1">Target: R ${(alert.targetPrice || 0).toLocaleString()}</div>
+                    <div class="d-flex gap-3 small text-muted">
+                        <span><i class="far fa-calendar me-1"></i> ${dateStr}</span>
+                        <span>${notifIcon} ${notifText}</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h6 class="fw-bold text-primary m-0">R ${(alert.currentPrice || 0).toLocaleString()}</h6>
+                    ${statusBadge}
+                </div>
+            </div>
+        `;
+    });
+
+    modalList.innerHTML = listHtml;
+
+    // Show Modal
+    const modal = new bootstrap.Modal(document.getElementById('userAlertsModal'));
+    modal.show();
 }
+
+function getInitials(email) {
+    if (!email) return '??';
+    const parts = email.split('@')[0].split('.');
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return email.substring(0, 2).toUpperCase();
+}
+
+// Toggle functionality removed as we use Modal now
+// function toggleUserAlerts(userId) { ... }
 
 // Update statistics
 function updateStats(stats) {

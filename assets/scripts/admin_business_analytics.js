@@ -436,25 +436,24 @@ function updateTables() {
         if (tbody) {
             tbody.innerHTML = analyticsData.topBusinessesByFollowers.map(business => `
                 <tr>
-                    <td><span class="badge badge-custom ${getRankBadgeClass(business.rank)}">#${business.rank}</span></td>
+                    <td><span class="d1-rank">${business.rank}</span></td>
                     <td>
-                        <div class="d-flex align-items-center">
-                            ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="business-logo me-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                            <div class="business-logo me-3 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 50px; height: 50px; display: ${business.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 18px;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
+                        <div class="d-flex align-items-center gap-3">
+                            ${business.businessLogo ? `<img src="${business.businessLogo}" alt="${business.businessName}" class="avatar-initials" style="object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+                            <div class="avatar-initials" style="display: ${business.businessLogo ? 'none' : 'flex'}; font-size: 0.9rem;">${(business.businessName || 'B').substring(0, 2).toUpperCase()}</div>
                             <div>
-                                <div class="fw-semibold">${escapeHtml(business.businessName)}</div>
+                                <div class="fw-bold text-dark">${escapeHtml(business.businessName)}</div>
                                 <small class="text-muted">${escapeHtml(business.businessCategory)}</small>
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge badge-custom ${getCategoryBadgeClass(business.businessCategory)}">${escapeHtml(business.businessCategory)}</span></td>
-                    <td><strong class="text-success">+${business.newFollowersThisMonth || 0}</strong></td>
-                    <td><strong>${formatNumber(business.totalFollowers || 0)}</strong></td>
+                    <td><span class="badge bg-light text-dark border">${escapeHtml(business.businessCategory)}</span></td>
+                    <td class="text-success fw-bold">+${business.newFollowersThisMonth || 0}</td>
+                    <td class="fw-bold">${formatNumber(business.totalFollowers || 0)}</td>
                     <td>
-                        <div class="rating-stars">${renderStars(business.averageRating || 0)}</div>
-                        <small class="text-muted">${business.averageRating || '0.0'}</small>
+                        <div class="text-warning small rating-stars">${renderStars(business.averageRating || 0)} <span class="text-muted ms-1">${business.averageRating || '0.0'}</span></div>
                     </td>
-                    <td><i class="fas fa-arrow-${business.followersChange >= 0 ? 'up' : 'down'} trend-${business.followersChange >= 0 ? 'up' : 'down'}"></i> <span class="${business.followersChange >= 0 ? 'text-success' : 'text-danger'}">${business.followersChange >= 0 ? '+' : ''}${business.followersChange}%</span></td>
+                    <td><span class="${business.followersChange >= 0 ? 'trend-up' : 'trend-down'}"><i class="fas fa-arrow-${business.followersChange >= 0 ? 'up' : 'down'} me-1"></i>${Math.abs(business.followersChange)}%</span></td>
                 </tr>
             `).join('');
         }

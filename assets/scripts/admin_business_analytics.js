@@ -538,9 +538,15 @@ function updateTables() {
                             ${(business.issues || []).map(issue => `<span class="issue-badge">${escapeHtml(issue)}</span>`).join('')}
                         </td>
                         <td>
-                            <button class="d1-btn-icon" onclick="openBusinessDetailsModal('${business.businessId}')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
+                            <div class="dropdown">
+                                <button class="d1-btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" style="border-radius: 12px; padding: 8px;">
+                                    <li><a class="dropdown-item rounded" href="#" onclick="openBusinessDetailsModal('${business.businessId}'); return false;"><i class="fas fa-eye me-2 text-primary"></i> View Details</a></li>
+                                    <li><a class="dropdown-item rounded" href="#"><i class="fas fa-envelope me-2 text-muted"></i> Contact</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 `).join('');

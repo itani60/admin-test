@@ -302,6 +302,71 @@
             font-weight: 700;
             font-size: 1.1rem;
             flex-shrink: 0;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        /* --- Design 1: Reference (Clean White with Ring) --- */
+        .card-d1 {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .card-d1:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .d1-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .d1-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            opacity: 0.2;
+        }
+
+        .d1-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-45deg);
+        }
+
+        .d1-content h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .d1-content p {
+            margin: 4px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .d2-user-meta {
@@ -510,46 +575,46 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <!-- Users with Alerts -->
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring primary">
-                        <i class="fas fa-user-tag"></i>
+                <div class="card-d1">
+                    <div class="d1-ring text-primary">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="totalUsersCount">0</div>
-                        <div class="design-g-label">Users with Alerts</div>
+                    <div class="d1-content">
+                        <h3 id="totalUsersCount">0</h3>
+                        <p>Users with Alerts</p>
                     </div>
                 </div>
 
                 <!-- Total Alerts -->
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring success">
+                <div class="card-d1">
+                    <div class="d1-ring text-success">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="totalAlertsCount">0</div>
-                        <div class="design-g-label">Total Alerts</div>
+                    <div class="d1-content">
+                        <h3 id="totalAlertsCount">0</h3>
+                        <p>Total Alerts</p>
                     </div>
                 </div>
 
                 <!-- Active Alerts -->
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring warning">
+                <div class="card-d1">
+                    <div class="d1-ring text-warning">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="activeAlertsCount">0</div>
-                        <div class="design-g-label">Active Alerts</div>
+                    <div class="d1-content">
+                        <h3 id="activeAlertsCount">0</h3>
+                        <p>Active Alerts</p>
                     </div>
                 </div>
 
                 <!-- Inactive Alerts -->
-                <div class="stat-card-design-g">
-                    <div class="design-g-ring danger">
+                <div class="card-d1">
+                    <div class="d1-ring text-danger">
                         <i class="fas fa-times-circle"></i>
                     </div>
-                    <div class="design-g-content">
-                        <div class="design-g-value" id="inactiveAlertsCount">0</div>
-                        <div class="design-g-label">Inactive Alerts</div>
+                    <div class="d1-content">
+                        <h3 id="inactiveAlertsCount">0</h3>
+                        <p>Inactive Alerts</p>
                     </div>
                 </div>
             </div>

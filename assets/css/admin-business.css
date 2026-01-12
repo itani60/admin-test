@@ -1,95 +1,96 @@
 /* Admin Business Specific Styles */
-     /* Loading Overlay */
-        .page-loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
+/* Loading Overlay */
+.page-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
 
-        .page-loading-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
+.page-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
 
-        .loading-content {
-            text-align: center;
-            color: #333;
-        }
+.loading-content {
+    text-align: center;
+    color: #333;
+}
 
-        .logo-container {
-            margin-bottom: 3rem;
-        }
+.logo-container {
+    margin-bottom: 3rem;
+}
 
-        .logo-container img {
-            max-width: 200px;
-            height: auto;
-        }
+.logo-container img {
+    max-width: 200px;
+    height: auto;
+}
 
-        /* Modern Spinner */
-        .modern-spinner {
-            position: relative;
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 2rem auto;
-        }
+/* Modern Spinner */
+.modern-spinner {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 2rem auto;
+}
 
-        .spinner-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            border-top: 3px solid #dc3545;
-            border-radius: 50%;
-            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        }
+.spinner-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid #dc3545;
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
 
-        .spinner-ring:nth-child(1) {
-            animation-delay: -0.45s;
-            border-top-color: #dc3545;
-        }
+.spinner-ring:nth-child(1) {
+    animation-delay: -0.45s;
+    border-top-color: #dc3545;
+}
 
-        .spinner-ring:nth-child(2) {
-            animation-delay: -0.3s;
-            border-top-color: #28a745;
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
-        }
+.spinner-ring:nth-child(2) {
+    animation-delay: -0.3s;
+    border-top-color: #28a745;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+}
 
-        .spinner-ring:nth-child(3) {
-            animation-delay: -0.15s;
-            border-top-color: #007bff;
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-        }
+.spinner-ring:nth-child(3) {
+    animation-delay: -0.15s;
+    border-top-color: #007bff;
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+}
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
 
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
-        .loading-content h4 {
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
+.loading-content h4 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
 /* Design 62: Circle Progress Card (Design G) */
 .stat-card-design-g {
     background: white;
@@ -993,4 +994,79 @@
     text-align: center;
     font-size: 1rem;
     color: inherit;
+}
+
+/* --- Chart Section Styles (Synced with Analytics) --- */
+.chart-section {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    background-image: linear-gradient(to right bottom, #ffffff, #f8fafc);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chart-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.chart-section h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* --- Design 1 Styles (Reference Clean) --- */
+.table-design-1 {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table-design-1 thead {
+    background: #fef2f2;
+}
+
+.table-design-1 th {
+    font-weight: 600;
+    color: #1e293b;
+    border: none;
+    padding: 1rem;
+}
+
+.table-design-1 td {
+    vertical-align: middle;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.img-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.badge-soft-warning {
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fcd34d;
+}
+
+.badge-soft-success {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #6ee7b7;
+}
+
+.badge-soft-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
 }

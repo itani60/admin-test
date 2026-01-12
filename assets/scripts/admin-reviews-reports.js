@@ -277,26 +277,101 @@ async function viewReportDetail(reportOrReviewId, reporterUserId) {
     modal.show();
 }
 
-// Basic Confirmation Logic using browser confirm()
-async function showDismissConfirm() {
-    if (!currentReport) return;
-    if (confirm('Are you sure you want to dismiss this report? No action will be taken against the review.')) {
-        await dismissReport();
-    }
+// Custom Confirmation Modal Logic
+function closeCustomConfirm() {
+    const modal = document.getElementById('customConfirmModal');
+    if (modal) modal.classList.remove('active');
 }
 
-async function showResolveConfirm() {
-    if (!currentReport) return;
-    if (confirm('Mark this report as resolved? This indicates the issue has been addressed.')) {
-        await resolveReport();
+function showConfirmModal(title, message, action, type = 'warning') {
+    const modal = document.getElementById('customConfirmModal');
+    const titleEl = document.getElementById('customConfirmTitle');
+    const msgEl = document.getElementById('customConfirmMessage');
+    const btn = document.getElementById('customConfirmBtn');
+    const iconContainer = document.getElementById('confirmIconContainer');
+
+    if (!modal) return;
+
+    pendingAction = action;
+
+    titleEl.textContent = title;
+    msgEl.innerHTML = message; // Use innerHTML to allow bolding if needed
+
+    // Set styling based on type
+    btn.className = 'btn-d1-confirm'; // Reset
+    let iconClass = 'fa-question-circle';
+    let iconColorClass = 'text-primary';
+
+    if (type === 'danger') {
+        btn.style.backgroundColor = 'var(--danger)';
+        iconClass = 'fa-exclamation-triangle';
+        iconColorClass = 'text-danger';
+    } else if (type === 'warning') {
+        btn.style.backgroundColor = 'var(--warning)';
+        btn.style.color = '#212529';
+        iconClass = 'fa-exclamation-circle';
+        iconColorClass = 'text-warning';
+    } else if (type === 'info') {
+        btn.style.backgroundColor = 'var(--info)';
+        iconClass = 'fa-info-circle';
+        iconColorClass = 'text-info';
+    } else {
+        // success/primary
+        btn.style.backgroundColor = 'var(--primary)';
+        iconClass = 'fa-check-circle';
+        iconColorClass = 'text-primary';
     }
+
+    iconContainer.className = `mb-3 ${iconColorClass}`;
+    iconContainer.innerHTML = `<i class="fas ${iconClass} fa-3x"></i>`;
+
+    // Set click handler
+    btn.onclick = async () => {
+        closeCustomConfirm();
+        await executeConfirmedAction();
+    };
+
+    modal.classList.add('active');
 }
 
-async function showRemoveConfirm() {
+// Wrapper functions for confirmation actions
+function showDismissConfirm() {
     if (!currentReport) return;
-    if (confirm('Are you sure you want to remove this review? This action cannot be undone and will affect the business rating.')) {
-        await removeReview();
-    }
+    const reportDetailModal = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
+    if (reportDetailModal) reportDetailModal.hide();
+
+    showConfirmModal(
+        'Dismiss Report?',
+        'Are you sure you want to dismiss this report? No action will be taken against the review.',
+        'dismiss',
+        'warning'
+    );
+}
+
+function showResolveConfirm() {
+    if (!currentReport) return;
+    const reportDetailModal = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
+    if (reportDetailModal) reportDetailModal.hide();
+
+    showConfirmModal(
+        'Resolve Report?',
+        'Mark this report as resolved? This indicates the issue has been addressed.',
+        'resolve',
+        'success'
+    );
+}
+
+function showRemoveConfirm() {
+    if (!currentReport) return;
+    const reportDetailModal = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
+    if (reportDetailModal) reportDetailModal.hide();
+
+    showConfirmModal(
+        'Remove Review?',
+        'Are you sure you want to remove this review? This action cannot be undone and will affect the business rating.',
+        'remove',
+        'danger'
+    );
 }
 
 async function executeConfirmedAction() {

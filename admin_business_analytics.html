@@ -399,6 +399,27 @@
             opacity: 0.2;
         }
 
+        .d1-progress-container {
+            width: 120px;
+            background: #f1f5f9;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .d1-progress-bar {
+            height: 100%;
+            background: #10b981;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
         .d1-ring::after {
             content: '';
             position: absolute;
@@ -697,96 +718,85 @@
                     </table>
                 </div>
             </div>
-            <tr>
-                <td colspan="7" class="text-center py-4">
-                    <i class="fas fa-spinner fa-spin"></i> Loading data...
-                </td>
-            </tr>
-            </tbody>
-            </table>
-        </div>
-    </div>
+            <!-- Monthly Good Reviews Table (Design 1) -->
+            <div class="d1-card-table">
+                <div class="d1-header-table">
+                    <i class="fas fa-star text-danger"></i>
+                    <h3>Monthly Good Reviews (4+ Stars) - Top Businesses</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="d1-table">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Good Reviews</th>
+                                <th>Total Reviews</th>
+                                <th>Success Rate</th>
+                                <th>Average Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="goodReviewsTableBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- Monthly Good Reviews Table -->
-    <div class="table-section">
-        <h3><i class="fas fa-star"></i> Monthly Good Reviews (4+ Stars) - Top Businesses</h3>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Business</th>
-                        <th>Category</th>
-                        <th>Good Reviews</th>
-                        <th>Total Reviews</th>
-                        <th>Success Rate</th>
-                        <th>Average Rating</th>
-                    </tr>
-                </thead>
-                <tbody id="goodReviewsTableBody">
-                    <tr>
-                        <td colspan="6" class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin"></i> Loading data...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <!-- Most Liked Products/Services -->
+            <div class="table-section">
+                <h3><i class="fas fa-heart text-danger"></i> Most Liked Products/Services</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Product/Service</th>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Total Likes</th>
+                                <th>Likes This Month</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mostLikedProductsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <!-- Most Liked Products/Services -->
-    <div class="table-section">
-        <h3><i class="fas fa-heart text-danger"></i> Most Liked Products/Services</h3>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Product/Service</th>
-                        <th>Business</th>
-                        <th>Category</th>
-                        <th>Total Likes</th>
-                        <th>Likes This Month</th>
-                        <th>Trend</th>
-                    </tr>
-                </thead>
-                <tbody id="mostLikedProductsTableBody">
-                    <tr>
-                        <td colspan="7" class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin"></i> Loading data...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Underperforming Businesses -->
+            <div class="table-section">
+                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Category</th>
+                                <th>Rating</th>
+                                <th>Total Reviews</th>
+                                <th>Followers</th>
+                                <th>Issues</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="underperformingBusinessesTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- Underperforming Businesses -->
-    <div class="table-section">
-        <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Business</th>
-                        <th>Category</th>
-                        <th>Rating</th>
-                        <th>Total Reviews</th>
-                        <th>Followers</th>
-                        <th>Issues</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="underperformingBusinessesTableBody">
-                    <tr>
-                        <td colspan="7" class="text-center py-4">
-                            <i class="fas fa-spinner fa-spin"></i> Loading data...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

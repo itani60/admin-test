@@ -430,19 +430,9 @@ async function checkLoginState() {
 
 // Initialize Analytics Charts
 function initializeCharts() {
-    // Prevent scroll function
-    const preventScroll = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        return false;
-    };
-
     // Chart 1: Alerts Over Time (Line Chart)
     const alertsOverTimeCtx = document.getElementById('alertsOverTimeChart');
     if (alertsOverTimeCtx) {
-        // Add scroll prevention
-        alertsOverTimeCtx.addEventListener('wheel', preventScroll, { passive: false });
-        alertsOverTimeCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         alertsOverTimeCtx.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1) {
                 const touch = e.touches[0];
@@ -496,9 +486,6 @@ function initializeCharts() {
     // Chart 2: Active vs Inactive Alerts (Design 2: Doughnut Chart)
     const alertStatusCtx = document.getElementById('alertStatusChart');
     if (alertStatusCtx) {
-        // Add scroll prevention
-        alertStatusCtx.addEventListener('wheel', preventScroll, { passive: false });
-        alertStatusCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         alertStatusCtx.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1) {
                 const touch = e.touches[0];
@@ -553,9 +540,6 @@ function initializeCharts() {
     // Chart 3: Top Users by Alert Count (Design 3: Vertical Bar with Gradient)
     const topUsersCtx = document.getElementById('topUsersChart');
     if (topUsersCtx) {
-        // Add scroll prevention
-        topUsersCtx.addEventListener('wheel', preventScroll, { passive: false });
-        topUsersCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         topUsersCtx.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1) {
                 const touch = e.touches[0];
@@ -614,9 +598,6 @@ function initializeCharts() {
     // Chart 4: Notification Methods Distribution (Design 2: Doughnut Chart)
     const notificationMethodsCtx = document.getElementById('notificationMethodsChart');
     if (notificationMethodsCtx) {
-        // Add scroll prevention
-        notificationMethodsCtx.addEventListener('wheel', preventScroll, { passive: false });
-        notificationMethodsCtx.addEventListener('DOMMouseScroll', preventScroll, { passive: false });
         notificationMethodsCtx.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1) {
                 const touch = e.touches[0];

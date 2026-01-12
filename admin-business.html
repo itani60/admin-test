@@ -547,45 +547,44 @@
             </div>
 
             <!-- Business Posts Section -->
-            <div class="business-posts-section">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>Business Posts</h3>
-                    <div>
-                        <button class="btn btn-primary btn-sm" onclick="refreshPosts()">
-                            <i class="fas fa-sync-alt"></i> Refresh
+            <!-- Business Posts Section (Design 1 Unified) -->
+            <div class="table-design-1 mb-5">
+                <div class="p-4 d-flex justify-content-between align-items-center border-bottom bg-white">
+                    <h5 class="fw-bold m-0 text-dark">Business Posts</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="refreshPosts()">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="exportPosts()">
-                            <i class="fas fa-download"></i> Export
+                        <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="exportPosts()">
+                            <i class="fas fa-download me-1"></i> Export
                         </button>
                     </div>
                 </div>
 
-                <div class="table-design-1">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Business</th>
-                                    <th>Post Title</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Permission</th>
-                                    <th>Submitted</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="businessPostsContainer">
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                        <div class="loading-state">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                            <p>Loading posts...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Business</th>
+                                <th>Post Title</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Permission</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="businessPostsContainer">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="loading-state p-5">
+                                        <i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i>
+                                        <p class="text-muted">Loading posts...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

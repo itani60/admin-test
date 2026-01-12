@@ -497,24 +497,24 @@ function updateTables() {
         if (tbody) {
             tbody.innerHTML = analyticsData.mostLikedProducts.map(product => `
                 <tr>
-                    <td><span class="badge badge-custom ${getRankBadgeClass(product.rank)}">#${product.rank}</span></td>
                     <td>
-                        <div class="fw-semibold">${escapeHtml(product.productName)}</div>
+                        <div class="d1-rank-badge ${product.rank <= 3 ? `d1-rank-${product.rank}` : 'd1-rank-other'}">#${product.rank}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">${escapeHtml(product.productName)}</div>
                         <small class="text-muted">${escapeHtml(product.businessCategory)} Services</small>
                     </td>
                     <td>
-                        <div class="d-flex align-items-center">
-                            ${product.businessLogo ? `<img src="${product.businessLogo}" alt="${product.businessName}" class="business-logo me-2" style="width: 40px; height: 40px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
-                            <div class="business-logo me-2 d-flex align-items-center justify-content-center bg-primary text-white rounded" style="width: 40px; height: 40px; display: ${product.businessLogo ? 'none' : 'flex'}; font-weight: bold; font-size: 14px;">${(product.businessName || 'B').substring(0, 2).toUpperCase()}</div>
-                            <div>
-                                <div class="fw-semibold">${escapeHtml(product.businessName)}</div>
-                            </div>
+                        <div class="d-flex align-items-center gap-3">
+                            ${product.businessLogo ? `<img src="${product.businessLogo}" alt="${product.businessName}" class="avatar-initials" style="object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+                            <div class="avatar-initials" style="display: ${product.businessLogo ? 'none' : 'flex'}; font-size: 0.9rem;">${(product.businessName || 'B').substring(0, 2).toUpperCase()}</div>
+                            <div class="fw-semibold">${escapeHtml(product.businessName)}</div>
                         </div>
                     </td>
-                    <td><span class="badge badge-custom ${getCategoryBadgeClass(product.businessCategory)}">${escapeHtml(product.businessCategory)}</span></td>
-                    <td><strong class="text-danger">${formatNumber(product.totalLikes || 0)}</strong></td>
-                    <td><strong class="text-success">+${product.likesThisMonth || 0}</strong></td>
-                    <td><i class="fas fa-arrow-up trend-up"></i> <span class="text-success">+${product.trend || 0}%</span></td>
+                    <td><span class="badge bg-light text-dark border">${escapeHtml(product.businessCategory)}</span></td>
+                    <td class="text-danger fw-bold">${formatNumber(product.totalLikes || 0)}</td>
+                    <td class="text-success fw-bold">+${product.likesThisMonth || 0}</td>
+                    <td><span class="text-success"><i class="fas fa-arrow-up"></i> +${product.trend || 0}%</span></td>
                 </tr>
             `).join('');
         }

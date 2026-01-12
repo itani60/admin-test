@@ -420,6 +420,38 @@
             font-weight: bold;
         }
 
+        /* Design 1 Rank Badges */
+        .d1-rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .d1-rank-1 {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .d1-rank-2 {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .d1-rank-3 {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .d1-rank-other {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
         .d1-ring::after {
             content: '';
             position: absolute;
@@ -743,11 +775,14 @@
                 </div>
             </div>
 
-            <!-- Most Liked Products/Services -->
-            <div class="table-section">
-                <h3><i class="fas fa-heart text-danger"></i> Most Liked Products/Services</h3>
+            <!-- Most Liked Products/Services (Design 1) -->
+            <div class="d1-card-table">
+                <div class="d1-header-table">
+                    <i class="fas fa-heart text-danger"></i>
+                    <h3>Most Liked Products/Services</h3>
+                </div>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="d1-table">
                         <thead>
                             <tr>
                                 <th>Rank</th>
@@ -760,43 +795,40 @@
                             </tr>
                         </thead>
                         <tbody id="mostLikedProductsTableBody">
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Underperforming Businesses -->
-            <div class="table-section">
-                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Business</th>
-                                <th>Category</th>
-                                <th>Rating</th>
-                                <th>Total Reviews</th>
-                                <th>Followers</th>
-                                <th>Issues</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="underperformingBusinessesTableBody">
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading data...
-                                </td>
-                            </tr>
+                            <!-- Populated by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        <!-- Underperforming Businesses -->
+        <div class="table-section">
+            <h3><i class="fas fa-exclamation-triangle text-warning"></i> Underperforming Businesses</h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Business</th>
+                            <th>Category</th>
+                            <th>Rating</th>
+                            <th>Total Reviews</th>
+                            <th>Followers</th>
+                            <th>Issues</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="underperformingBusinessesTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="fas fa-spinner fa-spin"></i> Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

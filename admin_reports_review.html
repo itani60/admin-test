@@ -450,7 +450,6 @@
     </style>
 
 </head>
-</head>
 <div class="page-loading-overlay" id="pageLoadingOverlay">
     <div class="loading-content">
         <div class="logo-container"><img src="assets/logo.png" alt="CompareHubPrices" class="logo-img"></div>
@@ -522,146 +521,139 @@
                 <h1 class="page-title">Reports Review</h1>
                 <p class="page-subtitle">Review and take action on reported business reviews</p>
             </div>
-            < !-- Stats Overview -->
-                <div class="stats-grid">
-                    < !-- Total Reports -->
-                        <div class="stat-card-design-g">
-                            <div class="design-g-ring primary"><i class="fas fa-flag"></i></div>
-                            <div class="design-g-content">
-                                <h4>Total Reports</h4>
-                                <div class="design-g-value" id="totalReportsStat">-</div>
-                            </div>
-                        </div>
-                        < !-- Pending Review -->
-                            <div class="stat-card-design-g">
-                                <div class="design-g-ring warning"><i class="fas fa-clock"></i></div>
-                                <div class="design-g-content">
-                                    <h4>Pending Review</h4>
-                                    <div class="design-g-value" id="pendingReportsStat">-</div>
-                                </div>
-                            </div>
-                            < !-- Resolved -->
-                                <div class="stat-card-design-g">
-                                    <div class="design-g-ring success"><i class="fas fa-check-circle"></i></div>
-                                    <div class="design-g-content">
-                                        <h4>Resolved</h4>
-                                        <div class="design-g-value" id="resolvedReportsStat">-</div>
-                                    </div>
-                                </div>
-                                < !-- Dismissed -->
-                                    <div class="stat-card-design-g">
-                                        <div class="design-g-ring danger"><i class="fas fa-ban"></i></div>
-                                        <div class="design-g-content">
-                                            <h4>Dismissed</h4>
-                                            <div class="design-g-value" id="dismissedReportsStat">-</div>
-                                        </div>
-                                    </div>
-                </div>
-                < !-- Filters (Design 2: Minimalist Pill) -->
-                    <div class="filter-d2">
-                        < !-- Search Pill -->
-                            <div class="search-pill">
-                                <div class="search-content"><label><i class="fas fa-search"></i></label><input
-                                        type="text" id="searchFilter"
-                                        placeholder="Search by business, reviewer, or reporter..."
-                                        onkeyup="filterReports()"></div>
-                            </div>
-                            < !-- Status Dropdown -->
-                                <div class="custom-dropdown" id="statusDropdown">
-                                    <div class="dropdown-trigger">
-                                        <div class="trigger-content"><label><i
-                                                    class="fas fa-clipboard-list"></i></label><span
-                                                class="selected-text" id="statusDropdownText">All Status</span></div><i
-                                            class="fas fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
-                                    </div>
-                                    <div class="dropdown-menu-list">
-                                        < !-- Populated by JS -->
-                                    </div><input type="hidden" id="statusSelect" value="all">
-                                </div>
-                                < !-- Reason Dropdown -->
-                                    <div class="custom-dropdown" id="reasonDropdown">
-                                        <div class="dropdown-trigger">
-                                            <div class="trigger-content"><label><i class="fas fa-list"></i></label><span
-                                                    class="selected-text" id="reasonDropdownText">All Reasons</span>
-                                            </div><i class="fas fa-chevron-down text-muted"
-                                                style="font-size: 0.7rem;"></i>
-                                        </div>
-                                        <div class="dropdown-menu-list">
-                                            < !-- Populated by JS -->
-                                        </div><input type="hidden" id="reasonSelect" value="all">
-                                    </div>
-                                    < !-- Refresh Button --><button class="btn-go" onclick="loadReports()"
-                                            title="Refresh Reports"><i class="fas fa-sync-alt"></i></button>
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <!-- Total Reports -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring primary"><i class="fas fa-flag"></i></div>
+                    <div class="design-g-content">
+                        <h4>Total Reports</h4>
+                        <div class="design-g-value" id="totalReportsStat">-</div>
                     </div>
-                    < !-- Reports List (Design 2) -->
-                        <div id="reportsContainer" class="d2-container">
-                            < !-- Reports will be populated here -->
-                        </div>
+                </div>
+                <!-- Pending Review -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring warning"><i class="fas fa-clock"></i></div>
+                    <div class="design-g-content">
+                        <h4>Pending Review</h4>
+                        <div class="design-g-value" id="pendingReportsStat">-</div>
+                    </div>
+                </div>
+                <!-- Resolved -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring success"><i class="fas fa-check-circle"></i></div>
+                    <div class="design-g-content">
+                        <h4>Resolved</h4>
+                        <div class="design-g-value" id="resolvedReportsStat">-</div>
+                    </div>
+                </div>
+                <!-- Dismissed -->
+                <div class="stat-card-design-g">
+                    <div class="design-g-ring danger"><i class="fas fa-ban"></i></div>
+                    <div class="design-g-content">
+                        <h4>Dismissed</h4>
+                        <div class="design-g-value" id="dismissedReportsStat">-</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Filters (Design 2: Minimalist Pill) -->
+            <div class="filter-d2">
+                <!-- Search Pill -->
+                <div class="search-pill">
+                    <div class="search-content"><label><i class="fas fa-search"></i></label><input type="text"
+                            id="searchFilter" placeholder="Search by business, reviewer, or reporter..."
+                            onkeyup="filterReports()"></div>
+                </div>
+                <!-- Status Dropdown -->
+                <div class="custom-dropdown" id="statusDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content"><label><i class="fas fa-clipboard-list"></i></label><span
+                                class="selected-text" id="statusDropdownText">All Status</span></div><i
+                            class="fas fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <!-- Populated by JS -->
+                    </div><input type="hidden" id="statusSelect" value="all">
+                </div>
+                <!-- Reason Dropdown -->
+                <div class="custom-dropdown" id="reasonDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content"><label><i class="fas fa-list"></i></label><span
+                                class="selected-text" id="reasonDropdownText">All Reasons</span>
+                        </div><i class="fas fa-chevron-down text-muted" style="font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <!-- Populated by JS -->
+                    </div><input type="hidden" id="reasonSelect" value="all">
+                </div>
+                <!-- Refresh Button --><button class="btn-go" onclick="loadReports()" title="Refresh Reports"><i
+                        class="fas fa-sync-alt"></i></button>
+            </div>
+            <!-- Reports List (Design 2) -->
+            <div id="reportsContainer" class="d2-container">
+                <!-- Reports will be populated here -->
+            </div>
         </div>
     </div>
-    < !-- Report Detail Modal -->
-        <div class="modal fade" id="reportDetailModal" tabindex="-1" aria-labelledby="reportDetailModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reportDetailModalLabel"><i
-                                class="fas fa-flag text-danger"></i>Report Details </h5><button type="button"
-                            class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body modal-review-content">
-                        <div id="reportDetailContent">
-                            < !-- Report details will be populated here -->
-                        </div>
-                    </div>
-                    <div class="modal-footer"><button type="button" class="btn btn-secondary"
-                            data-bs-dismiss="modal">Close</button><button type="button"
-                            class="btn btn-action btn-dismiss" onclick="showDismissConfirm()"><i
-                                class="fas fa-times"></i>Dismiss </button><button type="button"
-                            class="btn btn-action btn-resolve" onclick="showResolveConfirm()"><i
-                                class="fas fa-check"></i>Resolve </button><button type="button"
-                            class="btn btn-action btn-remove" onclick="showRemoveConfirm()"><i
-                                class="fas fa-trash"></i>Remove Review </button></div>
+    <!-- Report Detail Modal -->
+    <div class="modal fade" id="reportDetailModal" tabindex="-1" aria-labelledby="reportDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportDetailModalLabel"><i class="fas fa-flag text-danger"></i>Report
+                        Details </h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
+                <div class="modal-body modal-review-content">
+                    <div id="reportDetailContent">
+                        <!-- Report details will be populated here -->
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button><button type="button" class="btn btn-action btn-dismiss"
+                        onclick="showDismissConfirm()"><i class="fas fa-times"></i>Dismiss </button><button
+                        type="button" class="btn btn-action btn-resolve" onclick="showResolveConfirm()"><i
+                            class="fas fa-check"></i>Resolve </button><button type="button"
+                        class="btn btn-action btn-remove" onclick="showRemoveConfirm()"><i
+                            class="fas fa-trash"></i>Remove Review </button></div>
             </div>
         </div>
-        < !-- Custom Confirmation Modal (Design 1) -->
-            <div class="modal-overlay" id="customConfirmModal">
-                <div class="modal-d1">
-                    <div class="mb-3 text-primary" id="confirmIconContainer"><i
-                            class="fas fa-question-circle fa-3x"></i></div>
-                    <h3 id="customConfirmTitle">Confirm Action</h3>
-                    <p id="customConfirmMessage">Are you sure you want to proceed?</p>
-                    <div class="modal-d1-actions"><button class="btn-d1-cancel"
-                            onclick="closeCustomConfirm()">Cancel</button><button class="btn-d1-confirm"
-                            id="customConfirmBtn">Confirm</button></div>
+    </div>
+    <!-- Custom Confirmation Modal (Design 1) -->
+    <div class="modal-overlay" id="customConfirmModal">
+        <div class="modal-d1">
+            <div class="mb-3 text-primary" id="confirmIconContainer"><i class="fas fa-question-circle fa-3x"></i></div>
+            <h3 id="customConfirmTitle">Confirm Action</h3>
+            <p id="customConfirmMessage">Are you sure you want to proceed?</p>
+            <div class="modal-d1-actions"><button class="btn-d1-cancel"
+                    onclick="closeCustomConfirm()">Cancel</button><button class="btn-d1-confirm"
+                    id="customConfirmBtn">Confirm</button></div>
+        </div>
+    </div>
+    <!-- Alert Modal -->
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="alertModalHeader">
+                    <h5 class="modal-title" id="alertModalLabel"><i class="fas fa-info-circle"></i>Notification </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body" id="alertModalBody">
+                    < !-- Alert message will be populated here -->
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-primary"
+                        data-bs-dismiss="modal">OK</button></div>
             </div>
-            < !-- Alert Modal -->
-                <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header" id="alertModalHeader">
-                                <h5 class="modal-title" id="alertModalLabel"><i
-                                        class="fas fa-info-circle"></i>Notification </h5><button type="button"
-                                    class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body" id="alertModalBody">
-                                < !-- Alert message will be populated here -->
-                            </div>
-                            <div class="modal-footer"><button type="button" class="btn btn-primary"
-                                    data-bs-dismiss="modal">OK</button></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="toast-container"></div>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-                <script src="assets/scripts/admin-aws-auth.js"></script>
-                <script src="assets/scripts/admin-reviews-reports.js"></script>
-                <script src="assets/scripts/sidebar.js"></script>
-                <script src="assets/scripts/lazy_loading.js"></script>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-reviews-reports.js"></script>
+    <script src="assets/scripts/sidebar.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
 </body>
 
 </html>

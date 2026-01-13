@@ -720,11 +720,13 @@
             </div>
 
             <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Login Activity by Hour</h3>
+                <!-- Graph 1: Login Activity (Design 1) -->
+                <div class="graph-card-d1">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0">Login Activity Trends (By Hour)</h4>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
                     </div>
-                    <div class="chart-container">
+                    <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
                         <canvas id="loginActivityByHourChart"></canvas>
                     </div>
                 </div>
@@ -790,16 +792,7 @@
                 </button>
             </div>
 
-            <!-- Graph 1: Login Activity (Moved & Styled) -->
-            <div class="graph-card-d1">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold m-0">Login Activity Trends</h4>
-                    <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
-                </div>
-                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
-                    <canvas id="loginsOverTimeChart"></canvas>
-                </div>
-            </div>
+
 
             <!-- Login Events Section -->
             <div class="login-events-section">

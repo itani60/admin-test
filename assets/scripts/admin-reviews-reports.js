@@ -37,6 +37,11 @@ async function loadReports(status = null) {
         if (data.success && Array.isArray(data.reports)) {
             reportsData = data.reports;
             console.log('Loaded reports:', reportsData.length);
+
+            // Extract unique reasons dynamically
+            const uniqueReasons = [...new Set(reportsData.map(r => r.reason).filter(r => r))];
+            updateReasonOptions(uniqueReasons);
+
             filterReports();
             updateStats();
         } else {
@@ -675,20 +680,34 @@ function initializeStatusDropdown() {
 }
 
 // Initialize custom reason dropdown (Design 2)
-function initializeReasonDropdown() {
+// Initialize custom reason dropdown listeners (Design 2)
+function initReasonDropdownListeners() {
+    const reasonDropdown = document.getElementById('reasonDropdown');
+    const trigger = reasonDropdown?.querySelector('.dropdown-trigger');
+
+    if (!reasonDropdown || !trigger) return;
+
+    // Toggle dropdown
+    trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        document.querySelectorAll('.custom-dropdown').forEach(dd => {
+            if (dd !== reasonDropdown) dd.classList.remove('active');
+        });
+        reasonDropdown.classList.toggle('active');
+    });
+}
+
+// Update Reason Options Dynamically
+function updateReasonOptions(customReasons = null) {
     const reasonDropdown = document.getElementById('reasonDropdown');
     const reasonSelect = document.getElementById('reasonSelect');
+    const menu = reasonDropdown?.querySelector('.dropdown-menu-list');
+    const selectedText = reasonDropdown?.querySelector('.selected-text');
 
-    if (!reasonDropdown || !reasonSelect) return;
+    if (!reasonDropdown || !reasonSelect || !menu || !selectedText) return;
 
-    const trigger = reasonDropdown.querySelector('.dropdown-trigger');
-    const menu = reasonDropdown.querySelector('.dropdown-menu-list');
-    const selectedText = reasonDropdown.querySelector('.selected-text');
-
-    if (!trigger || !menu || !selectedText) return;
-
-    // Reason options
-    const reasonOptions = [
+    // Default static options
+    let options = [
         { value: 'all', text: 'All Reasons', icon: 'fas fa-list', color: 'text-secondary' },
         { value: 'spam', text: 'Spam', icon: 'fas fa-trash', color: 'text-danger' },
         { value: 'inappropriate', text: 'Inappropriate', icon: 'fas fa-exclamation-triangle', color: 'text-warning' },
@@ -697,9 +716,26 @@ function initializeReasonDropdown() {
         { value: 'other', text: 'Other', icon: 'fas fa-question', color: 'text-secondary' }
     ];
 
+    // Merge custom reasons if provided
+    if (customReasons && Array.isArray(customReasons)) {
+        const existingValues = new Set(options.map(o => o.value));
+        customReasons.forEach(reason => {
+            const val = reason.toLowerCase();
+            if (!existingValues.has(val)) {
+                options.push({
+                    value: val,
+                    text: reason.charAt(0).toUpperCase() + reason.slice(1), // Capitalize
+                    icon: 'fas fa-tag', // Generic icon
+                    color: 'text-muted'
+                });
+                existingValues.add(val);
+            }
+        });
+    }
+
     // Render dropdown items
     menu.innerHTML = '';
-    reasonOptions.forEach(option => {
+    options.forEach(option => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'dropdown-item-custom';
         if (option.value === reasonSelect.value) {
@@ -710,35 +746,16 @@ function initializeReasonDropdown() {
 
         itemDiv.addEventListener('click', function (e) {
             e.stopPropagation();
-            // Update selected state
-            menu.querySelectorAll('.dropdown-item-custom').forEach(item => {
-                item.classList.remove('selected');
-            });
+            menu.querySelectorAll('.dropdown-item-custom').forEach(item => item.classList.remove('selected'));
             this.classList.add('selected');
 
-            // Update button text and hidden input
             selectedText.textContent = option.text;
             reasonSelect.value = option.value;
 
-            // Close dropdown
             reasonDropdown.classList.remove('active');
-
-            // Apply filters
             filterReports();
         });
         menu.appendChild(itemDiv);
-    });
-
-    // Toggle dropdown
-    trigger.addEventListener('click', function (e) {
-        e.stopPropagation();
-        // Close all other dropdowns handled in status dropdown listener mainly, but good to be safe
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd !== reasonDropdown) {
-                dd.classList.remove('active');
-            }
-        });
-        reasonDropdown.classList.toggle('active');
     });
 }
 
@@ -756,7 +773,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     initializeStatusDropdown();
-    initializeReasonDropdown();
+    initReasonDropdownListeners();
+    updateReasonOptions(null); // Load static defaults
     await loadReports();
 });
 

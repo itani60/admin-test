@@ -424,16 +424,19 @@
             margin: 0 auto 10px;
         }
 
-        /* --- Design 2: Minimalist Pill (Filter) - Corrected --- */
+        /* --- Design 2: Minimalist Pill (Filter) - Corrected Horizontal --- */
         .filter-d2 {
             background: transparent;
             display: flex;
             align-items: center;
             gap: 16px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            /* Force single line */
             padding: 20px 0;
             border: none;
             box-shadow: none;
+            overflow-x: auto;
+            /* Allow scroll if screen is too small, prevent breaking layout */
         }
 
         .filter-d2 .search-pill,

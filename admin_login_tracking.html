@@ -42,6 +42,16 @@
             overflow-x: hidden;
         }
 
+        /* Graph 1 Style (Design 1 Reference) */
+        .graph-card-d1 {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
         /* Sidebar styles moved to assets/css/sidebar.css */
 
         /* Main Content */
@@ -334,6 +344,173 @@
             font-weight: 500;
         }
     </style>
+    <!-- Design 2 Filter CSS -->
+    <style>
+        /* --- Design 2: Minimalist Pill (Filter) - Corrected Horizontal --- */
+        .filter-d2 {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: nowrap;
+            /* Force single line */
+            padding: 20px 0;
+            border: none;
+            box-shadow: none;
+            overflow-x: auto;
+            /* Allow scroll if screen is too small */
+        }
+
+        .filter-d2 .search-pill,
+        .filter-d2 .custom-dropdown {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .filter-d2 .search-pill {
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .filter-d2 .search-pill:focus-within,
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-d2 .search-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .filter-d2 .search-content label {
+            color: #94a3b8;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-d2 input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .filter-d2 .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+            user-select: none;
+        }
+
+        .filter-d2 .trigger-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-d2 .trigger-content label {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .trigger-content .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .dropdown-menu-list {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            left: 0;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: none;
+            z-index: 100;
+            animation: slideDownFade 0.2s ease-out;
+            min-width: 100%;
+        }
+
+        .filter-d2 .custom-dropdown.active .dropdown-menu-list {
+            display: block;
+        }
+
+        .filter-d2 .dropdown-item-custom {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .filter-d2 .dropdown-item-custom:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .filter-d2 .dropdown-item-custom.selected {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .filter-d2 .btn-go {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            flex-shrink: 0;
+        }
+
+        .filter-d2 .btn-go:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        @keyframes slideDownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
 </head>
@@ -531,14 +708,7 @@
 
             <!-- Analytics Charts Section -->
             <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Logins Over Time</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="loginsOverTimeChart"></canvas>
-                    </div>
-                </div>
+
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Account Type Distribution</h3>
@@ -569,73 +739,65 @@
             </div>
 
             <!-- Filters Section -->
-            <div class="filters-section">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="form-control" id="searchInput"
-                                placeholder="Search by email, IP address, or device...">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="accountTypeDropdown">
-                                <button class="custom-dropdown-btn" id="accountTypeDropdownBtn">
-                                    <span id="accountTypeDropdownText">All Account Types</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="accountTypeDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="accountTypeDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="accountTypeSelect" value="all">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="statusDropdown">
-                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                    <span id="statusDropdownText">All Status</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="statusSelect" value="all">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="filter-box">
-                            <div class="custom-date-input">
-                                <input type="date" class="custom-date-field" id="dateFromFilter" title="From Date">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="filter-box">
-                            <div class="custom-date-input">
-                                <input type="date" class="custom-date-field" id="dateToFilter" title="To Date">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                        </div>
+            <!-- Filters Section -->
+            <div class="filter-d2">
+                <!-- Search Pill -->
+                <div class="search-pill">
+                    <div class="search-content">
+                        <label><i class="fas fa-search"></i></label>
+                        <input type="text" id="searchInput" placeholder="Search by email, IP...">
                     </div>
                 </div>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all" id="filterAll">
-                        All
-                    </button>
-                    <button class="filter-btn" data-filter="today" id="filterToday">
-                        Today
-                    </button>
-                    <button class="filter-btn" data-filter="week" id="filterWeek">
-                        This Week
-                    </button>
-                    <button class="filter-btn" data-filter="month" id="filterMonth">
-                        This Month
-                    </button>
+
+                <!-- Account Type Dropdown -->
+                <div class="custom-dropdown" id="accountTypeDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-users"></i></label>
+                            <span class="selected-text" id="accountTypeDropdownText">All Account Types</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom" data-value="all">All Account Types</div>
+                        <div class="dropdown-item-custom" data-value="regular">Regular Users</div>
+                        <div class="dropdown-item-custom" data-value="business">Business Users</div>
+                        <div class="dropdown-item-custom" data-value="admin">Admin Users</div>
+                    </div>
+                    <input type="hidden" id="accountTypeSelect" value="all">
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="custom-dropdown" id="statusDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-filter"></i></label>
+                            <span class="selected-text" id="statusDropdownText">All Status</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom" data-value="all">All Status</div>
+                        <div class="dropdown-item-custom" data-value="success">Successful</div>
+                        <div class="dropdown-item-custom" data-value="failed">Failed</div>
+                    </div>
+                    <input type="hidden" id="statusSelect" value="all">
+                </div>
+
+                <!-- Refresh Button -->
+                <button class="btn-go" onclick="refreshLogins()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <!-- Graph 1: Login Activity (Moved & Styled) -->
+            <div class="graph-card-d1">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Login Activity Trends</h4>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="loginsOverTimeChart"></canvas>
                 </div>
             </div>
 

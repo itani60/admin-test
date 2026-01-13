@@ -23,22 +23,62 @@ document.addEventListener('DOMContentLoaded', () => {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-    document.getElementById('dateFromFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateToFilter').addEventListener('change', applyFilters);
 
-    // Initialize custom dropdowns
-    initializeAccountTypeDropdown();
-    initializeStatusDropdown();
+    // Initialize Design 2 Dropdowns (Generic)
+    initializeDesign2Dropdowns();
+}
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            applyFilters();
+// Initialize Design 2 Dropdowns
+function initializeDesign2Dropdowns() {
+    const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+
+    dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        if (!trigger) return;
+
+        // Toggle
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Close others
+            dropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+            dropdown.classList.toggle('active');
+        });
+
+        // Item Selection
+        const options = dropdown.querySelectorAll('.dropdown-item-custom');
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.dataset.value;
+                const text = option.textContent;
+
+                // Update text
+                const textSpan = dropdown.querySelector('.selected-text');
+                if (textSpan) textSpan.textContent = text;
+
+                // Update specific hidden input
+                const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+                if (hiddenInput) {
+                    hiddenInput.value = value;
+                }
+
+                // Close dropdown
+                dropdown.classList.remove('active');
+
+                // Apply filters
+                applyFilters();
+            });
         });
     });
 
-
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+            dropdowns.forEach(d => d.classList.remove('active'));
+        }
+    });
 }
 
 // Load login events from API

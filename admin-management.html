@@ -424,39 +424,58 @@
             margin: 0 auto 10px;
         }
 
-        /* --- Design 2: Minimalist Pill (Filter) --- */
+        /* --- Design 2: Minimalist Pill (Filter) - Corrected --- */
         .filter-d2 {
-            background: white;
-            border-radius: 100px;
-            padding: 8px;
+            background: transparent;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .filter-d2 .search-pill,
+        .filter-d2 .custom-dropdown {
+            background: white;
             border: 1px solid #e2e8f0;
-            margin-bottom: 24px;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
         }
 
         .filter-d2 .search-pill {
             flex-grow: 1;
-            background: #f8fafc;
-            border-radius: 50px;
-            padding: 8px 20px;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            padding: 0 20px;
         }
 
-        .filter-d2 .search-pill:focus-within {
-            background: white;
+        .filter-d2 .search-pill:focus-within,
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
         }
 
         .filter-d2 .search-content {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #64748b;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .filter-d2 .search-content label {
+            color: #94a3b8;
+            margin: 0;
+            display: flex;
+            align-items: center;
         }
 
         .filter-d2 input {
@@ -468,54 +487,49 @@
             font-weight: 500;
         }
 
-        .filter-d2 .custom-dropdown {
-            position: relative;
-        }
-
         .filter-d2 .dropdown-trigger {
-            background: #f8fafc;
-            border-radius: 50px;
-            padding: 8px 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-            min-width: 180px;
+            width: 100%;
             justify-content: space-between;
-        }
-
-        .filter-d2 .dropdown-trigger:hover {
-            background: #f1f5f9;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+            user-select: none;
         }
 
         .filter-d2 .trigger-content {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            color: #334155;
-            font-size: 0.95rem;
+            gap: 12px;
         }
 
         .filter-d2 .trigger-content label {
+            margin: 0;
             color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .trigger-content .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
         }
 
         .filter-d2 .dropdown-menu-list {
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
+            left: 0;
             background: white;
             border-radius: 16px;
             padding: 8px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             border: 1px solid #e2e8f0;
-            min-width: 220px;
             display: none;
             z-index: 100;
             animation: slideDownFade 0.2s ease-out;
+            min-width: 100%;
         }
 
         .filter-d2 .custom-dropdown.active .dropdown-menu-list {
@@ -1624,6 +1638,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="assets/scripts/admin-aws-auth.js"></script>
     <script src="assets/scripts/admin-management.js"></script>
+
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
 

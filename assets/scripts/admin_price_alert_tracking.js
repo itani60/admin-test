@@ -442,7 +442,7 @@ async function checkLoginState() {
 
 // Initialize Analytics Charts
 function initializeCharts() {
-    // Chart 1: Alerts Over Time (Line Chart)
+    // Chart 1: Alerts Over Time (Design 1: Standard Area)
     const alertsOverTimeCtx = document.getElementById('alertsOverTimeChart');
     if (alertsOverTimeCtx) {
         alertsOverTimeCtx.addEventListener('touchmove', (e) => {
@@ -467,10 +467,14 @@ function initializeCharts() {
                 datasets: [{
                     label: 'Alerts Created',
                     data: timeData.data,
-                    borderColor: 'rgb(37, 99, 235)',
                     backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    fill: true,
                     tension: 0.4,
-                    fill: true
+                    pointRadius: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb'
                 }]
             },
             options: {
@@ -479,16 +483,17 @@ function initializeCharts() {
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
                     }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } }
                 },
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
@@ -798,80 +803,54 @@ async function handleLogout() {
 }
 
 // Initialize custom status dropdown
+// Initialize custom status dropdown (Updated for Design 2)
 function initializeStatusDropdown() {
-    const statusDropdown = document.getElementById('statusDropdown');
-    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
-    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
-    const statusDropdownItems = document.getElementById('statusDropdownItems');
-    const statusSelect = document.getElementById('statusSelect');
+    const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
 
-    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        if (!trigger) return;
 
-    // Status options
-    const statusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'active', text: 'Active' },
-        { value: 'inactive', text: 'Inactive' }
-    ];
-
-    // Render dropdown items
-    statusOptions.forEach(option => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
-            itemDiv.classList.add('selected');
-        }
-        itemDiv.addEventListener('click', function () {
-            // Update selected state
-            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
+        // Toggle
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Close others
+            dropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
             });
-            this.classList.add('selected');
-
-            // Update button text and hidden input
-            document.getElementById('statusDropdownText').textContent = option.text;
-            statusSelect.value = option.value;
-
-            // Close dropdown
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-
-            // Apply filters
-            applyFilters();
-        });
-        statusDropdownItems.appendChild(itemDiv);
-    });
-
-    // Toggle dropdown
-    statusDropdownBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const isActive = statusDropdown.classList.contains('active');
-
-        // Close all other dropdowns
-        document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'statusDropdown') {
-                dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
-            }
+            dropdown.classList.toggle('active');
         });
 
-        if (isActive) {
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-        } else {
-            statusDropdown.classList.add('active');
-            statusDropdownMenu.style.display = 'block';
-        }
+        // Item Selection
+        const options = dropdown.querySelectorAll('.dropdown-item-custom');
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.dataset.value || option.textContent;
+                const text = option.textContent;
+
+                // Update text
+                const textSpan = dropdown.querySelector('.selected-text');
+                if (textSpan) textSpan.textContent = text;
+
+                // Handle Status Logic
+                if (dropdown.id === 'statusDropdown') {
+                    const statusSelect = document.getElementById('statusSelect');
+                    if (statusSelect) {
+                        statusSelect.value = value;
+                        applyFilters();
+                    }
+                }
+
+                dropdown.classList.remove('active');
+            });
+        });
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
+    // Close on click outside
+    document.addEventListener('click', (e) => {
         if (!e.target.closest('.custom-dropdown')) {
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
+            dropdowns.forEach(d => d.classList.remove('active'));
         }
     });
 }

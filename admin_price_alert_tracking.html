@@ -413,6 +413,7 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         }
 
+
         .d2-prod-img {
             width: 60px;
             height: 60px;
@@ -421,9 +422,167 @@
             border: 1px solid #f1f5f9;
             padding: 2px;
         }
+
+        /* --- GENERIC CUSTOM DROPDOWN STYLES --- */
+        .custom-dropdown {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .dropdown-menu-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .custom-dropdown.active .dropdown-menu-list {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-item-custom {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        /* --- DESIGN 2: Minimalist Pill --- */
+        .filter-d2 {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+        }
+
+        .filter-d2 .custom-dropdown,
+        .filter-d2 .search-pill {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            flex: 1;
+        }
+
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active,
+        .filter-d2 .search-pill:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-d2 .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-d2 .trigger-content,
+        .filter-d2 .search-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .filter-d2 label {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .dropdown-menu-list {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            margin-top: 8px;
+            padding: 8px;
+        }
+
+        .filter-d2 .dropdown-item-custom {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .filter-d2 .dropdown-item-custom:hover {
+            background: #f8fafc;
+        }
+
+        .filter-d2 .btn-go {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            flex-shrink: 0;
+        }
+
+        .filter-d2 .btn-go:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Search specific */
+        .filter-d2 .search-pill input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0f172a;
+        }
+
+        .filter-d2 .search-pill input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* --- Design 1: Classic Reference (Graph) --- */
+        .card-d1-graph {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
-</head>
 </head>
 <div class="page-loading-overlay" id="pageLoadingOverlay">
     <div class="loading-content">
@@ -620,71 +779,80 @@
             </div>
 
             <!-- Charts Grid -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Alerts Created Over Time</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="alertsOverTimeChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Active vs Inactive Alerts</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="alertStatusChart"></canvas>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card-d1-graph">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Alerts Created Over Time</h4>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="alertsOverTimeChart"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Top Users by Alert Count</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="topUsersChart"></canvas>
+                <div class="col-lg-4">
+                    <div class="card-d1-graph">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Active vs Inactive</h4>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="alertStatusChart"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Notification Methods Distribution</h3>
+                <div class="col-lg-6">
+                    <div class="card-d1-graph">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Top Users by Alert Count</h4>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="topUsersChart"></canvas>
+                        </div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="notificationMethodsChart"></canvas>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card-d1-graph">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold m-0">Notification Methods</h4>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="notificationMethodsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Filters Section -->
-            <div class="filters-section">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" class="form-control" id="searchInput"
-                                placeholder="Search by user email or product name...">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="statusDropdown">
-                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                    <span id="statusDropdownText">All Status</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="statusSelect" value="all">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-primary w-100" onclick="refreshAlerts()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
+            <div class="filter-d2">
+                <!-- Search Pill -->
+                <div class="search-pill">
+                    <div class="search-content">
+                        <label><i class="fas fa-search"></i></label>
+                        <input type="text" id="searchInput" placeholder="Search by user or product...">
                     </div>
                 </div>
+
+                <!-- Status Dropdown Pill -->
+                <div class="custom-dropdown" id="statusDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-filter"></i></label>
+                            <span class="selected-text" id="statusDropdownText">All Status</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom" data-value="all">All Status</div>
+                        <div class="dropdown-item-custom" data-value="active">Active</div>
+                        <div class="dropdown-item-custom" data-value="inactive">Inactive</div>
+                    </div>
+                    <input type="hidden" id="statusSelect" value="all">
+                </div>
+
+                <!-- Refresh Button -->
+                <button class="btn-go" onclick="refreshAlerts()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
 
             <!-- Cards Section (Replaces Table) -->

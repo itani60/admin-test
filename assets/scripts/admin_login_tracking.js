@@ -131,8 +131,12 @@ function applyFilters() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const accountTypeFilter = document.getElementById('accountTypeSelect').value;
     const statusFilter = document.getElementById('statusSelect').value;
-    const dateFrom = document.getElementById('dateFromFilter').value;
-    const dateTo = document.getElementById('dateToFilter').value;
+    const dateFromInput = document.getElementById('dateFromFilter');
+    const dateFrom = dateFromInput ? dateFromInput.value : '';
+
+    const dateToInput = document.getElementById('dateToFilter');
+    const dateTo = dateToInput ? dateToInput.value : '';
+
     const timeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
 
     filteredLoginEvents = allLoginEvents.filter(event => {

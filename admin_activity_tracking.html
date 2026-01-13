@@ -10,7 +10,23 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/sidebar.css" rel="stylesheet">
     <link href="assets/css/admin_activity_tracking.css" rel="stylesheet">
-    <!-- Inline styles removed and moved to admin_activity_tracking.css -->
+    <style>
+        /* Design 1 Card Style */
+        .card-d1 {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -206,9 +222,12 @@
 
             <!-- Charts Section -->
             <div class="charts-grid">
-                <div class="chart-section full-width-chart">
-                    <h3>Traffic Overview <small class="text-muted fw-normal fs-6 ms-2">Last 7 Days</small></h3>
-                    <div class="canvas-wrapper">
+                <div class="card-d1">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0">Traffic Overview <small class="text-muted fw-normal fs-6 ms-2">Last 7
+                                Days</small></h4>
+                    </div>
+                    <div class="chart-container">
                         <canvas id="trafficChart"></canvas>
                     </div>
                 </div>

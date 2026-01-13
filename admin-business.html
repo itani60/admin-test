@@ -851,7 +851,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="businessPostsContainer">
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
@@ -874,7 +874,7 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-light btn-sm rounded-circle shadow-sm" type="button"
-                                        data-bs-toggle="modal" data-bs-target="#viewPostModal">
+                                        onclick="viewPost('example-post-id')" title="View Business Post">
                                         <i class="fas fa-ellipsis-v text-muted"></i>
                                     </button>
                                 </td>
@@ -889,8 +889,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-xl modal-dialog-scrollable">
                     <div class="modal-content border-0 bg-transparent">
-                        <div class="mock-modal bg-light"
-                            style="max-width: none; border-radius: 16px; overflow: hidden;">
+                        <div class="mock-modal bg-light" style="border-radius: 16px; overflow: hidden;">
                             <!-- Custom Header -->
                             <div class="bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center gap-3">
@@ -915,7 +914,7 @@
                             </div>
 
                             <!-- Body with Business Preview -->
-                            <div class="p-4">
+                            <div class="p-4" id="postModalBody">
                                 <div class="row g-4">
                                     <!-- Left Col: Key Info -->
                                     <div class="col-md-4">

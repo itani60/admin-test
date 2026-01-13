@@ -333,6 +333,141 @@
             font-size: 0.9rem;
             font-weight: 500;
         }
+
+        /* --- DESIGN 2: Minimalist Pill Filter --- */
+        .filter-d2 {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .filter-d2 .custom-dropdown {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 180px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-d2 .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-d2 .trigger-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .filter-d2 label {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .filter-d2 .dropdown-menu-list {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            margin-top: 8px;
+            padding: 8px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .filter-d2 .custom-dropdown.active .dropdown-menu-list {
+            display: block;
+        }
+
+        .filter-d2 .dropdown-item-custom {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .filter-d2 .dropdown-item-custom:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        .filter-d2 .dropdown-item-custom.selected {
+            background: #fef2f2;
+            color: var(--primary);
+        }
+
+        .filter-d2 .btn-go {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            flex-shrink: 0;
+        }
+
+        .filter-d2 .btn-go:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .filter-d2 .search-input-field {
+            border: none;
+            outline: none;
+            font-weight: 600;
+            color: #0f172a;
+            width: 100%;
+            background: transparent;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .search-input-field::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
     </style>
     <link href="assets/css/index.css" rel="stylesheet">
 </head>
@@ -566,62 +701,82 @@
                 </div>
             </div>
 
-            <!-- Filters Section -->
-            <div class="filters-section">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="filter-box">
-                            <div class="custom-search-input">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="searchInput"
-                                    placeholder="Search by user email, name, or notification type...">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="typeDropdown">
-                                <button class="custom-dropdown-btn" id="typeDropdownBtn">
-                                    <span id="typeDropdownText">All Types</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="typeDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="typeDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="typeSelect" value="all">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="filter-box">
-                            <div class="custom-dropdown" id="statusDropdown">
-                                <button class="custom-dropdown-btn" id="statusDropdownBtn">
-                                    <span id="statusDropdownText">All Status</span>
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                                <div class="custom-dropdown-menu" id="statusDropdownMenu" style="display: none;">
-                                    <div class="custom-dropdown-items" id="statusDropdownItems"></div>
-                                </div>
-                                <input type="hidden" id="statusSelect" value="all">
-                            </div>
+            <!-- Filter Section (Design 2) -->
+            <div class="filter-d2">
+                <!-- Search Input -->
+                <div class="custom-dropdown" style="cursor: text; flex: 2; min-width: 300px;"
+                    onclick="document.getElementById('searchInput').focus()">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-search"></i></label>
+                            <input type="text" id="searchInput" class="search-input-field"
+                                placeholder="Search email, name, or type...">
                         </div>
                     </div>
                 </div>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all" id="filterAll">
-                        All
-                    </button>
-                    <button class="filter-btn" data-filter="today" id="filterToday">
-                        Today
-                    </button>
-                    <button class="filter-btn" data-filter="week" id="filterWeek">
-                        This Week
-                    </button>
-                    <button class="filter-btn" data-filter="month" id="filterMonth">
-                        This Month
-                    </button>
+
+                <!-- Type Dropdown -->
+                <div class="custom-dropdown" id="typeDropdownWrapper">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-tag"></i></label>
+                            <span class="selected-text" id="selectedTypeText">All Types</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom type-item selected" data-value="all">All Types</div>
+                        <div class="dropdown-item-custom type-item" data-value="price_alert">Price Alerts</div>
+                        <div class="dropdown-item-custom type-item" data-value="user_registration">User Reg</div>
+                        <div class="dropdown-item-custom type-item" data-value="business_registration">Business Reg
+                        </div>
+                        <div class="dropdown-item-custom type-item" data-value="password_reset">Password Reset</div>
+                        <div class="dropdown-item-custom type-item" data-value="email_update">Email Update</div>
+                    </div>
                 </div>
+
+                <!-- Status Dropdown -->
+                <div class="custom-dropdown" id="statusDropdownWrapper">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-info-circle"></i></label>
+                            <span class="selected-text" id="selectedStatusText">All Status</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom status-item selected" data-value="all">All Status</div>
+                        <div class="dropdown-item-custom status-item" data-value="read">Read</div>
+                        <div class="dropdown-item-custom status-item" data-value="unread">Unread</div>
+                    </div>
+                </div>
+
+                <!-- Time Dropdown -->
+                <div class="custom-dropdown" id="timeDropdownWrapper">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="far fa-calendar-alt"></i></label>
+                            <span class="selected-text" id="selectedTimeText">Sort: All Time</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom time-item selected" data-value="all">All Time</div>
+                        <div class="dropdown-item-custom time-item" data-value="today">Today</div>
+                        <div class="dropdown-item-custom time-item" data-value="week">This Week</div>
+                        <div class="dropdown-item-custom time-item" data-value="month">This Month</div>
+                    </div>
+                </div>
+
+                <button class="btn-go" onclick="applyFilters()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
+
+            <!-- Hidden Inputs -->
+            <input type="hidden" id="typeSelect" value="all">
+            <input type="hidden" id="statusSelect" value="all">
+            <input type="hidden" id="timeSelect" value="all">
 
             <!-- Notifications Section -->
             <div class="notifications-section">
@@ -679,6 +834,86 @@
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
 
+    <script>
+        // Design 2 Filter Logic for Alerts
+        document.addEventListener('DOMContentLoaded', () => {
+            setupD2Dropdowns();
+        });
+
+        function setupD2Dropdowns() {
+            const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+
+            // Toggle
+            dropdowns.forEach(dropdown => {
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                if (!trigger) return;
+
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isActive = dropdown.classList.contains('active');
+                    dropdowns.forEach(d => d.classList.remove('active'));
+                    if (!isActive) dropdown.classList.add('active');
+                });
+            });
+
+            // Close on outside click
+            window.addEventListener('click', (event) => {
+                if (!event.target.closest('.filter-d2 .custom-dropdown')) {
+                    dropdowns.forEach(d => d.classList.remove('active'));
+                }
+            });
+
+            // Type Selection
+            document.querySelectorAll('.type-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    handleSelection(e, item, 'selectedTypeText', 'typeSelect', 'type-item', 'typeDropdownWrapper');
+                });
+            });
+
+            // Status Selection
+            document.querySelectorAll('.status-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    handleSelection(e, item, 'selectedStatusText', 'statusSelect', 'status-item', 'statusDropdownWrapper');
+                });
+            });
+
+            // Time Selection
+            document.querySelectorAll('.time-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    handleSelection(e, item, 'selectedTimeText', 'timeSelect', 'time-item', 'timeDropdownWrapper');
+                });
+            });
+        }
+
+        function handleSelection(e, item, textId, inputId, itemClass, dropdownId) {
+            e.stopPropagation();
+            const value = item.dataset.value;
+            const text = item.textContent;
+
+            // Update UI
+            document.getElementById(textId).textContent = text; // Just update text, keep prefix label
+            if (textId === 'selectedTimeText') {
+                document.getElementById(textId).textContent = 'Sort: ' + text;
+            } else {
+                document.getElementById(textId).textContent = text;
+            }
+
+            const listContainer = item.parentElement;
+            listContainer.querySelectorAll('.' + itemClass).forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+
+            // Update Hidden Input (Existing logic uses these IDs)
+            document.getElementById(inputId).value = value;
+
+            // Close Dropdown
+            document.getElementById(dropdownId).classList.remove('active');
+
+            // Trigger Filter
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        }
+    </script>
 </body>
 
 </html>

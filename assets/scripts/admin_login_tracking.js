@@ -469,15 +469,16 @@ function initializeCharts() {
             data: {
                 labels: timeData.labels,
                 datasets: [{
-                    label: 'Logins',
+                    label: 'Total Logins',
                     data: timeData.data,
-                    borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
                     fill: true,
-                    borderWidth: 3,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb'
                 }]
             },
             options: {
@@ -485,22 +486,28 @@ function initializeCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
                     }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        },
-                        grid: {
-                            color: '#eff6ff'
-                        }
-                    },
                     x: {
                         grid: {
                             display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            stepSize: 1
                         }
                     }
                 },
@@ -508,7 +515,6 @@ function initializeCharts() {
                     intersect: false,
                     mode: 'index'
                 },
-                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove']
             }
         });
     }

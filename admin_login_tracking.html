@@ -738,6 +738,17 @@
             </div>
 
             <!-- Filters Section -->
+            <!-- Graph 1: Login Activity (Moved & Styled) -->
+            <div class="graph-card-d1">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Login Activity Trends</h4>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="loginsOverTimeChart"></canvas>
+                </div>
+            </div>
+
             <!-- Filters Section -->
             <div class="filter-d2">
                 <!-- Search Pill -->
@@ -787,17 +798,6 @@
                 <button class="btn-go" onclick="refreshLogins()">
                     <i class="fas fa-sync-alt"></i>
                 </button>
-            </div>
-
-            <!-- Graph 1: Login Activity (Moved & Styled) -->
-            <div class="graph-card-d1">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold m-0">Login Activity Trends</h4>
-                    <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
-                </div>
-                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
-                    <canvas id="loginsOverTimeChart"></canvas>
-                </div>
             </div>
 
             <!-- Login Events Section -->

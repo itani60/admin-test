@@ -708,6 +708,15 @@
 
             <!-- Analytics Charts Section -->
             <div class="charts-grid">
+                <!-- Moved Login Activity by Hour Here to fill gap -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Login Activity by Hour</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="loginActivityByHourChart"></canvas>
+                    </div>
+                </div>
 
                 <div class="chart-card">
                     <div class="chart-header">
@@ -720,16 +729,6 @@
             </div>
 
             <div class="charts-grid">
-                <!-- Graph 1: Login Activity (Design 1) -->
-                <div class="graph-card-d1">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="fw-bold m-0">Login Activity Trends (By Hour)</h4>
-                        <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
-                    </div>
-                    <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
-                        <canvas id="loginActivityByHourChart"></canvas>
-                    </div>
-                </div>
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Successful vs Failed Logins</h3>
@@ -792,7 +791,16 @@
                 </button>
             </div>
 
-
+            <!-- Graph 1: Login Activity (Moved & Styled) -->
+            <div class="graph-card-d1">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0">Login Activity Trends</h4>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Live Updates</span>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="loginsOverTimeChart"></canvas>
+                </div>
+            </div>
 
             <!-- Login Events Section -->
             <div class="login-events-section">

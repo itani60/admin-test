@@ -82,27 +82,69 @@ async function checkLoginState() {
 
 
 // Setup event listeners
+// Setup event listeners
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
-
-    // Initialize custom dropdowns
-    initializeAccountTypeDropdown();
-    initializeStatusDropdown();
-
     document.getElementById('adminSearchInput').addEventListener('input', debounce(applyFilters, 300));
-
-    // Initialize admin status dropdown
-    initializeAdminStatusDropdown();
-
     document.getElementById('regularSearchInput').addEventListener('input', debounce(applyFilters, 300));
-
-    // Initialize regular status dropdown
-    initializeRegularStatusDropdown();
-
     document.getElementById('businessSearchInput').addEventListener('input', debounce(applyFilters, 300));
 
-    // Initialize business status dropdown
-    initializeBusinessStatusDropdown();
+    // Initialize Design 2 Dropdowns (Generic)
+    initializeDesign2Dropdowns();
+}
+
+// Initialize Design 2 Dropdowns
+function initializeDesign2Dropdowns() {
+    const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+
+    dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        if (!trigger) return;
+
+        // Toggle
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Close others
+            dropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+            dropdown.classList.toggle('active');
+        });
+
+        // Item Selection
+        const options = dropdown.querySelectorAll('.dropdown-item-custom');
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = option.dataset.value;
+                const text = option.textContent;
+
+                // Update text
+                const textSpan = dropdown.querySelector('.selected-text');
+                if (textSpan) textSpan.textContent = text;
+
+                // Update specific hidden input
+                const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+                if (hiddenInput) {
+                    hiddenInput.value = value;
+                }
+
+                // Close dropdown
+                dropdown.classList.remove('active');
+
+                // Apply filters (Reset page to 1)
+                currentPage = 1;
+                applyFilters();
+            });
+        });
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+            dropdowns.forEach(d => d.classList.remove('active'));
+        }
+    });
 }
 
 // Load users from API

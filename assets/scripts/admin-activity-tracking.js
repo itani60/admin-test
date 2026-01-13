@@ -185,14 +185,14 @@ function initCharts(data) {
         ticks: { color: '#64748b', font: { size: 11 } }
     };
 
-    // Traffic Chart (Design 1: Smooth Line)
+    // Traffic Chart (Design 1)
     const ctxTraffic = document.getElementById('trafficChart');
     if (ctxTraffic) {
         if (window.trafficChartInstance) window.trafficChartInstance.destroy();
         const ctx = ctxTraffic.getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.1)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
 
         window.trafficChartInstance = new Chart(ctx, {
             type: 'line',
@@ -201,25 +201,50 @@ function initCharts(data) {
                 datasets: [{
                     label: 'Page Views',
                     data: data.traffic || [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#3b82f6',
                     backgroundColor: gradient,
-                    tension: 0.4,
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
                     fill: true,
-                    pointBackgroundColor: '#2563eb',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    }
+                },
                 scales: {
-                    y: { ...commonScaleOptions, beginAtZero: true },
-                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
-                }
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            stepSize: 100 // Adjust step size as needed for traffic volume
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
             }
         });
     }

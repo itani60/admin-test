@@ -9,10 +9,28 @@ async function initSeoDashboard() {
     try {
         await Promise.all([
             fetchDashboardStats(),
-            fetchSearchConsoleData()
+            fetchSearchConsoleData(),
+            fetchRecentAudits()
         ]);
     } catch (error) {
         console.error('Error initializing dashboard:', error);
+    }
+}
+
+async function fetchRecentAudits() {
+    try {
+        const response = await fetch(SEO_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'getLastAudits' })
+        });
+
+        const audits = await response.json();
+        if (Array.isArray(audits)) {
+            updateAuditTable(audits);
+        }
+    } catch (error) {
+        console.error('Failed to fetch audits:', error);
     }
 }
 
@@ -28,10 +46,10 @@ async function fetchDashboardStats() {
         if (data.error) throw new Error(data.error);
 
         // Update Stat Cards
-        updateStatCard('overall-score', data.overallScore + '%', data.overallScore);
-        updateStatCard('indexed-pages', data.indexedPages, 75); // Mock progress for count
-        updateStatCard('crawl-errors', data.crawlErrors, 20); // Mock progress for count
-        updateStatCard('load-speed', data.avgLoadSpeed + 's', 90);
+        updateStatCard('overall-score', (data.overallScore || 0) + '%', data.overallScore || 0);
+        updateStatCard('indexed-pages', data.indexedPages || 0, 75); // Mock progress for count
+        updateStatCard('crawl-errors', data.crawlErrors || 0, 20); // Mock progress for count
+        updateStatCard('load-speed', (data.avgLoadSpeed || 0) + 's', 90);
 
         // Update Priority Fixes (Top Issues)
         updatePriorityFixes(data.topIssues);
@@ -57,6 +75,37 @@ async function fetchSearchConsoleData() {
     } catch (error) {
         console.error('Failed to fetch search console data:', error);
     }
+}
+
+function updateAuditTable(audits) {
+    const tbody = document.querySelector('tbody');
+    if (!tbody) return;
+
+    if (audits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-secondary">No audits found. Run a "New Audit" to get started!</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = audits.map(audit => {
+        const date = new Date(audit.Timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        let statusBadge = '<span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Good</span>';
+        if (audit.score < 50) statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">Poor</span>';
+        else if (audit.score < 80) statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">Fair</span>';
+
+        return `
+            <tr>
+                <td class="ps-4 fw-medium text-break" style="max-width: 200px;">${audit.PagePath}</td>
+                <td class="text-muted small">${date}</td>
+                <td><span class="fw-bold">${audit.score}</span></td>
+                <td>${statusBadge}</td>
+                <td class="pe-4 text-end">
+                    <button class="btn btn-sm btn-light text-secondary" onclick="alert('${(audit.issues_list || []).join('\\n')}')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function updateStatCard(id, value, progress) {

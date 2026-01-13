@@ -183,67 +183,6 @@
        margin-bottom: 1rem;
    }
 
-   .table-section {
-       background: white;
-       padding: 2rem;
-       border-radius: 16px;
-       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-       border: 2px solid var(--border);
-       margin-bottom: 2.25rem;
-   }
-
-   .table-section h3 {
-       font-size: 1.2rem;
-       font-weight: 800;
-       color: var(--text-dark);
-       margin-bottom: 1.75rem;
-       padding-bottom: 1.25rem;
-       border-bottom: 2px solid var(--border);
-   }
-
-   .table {
-       margin-bottom: 0;
-   }
-
-   .table thead th {
-       background: var(--light);
-       border-bottom: 2px solid var(--border);
-       font-weight: 600;
-       color: var(--text-dark);
-       padding: 1rem;
-   }
-
-   .table tbody td {
-       padding: 1rem;
-       border-bottom: 1px solid var(--border);
-   }
-
-   .table tbody tr:hover {
-       background: var(--light);
-   }
-
-   .badge {
-       padding: 0.35rem 0.75rem;
-       border-radius: 4px;
-       font-size: 0.85rem;
-       font-weight: 600;
-   }
-
-   .badge-primary {
-       background: var(--primary);
-       color: white;
-   }
-
-   .badge-success {
-       background: var(--success);
-       color: white;
-   }
-
-   .badge-danger {
-       background: var(--danger);
-       color: white;
-   }
-
    .btn-primary {
        background: var(--primary);
        border: none;
@@ -765,11 +704,91 @@
    .card-d1 {
        background: white;
        border-radius: 20px;
-       padding: 32px;
+       padding: 24px;
        border: none;
        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
        background-image: linear-gradient(to right bottom, #ffffff, #f8fafc);
-       margin-top: 2rem;
+       /* Layout for Design 1 */
+       display: flex;
+       align-items: center;
+       gap: 20px;
+   }
+
+   .card-d1:hover {
+       transform: translateY(-5px);
+   }
+
+   /* Design 1 Elements */
+   .d1-ring {
+       width: 60px;
+       height: 60px;
+       border-radius: 50%;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 1.2rem;
+       position: relative;
+       flex-shrink: 0;
+   }
+
+   .d1-ring::before {
+       content: '';
+       position: absolute;
+       inset: 0;
+       border-radius: 50%;
+       border: 4px solid currentColor;
+       opacity: 0.2;
+   }
+
+   .d1-ring::after {
+       content: '';
+       position: absolute;
+       inset: 0;
+       border-radius: 50%;
+       border: 4px solid currentColor;
+       border-right-color: transparent;
+       border-bottom-color: transparent;
+       transform: rotate(-45deg);
+   }
+
+   .d1-content {
+       flex: 1;
+   }
+
+   .d1-content h3 {
+       margin: 0;
+       font-size: 1.8rem;
+       font-weight: 800;
+       color: var(--text-dark);
+       line-height: 1;
+   }
+
+   .d1-content p {
+       margin: 4px 0 0 0;
+       color: #64748b;
+       font-size: 0.9rem;
+       font-weight: 500;
+   }
+
+   .d1-change {
+       font-size: 0.8rem;
+       margin-top: 5px;
+       font-weight: 600;
+       display: flex;
+       align-items: center;
+       gap: 0.25rem;
+   }
+
+   .d1-change.positive {
+       color: #10b981;
+   }
+
+   .d1-change.negative {
+       color: #ef4444;
+   }
+
+   .d1-change.neutral {
+       color: #94a3b8;
    }
 
    .table-d1 {

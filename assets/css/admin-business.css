@@ -450,6 +450,35 @@
     background: #f8f9fa;
 }
 
+/* --- Design 1: Reference Clean --- */
+.table-design-1 {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table-design-1 thead {
+    background: #fef2f2;
+    /* Light red/pinkish bg from screenshot */
+}
+
+.table-design-1 th,
+.table-design-1 .table th {
+    font-weight: 600;
+    color: #1e293b;
+    border: none !important;
+    padding: 1rem;
+    border-bottom: none !important;
+}
+
+.table-design-1 td,
+.table-design-1 .table td {
+    vertical-align: middle;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
 .badge {
     padding: 0.35em 0.65em;
     font-size: 0.75em;

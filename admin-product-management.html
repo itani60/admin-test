@@ -271,6 +271,136 @@
             text-align: center;
             font-size: 1rem;
         }
+
+        /* --- DESIGN 2: Minimalist Pill --- */
+        .filter-d2 {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .filter-d2 .custom-dropdown {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-d2 .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-d2 .trigger-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-d2 label {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .dropdown-menu-list {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            margin-top: 8px;
+            padding: 8px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: none;
+        }
+
+        .filter-d2 .custom-dropdown.active .dropdown-menu-list {
+            display: block;
+        }
+
+        .filter-d2 .dropdown-item-custom {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .filter-d2 .dropdown-item-custom:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        .filter-d2 .dropdown-item-custom.selected {
+            background: #fef2f2;
+            color: var(--primary);
+        }
+
+        .filter-d2 .btn-go {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            flex-shrink: 0;
+        }
+
+        .filter-d2 .btn-go:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Search input specific styles */
+        .filter-d2 .search-input-field {
+            border: none;
+            outline: none;
+            font-weight: 600;
+            color: #0f172a;
+            width: 100%;
+            background: transparent;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .search-input-field::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
     </style>
 
 </head>
@@ -292,17 +422,17 @@
 
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar" id="sidebar">
+      <aside class="sidebar" id="sidebar">
         <div class="sb9-grid" style="padding: 1.5rem;">
             <a href="index.html" class="sb9-tile active">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="admin-analytics.html" class="sb9-tile">
+            <a href="admin-product-stats.html" class="sb9-tile">
                 <i class="fas fa-chart-line"></i>
                 <span>Prod Stats</span>
             </a>
-            <a href="admin-business.html" class="sb9-tile">
+            <a href="admin-business-management-posts.html" class="sb9-tile">
                 <i class="fas fa-edit"></i>
                 <span>Posts</span>
             </a>
@@ -326,7 +456,7 @@
                 <i class="fas fa-crosshairs"></i>
                 <span>Tracking</span>
             </a>
-            <a href="admin-management.html" class="sb9-tile">
+            <a href="admin-management-users.html" class="sb9-tile">
                 <i class="fas fa-users"></i>
                 <span>Users</span>
             </a>
@@ -341,6 +471,10 @@
             <a href="admin_reports_review.html" class="sb9-tile">
                 <i class="fas fa-file-alt"></i>
                 <span>Reports</span>
+            </a>
+            <a href="admin-report-users.html" class="sb9-tile">
+                <i class="fas fa-user-slash"></i>
+                <span>Report Users</span>
             </a>
             <a href="admin-product-management.html" class="sb9-tile">
                 <i class="fas fa-box"></i>
@@ -362,10 +496,31 @@
                 <i class="fas fa-running"></i>
                 <span>Activity</span>
             </a>
-            <a href="admin-settings.html" class="sb9-tile">
-                <i class="fas fa-cog"></i>
-                <span>Settings</span>
+            <a href="admin-monitor-view.html" class="sb9-tile">
+                <i class="fas fa-desktop"></i>
+                <span>Monitor</span>
             </a>
+            <a href="admin-access-control.html" class="sb9-tile">
+                <i class="fas fa-shield-alt"></i>
+                <span>Access</span>
+            </a>
+            <a href="admin-support.html" class="sb9-tile">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
+            </a>
+            <a href="admin-seo-manager.html" class="sb9-tile">
+                <i class="fas fa-search-location"></i>
+                <span>SEO</span>
+            </a>
+            <a href="admin-marketing.html" class="sb9-tile">
+                <i class="fas fa-paper-plane"></i>
+                <span>Marketing</span>
+            </a>
+            <a href="admin-audit-logs.html" class="sb9-tile">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Audit</span>
+            </a>
+
             <a href="admin-info.html" class="sb9-tile">
                 <i class="fas fa-info-circle"></i>
                 <span>Info</span>
@@ -467,86 +622,61 @@
                 </div>
             </div>
 
-            <!-- Filters Section -->
-            <div class="filters-section">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="filter-buttons">
-                            <button class="filter-btn" data-filter="category" id="categoryFilterBtn">
-                                <i class="fas fa-th-large"></i>
-                                Category
-                            </button>
-                            <button class="filter-btn" data-filter="brand" id="brandFilterBtn" style="display: none;">
-                                <i class="fas fa-tag"></i>
-                                Brand
-                            </button>
+            <!-- Filters Section (Design 2) -->
+            <div class="filter-d2">
+                <!-- Category Dropdown -->
+                <div class="custom-dropdown" id="categoryDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-layer-group"></i></label>
+                            <span class="selected-text" id="selectedCategoryText">All Categories</span>
                         </div>
-
-                        <!-- Category Filter Options -->
-                        <div class="filter-options" id="categoryOptions" style="display: none;">
-                            <div class="filter-options-content">
-                                <h4>Select Category</h4>
-                                <div class="category-grid" id="categoryGrid">
-                                    <!-- Category buttons will be dynamically added here -->
-                                </div>
-                                <div class="filter-actions">
-                                    <button class="btn-clear" data-filter="category">Clear All</button>
-                                    <button class="btn-apply" data-filter="category">Apply</button>
-                                    <button class="btn-cancel" data-filter="category">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Brand Filter Options -->
-                        <div class="filter-options" id="brandOptions" style="display: none;">
-                            <div class="filter-options-content">
-                                <h4>Select Brand</h4>
-                                <div class="brand-grid" id="brandGrid">
-                                    <!-- Brand buttons will be dynamically added here for smartphones -->
-                                </div>
-                                <div id="brandTextInputContainer" style="display: none;">
-                                    <input type="text" class="form-control" id="brandFilterText"
-                                        placeholder="Enter brand name...">
-                                </div>
-                                <div class="filter-actions">
-                                    <button class="btn-clear" data-filter="brand">Clear All</button>
-                                    <button class="btn-apply" data-filter="brand">Apply</button>
-                                    <button class="btn-cancel" data-filter="brand">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <select class="form-select" id="categoryFilter" style="display: none;">
-                            <option value="">All Categories</option>
-                            <option value="smartphones">Smartphones</option>
-                            <option value="windows-laptops">Windows Laptops</option>
-                            <option value="macbooks-laptops">MacBooks Laptops</option>
-                            <option value="chromebooks-laptops">Chromebooks Laptops</option>
-                            <option value="tablets">Tablets</option>
-                            <option value="wearables">Wearables</option>
-                            <option value="televisions">Televisions</option>
-                            <option value="audio">Audio</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="appliances">Appliances</option>
-                        </select>
-                        <select class="form-select" id="brandFilter" style="display: none;">
-                            <option value="">All Brands</option>
-                        </select>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label"><strong>Search</strong></label>
-                        <div class="search-wrapper">
-                            <div class="input-group search-input-group">
-                                <input type="text" class="form-control search-input" id="searchInput"
-                                    placeholder="Search products...">
-                                <button type="button" class="btn btn-danger search-btn" onclick="loadProducts()">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
+                    <div class="dropdown-menu-list" id="categoryDropdownList">
+                        <div class="dropdown-item-custom category-item selected" data-value="">All Categories</div>
+                        <!-- Categories populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Brand Dropdown -->
+                <div class="custom-dropdown" id="brandDropdown">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-tag"></i></label>
+                            <span class="selected-text" id="selectedBrandText">All Brands</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list" id="brandDropdownList">
+                        <div class="dropdown-item-custom brand-option selected" data-brand="">All Brands</div>
+                        <!-- Brands populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Search Input -->
+                <div class="custom-dropdown" style="cursor: text;"
+                    onclick="document.getElementById('searchInput').focus()">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content" style="width: 100%;">
+                            <label><i class="fas fa-search"></i></label>
+                            <input type="text" id="searchInput" class="search-input-field"
+                                placeholder="Search products...">
                         </div>
                     </div>
                 </div>
+
+                <button class="btn-go" onclick="loadProducts()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
+
+            <!-- Hidden Inputs for Compatibility with existing loadProducts() logic -->
+            <select id="categoryFilter" style="display: none;">
+                <option value="">All Categories</option>
+            </select>
+            <input type="hidden" id="brandFilterText">
+            <!-- Note: existing JS checks .brand-option.active for smartphones, so we use that class in dropdown items -->
 
             <!-- Products Section -->
             <div class="products-section">
@@ -731,14 +861,139 @@
                 }
             }
 
-            // Audience Dropdown
-            if (!event.target.closest('#audienceDropdown')) {
-                const dropdown = document.getElementById('audienceDropdown');
-                if (dropdown && dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
+            // Design 2 Dropdowns
+            if (!event.target.closest('.filter-d2 .custom-dropdown')) {
+                document.querySelectorAll('.filter-d2 .custom-dropdown').forEach(d => d.classList.remove('active'));
             }
         };
+
+        // --- FILTER LOGIC FOR DESIGN 2 ---
+        const UI_CATEGORIES = [
+            { value: 'smartphones', label: 'Smartphones' },
+            { value: 'windows-laptops', label: 'Windows Laptops' },
+            { value: 'macbooks-laptops', label: 'MacBooks' },
+            { value: 'chromebooks-laptops', label: 'Chromebooks' },
+            { value: 'tablets', label: 'Tablets' },
+            { value: 'wearables', label: 'Wearables' },
+            { value: 'televisions', label: 'Televisions' },
+            { value: 'audio', label: 'Audio' },
+            { value: 'gaming', label: 'Gaming' },
+            { value: 'appliances', label: 'Appliances' }
+        ];
+
+        const UI_SMARTPHONE_BRANDS = [
+            'Apple', 'Huawei', 'Samsung', 'Xiaomi', 'OPPO', 'Honor', 'Motorola', 'Nokia', 'Tecno', 'Vivo', 'Realme'
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate Categories
+            const catList = document.getElementById('categoryDropdownList');
+            UI_CATEGORIES.forEach(cat => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item-custom category-item';
+                div.dataset.value = cat.value;
+                div.textContent = cat.label;
+                catList.appendChild(div);
+            });
+
+            // Populate Brands (Initial)
+            // ...
+
+            // Setup Event Listeners
+            setupDropdowns();
+        });
+
+        function setupDropdowns() {
+            const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+
+            dropdowns.forEach(dropdown => {
+                const trigger = dropdown.querySelector('.dropdown-trigger');
+                if (!trigger) return; // Skip if search input wrapper (which might have different structure)
+
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Toggle this one
+                    const isActive = dropdown.classList.contains('active');
+                    // Close all others
+                    dropdowns.forEach(d => d.classList.remove('active'));
+
+                    if (!isActive) dropdown.classList.add('active');
+                });
+            });
+
+            // Category Items
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.dataset.value;
+                    const text = item.textContent;
+
+                    // Update UI
+                    document.getElementById('selectedCategoryText').textContent = text;
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    document.getElementById('categoryDropdown').classList.remove('active');
+
+                    // Update Hidden Input (Important for loadProducts)
+                    const hiddenSelect = document.getElementById('categoryFilter');
+                    if (hiddenSelect) hiddenSelect.value = value;
+                    // Also set active class on a dummy element if existing JS needs .category-option.active?
+                    // Actually existing JS checks .category-option.active, if not present uses select value.
+                    // So we are good just updating select value.
+
+                    // Logic: Update Brand Dropdown based on Category
+                    updateBrandDropdown(value);
+
+                    // Load Data
+                    if (value) loadProducts();
+                });
+            });
+
+            // Brand Items (Delegated because brands are dynamic)
+            document.getElementById('brandDropdownList').addEventListener('click', (e) => {
+                const item = e.target.closest('.brand-option');
+                if (!item) return;
+
+                e.stopPropagation();
+                const value = item.dataset.brand; // Note: existing JS uses data-brand
+                const text = item.textContent;
+
+                // Update UI
+                document.getElementById('selectedBrandText').textContent = text;
+                document.querySelectorAll('.brand-option').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                document.getElementById('brandDropdown').classList.remove('active');
+
+                // For LoadProducts compatibility:
+                // If smartphones: it looks for .brand-option.active. The item we just clicked has it.
+                // If other: checks #brandFilterText.
+                document.getElementById('brandFilterText').value = value;
+
+                loadProducts();
+            });
+        }
+
+        function updateBrandDropdown(category) {
+            const brandList = document.getElementById('brandDropdownList');
+            brandList.innerHTML = '<div class="dropdown-item-custom brand-option selected" data-brand="">All Brands</div>';
+            document.getElementById('selectedBrandText').textContent = 'All Brands';
+            document.getElementById('brandFilterText').value = '';
+
+            if (category === 'smartphones') {
+                UI_SMARTPHONE_BRANDS.forEach(brand => {
+                    const div = document.createElement('div');
+                    div.className = 'dropdown-item-custom brand-option'; // Class 'brand-option' is crucial for existing JS
+                    div.dataset.brand = brand.toLowerCase();
+                    div.textContent = brand;
+                    brandList.appendChild(div);
+                });
+            } else {
+                // For other categories, maybe we don't have a rigid list?
+                // Existing JS allows text input for others.
+                // We could disable the dropdown or make it say "Type in Search" or keep "All Brands".
+                // Design 2 relies on dropdowns. Let's just keep All Brands or generic.
+            }
+        }
     </script>
 
 

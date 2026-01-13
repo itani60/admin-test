@@ -593,170 +593,152 @@ async function initRBAC() {
     }
 }
 
-// Initialize custom status dropdown
+// Initialize custom status dropdown (Design 2)
 function initializeStatusDropdown() {
     const statusDropdown = document.getElementById('statusDropdown');
-    const statusDropdownBtn = document.getElementById('statusDropdownBtn');
-    const statusDropdownMenu = document.getElementById('statusDropdownMenu');
-    const statusDropdownItems = document.getElementById('statusDropdownItems');
     const statusSelect = document.getElementById('statusSelect');
 
-    if (!statusDropdown || !statusDropdownBtn || !statusDropdownMenu || !statusDropdownItems) return;
+    if (!statusDropdown || !statusSelect) return;
+
+    const trigger = statusDropdown.querySelector('.dropdown-trigger');
+    const menu = statusDropdown.querySelector('.dropdown-menu-list');
+    const selectedText = statusDropdown.querySelector('.selected-text');
+
+    if (!trigger || !menu || !selectedText) return;
 
     // Status options
     const statusOptions = [
-        { value: 'all', text: 'All Status' },
-        { value: 'pending', text: 'Pending' },
-        { value: 'reviewed', text: 'Reviewed' },
-        { value: 'resolved', text: 'Resolved' },
-        { value: 'dismissed', text: 'Dismissed' }
+        { value: 'all', text: 'All Status', icon: 'fas fa-clipboard-list', color: 'text-secondary' },
+        { value: 'pending', text: 'Pending', icon: 'fas fa-clock', color: 'text-warning' },
+        { value: 'reviewed', text: 'Reviewed', icon: 'fas fa-search', color: 'text-info' },
+        { value: 'resolved', text: 'Resolved', icon: 'fas fa-check-circle', color: 'text-success' },
+        { value: 'dismissed', text: 'Dismissed', icon: 'fas fa-ban', color: 'text-danger' }
     ];
 
     // Render dropdown items
+    menu.innerHTML = '';
     statusOptions.forEach(option => {
         const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
+        itemDiv.className = 'dropdown-item-custom';
+        if (option.value === statusSelect.value) {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function () {
+        itemDiv.dataset.value = option.value;
+        itemDiv.innerHTML = `<i class="${option.icon} ${option.color}"></i> ${option.text}`;
+
+        itemDiv.addEventListener('click', function (e) {
+            e.stopPropagation();
             // Update selected state
-            statusDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+            menu.querySelectorAll('.dropdown-item-custom').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
 
             // Update button text and hidden input
-            document.getElementById('statusDropdownText').textContent = option.text;
+            selectedText.textContent = option.text;
             statusSelect.value = option.value;
 
             // Close dropdown
             statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
 
             // Apply filters
             filterReports();
 
-            // Reload reports if needed
+            // Reload reports if needed (for specific backend status filtering)
             const status = option.value === 'all' ? null : option.value;
             loadReports(status);
         });
-        statusDropdownItems.appendChild(itemDiv);
+        menu.appendChild(itemDiv);
     });
 
     // Toggle dropdown
-    statusDropdownBtn.addEventListener('click', function (e) {
+    trigger.addEventListener('click', function (e) {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains('active');
 
         // Close all other dropdowns
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'statusDropdown') {
+            if (dd !== statusDropdown) {
                 dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
             }
         });
 
-        if (isActive) {
-            statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
-        } else {
-            statusDropdown.classList.add('active');
-            statusDropdownMenu.style.display = 'block';
-        }
+        statusDropdown.classList.toggle('active');
     });
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function (e) {
         if (!e.target.closest('.custom-dropdown')) {
             statusDropdown.classList.remove('active');
-            statusDropdownMenu.style.display = 'none';
         }
     });
 }
 
-// Initialize custom reason dropdown
+// Initialize custom reason dropdown (Design 2)
 function initializeReasonDropdown() {
     const reasonDropdown = document.getElementById('reasonDropdown');
-    const reasonDropdownBtn = document.getElementById('reasonDropdownBtn');
-    const reasonDropdownMenu = document.getElementById('reasonDropdownMenu');
-    const reasonDropdownItems = document.getElementById('reasonDropdownItems');
     const reasonSelect = document.getElementById('reasonSelect');
 
-    if (!reasonDropdown || !reasonDropdownBtn || !reasonDropdownMenu || !reasonDropdownItems) return;
+    if (!reasonDropdown || !reasonSelect) return;
+
+    const trigger = reasonDropdown.querySelector('.dropdown-trigger');
+    const menu = reasonDropdown.querySelector('.dropdown-menu-list');
+    const selectedText = reasonDropdown.querySelector('.selected-text');
+
+    if (!trigger || !menu || !selectedText) return;
 
     // Reason options
     const reasonOptions = [
-        { value: 'all', text: 'All Reasons' },
-        { value: 'spam', text: 'Spam' },
-        { value: 'inappropriate', text: 'Inappropriate' },
-        { value: 'fake', text: 'Fake' },
-        { value: 'offensive', text: 'Offensive' },
-        { value: 'other', text: 'Other' }
+        { value: 'all', text: 'All Reasons', icon: 'fas fa-list', color: 'text-secondary' },
+        { value: 'spam', text: 'Spam', icon: 'fas fa-trash', color: 'text-danger' },
+        { value: 'inappropriate', text: 'Inappropriate', icon: 'fas fa-exclamation-triangle', color: 'text-warning' },
+        { value: 'fake', text: 'Fake', icon: 'fas fa-robot', color: 'text-dark' },
+        { value: 'offensive', text: 'Offensive', icon: 'fas fa-angry', color: 'text-danger' },
+        { value: 'other', text: 'Other', icon: 'fas fa-question', color: 'text-secondary' }
     ];
 
     // Render dropdown items
+    menu.innerHTML = '';
     reasonOptions.forEach(option => {
         const itemDiv = document.createElement('div');
-        itemDiv.className = 'custom-dropdown-item';
-        itemDiv.dataset.value = option.value;
-        itemDiv.textContent = option.text;
-        if (option.value === 'all') {
+        itemDiv.className = 'dropdown-item-custom';
+        if (option.value === reasonSelect.value) {
             itemDiv.classList.add('selected');
         }
-        itemDiv.addEventListener('click', function () {
+        itemDiv.dataset.value = option.value;
+        itemDiv.innerHTML = `<i class="${option.icon} ${option.color}"></i> ${option.text}`;
+
+        itemDiv.addEventListener('click', function (e) {
+            e.stopPropagation();
             // Update selected state
-            reasonDropdownItems.querySelectorAll('.custom-dropdown-item').forEach(item => {
+            menu.querySelectorAll('.dropdown-item-custom').forEach(item => {
                 item.classList.remove('selected');
             });
             this.classList.add('selected');
 
             // Update button text and hidden input
-            document.getElementById('reasonDropdownText').textContent = option.text;
+            selectedText.textContent = option.text;
             reasonSelect.value = option.value;
 
             // Close dropdown
             reasonDropdown.classList.remove('active');
-            reasonDropdownMenu.style.display = 'none';
 
             // Apply filters
             filterReports();
         });
-        reasonDropdownItems.appendChild(itemDiv);
+        menu.appendChild(itemDiv);
     });
 
     // Toggle dropdown
-    reasonDropdownBtn.addEventListener('click', function (e) {
+    trigger.addEventListener('click', function (e) {
         e.stopPropagation();
-        const isActive = reasonDropdown.classList.contains('active');
-
-        // Close all other dropdowns
+        // Close all other dropdowns handled in status dropdown listener mainly, but good to be safe
         document.querySelectorAll('.custom-dropdown').forEach(dd => {
-            if (dd.id !== 'reasonDropdown') {
+            if (dd !== reasonDropdown) {
                 dd.classList.remove('active');
-                const menu = dd.querySelector('.custom-dropdown-menu');
-                if (menu) menu.style.display = 'none';
             }
         });
-
-        if (isActive) {
-            reasonDropdown.classList.remove('active');
-            reasonDropdownMenu.style.display = 'none';
-        } else {
-            reasonDropdown.classList.add('active');
-            reasonDropdownMenu.style.display = 'block';
-        }
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.custom-dropdown')) {
-            reasonDropdown.classList.remove('active');
-            reasonDropdownMenu.style.display = 'none';
-        }
+        reasonDropdown.classList.toggle('active');
     });
 }
 

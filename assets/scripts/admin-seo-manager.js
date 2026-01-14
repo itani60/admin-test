@@ -179,10 +179,10 @@ async function triggerPageAudit(url) {
             body: JSON.stringify({ action: 'auditPage', url: url })
         });
         const result = await response.json();
-        alert('Audit Complete! Score: ' + result.score);
+        showToast('Audit Complete! Score: ' + result.score, 'success');
         fetchDashboardStats(); // Refresh stats
     } catch (error) {
-        alert('Audit Failed: ' + error.message);
+        showToast('Audit Failed: ' + error.message, 'error');
     }
 }
 
@@ -218,3 +218,40 @@ document.getElementById('auditModal')?.addEventListener('click', function (e) {
         closeAuditModal();
     }
 });
+
+// --- Toast Notification Logic (Design 6) ---
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-item';
+
+    // Determine icon and classes based on type
+    const isError = type === 'error';
+    const iconClass = isError ? 'fa-times' : 'fa-check';
+    const wrapperClass = isError ? 'toast-d6-error' : 'toast-d6-success';
+
+    toast.innerHTML = `
+        <div class="toast-d6 ${wrapperClass}">
+            <div class="toast-d6-icon-circle"><i class="fas ${iconClass}"></i></div>
+            <div class="toast-d6-text">${message}</div>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto remove
+    setTimeout(() => {
+        toast.classList.add('removing');
+        toast.addEventListener('animationend', () => {
+            toast.remove();
+        });
+    }, 4000);
+
+    // Allow manual dismiss logic if needed (clicking toast)
+    toast.onclick = function () {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+    };
+}

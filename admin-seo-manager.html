@@ -210,6 +210,90 @@
             gap: 1.125rem;
         }
 
+
+
+        /* --- Toast Notification Styles (Design 6) --- */
+        #toast-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            pointer-events: auto;
+            animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform: translateX(100%);
+            width: auto;
+            max-width: 90vw;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toast-item.removing {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .toast-d6 {
+            background: white;
+            border-radius: 30px;
+            padding: 10px 20px 10px 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .toast-d6-icon-circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.4);
+            flex-shrink: 0;
+        }
+
+        .toast-d6-success .toast-d6-icon-circle {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.4);
+        }
+
+        .toast-d6-error .toast-d6-icon-circle {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+        }
+
+        .toast-d6-text {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
         .header-icon {
             position: relative;
             background: var(--light);
@@ -490,6 +574,7 @@
 
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div id="toast-container"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sb9-grid" style="padding: 1.5rem;"><a href="index.html" class="sb9-tile active"><i
                     class="fas fa-tachometer-alt"></i><span>Dashboard</span></a><a href="admin-product-stats.html"

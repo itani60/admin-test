@@ -69,6 +69,105 @@
             border-bottom: 2px solid var(--border);
         }
 
+        /* Design 1: New Audit Modal Styles */
+        .m1-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .m1-modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .m1-modal-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            max-width: 500px;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .m1-modal-overlay.show .m1-modal-container {
+            transform: translateY(0);
+        }
+
+        .m1-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .m1-body {
+            padding: 2rem;
+        }
+
+        .m1-input {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .m1-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+        }
+
+        .m1-footer {
+            padding: 1.5rem;
+            background: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .m1-btn-sec {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .m1-btn-pri {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            background: #0f172a;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.2);
+            cursor: pointer;
+        }
+
+        .m1-btn-pri:hover {
+            background: #1e293b;
+        }
+
         .header-left {
             display: flex;
             align-items: center;
@@ -533,8 +632,7 @@
                             class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold m-0 text-dark">Page Optimizations</h5><button
                                 class="btn btn-sm btn-light border text-secondary font-monospace"
-                                onclick="triggerPageAudit(prompt('Enter URL to Audit:'))"><i
-                                    class="fas fa-plus me-2"></i>New Audit</button>
+                                onclick="openAuditModal()"><i class="fas fa-plus me-2"></i>New Audit</button>
                         </div>
                         <div class="table-responsive">
                             <table class="table align-middle table-hover mb-0">
@@ -580,6 +678,29 @@
                 </div>
             </div>
         </div>
+        <!-- Design 1: New Audit Modal -->
+        <div class="m1-modal-overlay" id="auditModal">
+            <div class="m1-modal-container">
+                <div class="m1-header">
+                    <h5 class="fw-bold m-0 text-dark">Start New Audit</h5>
+                    <button type="button" class="btn-close" onclick="closeAuditModal()"></button>
+                </div>
+                <div class="m1-body">
+                    <label class="fw-bold text-secondary mb-2 small text-uppercase">Page URL</label>
+                    <input type="text" class="m1-input" id="auditUrlInput"
+                        placeholder="e.g., https://comparehubprices.co.za/laptops.html"
+                        value="https://comparehubprices.co.za/">
+                    <p class="small text-secondary mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>Ensure the page is
+                        publicly accessible.</p>
+                </div>
+                <div class="m1-footer">
+                    <button class="m1-btn-sec" onclick="closeAuditModal()">Cancel</button>
+                    <button class="m1-btn-pri" onclick="submitAudit()"><i class="fas fa-rocket me-2"></i>Analyze
+                        Page</button>
+                </div>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script src="assets/scripts/sidebar.js"></script>

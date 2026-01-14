@@ -124,21 +124,29 @@ function updatePriorityFixes(issues) {
     if (!container) return; // Need to add this ID to HTML
 
     if (!issues || issues.length === 0) {
-        container.innerHTML = '<div class="text-center text-secondary py-3">No critical issues found!</div>';
+        container.innerHTML = '<div class="text-center text-white-50 py-3">No critical issues found!</div>';
         return;
     }
 
-    container.innerHTML = issues.map(issue => `
-        <div class="d-flex gap-3 mb-3">
-            <div class="bg-${issue.severity === 'High' ? 'danger' : 'warning'} bg-opacity-25 p-2 rounded text-${issue.severity === 'High' ? 'danger' : 'warning'}">
-                <i class="fas fa-${issue.severity === 'High' ? 'times' : 'exclamation'}"></i>
+    container.innerHTML = issues.map(issue => {
+        const isHigh = issue.severity === 'High';
+        const glowClass = isHigh ? 'd6-glow-red' : 'd6-glow-yellow';
+        const iconClass = isHigh ? 'fa-times' : 'fa-bolt';
+        const titleColor = 'text-white';
+        const descColor = 'text-white-50';
+
+        return `
+        <div class="d6-item">
+            <div class="d6-icon-box ${glowClass}">
+                <i class="fas ${iconClass}"></i>
             </div>
             <div>
-                <div class="fw-bold">${issue.type}</div>
-                <div class="small text-secondary">${issue.count} occurrences detected</div>
+                <h6 class="m-0 fw-bold ${titleColor}">${issue.type}</h6>
+                <p class="m-0 ${descColor} small">${issue.count} occurrences detected</p>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function updateKeywordList(keywords) {
@@ -177,3 +185,36 @@ async function triggerPageAudit(url) {
         alert('Audit Failed: ' + error.message);
     }
 }
+
+// --- Audit Modal Logic ---
+
+function openAuditModal() {
+    const modal = document.getElementById('auditModal');
+    if (modal) modal.classList.add('show');
+}
+
+function closeAuditModal() {
+    const modal = document.getElementById('auditModal');
+    if (modal) modal.classList.remove('show');
+}
+
+function submitAudit() {
+    const input = document.getElementById('auditUrlInput');
+    const url = input ? input.value.trim() : '';
+
+    if (!url) {
+        alert('Please enter a valid URL.');
+        return;
+    }
+
+    closeAuditModal();
+    // Trigger the existing audit logic
+    triggerPageAudit(url);
+}
+
+// Close modal when clicking outside
+document.getElementById('auditModal')?.addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeAuditModal();
+    }
+});

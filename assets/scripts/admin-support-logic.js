@@ -232,10 +232,251 @@ function filterTickets(term) {
     renderTickets(filtered);
 }
 
-function viewTicket(id) {
-    // For admin, we don't have a specific view file mentioned, but we can alert for now or send to user-support-view... 
-    // actually, user-support-view is for USERS.
-    // Use alert for now as Admin View isn't explicitly requested/defined, or I'll check if there is one.
-    // The previous prompt mentioned "user-support-view.html" for "user", so I'll just log.
-    alert('Managing ticket: ' + id);
+// Current Ticket State
+let currentTicketId = null;
+let ticketModal = null;
+
+// Initialize Modal
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing Init
+
+    // Modal Init
+    const el = document.getElementById('ticketManageModal');
+    if (el) ticketModal = new bootstrap.Modal(el);
+
+    // Bind Reply
+    document.getElementById('btn-send-reply')?.addEventListener('click', sendAdminReply);
+    document.getElementById('btn-resolve')?.addEventListener('click', () => updateTicketStatus('Resolved'));
+    document.getElementById('btn-delete')?.addEventListener('click', deleteTicket);
+});
+
+// Update renderTickets to use viewTicket which maps to openTicketModal
+window.viewTicket = openTicketModal;
+
+// Open Modal
+async function openTicketModal(id) {
+    if (!ticketModal) {
+        const el = document.getElementById('ticketManageModal');
+        if (el) ticketModal = new bootstrap.Modal(el);
+    }
+    if (!ticketModal) return;
+
+    currentTicketId = id;
+
+    // Reset UI
+    document.getElementById('modal-subject').innerText = 'Loading...';
+    document.getElementById('modal-chat-container').innerHTML = '<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i></div>';
+
+    // Reset inputs
+    const replyArea = document.getElementById('reply-textarea');
+    if (replyArea) replyArea.value = '';
+
+    ticketModal.show();
+
+    try {
+        const token = localStorage.getItem('admin_token') || getCookie('adminsessionid');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            credentials: 'include',
+            headers: headers,
+            body: JSON.stringify({ action: 'getTicketDetails', ticketId: id })
+        });
+
+        const ticket = await response.json();
+
+        if (ticket && ticket.TicketID) {
+            renderModalDetails(ticket);
+            renderChat(ticket);
+        } else {
+            document.getElementById('modal-chat-container').innerHTML = '<div class="text-center text-danger">Failed to load ticket details.</div>';
+        }
+
+    } catch (e) {
+        console.error('Error opening ticket:', e);
+        document.getElementById('modal-chat-container').innerHTML = '<div class="text-center text-danger">Error loading ticket.</div>';
+    }
+}
+
+// Render Header & Sidebar
+function renderModalDetails(ticket) {
+    // Header
+    const statusBadge = document.getElementById('modal-status-badge');
+    statusBadge.innerText = ticket.Status;
+    statusBadge.className = 'badge px-3 py-2 rounded-2 fw-bold text-uppercase';
+
+    if (ticket.Status === 'Pending') statusBadge.classList.add('bg-warning', 'text-dark');
+    else if (ticket.Status === 'Resolved') statusBadge.classList.add('bg-success');
+    else if (ticket.Status === 'Open') statusBadge.classList.add('bg-primary');
+    else statusBadge.classList.add('bg-secondary');
+
+    document.getElementById('modal-ticket-id').innerText = '#' + ticket.TicketID;
+    document.getElementById('modal-ticket-date').innerText = new Date(ticket.Timestamp).toLocaleString();
+
+    // Sidebar - Customer
+    const customer = ticket.Customer || {};
+    const name = customer.Name || 'Unknown';
+    document.getElementById('modal-customer-name').innerText = name;
+    document.getElementById('modal-customer-email').innerText = customer.Email || 'No Email';
+
+    const avatarEl = document.getElementById('modal-customer-avatar');
+    avatarEl.innerText = getInitials(name);
+
+    // Sidebar - Details
+    document.getElementById('modal-subject').innerText = ticket.Subject || '-';
+    document.getElementById('modal-category').innerText = ticket.Category || '-';
+    document.getElementById('modal-priority').innerText = ticket.Priority || 'Medium';
+}
+
+// Render Chat
+function renderChat(ticket) {
+    const container = document.getElementById('modal-chat-container');
+    container.innerHTML = '';
+
+    let messages = [];
+
+    if (ticket.Messages && Array.isArray(ticket.Messages) && ticket.Messages.length > 0) {
+        messages = ticket.Messages;
+    } else if (ticket.History && Array.isArray(ticket.History)) {
+        messages = ticket.History.map(h => ({
+            Sender: h.Author === 'Customer' ? 'User' : 'Admin',
+            Message: h.Message,
+            Timestamp: h.Timestamp,
+            Attachments: []
+        }));
+    }
+
+    // Sort Chronologically
+    messages.sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
+
+    messages.forEach(msg => {
+        if (msg.Type === 'System') return;
+
+        // Admin View: Sender 'Admin' is ME. Sender 'User' is THEM.
+        const isMe = msg.Sender === 'Admin' || msg.Sender === 'System';
+
+        const div = document.createElement('div');
+        div.className = `message-group ${isMe ? 'me' : ''}`;
+
+        const avatar = isMe ? '<i class="fas fa-headset"></i>' : getInitials(ticket.Customer?.Name || 'User');
+        const avatarClass = isMe ? 'bg-primary text-white' : 'bg-white border text-secondary';
+        const name = isMe ? 'You' : (ticket.Customer?.Name || 'User');
+        const time = new Date(msg.Timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        // Build Attachments HTML
+        let attHtml = '';
+        if (msg.Attachments && msg.Attachments.length > 0) {
+            attHtml = '<div class="attachment-grid">';
+            msg.Attachments.forEach(att => {
+                const isImg = att.match(/\.(jpeg|jpg|png|gif|webp)$/i);
+                const icon = isImg ? 'fa-image text-danger' : 'fa-file text-secondary';
+                // If S3 URL logic needed:
+                const url = att.startsWith('http') ? att : att; // Use as is if logic not confirmed, or append bucket
+
+                attHtml += `
+                    <a href="${url}" target="_blank" class="att-file text-decoration-none">
+                        <i class="fas ${icon}"></i>
+                        <span class="text-truncate" style="max-width:150px">${att.split('/').pop()}</span>
+                    </a>
+                `;
+            });
+            attHtml += '</div>';
+        }
+
+        div.innerHTML = `
+            <div class="avatar d-flex align-items-center justify-content-center rounded-3 shadow-sm ${avatarClass}" style="width:40px;height:40px;">${avatar}</div>
+            <div class="msg-bubble">
+                <div class="msg-meta justify-content-${isMe ? 'end' : 'start'}">
+                    <span>${name}</span> • <span>${time}</span>
+                </div>
+                <div class="msg-content text-break">${msg.Message}</div>
+                ${attHtml}
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    container.scrollTop = container.scrollHeight;
+}
+
+// Send Reply
+async function sendAdminReply() {
+    const textarea = document.getElementById('reply-textarea');
+    const message = textarea.value.trim();
+    if (!message || !currentTicketId) return;
+
+    const btn = document.getElementById('btn-send-reply');
+    const oldHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+        const token = localStorage.getItem('admin_token') || getCookie('adminsessionid');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const payload = {
+            action: 'addReply',
+            ticketId: currentTicketId,
+            message: message,
+            sender: 'Admin'
+        };
+
+        const response = await fetch(API_URL, {
+            method: 'POST', credentials: 'include', headers, body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            textarea.value = '';
+            // Refresh Chat
+            await openTicketModal(currentTicketId);
+        } else {
+            console.error(await response.text());
+            alert('Failed to send reply');
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert('Error sending reply');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+    }
+}
+
+// Update Status (Resolve)
+async function updateTicketStatus(status) {
+    if (!currentTicketId) return;
+    if (!confirm(`Mark ticket as ${status}?`)) return;
+
+    try {
+        const token = localStorage.getItem('admin_token') || getCookie('adminsessionid');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const response = await fetch(API_URL, {
+            method: 'POST', credentials: 'include', headers,
+            body: JSON.stringify({ action: 'updateStatus', ticketId: currentTicketId, status: status })
+        });
+
+        if (response.ok) {
+            openTicketModal(currentTicketId); // Refresh UI
+            fetchTickets(token); // Refresh Background Table
+            fetchStats(token);
+        }
+    } catch (e) { console.error(e); }
+}
+
+// Delete Ticket
+async function deleteTicket() {
+    alert('Delete functionality requires backend implementation.');
+}
+
+// Helper to get cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }

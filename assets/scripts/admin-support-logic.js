@@ -25,7 +25,7 @@ async function fetchActiveAgents(token) {
 
         // Endpoint: /admin/users/activity-status
         const BASE = 'https://hub.comparehubprices.co.za/admin';
-        const response = await fetch(`${BASE}/users/activity-status`, {
+        const response = await fetch(`${BASE}/admin/users/activity-status`, {
             method: 'GET',
             credentials: 'include',
             headers: headers
@@ -35,14 +35,64 @@ async function fetchActiveAgents(token) {
             const data = await response.json();
             const activityMap = data.activity || {};
 
+            const listContainer = document.getElementById('active-agents-list');
+            const badgeEl = document.getElementById('active-agents-badge');
+
             // Count Online
             let onlineCount = 0;
-            Object.values(activityMap).forEach(val => {
-                const status = (typeof val === 'string') ? val : (val.status || 'Offline');
-                if (status === 'Online') onlineCount++;
+            const entries = Object.entries(activityMap);
+
+            // Sort: Online first
+            entries.sort((a, b) => {
+                const s1 = (typeof a[1] === 'object' ? a[1].status : a[1]) || 'Offline';
+                const s2 = (typeof b[1] === 'object' ? b[1].status : b[1]) || 'Offline';
+                if (s1 === 'Online' && s2 !== 'Online') return -1;
+                if (s1 !== 'Online' && s2 === 'Online') return 1;
+                return 0;
             });
 
+            if (listContainer) listContainer.innerHTML = '';
+
+            entries.forEach(([email, val]) => {
+                const status = (typeof val === 'string') ? val : (val.status || 'Offline');
+                if (status === 'Online') onlineCount++;
+
+                // Styling
+                let dotClass = 'bg-secondary';
+                let textClass = 'text-secondary';
+                if (status === 'Online') { dotClass = 'bg-success'; textClass = 'text-success'; }
+                if (status === 'Away') { dotClass = 'bg-warning'; textClass = 'text-warning'; }
+
+                const initials = email.substring(0, 2).toUpperCase();
+                const displayName = email.split('@')[0];
+
+                if (listContainer) {
+                    const div = document.createElement('div');
+                    div.className = 'd-flex align-items-center justify-content-between mb-3';
+                    div.innerHTML = `
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="position-relative">
+                                <div class="avatar-small bg-light text-dark border">${initials}</div>
+                                <span class="position-absolute bottom-0 end-0 ${dotClass} border border-white rounded-circle"
+                                    style="width:10px;height:10px;"></span>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark text-truncate" style="max-width:130px;" title="${email}">${displayName}</div>
+                                <div class="small text-muted" style="font-size:0.75rem">Support Agent</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-white ${textClass} border">${status}</span>
+                    `;
+                    listContainer.appendChild(div);
+                }
+            });
+
+            if (listContainer && entries.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-3 text-muted small">No active agents found.</div>';
+            }
+
             updateStat('stat-active-agents', onlineCount);
+            if (badgeEl) badgeEl.innerText = `${onlineCount} Online`;
         }
     } catch (e) {
         console.error('Error fetching active agents:', e);

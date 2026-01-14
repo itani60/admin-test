@@ -28,6 +28,12 @@ async function fetchStats() {
             body: JSON.stringify({ action: 'getDashboardStats' })
         });
 
+        if (response.status === 401 || response.status === 403) {
+            console.warn('Access Denied. Please log in as Admin.');
+            // Optional: Redirect or Alert
+            return;
+        }
+
         const data = await response.json();
         if (data.totalTickets !== undefined) {
             updateStat('stat-total-tickets', data.totalTickets);

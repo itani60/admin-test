@@ -1,11 +1,11 @@
 const API_URL = 'https://hub.comparehubprices.co.za/admin/support-management';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check Auth - handled via Cookie
-    // const token = localStorage.getItem('admin_session_token');
+    // Check Auth - handled via Cookie primarily, but we add Header for robustness
+    const token = localStorage.getItem('admin_session_token');
 
-    await fetchStats();
-    await fetchTickets();
+    await fetchStats(token);
+    await fetchTickets(token);
 
     // Search Listener
     const searchInput = document.getElementById('search-input');
@@ -17,14 +17,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-async function fetchStats() {
+async function fetchStats(token) {
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(API_URL, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             body: JSON.stringify({ action: 'getDashboardStats' })
         });
 
@@ -53,14 +54,15 @@ function updateStat(id, value) {
 
 let allTickets = [];
 
-async function fetchTickets() {
+async function fetchTickets(token) {
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(API_URL, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: headers,
             body: JSON.stringify({ action: 'getTickets', status: 'All' })
         });
 

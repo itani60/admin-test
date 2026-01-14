@@ -101,6 +101,9 @@ function updateAuditTable(audits) {
                 <td><span class="fw-bold">${audit.score}</span></td>
                 <td>${statusBadge}</td>
                 <td class="pe-4 text-end">
+                    <button class="btn btn-sm btn-light text-secondary me-1" onclick="triggerPageAudit('${audit.FullUrl}')" title="Re-Analyze">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                     <button class="btn btn-sm btn-light text-secondary" onclick="showIssuesModal('${issuesEncoded}', ${audit.score})">
                         <i class="fas fa-info-circle"></i>
                     </button>
@@ -183,6 +186,7 @@ async function triggerPageAudit(url) {
         const result = await response.json();
         showToast('Audit Complete! Score: ' + result.score, 'success');
         fetchDashboardStats(); // Refresh stats
+        fetchRecentAudits(); // Refresh table
     } catch (error) {
         showToast('Audit Failed: ' + error.message, 'error');
     }

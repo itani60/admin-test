@@ -92,6 +92,8 @@ function updateAuditTable(audits) {
         if (audit.score < 50) statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">Poor</span>';
         else if (audit.score < 80) statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">Fair</span>';
 
+        const issuesEncoded = encodeURIComponent(JSON.stringify(audit.issues_list || []));
+
         return `
             <tr>
                 <td class="ps-4 fw-medium text-break" style="max-width: 200px;">${audit.PagePath}</td>
@@ -99,7 +101,7 @@ function updateAuditTable(audits) {
                 <td><span class="fw-bold">${audit.score}</span></td>
                 <td>${statusBadge}</td>
                 <td class="pe-4 text-end">
-                    <button class="btn btn-sm btn-light text-secondary" onclick="alert('${(audit.issues_list || []).join('\\n')}')">
+                    <button class="btn btn-sm btn-light text-secondary" onclick="showIssuesModal('${issuesEncoded}', ${audit.score})">
                         <i class="fas fa-info-circle"></i>
                     </button>
                 </td>
@@ -255,3 +257,47 @@ function showToast(message, type = 'success') {
         setTimeout(() => toast.remove(), 300);
     };
 }
+
+// --- Issues Modal Logic (Design 2) ---
+function showIssuesModal(issuesEncoded, score) {
+    const issues = JSON.parse(decodeURIComponent(issuesEncoded));
+    const modal = document.getElementById('issuesModal');
+    const grid = document.getElementById('issuesGrid');
+    const scoreEl = document.getElementById('issuesModalScore');
+
+    if (modal && scoreEl) {
+        scoreEl.innerText = `Score: ${score}/100`;
+        scoreEl.className = `d2-score ${score >= 80 ? 'text-success' : score >= 50 ? 'text-warning' : 'text-danger'}`;
+    }
+
+    if (grid) {
+        if (issues.length === 0) {
+            grid.innerHTML = `
+                <div class="d2-card" style="grid-column: 1 / -1; background:#f0fdf4; border-color:#bbf7d0;">
+                    <i class="fas fa-check-circle text-success" style="font-size:2rem; margin-bottom:0.5rem;"></i>
+                    <div class="d2-title text-success">No Issues Found</div>
+                    <div class="small text-secondary">Great job! This page is fully optimized.</div>
+                </div>
+            `;
+        } else {
+            grid.innerHTML = issues.map(issue => `
+                <div class="d2-card">
+                    <i class="fas fa-exclamation-circle d2-icon"></i>
+                    <div class="d2-title">${issue}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    if (modal) modal.classList.add('show');
+}
+
+function closeIssuesModal() {
+    const modal = document.getElementById('issuesModal');
+    if (modal) modal.classList.remove('show');
+}
+
+// Close issues modal on outside click
+document.getElementById('issuesModal')?.addEventListener('click', function (e) {
+    if (e.target === this) closeIssuesModal();
+});

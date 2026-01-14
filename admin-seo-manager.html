@@ -294,6 +294,63 @@
             white-space: nowrap;
         }
 
+        /* --- Issues Modal (Design 2) --- */
+        .issues-modal-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .m1-modal-overlay.show .issues-modal-container {
+            transform: translateY(0);
+        }
+
+        .d2-container {
+            background: #f8fafc;
+            padding: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .d2-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .d2-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .d2-icon {
+            font-size: 1.5rem;
+            color: #ef4444;
+            margin-bottom: 0.5rem;
+        }
+
+        .d2-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .d2-score {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
         .header-icon {
             position: relative;
             background: var(--light);
@@ -782,6 +839,22 @@
                     <button class="m1-btn-sec" onclick="closeAuditModal()">Cancel</button>
                     <button class="m1-btn-pri" onclick="submitAudit()"><i class="fas fa-rocket me-2"></i>Analyze
                         Page</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Design 2: Issues Modal -->
+        <div class="m1-modal-overlay" id="issuesModal">
+            <div class="issues-modal-container">
+                <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold m-0 text-dark">Performance Overview</h5>
+                    <button type="button" class="btn-close" onclick="closeIssuesModal()"></button>
+                </div>
+                <div class="d2-container">
+                    <div class="d2-score" id="issuesModalScore">--</div>
+                    <div class="d2-grid" id="issuesGrid">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
         </div>

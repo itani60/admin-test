@@ -1,12 +1,11 @@
 const API_URL = 'https://hub.comparehubprices.co.za/admin/support-management';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check Auth
-    // Assuming admin-aws-auth.js handles redirect if no token, but we check here for the token presence
-    const token = localStorage.getItem('admin_session_token');
+    // Check Auth - handled via Cookie
+    // const token = localStorage.getItem('admin_session_token');
 
-    await fetchStats(token);
-    await fetchTickets(token);
+    await fetchStats();
+    await fetchTickets();
 
     // Search Listener
     const searchInput = document.getElementById('search-input');
@@ -18,13 +17,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-async function fetchStats(token) {
-    if (!token) return;
+async function fetchStats() {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
+            credentials: 'include',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ action: 'getDashboardStats' })
@@ -49,13 +47,12 @@ function updateStat(id, value) {
 
 let allTickets = [];
 
-async function fetchTickets(token) {
-    if (!token) return;
+async function fetchTickets() {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
+            credentials: 'include',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ action: 'getTickets', status: 'All' })

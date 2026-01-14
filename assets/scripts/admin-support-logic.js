@@ -285,7 +285,8 @@ async function openTicketModal(id) {
             body: JSON.stringify({ action: 'getTicketDetails', ticketId: id })
         });
 
-        const ticket = await response.json();
+        const data = await response.json();
+        const ticket = data.ticket || data; // Handle wrapper
 
         if (ticket && ticket.TicketID) {
             renderModalDetails(ticket);

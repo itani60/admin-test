@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await fetchStats(token);
     await fetchTickets(token);
+    await fetchActiveAgents(token); // Fetch Active Agents count
 
     // Search Listener
     const searchInput = document.getElementById('search-input');
@@ -16,6 +17,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+async function fetchActiveAgents(token) {
+    try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        // Endpoint: /admin/users/activity-status
+        const BASE = 'https://hub.comparehubprices.co.za/admin';
+        const response = await fetch(`${BASE}/users/activity-status`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: headers
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const activityMap = data.activity || {};
+
+            // Count Online
+            let onlineCount = 0;
+            Object.values(activityMap).forEach(val => {
+                const status = (typeof val === 'string') ? val : (val.status || 'Offline');
+                if (status === 'Online') onlineCount++;
+            });
+
+            updateStat('stat-active-agents', onlineCount);
+        }
+    } catch (e) {
+        console.error('Error fetching active agents:', e);
+    }
+}
 
 async function fetchStats(token) {
     try {
@@ -38,7 +70,7 @@ async function fetchStats(token) {
         const data = await response.json();
         if (data.totalTickets !== undefined) {
             updateStat('stat-total-tickets', data.totalTickets);
-            updateStat('stat-open-tickets', data.openTickets);
+            updateStat('stat-open-tickets', data.openTickets); // In backend this is now 'Pending' count
             updateStat('stat-resolved-today', data.resolvedToday);
             updateStat('stat-avg-response', data.avgResponseTime);
         }
@@ -95,8 +127,10 @@ function renderTickets(tickets) {
 
         // Status Badge Color
         let sBadge = 'bg-secondary';
-        if (ticket.Status === 'Open') sBadge = 'bg-warning text-dark';
+        if (ticket.Status === 'Open') sBadge = 'bg-primary text-white'; // Legacy
+        if (ticket.Status === 'Pending') sBadge = 'bg-warning text-dark';
         if (ticket.Status === 'Resolved') sBadge = 'bg-success text-white';
+        // Handle Urgent display
         // Handle Urgent display
         if (ticket.Status === 'Urgent') sBadge = 'bg-danger bg-opacity-10 text-danger';
 

@@ -356,7 +356,15 @@ function renderChat(ticket) {
         if (msg.Type === 'System') return;
 
         // Admin View: Sender 'Admin' is ME. Sender 'User' is THEM.
-        const isMe = msg.Sender === 'Admin' || msg.Sender === 'System';
+        // We'll rely on Role first.
+        let isMe = false;
+
+        if (msg.Role === 'Admin' || msg.Sender === 'Admin' || msg.Role === 'System') {
+            isMe = true;
+        } else {
+            // If Role is User or Business, it is NOT me.
+            isMe = false;
+        }
 
         const div = document.createElement('div');
         div.className = `message-group ${isMe ? 'me' : ''}`;
@@ -373,8 +381,8 @@ function renderChat(ticket) {
             msg.Attachments.forEach(att => {
                 const isImg = att.match(/\.(jpeg|jpg|png|gif|webp)$/i);
                 const icon = isImg ? 'fa-image text-danger' : 'fa-file text-secondary';
-                // If S3 URL logic needed:
-                const url = att.startsWith('http') ? att : att; // Use as is if logic not confirmed, or append bucket
+                // Handle Full URL vs Relative Key
+                const url = att.startsWith('http') ? att : `https://assets.comparehubprices.co.za/${att}`;
 
                 attHtml += `
                     <a href="${url}" target="_blank" class="att-file text-decoration-none">

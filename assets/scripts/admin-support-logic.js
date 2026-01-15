@@ -371,7 +371,11 @@ function renderChat(ticket) {
 
         const avatar = isMe ? '<i class="fas fa-headset"></i>' : getInitials(ticket.Customer?.Name || 'User');
         const avatarClass = isMe ? 'bg-primary text-white' : 'bg-white border text-secondary';
-        const name = isMe ? 'You' : (ticket.Customer?.Name || 'User');
+        // Use the saved Sender name for Admins too, fallback to 'You' only if missing? 
+        // User requesting: "Fetch display admin name". 
+        // So we show msg.Sender. If it is 'Admin' or 'Support Agent', that is what shows. 
+        // If it is 'Itani Rabs', that shows.
+        const name = msg.Sender || (isMe ? 'Support Agent' : (ticket.Customer?.Name || 'User'));
         const time = new Date(msg.Timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         // Build Attachments HTML

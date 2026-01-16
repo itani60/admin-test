@@ -963,22 +963,22 @@
     <div class="modal-overlay" id="reportDetailsModal">
         <div class="rd-d1">
             <div class="rd-d1-header">
-                <h6 class="m-0 fw-bold text-secondary" id="modalReportId">REPORT ID: #RPT-8821</h6>
+                <h6 class="m-0 fw-bold text-secondary" id="modalReportId">loading...</h6>
                 <div>
-                    <span class="badge bg-warning text-dark me-2" id="modalStatus">Pending Review</span>
+                    <span class="badge bg-warning text-dark me-2" id="modalStatus">loading...</span>
                     <button class="btn-close" onclick="closeReportModal()"></button>
                 </div>
             </div>
             <div class="rd-d1-body">
                 <div class="row align-items-center mb-4">
                     <div class="col-md-6 border-end">
-                        <small class="text-uppercase text-muted fw-bold" style="font-size:0.7rem">Reported User</small>
+                        <small class="text-uppercase text-muted fw-bold" style="font-size:0.7rem">loading...</small>
                         <div class="d-flex align-items-center mt-2">
                             <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                                style="width:40px;height:40px" id="modalUserInitials">JD</div>
+                                style="width:40px;height:40px" id="modalUserInitials"></div>
                             <div>
-                                <div class="fw-bold" id="modalUserName">@john_doe</div>
-                                <div class="small text-muted" id="modalUserId">ID: 882121</div>
+                                <div class="fw-bold" id="modalUserName">loading...</div>
+                                <div class="small text-muted" id="modalUserId">loading...</div>
                             </div>
                         </div>
                     </div>
@@ -989,7 +989,7 @@
                                 style="width:40px;height:40px"><i class="fas fa-user text-muted"></i></div>
                             <div>
                                 <div class="fw-bold text-muted" id="modalReporter">loading...</div>
-                                <div class="small text-muted">via Mobile App</div>
+                                <div class="small text-muted">via browser</div>
                             </div>
                         </div>
                     </div>
@@ -1209,6 +1209,21 @@
             }
         }
 
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            return Math.floor(seconds) + " seconds ago";
+        }
+
         function renderReports(reports) {
             const tableBody = document.querySelector('#reportsTableBody');
             if (!reports || reports.length === 0) {
@@ -1218,6 +1233,7 @@
 
             tableBody.innerHTML = reports.map(report => {
                 const date = new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeString = timeAgo(new Date(report.createdAt));
 
                 let statusClass = 'bg-secondary bg-opacity-10 text-secondary';
                 if (report.status === 'PENDING') statusClass = 'bg-warning bg-opacity-10 text-warning';
@@ -1237,6 +1253,7 @@
                 const safeReporterId = report.reporterUserId;
                 // Robust Reporter Name Generation
                 const safeReporterName = (report.reporterName || report.reporterUserId || report.reporterId || 'Business').replace(/'/g, "\\'");
+                const safeTimeString = timeString.replace(/'/g, "\\'");
 
                 return `
                 <tr>
@@ -1269,7 +1286,7 @@
                     <td class="text-muted">${date}</td>
                     <td class="px-4 text-end">
                         <button class="btn btn-sm btn-light text-dark fw-medium border shadow-sm"
-                            onclick="openReportModal('${safeReportId}', '${safeName}', '${safeEmail}', '${safeReason}', '${safeDesc}', '${safeReportedId}', '${safeReporterId}', '${safeReporterName}')">
+                            onclick="openReportModal('${safeReportId}', '${safeName}', '${safeEmail}', '${safeReason}', '${safeDesc}', '${safeReportedId}', '${safeReporterId}', '${safeReporterName}', '${safeTimeString}', '${report.status}')">
                             ${report.status === 'PENDING' ? 'Review' : 'Details'}
                         </button>
                     </td>
@@ -1411,7 +1428,7 @@
         // Modal Logic
         let currentReportedEmail = '';
 
-        function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId, reporterName) {
+        function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId, reporterName, timeString, status) {
             currentReportId = reportId;
             currentUser = userName;
             currentReportedEmail = userEmail;
@@ -1426,6 +1443,20 @@
 
             // Set Reporter Name
             document.getElementById('modalReporter').textContent = reporterName || 'Unknown Business';
+
+            // Set Time
+            document.getElementById('modalTime').textContent = timeString || '';
+
+            // Set Status
+            const statusEl = document.getElementById('modalStatus');
+            if (statusEl) {
+                statusEl.textContent = status || 'Pending';
+                statusEl.className = 'badge me-2';
+                if (status === 'PENDING') statusEl.classList.add('bg-warning', 'text-dark');
+                else if (status === 'RESOLVED') statusEl.classList.add('bg-success', 'text-white');
+                else if (status === 'DISMISSED') statusEl.classList.add('bg-secondary', 'text-white');
+                else statusEl.classList.add('bg-light', 'text-dark');
+            }
 
             // Simple initial generic logic for avatar
             const initials = userName.substring(0, 2).toUpperCase();

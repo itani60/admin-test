@@ -818,7 +818,7 @@
                             <i class="fas fa-flag"></i>
                         </div>
                         <div class="d1-content">
-                            <h3>24</h3>
+                            <h3>0</h3>
                             <p>Total Reports</p>
                         </div>
                     </div>
@@ -829,7 +829,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="d1-content">
-                            <h3>8</h3>
+                            <h3>0</h3>
                             <p>Pending</p>
                         </div>
                     </div>
@@ -840,7 +840,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="d1-content">
-                            <h3>16</h3>
+                            <h3>0</h3>
                             <p>Resolved</p>
                         </div>
                     </div>
@@ -1165,19 +1165,20 @@
                 if (report.status === 'PENDING') statusClass = 'bg-warning bg-opacity-10 text-warning';
                 if (report.status === 'RESOLVED') statusClass = 'bg-success bg-opacity-10 text-success';
                 if (report.status === 'DISMISSED') statusClass = 'bg-dark bg-opacity-10 text-dark';
+                if (report.status === 'SUSPENDED') statusClass = 'bg-danger bg-opacity-10 text-danger';
 
                 // For Business Reports:
                 // Reporter = User (report.reporterUserId)
                 // Reported = Business (report.reportedBusinessId)
 
-                const reporterInitial = (report.reporterName || 'U').charAt(0).toUpperCase();
-                const targetInitial = (report.reportedBusinessName || 'B').charAt(0).toUpperCase();
+                const reporterInitial = (report.reporterName || report.reporterId || 'U').charAt(0).toUpperCase();
+                const targetInitial = (report.reportedBusinessName || report.targetName || 'B').charAt(0).toUpperCase();
 
-                const safeReporterName = (report.reporterName || report.reporterUserId || 'User').replace(/'/g, "\\'");
+                const safeReporterName = (report.reporterName || report.reporterUserId || report.reporterId || 'User').replace(/'/g, "\\'");
                 const safeReporterEmail = (report.reporterEmail || '').replace(/'/g, "\\'");
 
-                const safeBusinessName = (report.reportedBusinessName || report.reportedBusinessId || 'Business').replace(/'/g, "\\'");
-                const safeBusinessEmail = (report.reportedBusinessEmail || '').replace(/'/g, "\\'");
+                const safeBusinessName = (report.reportedBusinessName || report.targetName || report.reportedBusinessId || report.targetId || 'Business').replace(/'/g, "\\'");
+                const safeBusinessEmail = (report.reportedBusinessEmail || report.targetId || '').replace(/'/g, "\\'");
 
                 const safeReason = (report.reason || '').replace(/'/g, "\\'");
                 const safeDesc = (report.description || '').replace(/'/g, "\\'");
@@ -1191,7 +1192,7 @@
                              <div class="bg-light border text-muted rounded-circle d-flex align-items-center justify-content-center fw-bold"
                                 style="width: 32px; height: 32px; font-size: 0.8rem;">${reporterInitial}</div>
                             <div>
-                                <div class="fw-bold text-dark">${report.reporterName || report.reporterUserId}</div>
+                                <div class="fw-bold text-dark">${report.reporterName || report.reporterId || report.reporterUserId}</div>
                                 <div class="text-muted small">${report.reporterEmail || 'User'}</div>
                             </div>
                         </div>
@@ -1201,8 +1202,8 @@
                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold"
                                 style="width: 32px; height: 32px; font-size: 0.8rem;">${targetInitial}</div>
                             <div>
-                                <div class="fw-bold text-dark">${report.reportedBusinessName || report.reportedBusinessId}</div>
-                                <div class="text-muted small">${report.reportedBusinessEmail || 'Business'}</div>
+                                <div class="fw-bold text-dark">${report.reportedBusinessName || report.targetName || report.reportedBusinessId || report.targetId}</div>
+                                <div class="text-muted small">${report.reportedBusinessEmail || report.targetId || 'Business'}</div>
                             </div>
                         </div>
                     </td>

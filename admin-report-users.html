@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Reports | CompareHubPrices</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/sidebar.css" rel="stylesheet">
+
+
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #991b1b;
+            --primary-light: #f87171;
+            --secondary: #ef4444;
+            --success: #dc2626;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #b91c1c;
+            --dark: #1e293b;
+            --light: #fef2f2;
+            --border: #fecaca;
+            --text: #64748b;
+            --text-dark: #0f172a;
+            --sidebar-width: 270px;
+            --header-height: 72px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fef2f2;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar styles moved to assets/css/sidebar.css */
+
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        .top-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .header-logo img {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.125rem;
+        }
+
+        .header-icon {
+            position: relative;
+            background: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .header-icon .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--light);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            min-width: 220px;
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border: 2px solid var(--border);
+        }
+
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-user-email {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger);
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fff1f2;
+            color: var(--danger);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* --- DESIGN 1: Reference (Clean White with Ring) --- */
+        .card-d1 {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+
+        .card-d1:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .d1-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .d1-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            opacity: 0.2;
+        }
+
+        .d1-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 4px solid currentColor;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-45deg);
+        }
+
+        .d1-content h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-dark);
+        }
+
+        .d1-content p {
+            margin: 4px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Utility for grid */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- Design 2: Minimalist Pill (Filter) - Corrected Horizontal --- */
+        .filter-d2 {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: nowrap;
+            /* Force single line */
+            padding: 20px 0;
+            border: none;
+            box-shadow: none;
+            position: relative;
+            z-index: 20;
+        }
+
+        .filter-d2 .search-pill,
+        .filter-d2 .custom-dropdown {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .filter-d2 .search-pill {
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .filter-d2 .search-pill:focus-within,
+        .filter-d2 .custom-dropdown:hover,
+        .filter-d2 .custom-dropdown.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .filter-d2 .search-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .filter-d2 .search-content label {
+            color: #94a3b8;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-d2 input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .filter-d2 .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+            user-select: none;
+        }
+
+        .filter-d2 .trigger-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-d2 .trigger-content label {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .trigger-content .selected-text {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+
+        .filter-d2 .dropdown-menu-list {
+            position: absolute;
+            top: 100%;
+            margin-top: 8px;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: none;
+            z-index: 9999;
+            /* Ensure higher than any potential page content */
+            animation: slideDownFade 0.2s ease-out;
+        }
+
+        /* Ensure dropdown visibility */
+        .filter-d2 .custom-dropdown.active .dropdown-menu-list {
+            display: block;
+        }
+
+        .filter-d2 .dropdown-item-custom {
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .filter-d2 .dropdown-item-custom:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .filter-d2 .dropdown-item-custom.selected {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .filter-d2 .btn-go {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+            flex-shrink: 0;
+        }
+
+        .filter-d2 .btn-go:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        @keyframes slideDownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Design 1 Styles from report-users-ui.html */
+        .rd-d1 {
+            background: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .rd-d1 {
+            transform: scale(1);
+        }
+
+        .rd-d1-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .rd-d1-body {
+            padding: 20px;
+        }
+
+        .rd-d1-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* --- D2: Modern Minimalist (Icon Focus) - Ban --- */
+        .ban-d2 {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .ban-d2 {
+            transform: scale(1);
+        }
+
+        .ban-d2-icon {
+            width: 80px;
+            height: 80px;
+            background: #fef2f2;
+            color: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 0 8px #fff1f2;
+        }
+
+        /* --- D2: Modern Left-Border Card - Warning --- */
+        .warn-d2 {
+            background: white;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-left: 6px solid #f59e0b;
+            padding: 30px;
+            text-align: left;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .warn-d2 {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<div class="page-loading-overlay" id="pageLoadingOverlay">
+    <div class="loading-content">
+        <div class="logo-container">
+            <img src="assets/logo.png" alt="CompareHubPrices" class="logo-img">
+        </div>
+        <div class="modern-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <h4>Loading...</h4>
+        <p>Please wait while we load </p>
+    </div>
+</div>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sb9-grid" style="padding: 1.5rem;">
+            <a href="index.html" class="sb9-tile active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-product-stats.html" class="sb9-tile">
+                <i class="fas fa-chart-line"></i>
+                <span>Prod Stats</span>
+            </a>
+            <a href="admin-business-management-posts.html" class="sb9-tile">
+                <i class="fas fa-edit"></i>
+                <span>Posts</span>
+            </a>
+            <a href="admin-articles-management.html" class="sb9-tile">
+                <i class="fas fa-newspaper"></i>
+                <span>Articles</span>
+            </a>
+            <a href="admin-alerts-notifications.html" class="sb9-tile">
+                <i class="fas fa-bell"></i>
+                <span>Alerts</span>
+            </a>
+            <a href="admin-communications.html" class="sb9-tile">
+                <i class="fas fa-bullhorn"></i>
+                <span>Comms</span>
+            </a>
+            <a href="admin_business_analytics.html" class="sb9-tile">
+                <i class="fas fa-chart-pie"></i>
+                <span>Biz Stats</span>
+            </a>
+            <a href="admin_price_alert_tracking.html" class="sb9-tile">
+                <i class="fas fa-crosshairs"></i>
+                <span>Tracking</span>
+            </a>
+            <a href="admin-management-users.html" class="sb9-tile">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="admin-bulk-import.html" class="sb9-tile">
+                <i class="fas fa-file-import"></i>
+                <span>Import</span>
+            </a>
+            <a href="admin-price-update.html" class="sb9-tile">
+                <i class="fas fa-tags"></i>
+                <span>Prices</span>
+            </a>
+            <a href="admin_reports_review.html" class="sb9-tile">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-report-users.html" class="sb9-tile">
+                <i class="fas fa-user-slash"></i>
+                <span>Report Users</span>
+            </a>
+            <a href="admin-product-management.html" class="sb9-tile">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin_login_tracking.html" class="sb9-tile">
+                <i class="fas fa-user-clock"></i>
+                <span>Logins</span>
+            </a>
+            <a href="admin-hero-settings.html" class="sb9-tile">
+                <i class="fas fa-sliders-h"></i>
+                <span>Hero Set</span>
+            </a>
+            <a href="admin_hero-creator.html" class="sb9-tile">
+                <i class="fas fa-magic"></i>
+                <span>Studio</span>
+            </a>
+            <a href="admin_activity_tracking.html" class="sb9-tile">
+                <i class="fas fa-running"></i>
+                <span>Activity</span>
+            </a>
+            <a href="admin-monitor-view.html" class="sb9-tile">
+                <i class="fas fa-desktop"></i>
+                <span>Monitor</span>
+            </a>
+            <a href="admin-access-control.html" class="sb9-tile">
+                <i class="fas fa-shield-alt"></i>
+                <span>Access</span>
+            </a>
+            <a href="admin-support.html" class="sb9-tile">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
+            </a>
+            <a href="admin-seo-manager.html" class="sb9-tile">
+                <i class="fas fa-search-location"></i>
+                <span>SEO</span>
+            </a>
+            <a href="admin-marketing.html" class="sb9-tile">
+                <i class="fas fa-paper-plane"></i>
+                <span>Marketing</span>
+            </a>
+            <a href="admin-audit-logs.html" class="sb9-tile">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Audit</span>
+            </a>
+
+            <a href="admin-info.html" class="sb9-tile">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-logo">
+                    <img src="assets/logo .png" alt="CompareHubPrices">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfile" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">loading...</div>
+                        <div class="user-role" id="userRoleHeader">loading...</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--text);"></i>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">loading...</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">loading...</div>
+                        </div>
+                        <a href="admin-profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="admin-settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <div class="dropdown-item logout" id="logoutBtn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper p-4">
+            <div class="page-header" style="margin-bottom: 2.25rem;">
+                <h1 style="font-size: 2.5rem; font-weight: 900; color: var(--text-dark); margin-bottom: 0.625rem;">
+                    User Reporting</h1>
+                <p style="color: var(--text); font-size: 1.05rem;">Review and manage reports submitted against regular
+                    users.</p>
+            </div>
+            <!-- Summary Stats -->
+            <!-- Summary Stats (Design 1) -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card-d1">
+                        <div class="d1-ring text-danger">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <div class="d1-content">
+                            <h3>24</h3>
+                            <p>Total Reports</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-d1">
+                        <div class="d1-ring text-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="d1-content">
+                            <h3>8</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-d1">
+                        <div class="d1-ring text-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="d1-content">
+                            <h3>16</h3>
+                            <p>Resolved</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-d1">
+                        <div class="d1-ring text-secondary">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="d1-content">
+                            <h3>5</h3>
+                            <p>Dismissed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section (Design 2) -->
+            <div class="filter-d2 mb-4">
+                <!-- Search Pill -->
+                <div class="search-pill">
+                    <div class="search-content">
+                        <label><i class="fas fa-search"></i></label>
+                        <input type="text" placeholder="Search user..." id="searchReportInput">
+                    </div>
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="custom-dropdown" tabindex="0">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-filter"></i></label>
+                            <span class="selected-text">All Statuses</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom">All Statuses</div>
+                        <div class="dropdown-item-custom">Pending</div>
+                        <div class="dropdown-item-custom">Resolved</div>
+                        <div class="dropdown-item-custom">Dismissed</div>
+                    </div>
+                </div>
+
+                <!-- Date Range Dropdown -->
+                <div class="custom-dropdown" tabindex="0">
+                    <div class="dropdown-trigger">
+                        <div class="trigger-content">
+                            <label><i class="fas fa-calendar-alt"></i></label>
+                            <span class="selected-text">Last 30 Days</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-muted" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="dropdown-menu-list">
+                        <div class="dropdown-item-custom">Last 7 Days</div>
+                        <div class="dropdown-item-custom">Last 30 Days</div>
+                        <div class="dropdown-item-custom">This Month</div>
+                        <div class="dropdown-item-custom">Last Month</div>
+                    </div>
+                </div>
+
+                <button class="btn-go">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <!-- Main Reports Card -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div
+                    class="card-header bg-white border-bottom p-4 d-flex align-items-center justify-content-between rounded-top-4">
+                    <div>
+                        <h5 class="fw-bold mb-1">Reported Users</h5>
+                        <p class="text-muted small mb-0">Manage and review reports filed against user accounts.</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                        <thead class="bg-light text-muted text-uppercase small fw-bold">
+                            <tr>
+                                <th class="px-4 py-3 border-0">Report ID</th>
+                                <th class="py-3 border-0">Reporter (Business)</th>
+                                <th class="py-3 border-0">Reported User</th>
+                                <th class="py-3 border-0">Reason</th>
+                                <th class="py-3 border-0">Status</th>
+                                <th class="py-3 border-0">Date</th>
+                                <th class="px-4 py-3 border-0 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Populated by JS -->
+                            <tr>
+                                <td colspan="7" class="text-center py-5">Loading reports...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-4 border-top">
+                    <span class="text-muted small">Showing 3 of 24 reports</span>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0 border-0 gap-1">
+                            <li class="page-item disabled"><a class="page-link border-0 rounded-2" href="#"><i
+                                        class="fas fa-chevron-left"></i></a></li>
+                            <li class="page-item active"><a
+                                    class="page-link border-0 rounded-2 bg-danger text-white shadow-sm" href="#">1</a>
+                            </li>
+                            <li class="page-item"><a class="page-link border-0 rounded-2 text-muted" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link border-0 rounded-2 text-muted" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link border-0 rounded-2" href="#"><i
+                                        class="fas fa-chevron-right"></i></a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- Design 1 Modal -->
+    <div class="modal-overlay" id="reportDetailsModal">
+        <div class="rd-d1">
+            <div class="rd-d1-header">
+                <h6 class="m-0 fw-bold text-secondary" id="modalReportId">REPORT ID: #RPT-8821</h6>
+                <div>
+                    <span class="badge bg-warning text-dark me-2" id="modalStatus">Pending Review</span>
+                    <button class="btn-close" onclick="closeReportModal()"></button>
+                </div>
+            </div>
+            <div class="rd-d1-body">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-6 border-end">
+                        <small class="text-uppercase text-muted fw-bold" style="font-size:0.7rem">Reported User</small>
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                                style="width:40px;height:40px" id="modalUserInitials">JD</div>
+                            <div>
+                                <div class="fw-bold" id="modalUserName">@john_doe</div>
+                                <div class="small text-muted" id="modalUserId">ID: 882121</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 ps-4">
+                        <small class="text-uppercase text-muted fw-bold" style="font-size:0.7rem">Reported By</small>
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center me-2"
+                                style="width:40px;height:40px"><i class="fas fa-user text-muted"></i></div>
+                            <div>
+                                <div class="fw-bold text-muted" id="modalReporter">Anonymous</div>
+                                <div class="small text-muted">via Mobile App</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="text-muted opacity-25">
+
+                <div class="mb-2">
+                    <span class="badge border border-danger text-danger bg-danger-subtle mb-2"
+                        id="modalReason">Harassment</span>
+                    <span class="text-muted small ms-2"><i class="far fa-clock"></i> <span id="modalTime">2 hours
+                            ago</span></span>
+                </div>
+                <p class="mb-0 text-dark" id="modalDescription">"This user keeps sending me inappropriate messages in
+                    the comment section of my product review. Please check."</p>
+            </div>
+            <div class="rd-d1-footer">
+                <button class="btn btn-light border btn-sm" onclick="updateReportAction('DISMISS')">Dismiss
+                    Report</button>
+                <button class="btn btn-success btn-sm text-white" onclick="updateReportAction('RESOLVE')">Resolve
+                    Report</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn User</button>
+                <button class="btn btn-danger btn-sm" onclick="openBanModal()">Ban Account</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Ban User Modal (Design 2) -->
+    <div class="modal-overlay" id="banUserModal">
+        <div class="ban-d2">
+            <div class="ban-d2-icon">
+                <i class="fas fa-ban"></i>
+            </div>
+            <h3 class="fw-bold mb-2">Ban Account?</h3>
+            <p class="text-muted mb-4">You are about to ban <span class="text-dark fw-bold"
+                    id="banModalUserName">@User</span>. They will lose access immediately.</p>
+
+            <div class="mb-4 text-start">
+                <label class="form-label small fw-bold text-muted">Reason / Note</label>
+                <textarea class="form-control bg-light border-0" rows="2"
+                    placeholder="Why are you banning this user?"></textarea>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button class="btn btn-danger btn-lg rounded-pill shadow-sm">Yes, Ban User</button>
+                <button class="btn btn-light btn-lg rounded-pill text-muted fw-bold"
+                    onclick="closeBanModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning User Modal (Design 2) -->
+    <div class="modal-overlay" id="warningUserModal">
+        <div class="warn-d2">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Violation Notice</h4>
+                    <div class="text-muted small">Case <span id="warnModalCaseId">#000</span> • <span
+                            id="warnModalUserName">@User</span></div>
+                </div>
+                <span class="badge bg-warning text-dark rounded-pill">Draft</span>
+            </div>
+
+            <p class="text-secondary mb-4">Select a preset reason to auto-fill the specialized warning message.</p>
+
+            <div class="d-flex gap-2 flex-wrap mb-4">
+                <button class="btn btn-outline-secondary btn-sm rounded-pill"
+                    onclick="setWarningPreset(this, 'Profanity')">Profanity</button>
+                <button class="btn btn-warning text-dark btn-sm rounded-pill"
+                    onclick="setWarningPreset(this, 'Spamming')">Spamming</button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill"
+                    onclick="setWarningPreset(this, 'Off-topic')">Off-topic</button>
+                <button class="btn btn-outline-secondary btn-sm rounded-pill"
+                    onclick="setWarningPreset(this, 'Harassment')">Harassment</button>
+            </div>
+
+            <textarea class="form-control bg-light border-0 mb-4" rows="3"
+                id="warningMessage">We noticed repeated spamming in your recent comments. Please stop immediately or further action will be taken.</textarea>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-link text-muted text-decoration-none"
+                    onclick="closeWarningModal()">Discard</button>
+                <button class="btn btn-dark px-4">Send Notice</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="assets/scripts/admin-aws-auth.js"></script>
+
+    <script src="assets/scripts/sidebar.js"></script>
+    <script src="assets/scripts/lazy_loading.js"></script>
+    <script>
+        // Check login state
+        const API_BASE_URL = 'https://hub.comparehubprices.co.za';
+
+        function checkLoginState() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.getUserInfo().then(result => {
+                    if (result.success && result.user) {
+                        // Populate user info
+                        const user = result.user;
+                        document.getElementById('userName').textContent = user.givenName || 'Admin';
+                        document.getElementById('userRoleHeader').textContent = (user.role || 'Super Admin').replace('_', ' ');
+                        document.getElementById('userAvatar').textContent = (user.givenName ? user.givenName.charAt(0) : 'A').toUpperCase();
+
+                        document.getElementById('dropdownUserName').textContent = user.givenName || 'Admin';
+                        document.getElementById('dropdownUserEmail').textContent = user.email || '';
+
+                        // Initial Fetch
+                        fetchReports();
+                    } else {
+                        window.location.href = 'admin-login.html';
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkLoginState);
+
+        async function fetchReports(status = '') {
+            const tableBody = document.querySelector('#reportsTableBody');
+            // Keep loading state if table is empty or just refresh silently
+            if (!tableBody.querySelector('tr') || tableBody.innerText.includes('Loading')) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-5">Loading reports...</td></tr>';
+            }
+
+            try {
+                let url = `${API_BASE_URL}/admin/reports?source=USER`;
+                if (status && status !== 'All Statuses') {
+                    url += `&status=${status.toUpperCase()}`;
+                }
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch reports');
+
+                const data = await response.json();
+                if (data.success) {
+                    renderReports(data.reports);
+                    updateStats(data.reports);
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-5">No reports found via API.</td></tr>';
+                }
+
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-danger">Error loading reports: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderReports(reports) {
+            const tableBody = document.querySelector('#reportsTableBody');
+            if (!reports || reports.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-5">No reports found.</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = reports.map(report => {
+                const date = new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                let statusClass = 'bg-secondary bg-opacity-10 text-secondary';
+                if (report.status === 'PENDING') statusClass = 'bg-warning bg-opacity-10 text-warning';
+                if (report.status === 'RESOLVED') statusClass = 'bg-success bg-opacity-10 text-success';
+                if (report.status === 'DISMISSED') statusClass = 'bg-dark bg-opacity-10 text-dark';
+                if (report.status === 'SUSPENDED') statusClass = 'bg-danger bg-opacity-10 text-danger';
+
+                const reporterInitial = (report.reporterName || report.reporterUserId || '?').charAt(0).toUpperCase();
+                const targetInitial = (report.reportedUserName || report.reportedUserId || '?').charAt(0).toUpperCase();
+
+                const safeName = (report.reportedUserName || 'User').replace(/'/g, "\\'");
+                const safeEmail = (report.reportedUserEmail || report.reportedUserId || '').replace(/'/g, "\\'");
+                const safeReason = (report.reason || '').replace(/'/g, "\\'");
+                const safeDesc = (report.description || '').replace(/'/g, "\\'");
+                const safeReportId = report.reportId;
+                const safeReportedId = report.reportedUserId;
+                const safeReporterId = report.reporterUserId;
+
+                return `
+                <tr>
+                    <td class="px-4"><span class="fw-medium text-dark">#${report.reportId.substring(0, 8)}</span></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-light border text-muted rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 32px; height: 32px; font-size: 0.8rem;">${reporterInitial}</div>
+                            <div>
+                                <div class="fw-bold text-dark">${report.reporterName || report.reporterUserId}</div>
+                                <div class="text-muted small">${report.reporterEmail || 'No Email'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                             <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                style="width: 32px; height: 32px; font-size: 0.8rem;">${targetInitial}</div>
+                            <div>
+                                <div class="fw-bold text-dark">${report.reportedUserName || 'Unknown User'}</div>
+                                <div class="text-muted small">${report.reportedUserEmail || report.reportedUserId}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border fw-normal">${report.reason}</span>
+                        <div class="small text-muted mt-1 text-truncate" style="max-width: 150px;">${report.description || 'No details'}</div>
+                    </td>
+                    <td><span class="badge ${statusClass} px-2 py-1 rounded-pill">${report.status}</span></td>
+                    <td class="text-muted">${date}</td>
+                    <td class="px-4 text-end">
+                        <button class="btn btn-sm btn-light text-dark fw-medium border shadow-sm"
+                            onclick="openReportModal('${safeReportId}', '${safeName}', '${safeEmail}', '${safeReason}', '${safeDesc}', '${safeReportedId}', '${safeReporterId}')">
+                            ${report.status === 'PENDING' ? 'Review' : 'Details'}
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats(reports) {
+            const h3s = document.querySelectorAll('.d1-content h3');
+            if (h3s.length >= 4) {
+                h3s[0].innerText = reports.length;
+                h3s[1].innerText = reports.filter(r => r.status === 'PENDING').length;
+                h3s[2].innerText = reports.filter(r => r.status === 'RESOLVED').length;
+                h3s[3].innerText = reports.filter(r => r.status === 'DISMISSED').length;
+            }
+        }
+
+        async function updateReportAction(action) {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '...';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    reportId: currentReportId,
+                    action: action,
+                    source: 'USER',
+                    reportedUserId: currentReportedId,
+                    reporterUserId: currentReporterId,
+                    notes: 'Action taken via Admin Panel'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+
+                const res = await response.json();
+                if (res.success) {
+                    alert(`Report ${action.toLowerCase()}d successfully.`);
+                    closeReportModal();
+                    fetchReports();
+                } else {
+                    alert('Failed: ' + (res.message || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error updating report.');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function logout() {
+            if (typeof window.adminAWSAuthService !== 'undefined') {
+                window.adminAWSAuthService.logout();
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Dropdown Logic for Target Audience
+        function toggleAudienceDropdown() {
+            const dropdown = document.getElementById('audienceDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectAudience(value, text) {
+            document.getElementById('targetAudience').value = value;
+            document.getElementById('audienceDropdownText').textContent = text;
+
+            // Update visual selection
+            const items = document.querySelectorAll('#audienceDropdownMenu .custom-dropdown-item');
+            items.forEach(item => item.classList.remove('selected'));
+
+            items.forEach(item => {
+                if (item.textContent === text) item.classList.add('selected');
+            });
+
+            toggleAudienceDropdown();
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+            // User Profile Dropdown
+            if (!event.target.closest('.user-profile')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+
+            // Close Filter Dropdowns
+            if (!event.target.closest('.custom-dropdown')) {
+                const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+                dropdowns.forEach(dd => dd.classList.remove('active'));
+            }
+        };
+
+        // Filter Dropdown Logic
+        document.querySelectorAll('.filter-d2 .custom-dropdown').forEach(dropdown => {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            if (trigger) { // Search input doesn't have a trigger click the same way
+                trigger.addEventListener('click', () => {
+                    // Close others
+                    document.querySelectorAll('.filter-d2 .custom-dropdown').forEach(other => {
+                        if (other !== dropdown) other.classList.remove('active');
+                    });
+                    dropdown.classList.toggle('active');
+                });
+            }
+
+            // Handle Item Selection
+            const items = dropdown.querySelectorAll('.dropdown-item-custom');
+            items.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent bubbling
+                    const text = item.textContent;
+                    const selectedTextEl = dropdown.querySelector('.selected-text');
+                    if (selectedTextEl) {
+                        selectedTextEl.textContent = text;
+                    }
+                    dropdown.classList.remove('active');
+                });
+            });
+        });
+
+        // Modal Logic
+        let currentReportId = '';
+        let currentUser = '';
+        let currentReportedId = '';
+        let currentReporterId = '';
+
+        function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId) {
+            currentReportId = reportId;
+            currentUser = userName;
+            currentReportedId = reportedId;
+            currentReporterId = reporterId;
+
+            document.getElementById('modalReportId').textContent = 'REPORT ID: ' + reportId.substring(0, 8);
+            document.getElementById('modalUserName').textContent = userName;
+            document.getElementById('modalUserId').textContent = userEmail;
+            document.getElementById('modalReason').textContent = reason;
+            document.getElementById('modalDescription').innerText = description || "No description provided.";
+
+            // Simple initial generic logic for avatar
+            const initials = userName.substring(0, 2).toUpperCase();
+            document.getElementById('modalUserInitials').textContent = initials;
+
+            document.getElementById('reportDetailsModal').classList.add('active');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportDetailsModal').classList.remove('active');
+        }
+
+        // --- Ban Modal Logic ---
+        function openBanModal() {
+            // Close the details modal first (optional behavior, often better UI to stack or switch)
+            // For now, let's keep details open or just show over it. If we use z-indexes correctly they stack.
+            // But usually, one modal focus is better.
+            closeReportModal();
+            document.getElementById('banModalUserName').textContent = currentUser || '@User';
+            document.getElementById('banUserModal').classList.add('active');
+        }
+
+        function closeBanModal() {
+            document.getElementById('banUserModal').classList.remove('active');
+        }
+
+        // --- Warning Modal Logic ---
+        function openWarningModal() {
+            closeReportModal();
+            document.getElementById('warnModalUserName').textContent = currentUser || '@User';
+            document.getElementById('warnModalCaseId').textContent = currentReportId || '#000';
+            document.getElementById('warningUserModal').classList.add('active');
+        }
+
+        function closeWarningModal() {
+            document.getElementById('warningUserModal').classList.remove('active');
+        }
+
+        function setWarningPreset(btn, type) {
+            // Update visual state of buttons
+            const buttons = btn.parentElement.querySelectorAll('button');
+            buttons.forEach(b => {
+                b.classList.remove('btn-warning', 'text-dark');
+                b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-warning', 'text-dark');
+
+            // Set message
+            const msgBox = document.getElementById('warningMessage');
+            if (type === 'Profanity') msgBox.value = "We removed your recent content due to inappropriate language. Please keep our community friendly.";
+            if (type === 'Spamming') msgBox.value = "We noticed repeated spamming in your recent comments. Please stop immediately or further action will be taken.";
+            if (type === 'Off-topic') msgBox.value = "Your recent posts were off-topic. Please stick to the relevant discussion threads.";
+            if (type === 'Harassment') msgBox.value = "Harassment of other users is a serious violation. This is a formal warning.";
+        }
+
+
+        // Close on outside click
+        window.onclick = function (event) {
+            // User Profile Dropdown
+            if (!event.target.closest('.user-profile')) {
+                const dropdowns = document.getElementsByClassName("user-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+
+            // Close Filter Dropdowns
+            if (!event.target.closest('.custom-dropdown')) {
+                const dropdowns = document.querySelectorAll('.filter-d2 .custom-dropdown');
+                dropdowns.forEach(dd => dd.classList.remove('active'));
+            }
+
+            // Close Modals
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        };
+
+        // Modal Specific Close Listeners (Redundant with window.onclick but good for explicit target logic if needed)
+        // document.getElementById('reportDetailsModal').addEventListener('click', (e) => { ... });
+        // Logic handled by window.onclick generic 'modal-overlay' check above matches all current modals.
+    </script>
+
+
+</body>
+
+</html>

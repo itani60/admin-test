@@ -1012,35 +1012,91 @@
                 <button class="btn btn-success btn-sm text-white" onclick="updateReportAction('RESOLVE')">Resolve
                     Report</button>
                 <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn User</button>
-                <button class="btn btn-danger btn-sm" onclick="openBanModal()">Ban Account</button>
+                <button class="btn btn-warning btn-sm" onclick="showSuspendModal(currentReportedEmail)"
+                    id="suspendActionBtn">Suspend Account</button>
             </div>
         </div>
     </div>
 
 
-    <!-- Ban User Modal (Design 2) -->
-    <div class="modal-overlay" id="banUserModal">
-        <div class="ban-d2">
-            <div class="ban-d2-icon">
-                <i class="fas fa-ban"></i>
-            </div>
-            <h3 class="fw-bold mb-2">Ban Account?</h3>
-            <p class="text-muted mb-4">You are about to ban <span class="text-dark fw-bold"
-                    id="banModalUserName">@User</span>. They will lose access immediately.</p>
+    <!-- Suspend User Modal (Design 3 Modern Minimalist) -->
+    <div class="modal fade modal-minimal" id="suspendUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div class="text-center mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 60px; height: 60px;">
+                        <i class="fas fa-user-lock text-dark" style="font-size: 24px;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Suspend User</h4>
+                    <p class="text-muted small" id="suspendUserEmail">user@example.com</p>
+                </div>
 
-            <div class="mb-4 text-start">
-                <label class="form-label small fw-bold text-muted">Reason / Note</label>
-                <textarea class="form-control bg-light border-0" rows="2"
-                    placeholder="Why are you banning this user?"></textarea>
-            </div>
+                <div class="mb-4">
+                    <label class="form-label small text-uppercase fw-bold text-secondary"
+                        style="letter-spacing: 0.5px;">Reason for Suspension <span class="text-danger">*</span></label>
 
-            <div class="d-grid gap-3">
-                <button class="btn btn-danger btn-lg rounded-pill shadow-sm">Yes, Ban User</button>
-                <button class="btn btn-light btn-lg rounded-pill text-muted fw-bold"
-                    onclick="closeBanModal()">Cancel</button>
+                    <!-- CUSTOM DROPDOWN COMPONENT -->
+                    <div class="custom-select-wrapper" id="suspendReasonDropdown">
+                        <div class="custom-select-trigger">
+                            <span class="text-muted">Select a reason...</span>
+                            <i class="fas fa-chevron-down text-secondary border-0" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <div class="custom-select-options">
+                            <div class="custom-option" data-value="Spam or self-promotion">
+                                <i class="fas fa-bullhorn"></i> Spam or self-promotion
+                            </div>
+                            <div class="custom-option" data-value="Harassment or bullying">
+                                <i class="fas fa-comment-slash"></i> Harassment or bullying
+                            </div>
+                            <div class="custom-option" data-value="Hate speech or violence">
+                                <i class="fas fa-exclamation-triangle"></i> Hate speech or violence
+                            </div>
+                            <div class="custom-option" data-value="Nude or explicit content">
+                                <i class="fas fa-eye-slash"></i> Nude or explicit content
+                            </div>
+                            <div class="custom-option" data-value="Impersonation or identity theft">
+                                <i class="fas fa-user-secret"></i> Impersonation or identity theft
+                            </div>
+                            <div class="custom-option" data-value="Scams or phishing">
+                                <i class="fas fa-fish"></i> Scams or phishing
+                            </div>
+                            <div class="custom-option" data-value="Copyright infringement">
+                                <i class="fas fa-copyright"></i> Copyright infringement
+                            </div>
+                            <div class="custom-option" data-value="Other">
+                                <i class="fas fa-question-circle"></i> Other
+                            </div>
+                        </div>
+                        <input type="hidden" id="suspensionReason">
+                    </div>
+
+                    <!-- Optional Details Slot -->
+                    <div class="mt-3">
+                        <label class="form-label small text-uppercase fw-bold text-secondary"
+                            style="letter-spacing: 0.5px;">Additional Details (Optional)</label>
+                        <textarea class="form-control bg-light border-0" id="suspensionDetails" rows="3"
+                            placeholder="Add specific details about this suspension..."
+                            style="resize: none; font-size: 0.9rem; border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-dark py-2" id="confirmSuspendBtn"
+                        onclick="confirmSuspendUser()">
+                        <i class="fas fa-ban me-2"></i> Suspend Account
+                    </button>
+                    <button type="button" class="btn btn-link text-decoration-none text-secondary"
+                        data-bs-dismiss="modal">Cancel</button>
+                </div>
+
+                <input type="hidden" id="suspendUserEmailHidden">
             </div>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
     <!-- Warning User Modal (Design 2) -->
     <div class="modal-overlay" id="warningUserModal">
@@ -1080,13 +1136,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="assets/scripts/admin-aws-auth.js"></script>
+    <script src="assets/scripts/admin-aws-auth.js"></script>
 
     <script src="assets/scripts/sidebar.js"></script>
     <script src="assets/scripts/lazy_loading.js"></script>
     <script>
         // Check login state
-        const API_BASE_URL = 'https://hub.comparehubprices.co.za';
+        let API_BASE_URL = localStorage.getItem('comparehubprices_api_url') || 'https://hub.comparehubprices.co.za';
+        // Remove /data suffix if present
+        if (API_BASE_URL.endsWith('/data')) {
+            API_BASE_URL = API_BASE_URL.replace(/\/data$/, '');
+        }
+        let allReports = [];
 
         function checkLoginState() {
             if (typeof window.adminAWSAuthService !== 'undefined') {
@@ -1135,8 +1196,9 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    renderReports(data.reports);
-                    updateStats(data.reports);
+                    allReports = data.reports;
+                    renderReports(allReports);
+                    updateStats(allReports);
                 } else {
                     tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-5">No reports found via API.</td></tr>';
                 }
@@ -1345,14 +1407,12 @@
         });
 
         // Modal Logic
-        let currentReportId = '';
-        let currentUser = '';
-        let currentReportedId = '';
-        let currentReporterId = '';
+        let currentReportedEmail = '';
 
         function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId) {
             currentReportId = reportId;
             currentUser = userName;
+            currentReportedEmail = userEmail;
             currentReportedId = reportedId;
             currentReporterId = reporterId;
 
@@ -1373,18 +1433,153 @@
             document.getElementById('reportDetailsModal').classList.remove('active');
         }
 
-        // --- Ban Modal Logic ---
-        function openBanModal() {
-            // Close the details modal first (optional behavior, often better UI to stack or switch)
-            // For now, let's keep details open or just show over it. If we use z-indexes correctly they stack.
-            // But usually, one modal focus is better.
-            closeReportModal();
-            document.getElementById('banModalUserName').textContent = currentUser || '@User';
-            document.getElementById('banUserModal').classList.add('active');
+        // --- Suspend Logic (Ported from admin-management.js) ---
+
+        // Initialize Suspend Dropdown
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSuspendDropdown();
+        });
+
+        function initializeSuspendDropdown() {
+            const wrapper = document.getElementById('suspendReasonDropdown');
+            if (!wrapper) return;
+
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+            const triggerSpan = trigger.querySelector('span');
+            const optionElements = wrapper.querySelectorAll('.custom-option');
+
+            // Toggle
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                wrapper.classList.toggle('open');
+            });
+
+            // Select Option
+            optionElements.forEach(option => {
+                option.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const value = this.getAttribute('data-value');
+                    const text = this.textContent.trim();
+                    const icon = this.querySelector('i').cloneNode(true);
+
+                    hiddenInput.value = value;
+
+                    triggerSpan.innerHTML = '';
+                    triggerSpan.appendChild(icon);
+                    triggerSpan.appendChild(document.createTextNode(' ' + text));
+                    triggerSpan.classList.remove('text-muted');
+                    triggerSpan.classList.add('text-dark', 'fw-medium');
+
+                    optionElements.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+
+                    wrapper.classList.remove('open');
+                });
+            });
+
+            // Close on outside click
+            document.addEventListener('click', function (e) {
+                if (!wrapper.contains(e.target)) {
+                    wrapper.classList.remove('open');
+                }
+            });
         }
 
-        function closeBanModal() {
-            document.getElementById('banUserModal').classList.remove('active');
+        const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users/manage`;
+
+        function showSuspendModal(email) {
+            // Close details modal
+            closeReportModal();
+
+            const displayEl = document.getElementById('suspendUserEmail');
+            if (displayEl) displayEl.textContent = email;
+
+            const hiddenInput = document.getElementById('suspendUserEmailHidden');
+            if (hiddenInput) hiddenInput.value = email;
+
+            // Reset Form
+            const reasonInput = document.getElementById('suspensionReason');
+            const detailsInput = document.getElementById('suspensionDetails');
+            const dropdownTriggerSpan = document.querySelector('#suspendReasonDropdown .custom-select-trigger span');
+            const dropdownOptions = document.querySelectorAll('#suspendReasonDropdown .custom-option');
+
+            if (reasonInput) reasonInput.value = '';
+            if (detailsInput) detailsInput.value = '';
+
+            // Reset visual dropdown
+            if (dropdownTriggerSpan) {
+                dropdownTriggerSpan.textContent = 'Select a reason...';
+                dropdownTriggerSpan.classList.add('text-muted');
+                dropdownTriggerSpan.classList.remove('text-dark', 'fw-medium');
+            }
+            dropdownOptions.forEach(opt => opt.classList.remove('selected'));
+
+            const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
+            modal.show();
+        }
+
+        async function confirmSuspendUser() {
+            const email = document.getElementById('suspendUserEmailHidden').value;
+            const reason = document.getElementById('suspensionReason').value;
+            const details = document.getElementById('suspensionDetails').value;
+
+            if (!reason.trim()) {
+                alert('Please select a reason for suspension');
+                return;
+            }
+
+            const fullReason = details ? `${reason} - ${details}` : reason;
+
+            try {
+                const btn = document.getElementById('confirmSuspendBtn');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+                    btn.disabled = true;
+                }
+
+                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: fullReason }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('User suspended successfully');
+                    // Hide Modal
+                    const modalEl = document.getElementById('suspendUserModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // Also update report status if applicable
+                    if (currentReportId) {
+                        // We can automatically mark report as RESOLVED or SUSPENDED
+                        // For now, reload reports to reflect any backend changes
+                        fetchReports();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to suspend user');
+                }
+            } catch (error) {
+                console.error('Error suspending user:', error);
+                alert(error.message || 'Failed to suspend user');
+            } finally {
+                const btn = document.getElementById('confirmSuspendBtn');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-ban me-2"></i> Suspend Account';
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            // Simple fallback since we might not have full toast CSS
+            alert(message);
         }
 
         // --- Warning Modal Logic ---
@@ -1417,6 +1612,22 @@
             if (type === 'Harassment') msgBox.value = "Harassment of other users is a serious violation. This is a formal warning.";
         }
 
+        // Search Listener
+        const searchInput = document.getElementById('searchReportInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                if (!allReports) return;
+                const filtered = allReports.filter(report => {
+                    const id = (report.reportId || '').toLowerCase();
+                    const reporter = (report.reporterName || report.reporterUserId || '').toLowerCase();
+                    const target = (report.reportedUserName || report.reportedUserId || '').toLowerCase();
+                    const reason = (report.reason || '').toLowerCase();
+                    return id.includes(term) || reporter.includes(term) || target.includes(term) || reason.includes(term);
+                });
+                renderReports(filtered);
+            });
+        }
 
         // Close on outside click
         window.onclick = function (event) {

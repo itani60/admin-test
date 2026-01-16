@@ -1175,7 +1175,7 @@
                 const targetInitial = (report.reportedBusinessName || report.targetName || 'B').charAt(0).toUpperCase();
 
                 const safeReporterName = (report.reporterName || report.reporterUserId || report.reporterId || 'User').replace(/'/g, "\\'");
-                const safeReporterEmail = (report.reporterEmail || '').replace(/'/g, "\\'");
+                const safeReporterEmail = (report.reporterEmail || report.reporterId || report.reporterUserId || '').replace(/'/g, "\\'");
 
                 const safeBusinessName = (report.reportedBusinessName || report.targetName || report.reportedBusinessId || report.targetId || 'Business').replace(/'/g, "\\'");
                 const safeBusinessEmail = (report.reportedBusinessEmail || report.targetId || '').replace(/'/g, "\\'");
@@ -1193,7 +1193,7 @@
                                 style="width: 32px; height: 32px; font-size: 0.8rem;">${reporterInitial}</div>
                             <div>
                                 <div class="fw-bold text-dark">${report.reporterName || report.reporterId || report.reporterUserId}</div>
-                                <div class="text-muted small">${report.reporterEmail || 'User'}</div>
+                                <div class="text-muted small">${report.reporterEmail || report.reporterId || report.reporterUserId || 'No Email'}</div>
                             </div>
                         </div>
                     </td>
@@ -1203,7 +1203,7 @@
                                 style="width: 32px; height: 32px; font-size: 0.8rem;">${targetInitial}</div>
                             <div>
                                 <div class="fw-bold text-dark">${report.reportedBusinessName || report.targetName || report.reportedBusinessId || report.targetId}</div>
-                                <div class="text-muted small">${report.reportedBusinessEmail || report.targetId || 'Business'}</div>
+                                <div class="text-muted small">${report.reportedBusinessEmail || report.targetId || 'No ID'}</div>
                             </div>
                         </div>
                     </td>

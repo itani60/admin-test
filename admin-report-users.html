@@ -635,6 +635,109 @@
         .modal-overlay.active .warn-d2 {
             transform: scale(1);
         }
+
+        /* Design 3: Modern Minimalist Modal */
+        .modal-minimal .modal-content {
+            border: none;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 16px;
+        }
+
+        .modal-minimal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .modal-minimal .modal-footer {
+            border-top: none;
+            padding-top: 0;
+            padding-bottom: 1.5rem;
+        }
+
+        .modal-minimal .btn {
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        /* Design 3 Custom Dropdown */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+        }
+
+        .custom-select-trigger {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: #cbd5e1;
+            background-color: #fff;
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+        }
+
+        .custom-select-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 5px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 10001;
+            /* High z-index for modal */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+        }
+
+        .custom-select-wrapper.open .custom-select-options {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-option:hover {
+            background-color: #f1f5f9;
+        }
+
+        .custom-option.selected {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .custom-option i {
+            width: 20px;
+            color: #64748b;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <div class="page-loading-overlay" id="pageLoadingOverlay">

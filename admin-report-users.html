@@ -1411,7 +1411,7 @@
         // Modal Logic
         let currentReportedEmail = '';
 
-        function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId) {
+        function openReportModal(reportId, userName, userEmail, reason, description, reportedId, reporterId, reporterName) {
             currentReportId = reportId;
             currentUser = userName;
             currentReportedEmail = userEmail;
@@ -1423,6 +1423,9 @@
             document.getElementById('modalUserId').textContent = userEmail;
             document.getElementById('modalReason').textContent = reason;
             document.getElementById('modalDescription').innerText = description || "No description provided.";
+
+            // Set Reporter Name
+            document.getElementById('modalReporter').textContent = reporterName || 'Unknown Business';
 
             // Simple initial generic logic for avatar
             const initials = userName.substring(0, 2).toUpperCase();

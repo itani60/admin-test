@@ -1151,6 +1151,21 @@
             }
         }
 
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            return Math.floor(seconds) + " seconds ago";
+        }
+
         function renderReports(reports) {
             const tableBody = document.querySelector('#reportsTableBody');
             if (!reports || reports.length === 0) {
@@ -1160,6 +1175,7 @@
 
             tableBody.innerHTML = reports.map(report => {
                 const date = new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeString = timeAgo(new Date(report.createdAt));
 
                 let statusClass = 'bg-secondary bg-opacity-10 text-secondary';
                 if (report.status === 'PENDING') statusClass = 'bg-warning bg-opacity-10 text-warning';
@@ -1183,6 +1199,7 @@
                 const safeReason = (report.reason || '').replace(/'/g, "\\'");
                 const safeDesc = (report.description || '').replace(/'/g, "\\'");
                 const safeReportId = report.reportId; // Simple Key
+                const safeTimeString = timeString.replace(/'/g, "\\'");
 
                 return `
                 <tr>
@@ -1215,13 +1232,63 @@
                     <td class="text-muted">${date}</td>
                     <td class="px-4 text-end">
                         <button class="btn btn-sm btn-light text-dark fw-medium border shadow-sm"
-                            onclick="openReportModal('${safeReportId}', '${safeBusinessName}', '${safeBusinessEmail}', '${safeReason}', '${safeDesc}', '${safeReporterName}')">
+                            onclick="openReportModal('${safeReportId}', '${safeBusinessName}', '${safeBusinessEmail}', '${safeReason}', '${safeDesc}', '${safeReporterName}', '${safeTimeString}', '${report.status}')">
                             ${report.status === 'PENDING' ? 'Review' : 'Details'}
                         </button>
                     </td>
                 </tr>
                 `;
             }).join('');
+        }
+
+        function updateStats(reports) {
+            const h3s = document.querySelectorAll('.d1-content h3');
+            if (h3s.length >= 4) {
+                h3s[0].innerText = reports.length;
+                h3s[1].innerText = reports.filter(r => r.status === 'PENDING').length;
+                h3s[2].innerText = reports.filter(r => r.status === 'RESOLVED').length;
+                h3s[3].innerText = reports.filter(r => r.status === 'DISMISSED').length;
+            }
+        }
+
+        // ... (updateReportAction, logout, toggleUserDropdown, toggleAudienceDropdown, selectAudience, window.onclick, filter logic unchanged) ...
+
+        // Modal Logic
+        let currentReportId = '';
+        let currentUser = ''; // Used for Ban Modal title
+
+        function openReportModal(reportId, businessName, businessEmail, reason, description, reporterName, timeString, status) {
+            currentReportId = reportId;
+            currentUser = businessName;
+
+            document.getElementById('modalReportId').textContent = 'REPORT ID: #' + reportId.substring(0, 8);
+            document.getElementById('modalUserName').textContent = businessName; // Actually Business Name
+            document.getElementById('modalUserId').textContent = businessEmail;
+            document.getElementById('modalReason').textContent = reason;
+            document.getElementById('modalDescription').innerText = description || "No description provided.";
+
+            // Reporter Info
+            document.getElementById('modalReporter').textContent = reporterName || 'Unknown User';
+
+            // Set Time
+            document.getElementById('modalTime').textContent = timeString || '';
+
+            // Set Status
+            const statusEl = document.getElementById('modalStatus');
+            if (statusEl) {
+                statusEl.textContent = status || 'Pending';
+                // Reset classes
+                statusEl.className = 'badge me-2';
+                if (status === 'PENDING') statusEl.classList.add('bg-warning', 'text-dark');
+                else if (status === 'RESOLVED') statusEl.classList.add('bg-success', 'text-white');
+                else if (status === 'DISMISSED') statusEl.classList.add('bg-secondary', 'text-white');
+                else statusEl.classList.add('bg-light', 'text-dark');
+            }
+
+            const initials = businessName.substring(0, 2).toUpperCase();
+            document.getElementById('modalUserInitials').textContent = initials;
+
+            document.getElementById('reportDetailsModal').classList.add('active');
         }
 
         function updateStats(reports) {
@@ -1340,28 +1407,7 @@
             });
         });
 
-        // Modal Logic
-        let currentReportId = '';
-        let currentUser = ''; // Used for Ban Modal title
 
-        function openReportModal(reportId, businessName, businessEmail, reason, description, reporterName) {
-            currentReportId = reportId;
-            currentUser = businessName;
-
-            document.getElementById('modalReportId').textContent = 'REPORT ID: #' + reportId.substring(0, 8);
-            document.getElementById('modalUserName').textContent = businessName; // Actually Business Name
-            document.getElementById('modalUserId').textContent = businessEmail;
-            document.getElementById('modalReason').textContent = reason;
-            document.getElementById('modalDescription').innerText = description || "No description provided.";
-
-            // Reporter Info
-            document.getElementById('modalReporter').textContent = reporterName || 'Unknown User';
-
-            const initials = businessName.substring(0, 2).toUpperCase();
-            document.getElementById('modalUserInitials').textContent = initials;
-
-            document.getElementById('reportDetailsModal').classList.add('active');
-        }
 
         function closeReportModal() {
             document.getElementById('reportDetailsModal').classList.remove('active');

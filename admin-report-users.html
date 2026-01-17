@@ -2001,10 +2001,25 @@
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
 
-                    // Also update report status if applicable
+                    // Update Report Status to matches User Status
                     if (currentReportId) {
-                        // We can automatically mark report as RESOLVED or SUSPENDED
-                        // For now, reload reports to reflect any backend changes
+                        try {
+                            await fetch(`${API_BASE_URL}/admin/reports`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    reportId: currentReportId,
+                                    action: 'SUSPEND', // Sets status to SUSPENDED
+                                    source: 'USER',
+                                    reportedUserId: currentReportedId,
+                                    reporterUserId: currentReporterId,
+                                    notes: 'User Suspended'
+                                }),
+                                credentials: 'include'
+                            });
+                        } catch (err) {
+                            console.error('Failed to update report status:', err);
+                        }
                         fetchReports();
                     }
                 } else {

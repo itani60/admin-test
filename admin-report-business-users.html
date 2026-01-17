@@ -1920,6 +1920,22 @@
                     if (modal) modal.hide();
 
                     if (currentReportId) {
+                        try {
+                            await fetch(`${API_BASE_URL}/admin/reports`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    reportId: currentReportId,
+                                    action: 'SUSPEND',
+                                    source: 'BUSINESS',
+                                    reportedUserId: currentReportedId,
+                                    reporterUserId: currentReporterId,
+                                    notes: 'Business Suspended'
+                                }),
+                                credentials: 'include'
+                            });
+                        } catch (e) { console.error(e); }
+
                         fetchReports();
                     }
                 } else {

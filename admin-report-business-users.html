@@ -1107,7 +1107,8 @@
                 <div class="mb-2">
                     <span class="badge border border-danger text-danger bg-danger-subtle mb-2"
                         id="modalReason">loading...</span>
-                    <span class="text-muted small ms-2"><i class="far fa-clock"></i> <span id="modalTime">loading...</span></span>
+                    <span class="text-muted small ms-2"><i class="far fa-clock"></i> <span
+                            id="modalTime">loading...</span></span>
                 </div>
                 <p class="mb-0 text-dark" id="modalDescription">loading...</p>
             </div>
@@ -1224,7 +1225,7 @@
             <div class="d-flex justify-content-end gap-2">
                 <button class="btn btn-link text-muted text-decoration-none"
                     onclick="closeWarningModal()">Discard</button>
-                <button class="btn btn-dark px-4">Send Notice</button>
+                <button class="btn btn-dark px-4" onclick="confirmSendWarning()">Send Notice</button>
             </div>
         </div>
     </div>
@@ -1698,6 +1699,54 @@
                     btn.innerHTML = '<i class="fas fa-ban me-2"></i> Suspend Account';
                     btn.disabled = false;
                 }
+            }
+        }
+
+        async function confirmSendWarning() {
+            const message = document.getElementById('warningMessage').value;
+            if (!message.trim()) {
+                alert('Please enter a warning message.');
+                return;
+            }
+
+            // Add visual feedback
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    reportId: currentReportId,
+                    action: 'WARN',
+                    source: 'BUSINESS',
+                    reportedUserId: currentReportedId, // This might be business ID
+                    reporterUserId: currentReporterId,
+                    targetEmail: currentReportedEmail,
+                    notes: message
+                };
+
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+
+                const res = await response.json();
+                if (res.success) {
+                    alert('Warning sent successfully.');
+                    closeWarningModal();
+                    fetchReports();
+                } else {
+                    alert('Failed: ' + (res.message || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error sending warning.');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 

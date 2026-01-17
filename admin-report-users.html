@@ -1234,7 +1234,7 @@
             <div class="d-flex justify-content-end gap-2">
                 <button class="btn btn-link text-muted text-decoration-none"
                     onclick="closeWarningModal()">Discard</button>
-                <button class="btn btn-dark px-4">Send Notice</button>
+                <button class="btn btn-dark px-4" onclick="confirmSendWarning()">Send Notice</button>
             </div>
         </div>
     </div>
@@ -1446,6 +1446,54 @@
                 alert('Error updating report.');
             } finally {
                 btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function confirmSendWarning() {
+            const message = document.getElementById('warningMessage').value;
+            if (!message.trim()) {
+                alert('Please enter a warning message.');
+                return;
+            }
+
+            // Add visual feedback
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    reportId: currentReportId,
+                    action: 'WARN',
+                    source: 'USER',
+                    reportedUserId: currentReportedId,
+                    reporterUserId: currentReporterId,
+                    targetEmail: currentReportedEmail,
+                    notes: message
+                };
+
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+
+                const res = await response.json();
+                if (res.success) {
+                    alert('Warning sent successfully.');
+                    closeWarningModal();
+                    fetchReports();
+                } else {
+                    alert('Failed: ' + (res.message || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error sending warning.');
+            } finally {
+                btn.innerText = originalText;
                 btn.disabled = false;
             }
         }

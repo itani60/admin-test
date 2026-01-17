@@ -1720,6 +1720,14 @@
             // Reset defaults
             if (groupInitial) groupInitial.style.display = 'contents';
             if (groupEscalate) groupEscalate.style.display = 'contents';
+
+            const btnSuspend = document.getElementById('btn-suspend');
+            if (btnSuspend) {
+                btnSuspend.style.display = 'inline-block';
+                btnSuspend.textContent = 'Suspend';
+                btnSuspend.disabled = false;
+            }
+
             if (btnReview) {
                 btnReview.disabled = false;
                 btnReview.textContent = 'Reviewed';
@@ -1746,10 +1754,10 @@
             }
             else if (status === 'SUSPENDED') {
                 if (groupInitial) groupInitial.style.display = 'none';
+
                 const btnSuspend = document.getElementById('btn-suspend');
                 if (btnSuspend) {
-                    btnSuspend.textContent = 'Suspended ✓';
-                    btnSuspend.disabled = true;
+                    btnSuspend.style.display = 'none'; // Hide suspend button
                 }
             }
         }

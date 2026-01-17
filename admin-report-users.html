@@ -1188,13 +1188,23 @@
                     the comment section of my product review. Please check."</p>
             </div>
             <div class="rd-d1-footer">
-                <button class="btn btn-light border btn-sm" onclick="updateReportAction('DISMISS')">Dismiss</button>
-                <button class="btn btn-info btn-sm text-white" onclick="updateReportAction('REVIEW')">Reviewed</button>
-                <button class="btn btn-success btn-sm text-white"
-                    onclick="updateReportAction('RESOLVE')">Resolve</button>
-                <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn</button>
-                <button class="btn btn-warning btn-sm" onclick="showSuspendModal(currentReportedEmail)"
-                    id="suspendActionBtn">Suspend</button>
+                <!-- Group: Initial Actions (Dismiss, Review, Warn) -->
+                <div id="action-group-initial" style="display:contents">
+                    <button class="btn btn-light border btn-sm" id="btn-dismiss"
+                        onclick="updateReportAction('DISMISS')">Dismiss</button>
+                    <button class="btn btn-info btn-sm text-white" id="btn-review"
+                        onclick="updateReportAction('REVIEW')">Reviewed</button>
+                    <button class="btn btn-outline-danger btn-sm" id="btn-warn"
+                        onclick="openWarningModal()">Warn</button>
+                </div>
+
+                <!-- Group: Escalation (Resolve, Suspend) -->
+                <div id="action-group-escalate" style="display:contents">
+                    <button class="btn btn-warning btn-sm" id="btn-suspend"
+                        onclick="showSuspendModal(currentReportedEmail)">Suspend</button>
+                    <button class="btn btn-success btn-sm text-white" id="btn-resolve"
+                        onclick="updateReportAction('RESOLVE')">Resolve</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1549,9 +1559,20 @@
 
                 const res = await response.json();
                 if (res.success) {
-                    alert(`Report ${action.toLowerCase()}d successfully.`);
-                    closeReportModal();
-                    fetchReports();
+                    if (action === 'REVIEW') {
+                        // Don't close, just update state
+                        const statusEl = document.getElementById('modalStatus');
+                        if (statusEl) {
+                            statusEl.textContent = 'REVIEWED'; // or res.status
+                            statusEl.className = 'badge me-2 bg-info text-white';
+                        }
+                        applyButtonLogic('REVIEWED');
+                    } else {
+                        // Terminal actions (Dismiss, Resolve) close the modal
+                        alert(`Report ${action.toLowerCase()}d successfully.`);
+                        closeReportModal();
+                        fetchReports();
+                    }
                 } else {
                     alert('Failed: ' + (res.message || 'Unknown error'));
                 }
@@ -1600,6 +1621,15 @@
                 if (res.success) {
                     showToast('Warning sent successfully.', 'success');
                     closeWarningModal();
+
+                    // Update Report Modal State
+                    const statusEl = document.getElementById('modalStatus');
+                    if (statusEl) {
+                        statusEl.textContent = 'WARNING SENT';
+                        statusEl.className = 'badge me-2 bg-warning text-dark';
+                    }
+                    applyButtonLogic('WARNING_SENT');
+
                     fetchReports();
                 } else {
                     showToast('Failed: ' + (res.message || 'Unknown error'), 'error');
@@ -1718,6 +1748,57 @@
             });
         });
 
+        // Helper: Apply Button Logic (Logic 2)
+        function applyButtonLogic(status) {
+            const groupInitial = document.getElementById('action-group-initial');
+            const groupEscalate = document.getElementById('action-group-escalate');
+            const btnReview = document.getElementById('btn-review');
+
+            // Reset defaults
+            if (groupInitial) groupInitial.style.display = 'contents';
+            if (groupEscalate) groupEscalate.style.display = 'contents';
+            if (btnReview) {
+                btnReview.disabled = false;
+                btnReview.textContent = 'Reviewed';
+            }
+
+            status = status ? status.toUpperCase() : 'PENDING';
+
+            if (status === 'DISMISSED' || status === 'RESOLVED') {
+                if (groupInitial) groupInitial.style.display = 'none';
+                if (groupEscalate) groupEscalate.style.display = 'none';
+            }
+            else if (status === 'REVIEWED' || status === 'UNDER REVIEW') {
+                // Keep Initial Visible (for Review info) but disable review button
+                if (btnReview) {
+                    btnReview.disabled = true;
+                    btnReview.textContent = 'Reviewed ✓';
+                }
+                // Escalate stays visible
+            }
+            else if (status === 'WARNING_SENT' || status === 'WARNED') {
+                // Hide Initial (Dismiss/Warn) - One time warn
+                if (groupInitial) groupInitial.style.display = 'none';
+                // Escalate remains visible
+            }
+            else if (status === 'SUSPENDED') {
+                if (groupInitial) groupInitial.style.display = 'none';
+                // Usually hide escalate too if suspended? Or maybe leave Resolve? 
+                // Logic 1 said hide warn/dismiss/review, leave Resolve.
+                // In Logic 2 grouping, Suspend/Resolve are in Escalate.
+                // So we keep Escalate visible probably? But maybe disable Suspend?
+                if (groupEscalate) {
+                    // We can leave it visible, maybe button state handles disabling?
+                    // Let's hide Initial only.
+                }
+                const btnSuspend = document.getElementById('btn-suspend');
+                if (btnSuspend) {
+                    btnSuspend.textContent = 'Suspended ✓';
+                    btnSuspend.disabled = true;
+                }
+            }
+        }
+
         // Modal Logic
         let currentReportedEmail = '';
 
@@ -1754,6 +1835,8 @@
             // Simple initial generic logic for avatar
             const initials = userName.substring(0, 2).toUpperCase();
             document.getElementById('modalUserInitials').textContent = initials;
+
+            applyButtonLogic(status);
 
             document.getElementById('reportDetailsModal').classList.add('active');
         }

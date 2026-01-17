@@ -1189,12 +1189,23 @@
                 <p class="mb-0 text-dark" id="modalDescription">loading...</p>
             </div>
             <div class="rd-d1-footer">
-                <button class="btn btn-light border btn-sm" onclick="updateReportAction('DISMISS')">Dismiss</button>
-                <button class="btn btn-info btn-sm text-white" onclick="updateReportAction('REVIEW')">Reviewed</button>
-                <button class="btn btn-success btn-sm text-white"
-                    onclick="updateReportAction('RESOLVE')">Resolve</button>
-                <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn</button>
-                <button class="btn btn-danger btn-sm" onclick="showSuspendModal()">Suspend</button>
+                <!-- Group: Initial Actions -->
+                <div id="action-group-initial" style="display:contents">
+                    <button class="btn btn-light border btn-sm" id="btn-dismiss"
+                        onclick="updateReportAction('DISMISS')">Dismiss</button>
+                    <button class="btn btn-info btn-sm text-white" id="btn-review"
+                        onclick="updateReportAction('REVIEW')">Reviewed</button>
+                    <button class="btn btn-outline-danger btn-sm" id="btn-warn"
+                        onclick="openWarningModal()">Warn</button>
+                </div>
+
+                <!-- Group: Escalation -->
+                <div id="action-group-escalate" style="display:contents">
+                    <button class="btn btn-danger btn-sm" id="btn-suspend"
+                        onclick="showSuspendModal(currentReportedEmail)">Suspend</button>
+                    <button class="btn btn-success btn-sm text-white" id="btn-resolve"
+                        onclick="updateReportAction('RESOLVE')">Resolve</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1562,6 +1573,8 @@
             const initials = businessName.substring(0, 2).toUpperCase();
             document.getElementById('modalUserInitials').textContent = initials;
 
+            applyButtonLogic(status);
+
             document.getElementById('reportDetailsModal').classList.add('active');
         }
 
@@ -1598,9 +1611,18 @@
 
                 const res = await response.json();
                 if (res.success) {
-                    alert(`Report ${action.toLowerCase()}d successfully.`);
-                    closeReportModal();
-                    fetchReports();
+                    if (action === 'REVIEW') {
+                        const statusEl = document.getElementById('modalStatus');
+                        if (statusEl) {
+                            statusEl.textContent = 'REVIEWED';
+                            statusEl.className = 'badge me-2 bg-info text-white';
+                        }
+                        applyButtonLogic('REVIEWED');
+                    } else {
+                        alert(`Report ${action.toLowerCase()}d successfully.`);
+                        closeReportModal();
+                        fetchReports();
+                    }
                 } else {
                     alert('Failed: ' + (res.message || 'Unknown error'));
                 }
@@ -1682,6 +1704,54 @@
         });
 
 
+
+        // Modal Logic
+        // (Variables declared above)
+
+        // Duplicate openReportModal removed.
+
+        // Helper: Logic 2 Button Visibility
+        function applyButtonLogic(status) {
+            const groupInitial = document.getElementById('action-group-initial');
+            const groupEscalate = document.getElementById('action-group-escalate');
+            const btnReview = document.getElementById('btn-review');
+
+            // Reset defaults
+            if (groupInitial) groupInitial.style.display = 'contents';
+            if (groupEscalate) groupEscalate.style.display = 'contents';
+            if (btnReview) {
+                btnReview.disabled = false;
+                btnReview.textContent = 'Reviewed';
+            }
+
+            status = status ? status.toUpperCase() : 'PENDING';
+
+            if (status === 'DISMISSED' || status === 'RESOLVED') {
+                if (groupInitial) groupInitial.style.display = 'none';
+                if (groupEscalate) groupEscalate.style.display = 'none';
+            }
+            else if (status === 'REVIEWED' || status === 'UNDER REVIEW') {
+                // Keep Initial Visible (for Review info) but disable review button
+                if (btnReview) {
+                    btnReview.disabled = true;
+                    btnReview.textContent = 'Reviewed ✓';
+                }
+                // Escalate stays visible
+            }
+            else if (status === 'WARNING_SENT' || status === 'WARNED') {
+                // Hide Initial (Dismiss/Warn) - One time warn
+                if (groupInitial) groupInitial.style.display = 'none';
+                // Escalate remains visible
+            }
+            else if (status === 'SUSPENDED') {
+                if (groupInitial) groupInitial.style.display = 'none';
+                const btnSuspend = document.getElementById('btn-suspend');
+                if (btnSuspend) {
+                    btnSuspend.textContent = 'Suspended ✓';
+                    btnSuspend.disabled = true;
+                }
+            }
+        }
 
         function closeReportModal() {
             document.getElementById('reportDetailsModal').classList.remove('active');

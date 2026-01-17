@@ -1922,41 +1922,40 @@
                     btn.disabled = true;
                 }
 
-                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: fullReason, accountType: 'business', duration: duration }),
+                // Use Reports API to Suspend (Centralized Logic)
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reportId: currentReportId,
+                        action: 'SUSPEND',
+                        source: 'BUSINESS',
+                        reportedUserId: currentReportedId,
+                        targetEmail: businessEmail,
+                        reporterUserId: currentReporterId,
+                        suspensionReason: fullReason,
+                        suspensionDuration: duration,
+                        notes: `Suspended: ${fullReason || 'No reason'} (Duration: ${duration})`
+                    }),
                     credentials: 'include'
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Business suspended successfully');
-                    // Hide Modal
+                    alert('Business suspended successfully via Report Manager');
                     const modalEl = document.getElementById('suspendUserModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
 
-                    if (currentReportId) {
-                        try {
-                            await fetch(`${API_BASE_URL}/admin/reports`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    reportId: currentReportId,
-                                    action: 'SUSPEND',
-                                    source: 'BUSINESS',
-                                    reportedUserId: currentReportedId,
-                                    reporterUserId: currentReporterId,
-                                    notes: 'Business Suspended'
-                                }),
-                                credentials: 'include'
-                            });
-                        } catch (e) { console.error(e); }
-
+                    // Optimistic Update
+                    if (typeof allReports !== 'undefined') {
+                        const report = allReports.find(r => r.reportId === currentReportId);
+                        if (report) {
+                            report.status = 'SUSPENDED';
+                            renderReports(allReports);
+                        }
+                    } else {
                         fetchReports();
                     }
                 } else {

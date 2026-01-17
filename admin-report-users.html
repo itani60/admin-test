@@ -2004,55 +2004,39 @@
                     btn.disabled = true;
                 }
 
-                const response = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(email)}/suspend`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ reason: fullReason, accountType: 'regular', duration: duration }),
+                // Use Reports API to Suspend (Centralized Logic)
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        reportId: currentReportId,
+                        action: 'SUSPEND',
+                        source: 'USER',
+                        reportedUserId: currentReportedId,
+                        targetEmail: email,
+                        reporterUserId: currentReporterId,
+                        suspensionReason: fullReason,
+                        suspensionDuration: duration,
+                        notes: `Suspended: ${fullReason} (Duration: ${duration})`
+                    }),
                     credentials: 'include'
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('User suspended successfully');
-                    // Hide Modal
+                    alert('User suspended successfully via Report Manager');
+
                     const modalEl = document.getElementById('suspendUserModal');
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
 
-                    // Update Report Status to matches User Status
-                    if (currentReportId) {
-                        try {
-                            await fetch(`${API_BASE_URL}/admin/reports`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    reportId: currentReportId,
-                                    action: 'SUSPEND', // Sets status to SUSPENDED
-                                    source: 'USER',
-                                    reportedUserId: currentReportedId,
-                                    reporterUserId: currentReporterId,
-                                    notes: 'User Suspended'
-                                }),
-                                credentials: 'include'
-                            });
-
-                            // Update UI immediately (Optimistic Pattern)
-                            // We skip fetchReports() here to avoid GSI eventual consistency race conditions
-                            // where the DB returns the old status ('PENDING') before the new one propagates.
-                            if (typeof allReports !== 'undefined') {
-                                const report = allReports.find(r => r.reportId === currentReportId);
-                                if (report) {
-                                    report.status = 'SUSPENDED';
-                                    renderReports(allReports);
-                                }
-                            }
-                        } catch (err) {
-                            console.error('Failed to update report status:', err);
-                            // Fallback if local update fails
-                            fetchReports();
+                    // Optimistic UI Update (Report Status)
+                    if (typeof allReports !== 'undefined') {
+                        const report = allReports.find(r => r.reportId === currentReportId);
+                        if (report) {
+                            report.status = 'SUSPENDED';
+                            renderReports(allReports);
                         }
                     }
                 } else {

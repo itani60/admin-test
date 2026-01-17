@@ -1848,6 +1848,27 @@
             applyButtonLogic(status);
 
             document.getElementById('reportDetailsModal').classList.add('active');
+
+            // Check User Status (Latest Truth)
+            if (userEmail) {
+                (async () => {
+                    try {
+                        const res = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(userEmail)}`);
+                        if (res.ok) {
+                            const uData = await res.json();
+                            if (uData.success && uData.user && uData.user.status === 'suspended') {
+                                // User is Suspended -> Force SUSPENDED logic
+                                applyButtonLogic('SUSPENDED');
+                                const statusEl = document.getElementById('modalStatus');
+                                if (statusEl) {
+                                    statusEl.textContent = 'SUSPENDED';
+                                    statusEl.className = 'badge me-2 bg-danger text-white';
+                                }
+                            }
+                        }
+                    } catch (e) { console.error('Error checking user status:', e); }
+                })();
+            }
         }
 
         function closeReportModal() {
@@ -2018,7 +2039,9 @@
                                 credentials: 'include'
                             });
 
-                            // Optimistic Local Update (Fixes eventual consistency issues)
+                            // Update UI immediately (Optimistic Pattern)
+                            // We skip fetchReports() here to avoid GSI eventual consistency race conditions
+                            // where the DB returns the old status ('PENDING') before the new one propagates.
                             if (typeof allReports !== 'undefined') {
                                 const report = allReports.find(r => r.reportId === currentReportId);
                                 if (report) {
@@ -2028,10 +2051,9 @@
                             }
                         } catch (err) {
                             console.error('Failed to update report status:', err);
+                            // Fallback if local update fails
+                            fetchReports();
                         }
-
-                        // Delay fetch slightly to allow DB propagation
-                        setTimeout(fetchReports, 1500);
                     }
                 } else {
                     throw new Error(data.message || 'Failed to suspend user');

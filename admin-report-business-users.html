@@ -1577,6 +1577,27 @@
             applyButtonLogic(status);
 
             document.getElementById('reportDetailsModal').classList.add('active');
+
+            // Check Business User Status (Latest Truth)
+            if (businessEmail) {
+                (async () => {
+                    try {
+                        const res = await fetch(`${MANAGE_USER_API}/${encodeURIComponent(businessEmail)}`);
+                        if (res.ok) {
+                            const uData = await res.json();
+                            if (uData.success && uData.user && uData.user.status === 'suspended') {
+                                // Business is Suspended -> Force SUSPENDED logic
+                                applyButtonLogic('SUSPENDED');
+                                const statusEl = document.getElementById('modalStatus');
+                                if (statusEl) {
+                                    statusEl.textContent = 'SUSPENDED';
+                                    statusEl.className = 'badge me-2 bg-danger text-white';
+                                }
+                            }
+                        }
+                    } catch (e) { console.error('Error checking business status:', e); }
+                })();
+            }
         }
 
         function updateStats(reports) {
@@ -1934,18 +1955,9 @@
                                 }),
                                 credentials: 'include'
                             });
-
-                            // Optimistic Local Update
-                            if (typeof allReports !== 'undefined') {
-                                const report = allReports.find(r => r.reportId === currentReportId);
-                                if (report) {
-                                    report.status = 'SUSPENDED';
-                                    renderReports(allReports);
-                                }
-                            }
                         } catch (e) { console.error(e); }
 
-                        setTimeout(fetchReports, 1500);
+                        fetchReports();
                     }
                 } else {
                     throw new Error(data.message || 'Failed to suspend business');

@@ -1188,15 +1188,13 @@
                     the comment section of my product review. Please check."</p>
             </div>
             <div class="rd-d1-footer">
-                <button class="btn btn-light border btn-sm" onclick="updateReportAction('DISMISS')">Dismiss
-                    Report</button>
-                <button class="btn btn-info btn-sm text-white" onclick="updateReportAction('REVIEW')">Mark as
-                    Reviewed</button>
-                <button class="btn btn-success btn-sm text-white" onclick="updateReportAction('RESOLVE')">Resolve
-                    Report</button>
-                <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn User</button>
+                <button class="btn btn-light border btn-sm" onclick="updateReportAction('DISMISS')">Dismiss</button>
+                <button class="btn btn-info btn-sm text-white" onclick="updateReportAction('REVIEW')">Reviewed</button>
+                <button class="btn btn-success btn-sm text-white"
+                    onclick="updateReportAction('RESOLVE')">Resolve</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="openWarningModal()">Warn</button>
                 <button class="btn btn-warning btn-sm" onclick="showSuspendModal(currentReportedEmail)"
-                    id="suspendActionBtn">Suspend Account</button>
+                    id="suspendActionBtn">Suspend</button>
             </div>
         </div>
     </div>
@@ -1252,6 +1250,44 @@
                             </div>
                         </div>
                         <input type="hidden" id="suspensionReason">
+                    </div>
+
+                    <!-- Duration Selection (Dropdown) -->
+                    <div class="mb-3 mt-3">
+                        <label class="form-label small text-uppercase fw-bold text-secondary"
+                            style="letter-spacing: 0.5px;">Duration</label>
+
+                        <div class="custom-select-wrapper" id="suspendDurationDropdown">
+                            <div class="custom-select-trigger">
+                                <span class="text-muted">Select duration...</span>
+                                <i class="fas fa-chevron-down text-secondary border-0" style="font-size: 0.8rem;"></i>
+                            </div>
+                            <div class="custom-select-options">
+                                <div class="custom-option" data-value="24 Hours">
+                                    <i class="fas fa-hourglass-start"></i> 24 Hours
+                                </div>
+                                <div class="custom-option" data-value="7 Days">
+                                    <i class="fas fa-calendar-week"></i> 7 Days
+                                </div>
+                                <div class="custom-option" data-value="30 Days">
+                                    <i class="fas fa-calendar-alt"></i> 30 Days
+                                </div>
+                                <div class="custom-option" data-value="3 Months">
+                                    <i class="fas fa-calendar-day"></i> 3 Months
+                                </div>
+                                <div class="custom-option" data-value="6 Months">
+                                    <i class="fas fa-calendar"></i> 6 Months
+                                </div>
+                                <div class="custom-option" data-value="1 Year">
+                                    <i class="fas fa-history"></i> 1 Year
+                                </div>
+                                <div class="custom-option" data-value="Banned">
+                                    <i class="fas fa-ban text-danger"></i> <span class="text-danger fw-bold">Permanent
+                                        Ban</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="suspensionDuration">
+                        </div>
                     </div>
 
                     <!-- Optional Details Slot -->
@@ -1734,48 +1770,62 @@
         });
 
         function initializeSuspendDropdown() {
-            const wrapper = document.getElementById('suspendReasonDropdown');
-            if (!wrapper) return;
+            const dropdownWrappers = document.querySelectorAll('.custom-select-wrapper');
 
-            const trigger = wrapper.querySelector('.custom-select-trigger');
-            const hiddenInput = wrapper.querySelector('input[type="hidden"]');
-            const triggerSpan = trigger.querySelector('span');
-            const optionElements = wrapper.querySelectorAll('.custom-option');
+            dropdownWrappers.forEach(wrapper => {
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+                const triggerSpan = trigger.querySelector('span');
+                const optionElements = wrapper.querySelectorAll('.custom-option');
 
-            // Toggle
-            trigger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                wrapper.classList.toggle('open');
-            });
+                if (!trigger) return;
 
-            // Select Option
-            optionElements.forEach(option => {
-                option.addEventListener('click', function (e) {
+                // Toggle
+                trigger.addEventListener('click', function (e) {
                     e.stopPropagation();
-                    const value = this.getAttribute('data-value');
-                    const text = this.textContent.trim();
-                    const icon = this.querySelector('i').cloneNode(true);
+                    // Close other open dropdowns
+                    dropdownWrappers.forEach(w => {
+                        if (w !== wrapper) w.classList.remove('open');
+                    });
+                    wrapper.classList.toggle('open');
+                });
 
-                    hiddenInput.value = value;
+                // Select Option
+                optionElements.forEach(option => {
+                    option.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const value = this.getAttribute('data-value');
+                        const text = this.textContent.trim();
+                        const icon = this.querySelector('i') ? this.querySelector('i').cloneNode(true) : null;
 
-                    triggerSpan.innerHTML = '';
-                    triggerSpan.appendChild(icon);
-                    triggerSpan.appendChild(document.createTextNode(' ' + text));
-                    triggerSpan.classList.remove('text-muted');
-                    triggerSpan.classList.add('text-dark', 'fw-medium');
+                        if (hiddenInput) hiddenInput.value = value;
 
-                    optionElements.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
+                        triggerSpan.innerHTML = '';
+                        if (icon) {
+                            triggerSpan.appendChild(icon);
+                            triggerSpan.appendChild(document.createTextNode(' ' + text));
+                        } else {
+                            triggerSpan.textContent = text;
+                        }
 
-                    wrapper.classList.remove('open');
+                        triggerSpan.classList.remove('text-muted');
+                        triggerSpan.classList.add('text-dark', 'fw-medium');
+
+                        optionElements.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        wrapper.classList.remove('open');
+                    });
                 });
             });
 
             // Close on outside click
             document.addEventListener('click', function (e) {
-                if (!wrapper.contains(e.target)) {
-                    wrapper.classList.remove('open');
-                }
+                dropdownWrappers.forEach(wrapper => {
+                    if (!wrapper.contains(e.target)) {
+                        wrapper.classList.remove('open');
+                    }
+                });
             });
         }
 
@@ -1800,13 +1850,22 @@
             if (reasonInput) reasonInput.value = '';
             if (detailsInput) detailsInput.value = '';
 
-            // Reset visual dropdown
-            if (dropdownTriggerSpan) {
-                dropdownTriggerSpan.textContent = 'Select a reason...';
-                dropdownTriggerSpan.classList.add('text-muted');
-                dropdownTriggerSpan.classList.remove('text-dark', 'fw-medium');
-            }
-            dropdownOptions.forEach(opt => opt.classList.remove('selected'));
+            // Reset visual dropdowns
+            [document.getElementById('suspendReasonDropdown'), document.getElementById('suspendDurationDropdown')].forEach(wrapper => {
+                if (wrapper) {
+                    const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+                    const options = wrapper.querySelectorAll('.custom-option');
+                    const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+
+                    if (hiddenInput) hiddenInput.value = '';
+                    if (triggerSpan) {
+                        triggerSpan.textContent = wrapper.id.includes('Duration') ? 'Select duration...' : 'Select a reason...';
+                        triggerSpan.classList.add('text-muted');
+                        triggerSpan.classList.remove('text-dark', 'fw-medium');
+                    }
+                    if (options) options.forEach(opt => opt.classList.remove('selected'));
+                }
+            });
 
             const modal = new bootstrap.Modal(document.getElementById('suspendUserModal'));
             modal.show();
@@ -1816,6 +1875,7 @@
             const email = document.getElementById('suspendUserEmailHidden').value;
             const reason = document.getElementById('suspensionReason').value;
             const details = document.getElementById('suspensionDetails').value;
+            const duration = document.getElementById('suspensionDuration').value;
 
             if (!reason.trim()) {
                 alert('Please select a reason for suspension');
@@ -1836,7 +1896,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ reason: fullReason, accountType: 'regular' }),
+                    body: JSON.stringify({ reason: fullReason, accountType: 'regular', duration: duration }),
                     credentials: 'include'
                 });
 

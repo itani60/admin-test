@@ -1351,6 +1351,9 @@
                 const safeReportId = report.reportId; // Simple Key
                 const safeTimeString = timeString.replace(/'/g, "\\'");
 
+                const safeReportedId = report.reportedBusinessId || report.targetId || '';
+                const safeReporterId = report.reporterUserId || report.reporterId || '';
+
                 return `
                 <tr>
                     <td class="px-4"><span class="fw-medium text-dark">#${report.reportId.substring(0, 8)}</span></td>
@@ -1382,7 +1385,7 @@
                     <td class="text-muted">${date}</td>
                     <td class="px-4 text-end">
                         <button class="btn btn-sm btn-light text-dark fw-medium border shadow-sm"
-                            onclick="openReportModal('${safeReportId}', '${safeBusinessName}', '${safeBusinessEmail}', '${safeReason}', '${safeDesc}', '${safeReporterName}', '${safeTimeString}', '${report.status}')">
+                            onclick="openReportModal('${safeReportId}', '${safeBusinessName}', '${safeBusinessEmail}', '${safeReason}', '${safeDesc}', '${safeReporterName}', '${safeTimeString}', '${report.status}', '${safeReportedId}', '${safeReporterId}')">
                             ${report.status === 'PENDING' ? 'Review' : 'Details'}
                         </button>
                     </td>
@@ -1407,12 +1410,16 @@
         let currentReportId = '';
         let currentUser = ''; // Used for Ban Modal title
         let currentReportedEmail = '';
+        let currentReportedId = '';
+        let currentReporterId = '';
         const MANAGE_USER_API = `${API_BASE_URL}/admin/admin/users/manage`;
 
-        function openReportModal(reportId, businessName, businessEmail, reason, description, reporterName, timeString, status) {
+        function openReportModal(reportId, businessName, businessEmail, reason, description, reporterName, timeString, status, reportedId, reporterId) {
             currentReportId = reportId;
             currentUser = businessName;
             currentReportedEmail = businessEmail;
+            currentReportedId = reportedId;
+            currentReporterId = reporterId;
 
             document.getElementById('modalReportId').textContent = 'REPORT ID: #' + reportId.substring(0, 8);
             document.getElementById('modalUserName').textContent = businessName; // Actually Business Name

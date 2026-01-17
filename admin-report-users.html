@@ -1425,7 +1425,8 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    allReports = data.reports;
+                    allReports = data.reports || [];
+                    console.log('Fetched Reports:', allReports); // Debug
                     renderReports(allReports);
                     updateStats(allReports);
                 } else {

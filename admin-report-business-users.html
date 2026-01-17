@@ -1413,7 +1413,8 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    allReports = data.reports;
+                    allReports = data.reports || [];
+                    console.log('Fetched Business Reports:', allReports);
                     renderReports(allReports);
                     updateStats(allReports);
                 } else {

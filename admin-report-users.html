@@ -2017,10 +2017,21 @@
                                 }),
                                 credentials: 'include'
                             });
+
+                            // Optimistic Local Update (Fixes eventual consistency issues)
+                            if (typeof allReports !== 'undefined') {
+                                const report = allReports.find(r => r.reportId === currentReportId);
+                                if (report) {
+                                    report.status = 'SUSPENDED';
+                                    renderReports(allReports);
+                                }
+                            }
                         } catch (err) {
                             console.error('Failed to update report status:', err);
                         }
-                        fetchReports();
+
+                        // Delay fetch slightly to allow DB propagation
+                        setTimeout(fetchReports, 1500);
                     }
                 } else {
                     throw new Error(data.message || 'Failed to suspend user');

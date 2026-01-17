@@ -1934,9 +1934,18 @@
                                 }),
                                 credentials: 'include'
                             });
+
+                            // Optimistic Local Update
+                            if (typeof allReports !== 'undefined') {
+                                const report = allReports.find(r => r.reportId === currentReportId);
+                                if (report) {
+                                    report.status = 'SUSPENDED';
+                                    renderReports(allReports);
+                                }
+                            }
                         } catch (e) { console.error(e); }
 
-                        fetchReports();
+                        setTimeout(fetchReports, 1500);
                     }
                 } else {
                     throw new Error(data.message || 'Failed to suspend business');

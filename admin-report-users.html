@@ -1749,56 +1749,62 @@
             });
         });
 
-        // Helper: Apply Button Logic (Logic 2)
+        // Helper: Logic 1 (Strict per User Request)
         function applyButtonLogic(status) {
+            const btnDismiss = document.getElementById('btn-dismiss');
+            const btnReview = document.getElementById('btn-review');
+            const btnWarn = document.getElementById('btn-warn');
+            const btnSuspend = document.getElementById('btn-suspend');
+            const btnResolve = document.getElementById('btn-resolve');
+
+            // 1. Reset Defaults (Show All, Enable All) - Logic 1 style
+            // Note: We ignore group divs for button visibility logic, or ensure they are visible.
             const groupInitial = document.getElementById('action-group-initial');
             const groupEscalate = document.getElementById('action-group-escalate');
-            const btnReview = document.getElementById('btn-review');
-
-            // Reset defaults
             if (groupInitial) groupInitial.style.display = 'contents';
             if (groupEscalate) groupEscalate.style.display = 'contents';
 
-            const btnSuspend = document.getElementById('btn-suspend');
-            if (btnSuspend) {
-                btnSuspend.style.display = 'inline-block';
-                btnSuspend.textContent = 'Suspend';
-                btnSuspend.disabled = false;
-            }
+            const allBtns = [btnDismiss, btnReview, btnWarn, btnSuspend, btnResolve];
+            allBtns.forEach(b => {
+                if (b) {
+                    b.style.display = 'inline-block';
+                    b.disabled = false;
+                }
+            });
 
-            if (btnReview) {
-                btnReview.disabled = false;
-                btnReview.textContent = 'Reviewed';
-            }
+            if (btnReview) btnReview.textContent = 'Reviewed';
+            if (btnSuspend) btnSuspend.textContent = 'Suspend';
 
+            // 2. Apply Rules based on Status
             status = status ? status.toUpperCase() : 'PENDING';
 
             if (status === 'DISMISSED' || status === 'RESOLVED') {
-                if (groupInitial) groupInitial.style.display = 'none';
-                if (groupEscalate) groupEscalate.style.display = 'none';
+                // Rule: Terminal States -> Hide ALL
+                allBtns.forEach(b => { if (b) b.style.display = 'none'; });
             }
             else if (status === 'REVIEWED' || status === 'UNDER REVIEW') {
-                // Keep Initial Visible (for Review info) but disable review button
+                // Rule: Reviewed -> Disable 'Reviewed' button, Keep everything else visible (Investigating)
                 if (btnReview) {
                     btnReview.disabled = true;
                     btnReview.textContent = 'Reviewed ✓';
                 }
-                // Escalate stays visible
             }
             else if (status === 'WARNING_SENT' || status === 'WARNED') {
-                // Hide Initial (Dismiss/Warn) - One time warn
-                if (groupInitial) groupInitial.style.display = 'none';
-                // Escalate remains visible
+                // Rule: Warned -> Hide Dismiss, Review, Warn. Keep Suspend, Resolve.
+                if (btnDismiss) btnDismiss.style.display = 'none';
+                if (btnReview) btnReview.style.display = 'none';
+                if (btnWarn) btnWarn.style.display = 'none';
             }
             else if (status === 'SUSPENDED') {
-                // Hide Initial actions
-                if (groupInitial) groupInitial.style.display = 'none';
+                // Rule: Suspended -> Hide Dismiss, Review, Warn. 
+                if (btnDismiss) btnDismiss.style.display = 'none';
+                if (btnReview) btnReview.style.display = 'none';
+                if (btnWarn) btnWarn.style.display = 'none';
 
-                // Hide Suspend button (User request: don't unsuspend here, just hide)
-                const btnSuspend = document.getElementById('btn-suspend');
+                // User Request: Hide Suspend button too (don't unsuspend here).
                 if (btnSuspend) btnSuspend.style.display = 'none';
 
-                // Resolve remains visible in groupEscalate
+                // Resolve remains visible (to close report if needed)
             }
         }
 

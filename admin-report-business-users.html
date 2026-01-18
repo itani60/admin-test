@@ -1211,6 +1211,109 @@
     </div>
 
 
+    <!-- Dismiss Report Modal (Design 2) -->
+    <div class="modal fade" id="dismissReportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 50px; height: 50px;">
+                            <i class="fas fa-archive text-secondary fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">Dismiss Report</h5>
+                            <small class="text-muted">This action logs the dismissal.</small>
+                        </div>
+                    </div>
+
+                    <label class="form-label">Classification</label>
+                    <div class="custom-select-wrapper" id="dismissReasonDropdown">
+                        <div class="custom-select-trigger" style="background:#f8fafc; border:none;">
+                            <span>Choose classification...</span>
+                            <i class="fas fa-sort text-muted"></i>
+                        </div>
+                        <div class="custom-select-options">
+                            <div class="custom-option" data-value="False Report"><i
+                                    class="fas fa-times-circle text-danger"></i> False Report</div>
+                            <div class="custom-option" data-value="Insufficient Evidence"><i
+                                    class="fas fa-search-minus text-warning"></i> Insufficient Evidence</div>
+                            <div class="custom-option" data-value="Resolved Elsewhere"><i
+                                    class="fas fa-check-circle text-success"></i> Resolved Elsewhere</div>
+                            <div class="custom-option" data-value="Duplicate"><i class="fas fa-copy text-info"></i>
+                                Duplicate</div>
+                            <div class="custom-option" data-value="Other"><i
+                                    class="fas fa-question-circle text-secondary"></i> Other</div>
+                        </div>
+                        <input type="hidden" id="dismissReason">
+                    </div>
+
+                    <label class="form-label mt-3">Note</label>
+                    <textarea class="form-control border-0 bg-light" id="dismissNote" rows="3"
+                        placeholder="Why is this being dismissed?"></textarea>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-dark rounded-3 py-2 fw-medium" onclick="confirmDismissReport()">Dismiss
+                            Report</button>
+                        <button class="btn btn-link text-decoration-none text-muted"
+                            data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resolve Report Modal (Design 2) -->
+    <div class="modal fade" id="resolveReportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0"
+                style="border-radius: 20px; box-shadow: 0 20px 40px rgba(22, 101, 52, 0.1);">
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-success-subtle rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 50px; height: 50px;">
+                            <i class="fas fa-clipboard-check text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">Mark as Resolved</h5>
+                            <small class="text-muted">Finalize this ticket.</small>
+                        </div>
+                    </div>
+
+                    <label class="form-label text-success">Outcome</label>
+                    <div class="custom-select-wrapper" id="resolveReasonDropdown">
+                        <div class="custom-select-trigger" style="background:#f0fdf4; border-color:#bbf7d0;">
+                            <span>Choose outcome...</span>
+                            <i class="fas fa-sort text-success"></i>
+                        </div>
+                        <div class="custom-select-options">
+                            <div class="custom-option" data-value="Content Removed"><i class="fas fa-trash-alt"></i>
+                                Content Removed</div>
+                            <div class="custom-option" data-value="User Warned"><i
+                                    class="fas fa-exclamation-triangle"></i> User Warned</div>
+                            <div class="custom-option" data-value="User Banned"><i class="fas fa-user-slash"></i> User
+                                Banned</div>
+                            <div class="custom-option" data-value="Manual Fix Applied"><i class="fas fa-tools"></i>
+                                Manual Fix Applied</div>
+                        </div>
+                        <input type="hidden" id="resolveReason">
+                    </div>
+
+                    <label class="form-label mt-3 text-success">Ticket Summary</label>
+                    <textarea class="form-control border-0 bg-success-subtle text-dark" id="resolveNote" rows="3"
+                        placeholder="Summary of action taken..."></textarea>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-success rounded-3 py-2 fw-medium shadow-sm"
+                            onclick="confirmResolveReport()">Resolve Ticket</button>
+                        <button class="btn btn-link text-decoration-none text-secondary"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Suspend User Modal (Design 3 Modern Minimalist) -->
     <div class="modal fade modal-minimal" id="suspendUserModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -1611,6 +1714,15 @@
         }
 
         async function updateReportAction(action) {
+            if (action === 'DISMISS') {
+                openDismissModal();
+                return;
+            }
+            if (action === 'RESOLVE') {
+                openResolveModal();
+                return;
+            }
+
             const btn = event.target;
             const originalText = btn.textContent;
             btn.textContent = '...';
@@ -1640,10 +1752,6 @@
                             statusEl.className = 'badge me-2 bg-info text-white';
                         }
                         applyButtonLogic('REVIEWED');
-                    } else {
-                        alert(`Report ${action.toLowerCase()}d successfully.`);
-                        closeReportModal();
-                        fetchReports();
                     }
                 } else {
                     alert('Failed: ' + (res.message || 'Unknown error'));
@@ -1654,6 +1762,108 @@
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
+            }
+        }
+
+        function openDismissModal() {
+            closeReportModal();
+            document.getElementById('dismissReason').value = '';
+            document.getElementById('dismissNote').value = '';
+
+            const wrapper = document.getElementById('dismissReasonDropdown');
+            const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+            if (triggerSpan) {
+                triggerSpan.textContent = 'Choose classification...';
+                triggerSpan.classList.add('text-muted');
+            }
+            wrapper.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+
+            const modal = new bootstrap.Modal(document.getElementById('dismissReportModal'));
+            modal.show();
+        }
+
+        async function confirmDismissReport() {
+            const reason = document.getElementById('dismissReason').value;
+            const notes = document.getElementById('dismissNote').value;
+
+            if (!reason) { alert('Please select a classification.'); return; }
+
+            const btn = event.target;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            await performReportAction('DISMISS', notes ? `${reason} - ${notes}` : reason);
+
+            const modalEl = document.getElementById('dismissReportModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            btn.innerHTML = 'Dismiss Report';
+            btn.disabled = false;
+        }
+
+        function openResolveModal() {
+            closeReportModal();
+            document.getElementById('resolveReason').value = '';
+            document.getElementById('resolveNote').value = '';
+
+            const wrapper = document.getElementById('resolveReasonDropdown');
+            const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+            if (triggerSpan) {
+                triggerSpan.textContent = 'Choose outcome...';
+            }
+            wrapper.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+
+            const modal = new bootstrap.Modal(document.getElementById('resolveReportModal'));
+            modal.show();
+        }
+
+        async function confirmResolveReport() {
+            const reason = document.getElementById('resolveReason').value;
+            const notes = document.getElementById('resolveNote').value;
+
+            if (!reason) { alert('Please select an outcome.'); return; }
+
+            const btn = event.target;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            await performReportAction('RESOLVE', notes ? `${reason} - ${notes}` : reason);
+
+            const modalEl = document.getElementById('resolveReportModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+
+            btn.innerHTML = 'Resolve Ticket';
+            btn.disabled = false;
+        }
+
+        async function performReportAction(action, notes) {
+            try {
+                const payload = {
+                    reportId: currentReportId,
+                    action: action,
+                    source: 'BUSINESS',
+                    notes: notes || 'Action taken via Admin Panel'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/admin/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    credentials: 'include'
+                });
+
+                const res = await response.json();
+                if (res.success) {
+                    alert(`Report ${action.toLowerCase()}d successfully.`);
+                    fetchReports();
+                } else {
+                    alert('Failed: ' + (res.message || 'Unknown error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert(`Error updating report: ${e.message}`);
             }
         }
 

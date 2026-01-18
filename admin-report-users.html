@@ -1722,7 +1722,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
-            await performReportAction('DISMISS', notes ? `${reason} - ${notes}` : reason);
+            await performReportAction('DISMISS', reason, notes);
 
             const modalEl = document.getElementById('dismissReportModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
@@ -1758,7 +1758,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
-            await performReportAction('RESOLVE', notes ? `${reason} - ${notes}` : reason);
+            await performReportAction('RESOLVE', reason, notes);
 
             const modalEl = document.getElementById('resolveReportModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
@@ -1768,7 +1768,7 @@
             btn.disabled = false;
         }
 
-        async function performReportAction(action, notes) {
+        async function performReportAction(action, reason, notes) {
             try {
                 const payload = {
                     reportId: currentReportId,
@@ -1776,6 +1776,7 @@
                     source: 'USER',
                     reportedUserId: currentReportedId,
                     reporterUserId: currentReporterId,
+                    reason: reason, // Structured reason
                     notes: notes || 'Action taken via Admin Panel'
                 };
 

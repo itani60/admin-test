@@ -1792,7 +1792,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
-            await performReportAction('DISMISS', notes ? `${reason} - ${notes}` : reason);
+            await performReportAction('DISMISS', reason, notes);
 
             const modalEl = document.getElementById('dismissReportModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
@@ -1828,7 +1828,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
-            await performReportAction('RESOLVE', notes ? `${reason} - ${notes}` : reason);
+            await performReportAction('RESOLVE', reason, notes);
 
             const modalEl = document.getElementById('resolveReportModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
@@ -1838,13 +1838,14 @@
             btn.disabled = false;
         }
 
-        async function performReportAction(action, notes) {
+        async function performReportAction(action, reason, notes) {
             try {
                 const payload = {
                     reportId: currentReportId,
                     action: action,
                     source: 'BUSINESS',
-                    notes: notes || 'Action taken via Admin Panel'
+                    notes: notes || 'Action taken via Admin Panel',
+                    reason: reason // Structured reason
                 };
 
                 const response = await fetch(`${API_BASE_URL}/admin/reports`, {
